@@ -8,11 +8,20 @@ const Navbar = ({ open, setOpen, navItems, hr }) => {
   return (
     <>
       {/* NAVBAR */}
-      <div className="flex justify-between items-center px-4 sm:px-6 md:px-8 py-2 shadow bg-white">
-        {/* Logo */}
-        <h1 className="text-base sm:text-lg md:text-xl font-bold text-blue-600">
-          TrainerHub
-        </h1>
+<div className="flex border border-gray-400 justify-between items-center 
+px-4 sm:px-6 md:px-8 py-3 shadow bg-white 
+mx-2 sm:mx-8 md:mx-10 lg:mx-20 
+my-3 rounded-lg">     
+
+
+ 
+
+  {/* Text */}
+  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600 leading-none">
+    Trainer <span className="text-orange-400">Hub</span>
+  </h1>
+
+
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-4 lg:gap-8">
@@ -30,7 +39,7 @@ const Navbar = ({ open, setOpen, navItems, hr }) => {
           </div>
 
           {/* User Info */}
-          <div className="flex items-center gap-3 border-l pl-4">
+          <div className="flex items-center gap-3  ">
             <Image
               src={hr}
               alt="HR"
@@ -45,10 +54,27 @@ const Navbar = ({ open, setOpen, navItems, hr }) => {
           </div>
 
           {/* Button */}
-          <button className="flex items-center gap-2 border px-3 lg:px-4 py-2 rounded-lg hover:bg-gray-100 transition text-sm">
-            <ShoppingCart size={18} />
-            Bulk Inquiry
-          </button>
+
+
+      <button className="flex items-center gap-2 
+border border-gray-100 
+px-2 sm:px-3 lg:px-2
+py-2 
+rounded-lg 
+hover:bg-blue-500 transition 
+text-xs sm:text-sm lg:text-base 
+whitespace-nowrap">
+
+  {/* Icon */}
+  <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
+
+  {/* Text (2 lines but compact) */}
+  <span className="hidden sm:flex flex-col leading-none">
+    <span>Bulk Inquiry</span>
+    
+  </span>
+</button>
+
         </div>
 
         {/* Mobile Menu Button */}
@@ -90,7 +116,7 @@ const Navbar = ({ open, setOpen, navItems, hr }) => {
           </div>
 
           {/* Button */}
-          <button className="mt-6 w-full flex items-center justify-center gap-2 border px-4 py-2 rounded-lg">
+          <button className="mt-6 w-full flex items-center justify-center gap-2  border-2  px-4 py-2 rounded-lg">
             <ShoppingCart size={18} />
             Bulk Inquiry
           </button>
