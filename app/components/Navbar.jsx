@@ -7,6 +7,7 @@ import Image from "next/image";
 const Navbar = ({ open, setOpen, navItems }) => {
   return (
     <>
+    
       {/* NAVBAR */}
 <div className="flex border border-gray-400 justify-between items-center 
 px-4 sm:px-6 md:px-8 py-3 shadow bg-white 
