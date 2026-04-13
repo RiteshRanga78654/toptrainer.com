@@ -154,14 +154,14 @@ const Page = () => {
 
         {/* RIGHT IMAGE */}
         <div className="relative flex justify-end ">
-          <div className="absolute w-[320px] h-[320px] bg-blue-200 rounded-full blur-3xl opacity-30"></div>
+          <div className="absolute bg-blue-200 rounded-full blur-3xl opacity-30 "></div>
 
           <Image
             src="/Images/hero.png"
             alt="Trainer"
             width={700}
             height={400}
-            className="relative z-10 "
+            className="relative z-10 justify-end "
           />
         </div>
       </div>
@@ -169,9 +169,7 @@ const Page = () => {
       {/* 🔥 SCROLLABLE CATEGORIES (FULL WIDTH BELOW) */}
       <div className="mt-14 max-w-7xl mx-auto text-center">
 
-      <h3 className="text-lg font-semibold text-gray-700 mb-6">
-        Popular Categories
-      </h3>
+    
 
       {/* SLIDER ROW */}
       <div className="relative flex items-center justify-center">
