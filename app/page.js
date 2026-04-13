@@ -9,6 +9,7 @@ import hr from "./image/5-img.png";
 import trainer from "./image/book-demo-girl.png";
 
 
+
 import { Brain, Mic, Monitor, BarChart3, Leaf } from "lucide-react";
 
 const Page = () => {
@@ -24,17 +25,17 @@ const Page = () => {
     "Join as Trainer",
   ];
 
-  const categories = [
-    { name: "AI Goal-Based", icon: Brain, color: "bg-orange-100 text-orange-600" },
-    { name: "Soft Skills", icon: Mic, color: "bg-red-100 text-red-600" },
-    { name: "Technical", icon: Monitor, color: "bg-blue-100 text-blue-600" },
-    { name: "Leadership", icon: BarChart3, color: "bg-yellow-100 text-yellow-600" },
-    { name: "Wellness", icon: Leaf, color: "bg-green-100 text-green-600" },
-     { name: "AI Goal-Based", icon: Brain, color: "bg-orange-100 text-orange-600" },
-    { name: "Soft Skills", icon: Mic, color: "bg-red-100 text-red-600" },
-    { name: "Technical", icon: Monitor, color: "bg-blue-100 text-blue-600" },
-   
-  ];
+ 
+    const categories = [
+  { name: "AI Goal-Based", icon: Brain, color: "bg-orange-100 text-orange-600" },
+  { name: "Soft Skills", icon: Mic, color: "bg-red-100 text-red-600" },
+  { name: "Technical", icon: Monitor, color: "bg-blue-100 text-blue-600" },
+  { name: "Leadership", icon: BarChart3, color: "bg-yellow-100 text-yellow-600" },
+  { name: "Wellness", icon: Leaf, color: "bg-green-100 text-green-600" },
+  { name: "Data Science", icon: Brain, color: "bg-purple-100 text-purple-600" },
+  { name: "Communication", icon: Mic, color: "bg-pink-100 text-pink-600" },
+  { name: "Management", icon: BarChart3, color: "bg-indigo-100 text-indigo-600" },
+];
    const [index, setIndex] = useState(0);
 
   const itemsPerView = 4;
@@ -92,10 +93,10 @@ const Page = () => {
         
       />
       
-      <section className="w-full bg-gradient-to-br from-blue-50 via-white to-purple-50 px-6 md:px-16 py-10">
+      <section className="w-full bg-gradient-to-br from-blue-50 via-white to-purple-50  md:px-16 py-10">
       
       {/* TOP HERO */}
-      <div className="grid md:grid-cols-2 gap-10 items-center max-w-7xl mx-auto">
+      <div className="grid md:grid-cols-2 gap-10 items-center max-w-7xl mx-4">
         
         {/* LEFT */}
         <div>
@@ -152,15 +153,15 @@ const Page = () => {
         </div>
 
         {/* RIGHT IMAGE */}
-        <div className="relative flex justify-center">
+        <div className="relative flex justify-end ">
           <div className="absolute w-[320px] h-[320px] bg-blue-200 rounded-full blur-3xl opacity-30"></div>
 
           <Image
             src="/Images/hero.png"
             alt="Trainer"
-            width={500}
+            width={700}
             height={400}
-            className="relative z-10"
+            className="relative z-10 "
           />
         </div>
       </div>
