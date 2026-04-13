@@ -4,7 +4,7 @@ import React from "react";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 
-const Navbar = ({ open, setOpen, navItems, hr }) => {
+const Navbar = ({ open, setOpen, navItems }) => {
   return (
     <>
       {/* NAVBAR */}
@@ -41,7 +41,7 @@ my-3 rounded-lg">
           {/* User Info */}
           <div className="flex items-center gap-3  ">
             <Image
-              src={hr}
+              src="/Images/hr.png"
               alt="HR"
               width={40}
               height={40}
