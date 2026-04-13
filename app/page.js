@@ -1,20 +1,14 @@
 "use client";
 
+import { Star, CheckCircle } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
-import { Search, ChevronLeft, ChevronRight , Star } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 import Navbar from "./components/Navbar"; // 👈 import navbar
-import hr from "./image/5-img.png";
-import trainer from "./image/book-demo-girl.png";
 
 
-
-import softskillsImg from "./image/soft skill.jpg";
-import technicalImg from "./image/tech logo.jpg";
-import leadershipImg from "./image/leadership logo.webp";
-import salesImg from "./image/sales logo.png";
-import wellnessImg from "./image/wellness logo.webp";
+import { Brain, Mic, Monitor, BarChart3, Leaf } from "lucide-react";
 
 const Page = () => {
   const [open, setOpen] = useState(false);
@@ -29,28 +23,29 @@ const Page = () => {
     "Join as Trainer",
   ];
 
- const categories = [
-    {
-      name: "Soft Skills",
-      image: softskillsImg,
-    },
-    {
-      name: "Technical",
-      image: technicalImg,
-    },
-    {
-      name: "Leadership",
-      image: leadershipImg,
-    },
-    {
-      name: "Sales",
-      image: salesImg,
-    },
-    {
-      name: "Wellness",
-      image: wellnessImg,
-    },
+  const categories = [
+    { name: "AI Goal-Based", icon: Brain, color: "bg-orange-100 text-orange-600" },
+    { name: "Soft Skills", icon: Mic, color: "bg-red-100 text-red-600" },
+    { name: "Technical", icon: Monitor, color: "bg-blue-100 text-blue-600" },
+    { name: "Leadership", icon: BarChart3, color: "bg-yellow-100 text-yellow-600" },
+    { name: "Wellness", icon: Leaf, color: "bg-green-100 text-green-600" },
+     { name: "AI Goal-Based", icon: Brain, color: "bg-orange-100 text-orange-600" },
+    { name: "Soft Skills", icon: Mic, color: "bg-red-100 text-red-600" },
+    { name: "Technical", icon: Monitor, color: "bg-blue-100 text-blue-600" },
+   
   ];
+   const [index, setIndex] = useState(0);
+
+  const itemsPerView = 4;
+  const totalSlides = Math.ceil(categories.length / itemsPerView);
+
+  const nextSlide = () => {
+    if (index < totalSlides - 1) setIndex(index + 1);
+  };
+
+  const prevSlide = () => {
+    if (index > 0) setIndex(index - 1);
+  };
 
   const scrollAmount = 300;
 
@@ -93,9 +88,138 @@ const Page = () => {
         open={open}
         setOpen={setOpen}
         navItems={navItems}
-        hr={hr}
+        
       />
+      
+      <section className="w-full bg-gradient-to-br from-blue-50 via-white to-purple-50 px-6 md:px-16 py-10">
+      
+      {/* TOP HERO */}
+      <div className="grid md:grid-cols-2 gap-10 items-center max-w-7xl mx-auto">
+        
+        {/* LEFT */}
+        <div>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
+            Connect with{" "}
+            <span className="text-blue-600">Expert Trainers</span>{" "}
+            to Achieve Your Goals
+          </h1>
 
+          <p className="text-gray-500 mt-4 text-lg">
+            Personalized learning, live 1-on-1 sessions, and guidance from
+            top-rated professionals.
+          </p>
+
+          {/* SEARCH */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
+            <input
+              type="text"
+              placeholder="What do you want to learn?"
+              className="flex-1 px-5 py-3 rounded-xl border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+
+            <button className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium shadow-md hover:bg-blue-700 transition">
+              Find a Trainer →
+            </button>
+          </div>
+
+          {/* STATS */}
+          <div className="flex flex-wrap gap-6 mt-8">
+            <div className="flex items-center gap-2">
+              <Star className="text-yellow-500" size={20} />
+              <div>
+                <p className="font-semibold text-gray-800">4.9/5 Rating</p>
+                <p className="text-sm text-gray-500">2,500+ reviews</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <CheckCircle className="text-green-500" size={20} />
+              <div>
+                <p className="font-semibold text-gray-800">1,200+</p>
+                <p className="text-sm text-gray-500">Verified Experts</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <CheckCircle className="text-green-500" size={20} />
+              <div>
+                <p className="font-semibold text-gray-800">50,000+</p>
+                <p className="text-sm text-gray-500">1-on-1 Sessions</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT IMAGE */}
+        <div className="relative flex justify-center">
+          <div className="absolute w-[320px] h-[320px] bg-blue-200 rounded-full blur-3xl opacity-30"></div>
+
+          <Image
+            src="/Images/hero.png"
+            alt="Trainer"
+            width={500}
+            height={400}
+            className="relative z-10"
+          />
+        </div>
+      </div>
+
+      {/* 🔥 SCROLLABLE CATEGORIES (FULL WIDTH BELOW) */}
+      <div className="mt-14 max-w-7xl mx-auto text-center">
+
+      <h3 className="text-lg font-semibold text-gray-700 mb-6">
+        Popular Categories
+      </h3>
+
+      {/* SLIDER ROW */}
+      <div className="relative flex items-center justify-center">
+
+        {/* LEFT BUTTON */}
+        <button className="mr-3 bg-white shadow-md p-2 rounded-full hover:bg-gray-100">
+          <ChevronLeft />
+        </button>
+
+        {/* CARDS */}
+        <div className="flex gap-4 px-10">
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+
+            return (
+              <div
+                key={cat.name}
+                className="flex items-center gap-3 px-5 py-3 rounded-xl border bg-white shadow-sm hover:shadow-md hover:border-blue-400 transition"
+              >
+                <div className={`p-2 rounded-lg ${cat.color}`}>
+                  <Icon size={18} />
+                </div>
+
+                <p className="font-medium text-sm whitespace-nowrap">
+                  {cat.name}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* RIGHT BUTTON */}
+        <button className="mr-3 bg-white shadow-md p-2 rounded-full hover:bg-gray-100">
+          <ChevronRight />
+        </button>
+      </div>
+
+      {/* 🔴 5 BLACK DOTS */}
+      <div className="flex justify-center mt-6 gap-2">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="h-2 w-2 rounded-full bg-black"
+          />
+        ))}
+      </div>
+
+    </div>
+
+    </section>
       {/* HERO */}
       <div className="bg-linear-to-r from-blue-50 to-orange-50 py-12 px-4 md:px-8 text-center">
         <h2 className="text-2xl md:text-4xl font-semibold leading-snug">
@@ -118,25 +242,7 @@ const Page = () => {
           </div>
         </div>
 
-     <div className="mt-8 flex flex-wrap justify-center gap-4">
-          {categories.map((cat) => (
-            <div
-              key={cat.name}
-              className="bg-white px-6 py-4 rounded-xl shadow hover:shadow-md cursor-pointer transition flex flex-col items-center gap-3 w-32"
-            >
-              <Image
-                src={cat.image}
-                alt={cat.name}
-                width={50}
-                height={50}
-                className="object-contain h-12 w-12"
-              />
-              <p className="font-medium text-sm md:text-base text-center">
-                {cat.name}
-              </p>
-            </div>
-          ))}
-        </div>
+       
       </div>
 
       {/* TRAINER CARDS */}
@@ -185,19 +291,19 @@ const Page = () => {
                 key={item}
                 className="min-w-64 bg-white rounded-xl border border-gray-300 shadow-sm flex-shrink-0"
               >
-                <div className="relative">
-                 <Image
-  src={trainer}
-  alt="trainer"
-  width={400}
-  height={300}
-  className="w-full h-56 md:h-64 object-cover object-top rounded-t-xl"
-/>
-                <span className="absolute top-2 left-2 bg-yellow-400 text-xs px-2 py-1 rounded flex items-center gap-1">
-  <Star size={14} className="fill-current" />
-  Top Rated
-</span>
-                </div>
+                {/* <div className="relative">
+                  <Image
+                    src={trainer}
+                    alt="trainer"
+                    width={400}
+                    height={300}
+                    className="w-full h-56 md:h-64 object-cover object-top rounded-t-xl"
+                  />
+                  <span className="absolute top-2 left-2 bg-yellow-400 text-xs px-2 py-1 rounded flex items-center gap-1">
+                    <Star size={14} className="fill-current" />
+                    Top Rated
+                  </span>
+                </div> */}
 
                 <div className="p-4 space-y-2">
                   <h4 className="font-semibold">Dr. Arvinder Singh</h4>
@@ -207,10 +313,10 @@ const Page = () => {
                   </p>
 
                   <div className="flex justify-between text-sm pt-2">
-<span className="flex items-center gap-1">
-  <Star size={14} className="fill-current  " />
-  4.9/5
-</span>                    <span>500+ hrs</span>
+                    <span className="flex items-center gap-1">
+                      <Star size={14} className="fill-current  " />
+                      4.9/5
+                    </span>                    <span>500+ hrs</span>
                     <span>20+ Clients</span>
                   </div>
 
