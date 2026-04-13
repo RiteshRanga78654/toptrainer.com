@@ -4,8 +4,9 @@ import { Star, CheckCircle } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-
-import Navbar from "./components/Navbar"; // 👈 import navbar
+import Navbar from "./components/Navbar";
+import hr from "./image/5-img.png";
+import trainer from "./image/book-demo-girl.png";
 
 
 import { Brain, Mic, Monitor, BarChart3, Leaf } from "lucide-react";
