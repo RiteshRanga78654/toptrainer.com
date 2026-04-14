@@ -1,21 +1,19 @@
-"use client";
+ "use client";
 
 import { Star, CheckCircle } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Navbar from "./components/Navbar";
-
-
-
-
+import Link from "next/link";
 import { Brain, Mic, Monitor, BarChart3, Leaf } from "lucide-react";
 
 const Page = () => {
   const [open, setOpen] = useState(false);
-
   const scrollRef = useRef(null);
+  const categoryRef = useRef(null);
   const [pause, setPause] = useState(false);
+  const [catIndex, setCatIndex] = useState(0);
 
   const navItems = [
     "Find Trainers",
@@ -23,29 +21,66 @@ const Page = () => {
     "Corporate Solutions",
     "Join as Trainer",
   ];
-
- 
-    const categories = [
-  { name: "AI Goal-Based", icon: Brain, color: "bg-orange-100 text-orange-600" },
-  { name: "Soft Skills", icon: Mic, color: "bg-red-100 text-red-600" },
-  { name: "Technical", icon: Monitor, color: "bg-blue-100 text-blue-600" },
-  { name: "Leadership", icon: BarChart3, color: "bg-yellow-100 text-yellow-600" },
-  { name: "Wellness", icon: Leaf, color: "bg-green-100 text-green-600" },
-  { name: "Data Science", icon: Brain, color: "bg-purple-100 text-purple-600" },
-  { name: "Communication", icon: Mic, color: "bg-pink-100 text-pink-600" },
-  { name: "Management", icon: BarChart3, color: "bg-indigo-100 text-indigo-600" },
+const courseData = [
+  {
+    id: 1,
+    title: "Advanced B2B Sales Mastery",
+    provider: "Masterclass",
+    type: "Course",
+    rating: "4.9",
+    image: "/Images/courses.png",
+  },
+  {
+    id: 2,
+    title: "Closing Techniques 101",
+    provider: "Bootcamp",
+    type: "Course",
+    rating: "4.6",
+    image: "/Images/courses.png",
+  },
+  {
+    id: 3,
+    title: "Negotiation Tactics for Enterprise",
+    provider: "Specialization",
+    type: "Course",
+    rating: "5.0",
+    image: "/Images/courses.png",
+  },
+  {
+    id: 4,
+    title: "Cold Calling Strategies",
+    provider: "Workshop",
+    type: "Course",
+    rating: "4.7",
+    image: "/Images/courses.png",
+  },
 ];
-   const [index, setIndex] = useState(0);
 
-  const itemsPerView = 4;
-  const totalSlides = Math.ceil(categories.length / itemsPerView);
+  const categories = [
+    { name: "AI Goal-Based", icon: Brain, color: "bg-orange-100 text-orange-600" },
+    { name: "Soft Skills", icon: Mic, color: "bg-red-100 text-red-600" },
+    { name: "Technical", icon: Monitor, color: "bg-blue-100 text-blue-600" },
+    { name: "Leadership", icon: BarChart3, color: "bg-yellow-100 text-yellow-600" },
+    { name: "Wellness", icon: Leaf, color: "bg-green-100 text-green-600" },
+    { name: "Data Science", icon: Brain, color: "bg-purple-100 text-purple-600" },
+    { name: "Communication", icon: Mic, color: "bg-pink-100 text-pink-600" },
+    { name: "Management", icon: BarChart3, color: "bg-indigo-100 text-indigo-600" },
+  ];
 
-  const nextSlide = () => {
-    if (index < totalSlides - 1) setIndex(index + 1);
+  const totalDots = 5;
+
+  const scrollCatLeft = () => {
+    if (categoryRef.current) {
+      categoryRef.current.scrollBy({ left: -220, behavior: "smooth" });
+      setCatIndex((prev) => Math.max(prev - 1, 0));
+    }
   };
 
-  const prevSlide = () => {
-    if (index > 0) setIndex(index - 1);
+  const scrollCatRight = () => {
+    if (categoryRef.current) {
+      categoryRef.current.scrollBy({ left: 220, behavior: "smooth" });
+      setCatIndex((prev) => Math.min(prev + 1, totalDots - 1));
+    }
   };
 
   const scrollAmount = 300;
@@ -54,7 +89,6 @@ const Page = () => {
     const interval = setInterval(() => {
       if (!pause && scrollRef.current) {
         scrollRef.current.scrollLeft += 1;
-
         if (
           scrollRef.current.scrollLeft >=
           scrollRef.current.scrollWidth - scrollRef.current.clientWidth
@@ -63,307 +97,314 @@ const Page = () => {
         }
       }
     }, 10);
-
     return () => clearInterval(interval);
   }, [pause]);
 
   const scrollLeft = () => {
-    scrollRef.current.scrollBy({
-      left: -scrollAmount,
-      behavior: "smooth",
-    });
+    scrollRef.current?.scrollBy({ left: -scrollAmount, behavior: "smooth" });
   };
 
   const scrollRight = () => {
-    scrollRef.current.scrollBy({
-      left: scrollAmount,
-      behavior: "smooth",
-    });
+    scrollRef.current?.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
   return (
     <div className="font-sans bg-white min-h-screen">
+      <Navbar open={open} setOpen={setOpen} navItems={navItems} />
 
-      {/* ✅ Navbar Component */}
-      <Navbar
-        open={open}
-        setOpen={setOpen}
-        navItems={navItems}
-        
-      />
-      
-      <section className="w-full bg-gradient-to-br from-blue-50 via-white to-purple-50  md:px-16 py-10">
-      
-      {/* TOP HERO */}
-      <div className="grid md:grid-cols-2 gap-10 items-center max-w-7xl mx-4">
-        
-        {/* LEFT */}
-        <div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
-            Connect with{" "}
-            <span className="text-blue-600">Expert Trainers</span>{" "}
-            to Achieve Your Goals
-          </h1>
+      {/* ━━━ HERO SECTION ━━━ */}
+      <section className="w-full bg-gradient-to-br from-blue-50  to-purple-50 px-4 sm:px-8 md:px-16 py-8 md:py-14">
 
-          <p className="text-gray-500 mt-4 text-lg">
-            Personalized learning, live 1-on-1 sessions, and guidance from
-            top-rated professionals.
-          </p>
+        {/* HERO GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center max-w-7xl mx-auto">
 
-          {/* SEARCH */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <input
-              type="text"
-              placeholder="What do you want to learn?"
-              className="flex-1 px-5 py-3 rounded-xl border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+          {/* LEFT TEXT */}
+          <div className="text-center md:text-left order-2 md:order-1">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
+              Connect with{" "}
+              <span className="text-blue-600">Expert Trainers</span>{" "}
+              to Achieve Your Goals
+            </h1>
 
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium shadow-md hover:bg-blue-700 transition">
-              Find a Trainer →
-            </button>
-          </div>
+            <p className="text-gray-500 mt-3 md:mt-4 text-sm md:text-lg">
+              Personalized learning, live 1-on-1 sessions, and guidance from
+              top-rated professionals.
+            </p>
 
-          {/* STATS */}
-          <div className="flex flex-wrap gap-6 mt-8">
-            <div className="flex items-center gap-2">
-              <Star className="text-yellow-500" size={20} />
-              <div>
-                <p className="font-semibold text-gray-800">4.9/5 Rating</p>
-                <p className="text-sm text-gray-500">2,500+ reviews</p>
-              </div>
-            </div>
+            {/* SEARCH */}
+      <div className="flex flex-col sm:flex-row gap-3 mt-5 md:mt-6">
+  <input
+    type="text"
+    placeholder="What do you want to learn?"
+    className="flex-1 min-w-0 px-4 sm:px-5 py-3 rounded-xl border border-gray-200 shadow-sm 
+    text-sm md:text-base transition-all duration-200
+    hover:border-blue-400 hover:shadow-md
+    focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
+  />
 
-            <div className="flex items-center gap-2">
-              <CheckCircle className="text-green-500" size={20} />
-              <div>
-                <p className="font-semibold text-gray-800">1,200+</p>
-                <p className="text-sm text-gray-500">Verified Experts</p>
-              </div>
-            </div>
+  <button className="px-5 py-3 bg-blue-600 text-white rounded-xl font-medium shadow-md 
+    text-sm md:text-base whitespace-nowrap transition-all duration-200
+    hover:bg-blue-700 hover:shadow-lg cursor-pointer active:scale-95">
+    Find a Trainer →
+  </button>
+</div>
 
-            <div className="flex items-center gap-2">
-              <CheckCircle className="text-green-500" size={20} />
-              <div>
-                <p className="font-semibold text-gray-800">50,000+</p>
-                <p className="text-sm text-gray-500">1-on-1 Sessions</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT IMAGE */}
-        <div className="relative flex justify-end ">
-          <div className="absolute bg-blue-200 rounded-full blur-3xl opacity-30 "></div>
-
-          <Image
-            src="/Images/hero.png"
-            alt="Trainer"
-            width={700}
-            height={400}
-            className="relative z-10 justify-end "
-          />
-        </div>
-      </div>
-
-      {/* 🔥 SCROLLABLE CATEGORIES (FULL WIDTH BELOW) */}
-      <div className="mt-14 max-w-7xl mx-auto text-center">
-
-    
-
-      {/* SLIDER ROW */}
-      <div className="relative flex items-center justify-center">
-
-        {/* LEFT BUTTON */}
-        <button className="mr-3 bg-white shadow-md p-2 rounded-full hover:bg-gray-100">
-          <ChevronLeft />
-        </button>
-
-        {/* CARDS */}
-        <div className="flex gap-4 px-10">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-
-            return (
-              <div
-                key={cat.name}
-                className="flex items-center gap-3 px-5 py-3 rounded-xl border bg-white shadow-sm hover:shadow-md hover:border-blue-400 transition"
-              >
-                <div className={`p-2 rounded-lg ${cat.color}`}>
-                  <Icon size={18} />
+            {/* STATS */}
+            <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 mt-5 md:mt-8">
+              <div className="flex items-center gap-2">
+                <Star className="text-yellow-500 flex-shrink-0" size={16} />
+                <div>
+                  <p className="font-semibold text-gray-800 text-sm">4.9/5 Rating</p>
+                  <p className="text-xs text-gray-500">2,500+ reviews</p>
                 </div>
-
-                <p className="font-medium text-sm whitespace-nowrap">
-                  {cat.name}
-                </p>
               </div>
-            );
-          })}
+              <div className="flex items-center gap-2">
+                <CheckCircle className="text-green-500 flex-shrink-0" size={16} />
+                <div>
+                  <p className="font-semibold text-gray-800 text-sm">1,200+</p>
+                  <p className="text-xs text-gray-500">Verified Experts</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="text-green-500 flex-shrink-0" size={16} />
+                <div>
+                  <p className="font-semibold text-gray-800 text-sm">50,000+</p>
+                  <p className="text-xs text-gray-500">1-on-1 Sessions</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT IMAGE */}
+          <div className="relative flex justify-center md:justify-end order-1 md:order-2">
+            <div className="absolute bg-blue-200 rounded-full blur-3xl opacity-30 w-40 h-40 md:w-72 md:h-72" />
+            <Image
+              src="/Images/hero.png"
+              alt="Trainer"
+              width={700}
+              height={400}
+              className="relative z-10 w-full max-w-[260px] sm:max-w-sm md:max-w-full h-auto"
+            />
+          </div>
         </div>
 
-        {/* RIGHT BUTTON */}
-        <button className="mr-3 bg-white shadow-md p-2 rounded-full hover:bg-gray-100">
-          <ChevronRight />
-        </button>
-      </div>
+        {/* ━━━ CATEGORY SLIDER ━━━ */}
+       <div className="mt-8 md:mt-14 max-w-7xl mx-auto">
 
-      {/* 🔴 5 BLACK DOTS */}
-      <div className="flex justify-center mt-6 gap-2">
-        {[...Array(5)].map((_, i) => (
+  <div className="flex items-center gap-2 md:gap-3">
+
+    {/* LEFT BUTTON (VISIBLE ON MOBILE ALSO) */}
+    <button
+      onClick={scrollCatLeft}
+      className="flex-shrink-0 bg-white shadow-md p-2 rounded-full hover:bg-gray-100 border border-gray-200"
+    >
+      <ChevronLeft size={18} />
+    </button>
+
+    {/* CATEGORY CONTAINER */}
+    <div
+      ref={categoryRef}
+      className="flex gap-2 md:gap-3 overflow-hidden flex-1"
+    >
+      {categories.map((cat) => {
+        const Icon = cat.icon;
+        return (
           <div
-            key={i}
-            className="h-2 w-2 rounded-full bg-black"
-          />
-        ))}
-      </div>
+            key={cat.name}
+            className="
+              flex items-center gap-2 md:gap-3 
+              px-2 md:px-4 py-2 md:py-3 
+              rounded-xl border bg-white shadow-sm 
+              hover:shadow-md hover:border-blue-400 transition 
+              flex-shrink-0 cursor-pointer
 
+              /* 👇 IMPORTANT WIDTH CONTROL */
+              w-[30%] sm:w-[30%] md:w-auto
+            "
+          >
+            <div className={`p-1.5 md:p-2 rounded-lg ${cat.color}`}>
+              <Icon size={14} />
+            </div>
+            <p className="font-medium text-[11px] sm:text-xs md:text-sm whitespace-nowrap">
+              {cat.name}
+            </p>
+          </div>
+        );
+      })}
     </div>
 
-    </section>
-      {/* HERO */}
-      <div className="bg-linear-to-r from-blue-50 to-orange-50 py-12 px-4 md:px-8 text-center">
-        <h2 className="text-2xl md:text-4xl font-semibold leading-snug">
-          I need a{" "}
-          <span className="text-blue-600 font-bold">Data Science</span>{" "}
-          trainer for <span className="font-bold">2 days</span> in{" "}
-          <span className="font-bold">Hyderabad</span>
-        </h2>
+    {/* RIGHT BUTTON */}
+    <button
+      onClick={scrollCatRight}
+      className="flex-shrink-0 bg-white shadow-md p-2 rounded-full hover:bg-gray-100 border border-gray-200"
+    >
+      <ChevronRight size={18} />
+    </button>
 
-        <div className="mt-6 flex justify-center">
-          <div className="flex items-center bg-white border rounded-xl shadow-md w-full md:w-[600px] overflow-hidden">
-            <input
-              type="text"
-              placeholder="I need a natural language search..."
-              className="flex-1 px-4 py-3 outline-none text-sm md:text-base"
-            />
-            <button className="bg-blue-600 text-white px-4 py-4">
-              <Search size={20} />
-            </button>
-          </div>
+  </div>
+
+  {/* DOTS */}
+  <div className="flex justify-center mt-4 md:mt-5 gap-2">
+    {[...Array(totalDots)].map((_, i) => (
+      <div
+        key={i}
+        className={`h-1.5 md:h-2 rounded-full transition-all duration-300 ${
+          i === catIndex ? "w-4 md:w-5 bg-blue-600" : "w-1.5 md:w-2 bg-gray-300"
+        }`}
+      />
+    ))}
+  </div>
+
+</div>
+      </section>
+      <section className="bg-gradient-to-br from-blue-50  ">
+       <div className="bg-blue-50 border border-black rounded-xl p-6 md:p-8 max-w-7xl mx-auto hover:shadow-xl transition-all duration-300 py-0">
+      
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+        
+        {/* LEFT SECTION */}
+        <div className="lg:w-[260px] flex flex-col py-15 gap-5">
+          <h2 className="text-black text-xl md:text-3xl font-bold leading-tight">
+           Advance Your Sales Career with Expert-Led Courses
+          </h2>
+
+          <Link
+            href="/courses"
+            className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-semibold py-3 px-5 rounded-full w-fit hover:bg-blue-700 transition-all duration-300 hover:scale-105"
+          >
+            Explore courses →
+          </Link>
         </div>
 
-       
-      </div>
-
-      {/* TRAINER CARDS */}
-      <div className="px-4 md:px-8 py-10">
-        <h3 className="text-xl md:text-2xl font-semibold mb-6">
-          Discovery Spotlight: Verified Top Performers
-        </h3>
-
-        <div
-          className="relative group"
-          onMouseEnter={() => setPause(true)}
-          onMouseLeave={() => setPause(false)}
-        >
-          {/* Left Button */}
-          <button
-            onClick={scrollLeft}
-            className="absolute left-0.5 top-1/2 -translate-y-1/2 z-10 
-            bg-white/90 backdrop-blur-md border border-gray-200 
-            shadow-md px-3 py-2 rounded-lg 
-            opacity-0 group-hover:opacity-100 
-            pointer-events-none group-hover:pointer-events-auto
-            hover:bg-blue-600 hover:text-white transition-all duration-300"
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          {/* Right Button */}
-          <button
-            onClick={scrollRight}
-            className="absolute right-0.5 top-1/2 -translate-y-1/2 z-10 
-            bg-white/90 backdrop-blur-md border border-gray-200 
-            shadow-md px-3 py-2 rounded-lg 
-            opacity-0 group-hover:opacity-100 
-            pointer-events-none group-hover:pointer-events-auto
-            hover:bg-blue-600 hover:text-white transition-all duration-300"
-          >
-            <ChevronRight size={20} />
-          </button>
-
-          <div
-            ref={scrollRef}
-            className="flex gap-6 overflow-hidden scroll-smooth"
-          >
-            {[1, 2, 3, 4, 5].map((item) => (
+        {/* RIGHT SECTION */}
+        <div className="flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            
+            {courseData.map((course) => (
               <div
-                key={item}
-                className="min-w-64 bg-white rounded-xl border border-gray-300 shadow-sm flex-shrink-0"
+                key={course.id}
+                className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group"
               >
-                {/* <div className="relative">
+                
+                {/* IMAGE */}
+                <div className="relative h-[160px] w-full overflow-hidden">
                   <Image
-                    src={trainer}
-                    alt="trainer"
-                    width={400}
-                    height={300}
-                    className="w-full h-56 md:h-64 object-cover object-top rounded-t-xl"
+                    src={course.image}
+                    alt={course.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <span className="absolute top-2 left-2 bg-yellow-400 text-xs px-2 py-1 rounded flex items-center gap-1">
-                    <Star size={14} className="fill-current" />
-                    Top Rated
-                  </span>
-                </div> */}
+                </div>
 
-                <div className="p-4 space-y-2">
-                  <h4 className="font-semibold">Dr. Arvinder Singh</h4>
+                {/* CONTENT */}
+                <div className="p-4 flex flex-col gap-2">
+                  
+                  {/* Provider */}
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <span className="w-4 h-4 bg-gray-300 rounded-sm"></span>
+                    {course.provider}
+                  </div>
 
+                  {/* Title */}
+                  <h3 className="text-sm md:text-base font-semibold text-gray-900 leading-snug line-clamp-2">
+                    {course.title}
+                  </h3>
+
+                  {/* Type */}
                   <p className="text-xs text-gray-500">
-                    15+ Yrs Leadership Experience | Ex-Google | EQ Certified
+                    {course.type}
                   </p>
 
-                  <div className="flex justify-between text-sm pt-2">
-                    <span className="flex items-center gap-1">
-                      <Star size={14} className="fill-current  " />
-                      4.9/5
-                    </span>                    <span>500+ hrs</span>
-                    <span>20+ Clients</span>
+                  {/* Rating */}
+                  <div className="flex items-center gap-1 text-sm font-semibold text-gray-900">
+                    ⭐ {course.rating}
                   </div>
 
-                  <div className="flex gap-2 pt-3">
-                    <button className="flex-1 bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700">
-                      Check Availability
-                    </button>
-                    <button className="flex-1 border text-sm py-2 rounded-lg hover:bg-gray-100">
-                      Brochure
-                    </button>
-                  </div>
                 </div>
               </div>
             ))}
+
           </div>
         </div>
+
       </div>
+    </div>
 
-      {/* FEATURES */}
-      <div className="px-4 md:px-8 py-10 bg-gray-50">
-        <h3 className="text-xl md:text-2xl font-semibold mb-8">
-          Corporate Edge Features
-        </h3>
+</section>
+<section className="bg-gradient-to-br from-blue-50  ">
+       <div className="bg-blue-50 border border-black rounded-xl p-6 md:p-8 max-w-7xl mx-auto hover:shadow-xl transition-all duration-300 my-7">
+      
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+        
+        {/* LEFT SECTION */}
+        <div className="lg:w-[260px] flex flex-col py-15 gap-5">
+          <h2 className="text-black text-xl md:text-3xl font-bold leading-tight">
+           Advance Your Sales Career with Expert-Led Courses
+          </h2>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-md transition">
-            <h4 className="font-semibold mb-2">Bulk Inquiry Tool</h4>
-            <p className="text-sm text-gray-500">
-              Raise and manage bulk training requests easily across domains.
-            </p>
-          </div>
+          <Link
+            href="/courses"
+            className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-semibold py-3 px-5 rounded-full w-fit hover:bg-blue-700 transition-all duration-300 hover:scale-105"
+          >
+            Explore courses →
+          </Link>
+        </div>
 
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-md transition">
-            <h4 className="font-semibold mb-2">Vetted Profiles</h4>
-            <p className="text-sm text-gray-500">
-              Access verified trainers with proven experience.
-            </p>
-          </div>
+        {/* RIGHT SECTION */}
+        <div className="flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            
+            {courseData.map((course) => (
+              <div
+                key={course.id}
+                className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group"
+              >
+                
+                {/* IMAGE */}
+                <div className="relative h-[160px] w-full overflow-hidden">
+                  <Image
+                    src={course.image}
+                    alt={course.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110 "
+                  />
+                </div>
 
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-md transition">
-            <h4 className="font-semibold mb-2">LMS Preview</h4>
-            <p className="text-sm text-gray-500">
-              Preview training modules and assessments.
-            </p>
+                {/* CONTENT */}
+                <div className="p-4 flex flex-col gap-2">
+                  
+                  {/* Provider */}
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <span className="w-4 h-4 bg-gray-300 rounded-sm"></span>
+                    {course.provider}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-sm md:text-base font-semibold text-gray-900 leading-snug line-clamp-2">
+                    {course.title}
+                  </h3>
+
+                  {/* Type */}
+                  <p className="text-xs text-gray-500">
+                    {course.type}
+                  </p>
+
+                  {/* Rating */}
+                  <div className="flex items-center gap-1 text-sm font-semibold text-gray-900">
+                    ⭐ {course.rating}
+                  </div>
+
+                </div>
+              </div>
+            ))}
+
           </div>
         </div>
-      </div>
 
+      </div>
+    </div>
+
+</section>
     </div>
   );
 };
