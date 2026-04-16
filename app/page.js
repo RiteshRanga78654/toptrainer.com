@@ -2,11 +2,17 @@
 
 import { Star, CheckCircle } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {  ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Navbar from "./components/Navbar";
-import Link from "next/link";
+
+
+
 import { Brain, Mic, Monitor, BarChart3, Leaf } from "lucide-react";
+import YoutubeSection from "./components/youtube";
+
+import PopularCourses from "./components/course";
+
 
 const Page = () => {
   const [open, setOpen] = useState(false);
@@ -257,154 +263,10 @@ const courseData = [
 
 </div>
       </section>
-      <section className="bg-gradient-to-br from-blue-50  ">
-       <div className="bg-blue-50 border border-black rounded-xl p-6 md:p-8 max-w-7xl mx-auto hover:shadow-xl transition-all duration-300 py-0">
-      
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
-        
-        {/* LEFT SECTION */}
-        <div className="lg:w-[260px] flex flex-col py-15 gap-5">
-          <h2 className="text-black text-xl md:text-3xl font-bold leading-tight">
-           Advance Your Sales Career with Expert-Led Courses
-          </h2>
+    
+      <PopularCourses/>
+      <YoutubeSection/>
 
-          <Link
-            href="/courses"
-            className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-semibold py-3 px-5 rounded-full w-fit hover:bg-blue-700 transition-all duration-300 hover:scale-105"
-          >
-            Explore courses →
-          </Link>
-        </div>
-
-        {/* RIGHT SECTION */}
-        <div className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            
-            {courseData.map((course) => (
-              <div
-                key={course.id}
-                className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group"
-              >
-                
-                {/* IMAGE */}
-                <div className="relative h-[160px] w-full overflow-hidden">
-                  <Image
-                    src={course.image}
-                    alt={course.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                </div>
-
-                {/* CONTENT */}
-                <div className="p-4 flex flex-col gap-2">
-                  
-                  {/* Provider */}
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <span className="w-4 h-4 bg-gray-300 rounded-sm"></span>
-                    {course.provider}
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-sm md:text-base font-semibold text-gray-900 leading-snug line-clamp-2">
-                    {course.title}
-                  </h3>
-
-                  {/* Type */}
-                  <p className="text-xs text-gray-500">
-                    {course.type}
-                  </p>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-1 text-sm font-semibold text-gray-900">
-                    ⭐ {course.rating}
-                  </div>
-
-                </div>
-              </div>
-            ))}
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-</section>
-<section className="bg-gradient-to-br from-blue-50  ">
-       <div className="bg-blue-50 border border-black rounded-xl p-6 md:p-8 max-w-7xl mx-auto hover:shadow-xl transition-all duration-300 my-7">
-      
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
-        
-        {/* LEFT SECTION */}
-        <div className="lg:w-[260px] flex flex-col py-15 gap-5">
-          <h2 className="text-black text-xl md:text-3xl font-bold leading-tight">
-           Advance Your Sales Career with Expert-Led Courses
-          </h2>
-
-          <Link
-            href="/courses"
-            className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-semibold py-3 px-5 rounded-full w-fit hover:bg-blue-700 transition-all duration-300 hover:scale-105"
-          >
-            Explore courses →
-          </Link>
-        </div>
-
-        {/* RIGHT SECTION */}
-        <div className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            
-            {courseData.map((course) => (
-              <div
-                key={course.id}
-                className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group"
-              >
-                
-                {/* IMAGE */}
-                <div className="relative h-[160px] w-full overflow-hidden">
-                  <Image
-                    src={course.image}
-                    alt={course.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110 "
-                  />
-                </div>
-
-                {/* CONTENT */}
-                <div className="p-4 flex flex-col gap-2">
-                  
-                  {/* Provider */}
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <span className="w-4 h-4 bg-gray-300 rounded-sm"></span>
-                    {course.provider}
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-sm md:text-base font-semibold text-gray-900 leading-snug line-clamp-2">
-                    {course.title}
-                  </h3>
-
-                  {/* Type */}
-                  <p className="text-xs text-gray-500">
-                    {course.type}
-                  </p>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-1 text-sm font-semibold text-gray-900">
-                    ⭐ {course.rating}
-                  </div>
-
-                </div>
-              </div>
-            ))}
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-</section>
     </div>
   );
 };
