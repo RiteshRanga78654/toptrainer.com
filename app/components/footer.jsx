@@ -13,31 +13,31 @@ import {
 
 export default function Footer() {
   const [checked, setChecked] = useState(false);
-   const companies = [
-  "Web Development",
-        "Full Stack Development",
-        "Data Science",
-        "Machine Learning",
-        "Artificial Intelligence",
-        "Cyber Security",
-        "Cloud Computing",
-        "DevOps",
-        "UI/UX Design",
-        "Digital Marketing",
-        "Business Analytics",
-        "Entrepreneurship",
-        "Soft Skills",
-        "Communication Skills",
-        "Leadership Training",
-        "Public Speaking",
-        "Interview Preparation",
-        "Career Guidance",
-        "Corporate Training",
-        "Technical Skills",];
+  const companies = [
+    "Web Development",
+    "Full Stack Development",
+    "Data Science",
+    "Machine Learning",
+    "Artificial Intelligence",
+    "Cyber Security",
+    "Cloud Computing",
+    "DevOps",
+    "UI/UX Design",
+    "Digital Marketing",
+    "Business Analytics",
+    "Entrepreneurship",
+    "Soft Skills",
+    "Communication Skills",
+    "Leadership Training",
+    "Public Speaking",
+    "Interview Preparation",
+    "Career Guidance",
+    "Corporate Training",
+    "Technical Skills",];
   return (
     <footer className="bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900 text-white">
-      <div className="max-w-7xl mx-auto px-8 lg:px-16 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14">
-        
+      <div className="max-w-7xl mx-auto px-8 lg:px-16 py-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-14">
+
         {/* COLUMN 1 */}
         <div>
           {/* Logo */}
@@ -62,55 +62,55 @@ export default function Footer() {
         </div>
 
         {/* COLUMN 2 */}
-     {/* COLUMN 2 + 3 (Mobile Grid Fix) */}
-<div className="col-span-1 sm:col-span-2 grid grid-cols-2 gap-8">
+        {/* COLUMN 2 + 3 (Mobile Grid Fix) */}
+        <div className="col-span-1 sm:col-span-2 grid grid-cols-2 gap-8">
 
-  {/* COMPANY */}
-  <div>
-    <h4 className="text-lg font-semibold mb-4 sm:mb-6">Company</h4>
-    <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
-      {[
-        "About",
-        "Courses",
-        "Mentors",
-        "SiteMap",
-        "Privacy Policy",
-      ].map((item, i) => (
-        <li key={i}>
-        <a
-  href="#"
-  className="hover:text-white hover:font-bold hover:underline transition-all duration-200"
->
-  {item}
-</a>
-        </li>
-      ))}
-    </ul>
-  </div>
+          {/* COMPANY */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4 sm:mb-6">Company</h4>
+            <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
+              {[
+                "About",
+                "Courses",
+                "Mentors",
+                "SiteMap",
+                "Privacy Policy",
+              ].map((item, i) => (
+                <li key={i}>
+                  <a
+                    href="#"
+                    className="hover:text-white hover:font-bold hover:underline transition-all duration-200"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-  {/* LINKS */}
-  <div>
-    <h4 className="text-lg font-semibold mb-4 sm:mb-6">Links</h4>
-    <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
-      {[
-        "Contact Us",
-        "FAQ's",
-        "Terms and Conditions",
-        "Student Review",
-      ].map((item, i) => (
-        <li key={i}>
-        <a
-  href="#"
-  className="hover:text-white hover:font-bold hover:underline transition-all duration-200"
->
-  {item}
-</a>
-        </li>
-      ))}
-    </ul>
-  </div>
+          {/* LINKS */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4 sm:mb-6">Links</h4>
+            <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
+              {[
+                "Contact Us",
+                "FAQ's",
+                "Terms and Conditions",
+                "Student Review",
+              ].map((item, i) => (
+                <li key={i}>
+                  <a
+                    href="#"
+                    className="hover:text-white hover:font-bold hover:underline transition-all duration-200"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-</div>
+        </div>
 
         {/* COLUMN 4 */}
         <div>
@@ -121,38 +121,38 @@ export default function Footer() {
           </p>
 
           {/* Input + Button */}
-   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full max-w-md">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full max-w-md">
 
-  {/* Input */}
- <input type="email" placeholder="Enter your email" className=" border border-white rounded-md px-2 py-2 " />
+            {/* Input */}
+            <input type="email" placeholder="Enter your email" className=" border border-white rounded-md px-2 py-2 " />
 
-  {/* Button */}
-  <button
-    className="
-      bg-black 
-      rounded-md
-      px-4 py-2
-      text-sm sm:text-base
-      font-semibold
-      whitespace-nowrap
-      hover:bg-blue-400
-      transition
-    "
-  >
-    Subscribe →
-  </button>
+            {/* Button */}
+            <button
+              className="
+              bg-black 
+              rounded-md
+              px-4 py-2
+              text-sm sm:text-base
+              font-semibold
+              whitespace-nowrap
+              hover:bg-blue-400
+              transition            
+              "
+            >
+              Subscribe →
+            </button>
 
-</div>
+          </div>
 
-         
+
 
           {/* Social Icons */}
-       <div className="flex gap-4 mt-6 mb-8">
-  {[Facebook, Twitter, Linkedin, Youtube, Instagram].map(
-    (Icon, i) => (
-      <div
-        key={i}
-        className="
+          <div className="flex gap-4 mt-6 mb-8">
+            {[Facebook, Twitter, Linkedin, Youtube, Instagram].map(
+              (Icon, i) => (
+                <div
+                  key={i}
+                  className="
           w-11 h-10
           flex items-center justify-center
           rounded-full
@@ -166,18 +166,18 @@ export default function Footer() {
           hover:scale-110
           hover:shadow-xl
         "
-      >
-        <Icon size={18} />
-      </div>
-    )
-  )}
-</div>
+                >
+                  <Icon size={18} />
+                </div>
+              )
+            )}
+          </div>
 
-{/* Checkbox */}
+          {/* Checkbox */}
 
-<div
-  onClick={() => setChecked(!checked)}
-  className="
+          <div
+            onClick={() => setChecked(!checked)}
+            className="
     flex items-center justify-between
     bg-white text-black
     px-3 sm:px-4 py-3
@@ -188,40 +188,40 @@ export default function Footer() {
     cursor-pointer
     hover:shadow-md transition
   "
->
-  {/* Left side */}
-  <div className="flex items-center gap-2 sm:gap-3">
-    <div
-      className={`
+          >
+            {/* Left side */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div
+                className={`
         w-4 h-4 sm:w-5 sm:h-5 
         border-2 rounded 
         flex items-center justify-center
         ${checked ? "bg-green-500 border-green-500" : "border-gray-400"}
       `}
-    >
-      {checked && <span className="text-white text-[10px] sm:text-xs">✓</span>}
-    </div>
+              >
+                {checked && <span className="text-white text-[10px] sm:text-xs">✓</span>}
+              </div>
 
-    <p className="text-xs sm:text-sm">I’m not a robot</p>
-  </div>
+              <p className="text-xs sm:text-sm">I’m not a robot</p>
+            </div>
 
-  {/* Right side */}
-  <div className="text-[9px] sm:text-[10px] text-gray-500 text-right leading-tight">
-    reCAPTCHA
-    <br />
-    <span className="underline cursor-pointer">Privacy</span> ·{" "}
-    <span className="underline cursor-pointer">Terms</span>
-  </div>
-</div>
+            {/* Right side */}
+            <div className="text-[9px] sm:text-[10px] text-gray-500 text-right leading-tight">
+              reCAPTCHA
+              <br />
+              <span className="underline cursor-pointer">Privacy</span> ·{" "}
+              <span className="underline cursor-pointer">Terms</span>
+            </div>
+          </div>
 
-       
+
         </div>
-        
+
       </div>
 
 
 
-     <div className="border-t border-white/20">
+      <div className="border-t border-white/20">
         <div
           className="
             max-w-7xl
@@ -268,7 +268,7 @@ export default function Footer() {
           </p>
         </div>
       </div>
-      
+
     </footer>
   );
 }
