@@ -1,222 +1,155 @@
-// "use client";
-
-// import React from "react";
-// import { Menu, X, ShoppingCart } from "lucide-react";
-// import Image from "next/image";
-
-// const Navbar = ({ open, setOpen, navItems }) => {
-//   return (
-//     <>
-//       {/* ✅ FIX: sticky top-0 (not top-3) so it sticks flush to top without gap */}
-//       <div className="sticky top-3 z-50 w-full bg-white">
-
-//         <div
-//           className="flex border border-gray-200 justify-between items-center 
-//           px-4 sm:px-6 md:px-8 py-3 shadow bg-white 
-//           mx-2 sm:mx-8 md:mx-10 lg:mx-20 
-//           my-3 rounded-lg"
-//         >
-//           {/* Logo */}
-//           <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600 leading-none">
-//             Trainer <span className="text-orange-400">Hub</span>
-//           </h1>
-
-//           {/* Desktop Menu */}
-//           <div className="hidden md:flex items-center gap-4 lg:gap-8">
-//             {/* Nav Items */}
-//             <div className="flex items-center gap-4 lg:gap-6">
-//               {navItems.map((item) => (
-//                 <span
-//                   key={item}
-//                   className="relative cursor-pointer group hover:text-blue-600 transition text-sm lg:text-base"
-//                 >
-//                   {item}
-//                   <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
-//                 </span>
-//               ))}
-//             </div>
-
-//             {/* User Info */}
-//             <div className="flex items-center gap-3">
-//               <Image
-//                 src="/Images/hr.png"
-//                 alt="HR"
-//                 width={40}
-//                 height={40}
-//                 className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
-//               />
-//               <div className="text-xs sm:text-sm">
-//                 <p className="font-medium">HR Manager</p>
-//                 <p className="text-gray-500 text-xs">IREED</p>
-//               </div>
-//             </div>
-
-//             {/* Button */}
-//             <button
-//               className="flex items-center gap-2 
-//               border border-gray-300
-//               px-2 sm:px-3 lg:px-4
-//               py-2 
-//               rounded-lg 
-//               hover:bg-blue-500 hover:text-white hover:border-blue-500 transition 
-//               text-xs sm:text-sm lg:text-base 
-//               whitespace-nowrap"
-//             >
-//               <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
-//               <span className="hidden sm:inline">Bulk Inquiry</span>
-//             </button>
-//           </div>
-
-//           {/* Mobile Menu Button */}
-//           <div className="flex items-center gap-3 md:hidden">
-//             <button className="border p-2 rounded-lg">
-//               <ShoppingCart size={18} />
-//             </button>
-//             <button onClick={() => setOpen(!open)}>
-//               {open ? <X size={24} /> : <Menu size={24} />}
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* MOBILE MENU */}
-//       {open && (
-//         <div className="md:hidden fixed inset-0 bg-white z-50 px-4 py-6 space-y-6 overflow-y-auto">
-//           <div className="flex justify-between items-center">
-//             <h1 className="mt-4 text-lg font-bold text-blue-600">TrainerHub</h1>
-//             <button onClick={() => setOpen(false)}>
-//               <X size={24} />
-//             </button>
-//           </div>
-
-//           <div className="mt-6 flex flex-col gap-3">
-//             {navItems.map((item) => (
-//               <div
-//                 key={item}
-//                 className="cursor-pointer hover:text-blue-600 text-base sm:text-lg"
-//               >
-//                 {item}
-//               </div>
-//             ))}
-//           </div>
-
-//           <button className="mt-6 w-full flex items-center justify-center gap-2 border-2 px-4 py-2 rounded-lg">
-//             <ShoppingCart size={18} />
-//             Bulk Inquiry
-//           </button>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
-// export default Navbar;
-
 "use client";
 
 import React from "react";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
-const Navbar = ({ open, setOpen, navItems }) => {
+const Navbar = ({ open, setOpen }) => {
+  const navItems = [
+    { name: "Find Trainers", link: "/find-trainers" },
+    { name: "Workshops", link: "/workshops" },
+    { name: "Corporate Solutions", link: "/corporate-solutions" },
+    { name: "Join as Trainer", link: "/join-as-trainer" },
+        { name: "Articles", link: "/articles" },
+  ];
+
   return (
     <>
-<div className="sticky top-3 z-50 w-full backdrop-blur-md bg-transparent ">
-  
-  <div
-    className="flex border border-gray-200 justify-between items-center 
-    px-4 sm:px-6 md:px-8 py-3 shadow bg-white 
-    mx-2 sm:mx-8 md:mx-8 lg:mx-20 
-    rounded-lg"
-  > 
-          {/* Logo */}
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600 leading-none">
-            Trainer <span className="text-orange-400">Hub</span>
-          </h1>
+      {/* ━━ STICKY WRAPPER ━━ */}
+      <div className="sticky top-0 left-0 right-0 z-[100] relative">
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-4 lg:gap-8">
-            {/* Nav Items */}
-            <div className="flex items-center gap-4 lg:gap-6">
+        {/* 🔥 CENTER BLUR ONLY */}
+        <div className="absolute top-0 left-0 right-0 pointer-events-none">
+          <div className="max-w-[1290px] mx-auto h-[50px] backdrop-blur-lg bg-white/30 rounded-2xl"></div>
+        </div>
+
+        {/* CONTENT */}
+        <div className="relative px-2 md:px-4 py-2">
+
+          {/* ━━ INNER NAV ━━ */}
+          <div className="w-full md:max-w-[1290px] md:mx-auto flex items-center justify-between px-4 md:px-5 py-3
+          bg-white/80 backdrop-blur-xl border border-white/70 rounded-xl md:rounded-2xl
+          shadow-[0_4px_24px_rgba(37,99,235,0.08)]
+          hover:shadow-[0_8px_40px_rgba(37,99,235,0.13)]
+          transition-all duration-300">
+
+            {/* Logo */}
+            <h1 className="text-lg sm:text-xl font-bold leading-none">
+              <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                Top
+              </span>{" "}
+              <span className="text-orange-400">Trainer</span>
+            </h1>
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-1">
               {navItems.map((item) => (
-                <span
-                  key={item}
-                  className="relative cursor-pointer group hover:text-blue-600 transition text-sm lg:text-base"
-                >
-                  {item}
-                  <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
-                </span>
+                <Link key={item.name} href={item.link}>
+                  <span
+                    className="relative text-[13.5px] font-medium text-slate-600 px-3 py-1.5 rounded-lg cursor-pointer
+                    hover:text-blue-700 hover:bg-blue-50 transition-all duration-200
+                    after:content-[''] after:absolute after:left-3 after:right-3 after:bottom-1
+                    after:h-[2px] after:bg-gradient-to-r after:from-blue-600 after:to-purple-500
+                    after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
+                  >
+                    {item.name}
+                  </span>
+                </Link>
               ))}
-            </div>
+            </nav>
 
-            {/* User Info */}
-            <div className="flex items-center gap-3">
-              <Image
-                src="/Images/hr.png"
-                alt="HR"
-                width={40}
-                height={40}
-                className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
-              />
-              <div className="text-xs sm:text-sm">
-                <p className="font-medium">HR Manager</p>
-                <p className="text-gray-500 text-xs">IREED</p>
+            {/* Right Side */}
+            <div className="hidden md:flex items-center gap-2">
+
+              {/* User */}
+              <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full pl-1 pr-3 py-1 cursor-pointer hover:bg-blue-100 transition">
+                <div className="w-[30px] h-[30px] rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-500">
+                  <Image
+                    src="/Images/hr.png"
+                    alt="HR"
+                    width={30}
+                    height={30}
+                    className="object-cover"
+                  />
+                </div>
+
+                <div>
+                  <p className="text-[12px] font-semibold text-slate-800">
+                    HR Manager
+                  </p>
+                  <p className="text-[10px] text-slate-500">IREED</p>
+                </div>
               </div>
+
+              {/* Login */}
+              <button className="px-4 py-1.5 text-[13px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition">
+                Login
+              </button>
+
+              {/* Signup */}
+              <button className="px-4 py-1.5 text-[13px] font-semibold rounded-lg text-white
+              bg-gradient-to-r from-blue-600 to-blue-800
+              hover:shadow-lg hover:-translate-y-[1px] transition-all">
+                Sign Up
+              </button>
             </div>
 
-            {/* Button */}
+            {/* Mobile Button */}
             <button
-              className="flex items-center gap-2 
-              border border-gray-300
-              px-2 sm:px-3 lg:px-4
-              py-2 
-              rounded-lg 
-              hover:bg-blue-500 hover:text-white hover:border-blue-500 transition 
-              text-xs sm:text-sm lg:text-base 
-              whitespace-nowrap"
+              className="flex md:hidden flex-col gap-[5px]"
+              onClick={() => setOpen(!open)}
             >
-              <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
-              <span className="hidden sm:inline">Bulk Inquiry</span>
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex items-center gap-3 md:hidden">
-            <button className="border p-2 rounded-lg">
-              <ShoppingCart size={18} />
-            </button>
-            <button onClick={() => setOpen(!open)}>
-              {open ? <X size={24} /> : <Menu size={24} />}
+              <span className="w-5 h-[2px] bg-gradient-to-r from-blue-600 to-purple-500 rounded"></span>
+              <span className="w-5 h-[2px] bg-gradient-to-r from-blue-600 to-purple-500 rounded"></span>
+              <span className="w-5 h-[2px] bg-gradient-to-r from-blue-600 to-purple-500 rounded"></span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* MOBILE MENU */}
+      {/* ━━ MOBILE MENU ━━ */}
       {open && (
-        <div className="md:hidden fixed inset-0 bg-white z-50 px-4 py-6 space-y-6 overflow-y-auto">
-          <div className="flex justify-between items-center">
-            <h1 className="mt-4 text-lg font-bold text-blue-600">TrainerHub</h1>
+        <div className="fixed inset-0 z-[200] bg-white/90 backdrop-blur-lg px-5 py-8 overflow-y-auto">
+
+          {/* Top */}
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-lg font-bold">
+              <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                Top
+              </span>{" "}
+              <span className="text-orange-400">Trainer</span>
+            </h1>
+
             <button onClick={() => setOpen(false)}>
-              <X size={24} />
+              <X size={24} className="text-gray-600" />
             </button>
           </div>
 
-          <div className="mt-6 flex flex-col gap-3">
+          {/* Links */}
+          <nav className="mb-8">
             {navItems.map((item) => (
-              <div
-                key={item}
-                className="cursor-pointer hover:text-blue-600 text-base sm:text-lg"
+              <Link
+                key={item.name}
+                href={item.link}
+                onClick={() => setOpen(false)}
               >
-                {item}
-              </div>
+                <span className="block text-[16px] font-medium text-slate-700 py-3 border-b border-blue-100 hover:text-blue-600 transition">
+                  {item.name}
+                </span>
+              </Link>
             ))}
-          </div>
+          </nav>
 
-          <button className="mt-6 w-full flex items-center justify-center gap-2 border-2 px-4 py-2 rounded-lg">
-            <ShoppingCart size={18} />
-            Bulk Inquiry
-          </button>
+          {/* Buttons */}
+          <div className="flex gap-3">
+            <button className="flex-1 py-2 border border-blue-300 rounded-lg text-blue-600 bg-blue-50">
+              Login
+            </button>
+            <button className="flex-1 py-2 rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-800">
+              Sign Up
+            </button>
+          </div>
         </div>
       )}
     </>
