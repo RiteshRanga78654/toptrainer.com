@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import React from "react";
@@ -8,10 +10,13 @@ import Link from "next/link";
 const Navbar = ({ open, setOpen }) => {
   const navItems = [
     { name: "Find Trainers", link: "/find-trainers" },
-    { name: "Workshops", link: "/workshops" },
-    { name: "Corporate Solutions", link: "/corporate-solutions" },
-    { name: "Join as Trainer", link: "/join-as-trainer" },
-        { name: "Articles", link: "/articles" },
+    { name: "Popular Workshops", link: "/workshops" },
+    
+  { name: "Industry", link: "/corporate-solutions" },
+  { name: "Department", link: "/corporate-solutions" },
+  { name: "Competency", link: "/corporate-solutions" },
+ { name: "Articles", link: "/articles" },
+
   ];
 
   return (
@@ -60,39 +65,28 @@ const Navbar = ({ open, setOpen }) => {
             </nav>
 
             {/* Right Side */}
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-3">
 
               {/* User */}
-              <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full pl-1 pr-3 py-1 cursor-pointer hover:bg-blue-100 transition">
-                <div className="w-[30px] h-[30px] rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-500">
-                  <Image
-                    src="/Images/hr.png"
-                    alt="HR"
-                    width={30}
-                    height={30}
-                    className="object-cover"
-                  />
-                </div>
+             <Link href="/join-as-trainer">
+  <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full pl-3 pr-3 py-2 cursor-pointer hover:bg-blue-100 transition">
+    
 
-                <div>
-                  <p className="text-[12px] font-semibold text-slate-800">
-                    HR Manager
-                  </p>
-                  <p className="text-[10px] text-slate-500">IREED</p>
-                </div>
-              </div>
+    <div>
+      <p className="text-[13.5px] font-semibold text-slate-800">
+        Join as Trainer
+      </p>
+    </div>
+
+  </div>
+</Link>
 
               {/* Login */}
-              <button className="px-4 py-1.5 text-[13px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition">
+              <button className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition">
                 Login
               </button>
 
-              {/* Signup */}
-              <button className="px-4 py-1.5 text-[13px] font-semibold rounded-lg text-white
-              bg-gradient-to-r from-blue-600 to-blue-800
-              hover:shadow-lg hover:-translate-y-[1px] transition-all">
-                Sign Up
-              </button>
+             
             </div>
 
             {/* Mobile Button */}

@@ -289,6 +289,7 @@ import PopularCourses from "./components/course";
 import Category from "./components/category";
 import Articles from "./components/article";
 
+
 /* ━━━ INJECT GLOBAL STYLES ━━━ */
 const GlobalStyles = () => (
   <style jsx global>{`
@@ -699,12 +700,7 @@ const Page = () => {
   const [pause, setPause] = useState(false);
   const [catIndex, setCatIndex] = useState(0);
 
-  const navItems = [
-    "Find Trainers",
-    "Workshops",
-    "Corporate Solutions",
-    "Join as Trainer",
-  ];
+ 
 
   const courseData = [
     { id: 1, title: "Advanced B2B Sales Mastery",        provider: "Masterclass",    type: "Course", rating: "4.9", image: "/Images/courses.png" },
@@ -759,7 +755,7 @@ const Page = () => {
   return (
     <div className="font-sans bg-white min-h-screen">
       <GlobalStyles />
-      <Navbar open={open} setOpen={setOpen} navItems={navItems} />
+      <Navbar open={open} setOpen={setOpen} />
 
       {/* ━━━ HERO SECTION ━━━ */}
       <section className="hero-bg w-full px-4 sm:px-8 md:px-16 py-8 md:py-14">
@@ -866,7 +862,13 @@ const Page = () => {
         {/* ━━━ CATEGORY SLIDER ━━━ */}
         <div className="anim-fade-up delay-600 mt-8 md:mt-14 max-w-7xl mx-auto relative z-10">
 
+
+<h2 className="text-shimmer text-center mb-6 flex flex-col items-center text-2xl md:text-3xl font-bold">
+  Trending Categories
+  <span className="mt-2 h-[3px] w-16 md:w-24 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600"></span>
+</h2>
           <div className="flex items-center gap-2 md:gap-3">
+            
 
             {/* LEFT BUTTON */}
             <button onClick={scrollCatLeft} className="scroll-btn">
@@ -920,6 +922,8 @@ const Page = () => {
       <YoutubeSection />
       <Articles />
       <Footer />
+ 
+      
       
     </div>
   );

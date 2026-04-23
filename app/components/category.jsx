@@ -237,7 +237,7 @@
 // /* ─── Main Component ─── */
 // const Category = () => {
 //   const [activeFilter, setActiveFilter] = useState("All");
-//   const [visibleCount, setVisibleCount] = useState(8);
+//   const [visibleCount, setVisibleCount] = useState(4);
 //   const [mounted, setMounted] = useState(false);
 
 //   useEffect(() => setMounted(true), []);
@@ -252,12 +252,12 @@
 
 //   const handleFilterChange = (id) => {
 //     setActiveFilter(id);
-//     setVisibleCount(8);
+//     setVisibleCount(4);
 //   };
 
 //   const handleLoadMore = () => {
 //     if (hasMore) setVisibleCount((prev) => prev + 4);
-//     else setVisibleCount(8);
+//     else setVisibleCount(4);
 //   };
 
 //   return (
@@ -351,7 +351,7 @@
 //         )}
 
 //         {/* Load More / Show Less */}
-//         {filteredTrainers.length > 8 && (
+//         {filteredTrainers.length > 4 && (
 //           <div className="flex justify-center mt-12">
 //             <button
 //               onClick={handleLoadMore}
@@ -630,7 +630,7 @@ const TrainerCard = ({ trainer }) => {
 /* ─── Main Component ─── */
 const Category = () => {
   const [activeFilter, setActiveFilter] = useState("All");
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [visibleCount, setVisibleCount] = useState(4);
 
   const filteredTrainers =
     activeFilter === "All"
@@ -642,7 +642,7 @@ const Category = () => {
 
   const handleFilterChange = (id) => {
     setActiveFilter(id);
-    setVisibleCount(8);
+    setVisibleCount(4);
   };
 
   return (
@@ -659,7 +659,7 @@ const Category = () => {
           {/* Pill badge */}
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 backdrop-blur-sm text-blue-100 text-xs font-semibold px-4 py-2 rounded-full mb-5">
             <TrendingUp size={12} className="text-amber-400" />
-            India's #1 Trainer Marketplace
+            India's #1 Industry Expert
           </div>
 
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight tracking-tight">
@@ -736,12 +736,12 @@ const Category = () => {
         )}
 
         {/* Load More / Show Less */}
-        {filteredTrainers.length > 8 && (
+        {filteredTrainers.length > 4 && (
           <div className="flex justify-center mt-12">
             <button
               onClick={() => {
                 if (hasMore) setVisibleCount((v) => v + 4);
-                else setVisibleCount(8);
+                else setVisibleCount(4);
               }}
               className="flex items-center gap-2 px-8 py-3 bg-white text-blue-700 border-2 border-blue-600 rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md"
             >
@@ -755,23 +755,7 @@ const Category = () => {
         )}
       </div>
 
-      {/* ── Bottom CTA ── */}
-      <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 mt-8 py-16 px-6 text-center overflow-hidden">
-        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5 pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-60 h-60 rounded-full bg-white/5 pointer-events-none" />
-
-        <div className="relative max-w-lg mx-auto">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3 tracking-tight">
-            Are you an expert? Become a Trainer.
-          </h2>
-          <p className="text-blue-200 mb-8 text-sm leading-relaxed">
-            Join 480+ top trainers on TopTrainer and start earning by sharing your knowledge with thousands of students.
-          </p>
-          <button className="bg-amber-400 hover:bg-amber-300 active:scale-95 text-amber-900 font-bold px-10 py-3.5 rounded-xl transition-all duration-200 text-sm shadow-xl hover:shadow-amber-400/30 hover:scale-105">
-            Apply as a Trainer →
-          </button>
-        </div>
-      </section>
+   
     </div>
   );
 };

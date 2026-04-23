@@ -672,8 +672,10 @@ export default function PopularCourses() {
     <>
       <style>{styles}</style>
 
-      <section ref={sectionRef} className="pc-section w-full px-4 sm:px-8 md:px-16 py-12 md:py-20 relative">
-
+<section 
+  ref={sectionRef} 
+  className="pc-section w-full px-4 sm:px-8 md:px-16 pt-10 md:pt-12 pb-14 md:pb-16 relative"
+>
         {/* blobs */}
         <div className="pc-blob-1" />
         <div className="pc-blob-2" />
