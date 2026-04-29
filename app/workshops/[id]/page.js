@@ -15,27 +15,18 @@ const ICON_MAP = {
   Award, Brain, BarChart3, Mic, Leaf,
 };
 
-/* ══════════════════════════════════════════════
-   GLOBAL STYLES — Unified theme: Clash Display + Satoshi
-══════════════════════════════════════════════ */
-const DETAIL_CSS = `
+/* ── Keyframe animations injected once ── */
+const KEYFRAMES = `
   @import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;600;700&display=swap');
 
   :root {
-    --blue-primary: #2563eb;
-    --blue-deep: #1d4ed8;
-    --blue-light: #eff6ff;
-    --blue-glow: rgba(37,99,235,0.15);
-    --purple-mid: #6366f1;
-    --text-dark: #0f172a;
-    --text-mid: #475569;
-    --text-soft: #94a3b8;
+    --font-display: 'Clash Display', sans-serif;
+    --font-body: 'Satoshi', sans-serif;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
-  body { font-family: 'Satoshi', sans-serif; margin: 0; background: #f8fafc; }
+  body { font-family: var(--font-body); }
 
-  /* ── Keyframes ── */
   @keyframes gradientShift {
     0%   { background-position: 0% 50%; }
     50%  { background-position: 100% 50%; }
@@ -64,9 +55,9 @@ const DETAIL_CSS = `
     to   { opacity: 1; transform: translateX(0); }
   }
   @keyframes pulseRing {
-    0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
-    70%  { transform: scale(1);    box-shadow: 0 0 0 16px rgba(37,99,235,0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+    0%   { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+    70%  { box-shadow: 0 0 0 16px rgba(37,99,235,0); }
+    100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
   }
   @keyframes particleDrift {
     0%   { transform: translateY(0) translateX(0) scale(1);   opacity: 0.6; }
@@ -78,20 +69,15 @@ const DETAIL_CSS = `
     0%,100% { opacity: 1; }
     50%     { opacity: 0.3; }
   }
-  @keyframes spinSlow {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1); }
   }
   @keyframes underlineGrow {
     from { width: 0; }
     to   { width: 100%; }
   }
-  @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.88); }
-    to   { opacity: 1; transform: scale(1); }
-  }
 
-  /* ── Animation utilities ── */
   .anim-up    { animation: fadeUp   0.65s cubic-bezier(0.22,1,0.36,1) both; }
   .anim-right { animation: fadeRight 0.65s cubic-bezier(0.22,1,0.36,1) both; }
   .anim-scale { animation: scaleIn  0.6s  cubic-bezier(0.22,1,0.36,1) both; }
@@ -101,55 +87,29 @@ const DETAIL_CSS = `
   .d4 { animation-delay: 0.42s; }
   .d5 { animation-delay: 0.58s; }
 
-  /* ── Hero background ── */
-  .hero-bg {
+  .hero-bg-anim {
     background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 40%, #eef2ff 70%, #e0f2fe 100%);
     background-size: 300% 300%;
     animation: gradientShift 14s ease infinite;
-    position: relative;
-    overflow: hidden;
   }
-
-  /* ── Mesh grid overlay ── */
-  .hero-bg::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
-    background-size: 44px 44px;
-    mask-image: radial-gradient(ellipse 80% 90% at 50% 50%, black 30%, transparent 100%);
-    pointer-events: none;
-  }
-
-  /* ── Blobs ── */
-  .blob-blue {
-    position: absolute;
-    background: radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%);
+  .blob-blue-anim {
     animation: blobMorph 12s ease-in-out infinite, floatY 8s ease-in-out infinite;
-    filter: blur(36px);
-    pointer-events: none;
   }
-  .blob-purple {
-    position: absolute;
-    background: radial-gradient(circle, rgba(139,92,246,0.16) 0%, transparent 70%);
+  .blob-purple-anim {
     animation: blobMorph 16s ease-in-out infinite reverse, floatY 11s ease-in-out infinite 2s;
-    filter: blur(44px);
-    pointer-events: none;
   }
+  .float-anim  { animation: floatY 6s ease-in-out infinite; }
+  .float-anim2 { animation: floatY 4s ease-in-out infinite 0.5s; }
+  .pulse-ring  { animation: pulseRing 4s ease-out infinite; }
+  .live-dot    { animation: liveDot 1.5s ease-in-out infinite; }
+  .particle-1  { animation: particleDrift 6s ease-in-out infinite; }
+  .particle-2  { animation: particleDrift 8s ease-in-out infinite 1s; }
+  .particle-3  { animation: particleDrift 7s ease-in-out infinite 2s; }
+  .particle-4  { animation: particleDrift 9s ease-in-out infinite 0.5s; }
+  .particle-5  { animation: particleDrift 5s ease-in-out infinite 1.5s; }
+  .particle-6  { animation: particleDrift 10s ease-in-out infinite 3s; }
+  .particle-7  { animation: particleDrift 7s ease-in-out infinite 0.8s; }
 
-  /* ── Particles ── */
-  .particle { position: absolute; border-radius: 50%; pointer-events: none; }
-  .p1 { width:6px; height:6px; background:#2563eb; top:15%; left:6%;  animation: particleDrift 6s ease-in-out infinite; }
-  .p2 { width:4px; height:4px; background:#8b5cf6; top:30%; left:16%; animation: particleDrift 8s ease-in-out infinite 1s; }
-  .p3 { width:7px; height:7px; background:#06b6d4; top:65%; left:4%;  animation: particleDrift 7s ease-in-out infinite 2s; }
-  .p4 { width:5px; height:5px; background:#10b981; top:75%; left:20%; animation: particleDrift 9s ease-in-out infinite 0.5s; }
-  .p5 { width:5px; height:5px; background:#f59e0b; top:20%; right:10%;animation: particleDrift 5s ease-in-out infinite 1.5s; }
-  .p6 { width:4px; height:4px; background:#ef4444; top:50%; right:6%; animation: particleDrift 10s ease-in-out infinite 3s; }
-  .p7 { width:6px; height:6px; background:#2563eb; top:70%; right:15%;animation: particleDrift 7s ease-in-out infinite 0.8s; }
-
-  /* ── Shimmer text ── */
   .text-shimmer {
     background: linear-gradient(90deg, #1d4ed8 0%, #7c3aed 30%, #1d4ed8 60%, #0891b2 100%);
     background-size: 200% auto;
@@ -159,72 +119,10 @@ const DETAIL_CSS = `
     animation: shimmer 4s linear infinite;
   }
 
-  /* ── Stat badge ── */
-  .stat-badge {
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.92);
-    border-radius: 14px;
-    box-shadow: 0 4px 20px rgba(37,99,235,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
-    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
-  }
-  .stat-badge:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 12px 32px rgba(37,99,235,0.14);
-    border-color: rgba(37,99,235,0.2);
-  }
-
-  /* ── Hero image ── */
-  .hero-img-frame {
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: 0 32px 80px rgba(37,99,235,0.18), 0 8px 24px rgba(0,0,0,0.08);
-    animation: floatY 6s ease-in-out infinite;
-  }
-  .hero-img-glow {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
-    filter: blur(48px);
-    animation: pulseRing 4s ease-out infinite;
-  }
-
-  /* ── Orbit badges ── */
-  .orbit-badge {
-    position: absolute;
-    background: white;
-    border-radius: 14px;
-    padding: 10px 14px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-    border: 1px solid rgba(255,255,255,0.9);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    z-index: 20;
-    font-family: 'Satoshi', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .badge-tl { top: 8%;  left: -8%;  animation: floatY 4s ease-in-out infinite 0.3s; }
-  .badge-br { bottom: 10%; right: -6%; animation: floatY 4.5s ease-in-out infinite 1.2s; }
-  .badge-tr { top: 40%; right: -10%; animation: floatY 5s ease-in-out infinite 0.8s; }
-
-  /* ── Spinning ring ── */
-  .spin-ring { animation: spinSlow 20s linear infinite; }
-
-  /* ── Online dot ── */
-  .live-dot { animation: liveDot 1.5s ease-in-out infinite; }
-
-  /* ── CTA button ── */
   .cta-btn {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
-    border: none;
-    cursor: pointer;
-    color: white;
   }
   .cta-btn::before {
     content: '';
@@ -242,38 +140,18 @@ const DETAIL_CSS = `
   .cta-btn:active { transform: scale(0.97); }
   .cta-btn > * { position: relative; z-index: 1; }
 
-  /* ── Secondary button ── */
-  .sec-btn {
-    background: white;
-    border: 1.5px solid #e2e8f0;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
-    color: #475569;
-    font-family: 'Satoshi', sans-serif;
-    font-weight: 600;
+  .stat-badge-hover {
+    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
   }
-  .sec-btn:hover {
-    border-color: #93c5fd;
-    color: #2563eb;
-    background: #eff6ff;
-    transform: translateY(-1px);
+  .stat-badge-hover:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 32px rgba(37,99,235,0.14);
+    border-color: rgba(37,99,235,0.2);
   }
 
-  /* ── Section bar ── */
-  .section-bar {
-    width: 4px; height: 22px; border-radius: 3px; flex-shrink: 0;
-    background: linear-gradient(180deg, #2563eb, #6366f1);
-  }
-
-  /* ── Enroll card shadow ── */
-  .enroll-shadow { box-shadow: 0 12px 48px rgba(37,99,235,0.16); }
-
-  /* ── Photo frame ── */
-  .photo-frame { overflow: hidden; border-radius: 16px; }
   .photo-frame img { transition: transform 0.5s ease; }
   .photo-frame:hover img { transform: scale(1.07); }
 
-  /* ── Related card ── */
   .related-card {
     transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease;
   }
@@ -282,41 +160,25 @@ const DETAIL_CSS = `
     box-shadow: 0 16px 40px rgba(37,99,235,0.12);
   }
 
-  /* ── Content cards ── */
-  .content-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  .content-card-hover {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .content-card:hover {
+  .content-card-hover:hover {
     border-color: #bfdbfe;
     box-shadow: 0 6px 24px rgba(37,99,235,0.08);
   }
 
-  /* ── Heading underline ── */
-  .heading-underline {
-    position: relative;
-    display: inline-block;
+  .sec-btn {
+    transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
   }
-  .heading-underline::after {
-    content: '';
-    position: absolute;
-    bottom: -4px; left: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #2563eb, #7c3aed);
-    border-radius: 2px;
-    animation: underlineGrow 1s cubic-bezier(0.22,1,0.36,1) 0.6s both;
+  .sec-btn:hover {
+    border-color: #93c5fd;
+    color: #2563eb;
+    background: #eff6ff;
+    transform: translateY(-1px);
   }
-
-  /* ── Scrollbar ── */
-  .no-scrollbar { scrollbar-width: none; }
-  .no-scrollbar::-webkit-scrollbar { display: none; }
 `;
 
-/* ── Slug helper ── */
 function findBySlug(idOrSlug) {
   const byId = WORKSHOPS.find((w) => String(w.id) === String(idOrSlug));
   if (byId) return byId;
@@ -325,20 +187,22 @@ function findBySlug(idOrSlug) {
   return null;
 }
 
-/* ══════════════════════════════════════════════
-   DETAIL PAGE
-══════════════════════════════════════════════ */
 export default function WorkshopDetailPage() {
   const { id: slugParam } = useParams();
   const w = findBySlug(slugParam);
 
   if (!w) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, background: '#f8fafc' }}>
-        <div style={{ fontSize: 52 }}>🔍</div>
-        <h2 style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 20, color: '#0f172a' }}>Workshop not found</h2>
-        <Link href="/workshops" className="cta-btn"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 14, textDecoration: 'none', fontSize: 14 }}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-slate-50">
+        <div className="text-5xl">🔍</div>
+        <h2 className="text-xl font-bold text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
+          Workshop not found
+        </h2>
+        <Link
+          href="/workshops"
+          className="cta-btn inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-semibold text-white no-underline"
+          style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}
+        >
           <ArrowLeft size={14} /> <span>Back to Workshops</span>
         </Link>
       </div>
@@ -351,543 +215,478 @@ export default function WorkshopDetailPage() {
 
   return (
     <>
-      <style>{DETAIL_CSS}</style>
-      <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      <style>{KEYFRAMES}</style>
+      <div className="min-h-screen bg-slate-50">
 
-        {/* ── STICKY NAV ── */}
-        <div style={{
-          position: 'sticky', top: 0, zIndex: 30,
-          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid #e2e8f0',
-          padding: '12px 24px',
-          display: 'flex', alignItems: 'center', gap: 12,
-        }}>
-          <Link href="/workshops" style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 13, color: '#64748b',
-            textDecoration: 'none', transition: 'color 0.2s',
+        {/* ══════════════ HERO ══════════════ */}
+  
+<div className="hero-bg-anim relative" style={{ overflow: 'visible' }}>
+
+  {/* Grid overlay */}
+  <div
+    className="absolute inset-0 pointer-events-none"
+    style={{
+      backgroundImage: 'linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)',
+      backgroundSize: '44px 44px',
+      maskImage: 'radial-gradient(ellipse 80% 90% at 50% 50%, black 30%, transparent 100%)',
+    }}
+  />
+
+  {/* Blobs */}
+  <div
+    className="blob-blue-anim absolute pointer-events-none"
+    style={{
+      width: 480, height: 480, top: -100, left: -80,
+      background: 'radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%)',
+      filter: 'blur(36px)',
+    }}
+  />
+  <div
+    className="blob-purple-anim absolute pointer-events-none"
+    style={{
+      width: 360, height: 360, bottom: -80, right: 80,
+      background: 'radial-gradient(circle, rgba(139,92,246,0.16) 0%, transparent 70%)',
+      filter: 'blur(44px)',
+    }}
+  />
+
+  {/* Particles */}
+  {[
+    { cls: 'particle-1', size: 6, bg: '#2563eb', top: '15%', left: '6%' },
+    { cls: 'particle-2', size: 4, bg: '#8b5cf6', top: '30%', left: '16%' },
+    { cls: 'particle-3', size: 7, bg: '#06b6d4', top: '65%', left: '4%' },
+    { cls: 'particle-4', size: 5, bg: '#10b981', top: '75%', left: '20%' },
+    { cls: 'particle-5', size: 5, bg: '#f59e0b', top: '20%', right: '10%' },
+    { cls: 'particle-6', size: 4, bg: '#ef4444', top: '50%', right: '6%' },
+    { cls: 'particle-7', size: 6, bg: '#2563eb', top: '70%', right: '15%' },
+  ].map((p, i) => (
+    <div
+      key={i}
+      className={`${p.cls} absolute rounded-full pointer-events-none`}
+      style={{ width: p.size, height: p.size, background: p.bg, top: p.top, left: p.left, right: p.right }}
+    />
+  ))}
+
+  {/* Hero inner grid */}
+  <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-10 lg:px-16 grid grid-cols-1 md:grid-cols-[1fr_480px] lg:grid-cols-[1fr_580px] items-center"
+    style={{ minHeight: '650px' }}
+  >
+
+    {/* ── LEFT CONTENT ── starts right at navbar bottom with pt */}
+    <div className="flex mb-25   md:-ml-6 lg:-ml-12 flex-col items-center md:items-start text-center md:text-left pt-8 pb-10 md:pt-10 md:pb-12 lg:pt-12 lg:pb-14">
+
+      {/* Live / category badge row */}
+      <div className="anim-up d1 flex items-center gap-3 flex-wrap justify-center md:justify-start mb-5">
+        <div
+          className="stat-badge-hover inline-flex items-center gap-2 px-4 py-2 rounded-full"
+          style={{
+            background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.95)',
+            boxShadow: '0 4px 16px rgba(37,99,235,0.08)',
           }}
-            onMouseEnter={e => e.currentTarget.style.color = '#2563eb'}
-            onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+        >
+          <span className="live-dot w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+          <span className="font-semibold text-xs tracking-widest text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
+            {CatLabel.toUpperCase()} WORKSHOP
+          </span>
+        </div>
+
+        {w.isLive && (
+          <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-500 text-white font-bold text-xs" style={{ fontFamily: 'var(--font-display)' }}>
+            <span className="live-dot w-1.5 h-1.5 rounded-full bg-white" />
+            LIVE NOW
+          </div>
+        )}
+      </div>
+
+      {/* Title */}
+      <h1
+        className="anim-up d2 font-bold leading-tight text-slate-900 mb-4"
+        style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px, 4.5vw, 56px)' }}
+      >
+        {(() => {
+          const words = w.title.split(" ");
+          const head = words.slice(0, Math.ceil(words.length * 0.6)).join(" ");
+          const tail = words.slice(Math.ceil(words.length * 0.6)).join(" ");
+          return <>{head} <span className="text-shimmer">{tail}</span></>;
+        })()}
+      </h1>
+
+      {/* Short desc */}
+      <p className="anim-up d3 text-slate-500 text-[15px] leading-relaxed mb-6 max-w-lg" style={{ fontFamily: 'var(--font-body)' }}>
+        {w.shortDesc}
+      </p>
+
+      {/* Info row */}
+      <div className="anim-up d3 flex flex-wrap items-center justify-center md:justify-start gap-4 mb-6">
+        <span className="flex items-center gap-1.5 font-bold text-sm text-amber-500" style={{ fontFamily: 'var(--font-body)' }}>
+          <Star size={14} fill="currentColor" /> {w.rating}
+          <span className="font-normal text-slate-400 ml-0.5">({w.reviews})</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-[13px] text-slate-500" style={{ fontFamily: 'var(--font-body)' }}>
+          <Clock size={13} className="text-blue-600" /> {w.duration}
+        </span>
+        <span className="flex items-center gap-1.5 text-[13px] text-slate-500" style={{ fontFamily: 'var(--font-body)' }}>
+          <Users size={13} className="text-blue-600" /> {w.trainer.students} students
+        </span>
+        <span className="flex items-center gap-1.5 font-semibold text-[13px] text-red-500" style={{ fontFamily: 'var(--font-body)' }}>
+          <span className="live-dot w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+          Only {w.seats} seats left
+        </span>
+      </div>
+
+      {/* Trust badges */}
+      <div className="anim-up d5 flex flex-wrap justify-center md:justify-start gap-2.5">
+        {[
+          { icon: Shield, color: '#10b981', label: '7-Day Guarantee' },
+          { icon: Award, color: '#6366f1', label: 'Certificate Included' },
+          { icon: CheckCircle, color: '#2563eb', label: 'Expert-Led' },
+        ].map(({ icon: Icon, color, label }, i) => (
+          <div
+            key={i}
+            className="stat-badge-hover flex items-center gap-2 px-3.5 py-2 rounded-xl"
+            style={{
+              background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.92)',
+              boxShadow: '0 4px 20px rgba(37,99,235,0.08), inset 0 1px 0 rgba(255,255,255,0.8)',
+            }}
           >
-            <ArrowLeft size={15} /> Back to Workshops
-          </Link>
-
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{
-              fontFamily: "'Clash Display', sans-serif", fontWeight: 600, fontSize: 10,
-              textTransform: 'uppercase', letterSpacing: '0.08em',
-              padding: '4px 12px', borderRadius: 100,
-              background: col.bg, color: col.text, border: `1px solid ${col.border}`,
-            }}>{CatLabel}</span>
-            {w.isLive && (
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                padding: '4px 10px', borderRadius: 100,
-                background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca',
-                fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 10,
-              }}>
-                <span className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} />
-                LIVE
-              </span>
-            )}
+            <Icon size={13} style={{ color }} />
+            <span className="font-semibold text-xs text-slate-700" style={{ fontFamily: 'var(--font-body)' }}>{label}</span>
           </div>
+        ))}
+      </div>
+    </div>
+
+    {/* ── RIGHT IMAGE — bleeds up behind navbar via negative margin-top ── */}
+    
+<div
+  className="anim-scale d3 relative hidden md:block self-stretch md:pl-10 lg:pl-16 mt-15"
+>      {/* Glow */}
+      <div
+        className="pulse-ring absolute rounded-full pointer-events-none"
+        style={{
+          width: '80%', height: '70%', left: '10%', top: '10%',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)',
+          filter: 'blur(52px)',
+        }}
+      />
+
+      {/* Image frame — full height of parent, rounded only on left side */}
+      <div
+className="float-anim relative w-full h-80 overflow-hidden md:translate-x-4 lg:translate-x-15"        style={{
+          borderRadius: '24px 24px 24px 24px',  // rounded left, flush right edge
+          minHeight: '480px',
+          boxShadow: '-24px 0 80px rgba(37,99,235,0.18), 0 40px 80px rgba(37,99,235,0.16)',
+        }}
+      >
+        <img
+          src={w.coverImg}
+          alt={w.title}
+          className="w-full h-full object-cover   "
+          style={{ objectPosition: 'center top' }}
+        />
+
+        {/* Gradient overlay */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(37,99,235,0.06) 0%, transparent 50%, rgba(0,0,0,0.32) 100%)' }} />
+
+        {/* Category pill */}
+        <div
+          className="absolute top-4 left-4 px-3.5 py-1.5 rounded-full text-white font-semibold text-[11px]"
+          style={{ fontFamily: 'var(--font-display)', background: col.pill }}
+        >
+          {CatLabel}
         </div>
 
-        {/* ══════════════════════════════════════════════
-            HERO — Attractive split layout
-        ══════════════════════════════════════════════ */}
-        <div className="hero-bg">
-
-          {/* Particles */}
-          {[1,2,3,4,5,6,7].map(n => <div key={n} className={`particle p${n}`} />)}
-
-          {/* Blobs */}
-          <div className="blob-blue" style={{ width: 480, height: 480, top: -100, left: -80, borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' }} />
-          <div className="blob-purple" style={{ width: 360, height: 360, bottom: -80, right: 80, borderRadius: '40% 60% 70% 30% / 40% 60% 30% 70%' }} />
-
-          {/* Spinning ring */}
-          <div className="spin-ring hidden md:block" style={{
-            position: 'absolute', top: 32, right: '38%',
-            width: 72, height: 72,
-            border: '2px dashed rgba(37,99,235,0.25)',
-            borderRadius: '50%',
-            display: 'none',
-          }} />
-
-          <div style={{
-            maxWidth: 1280, margin: '0 auto',
-            padding: 'clamp(48px,7vw,96px) clamp(20px,5vw,60px)',
-            display: 'grid', gridTemplateColumns: '1fr',
-            gap: 48,
-            position: 'relative', zIndex: 10,
-          }} className="md-hero-grid">
-
-            <style>{`
-              @media (min-width: 768px) {
-                .md-hero-grid { grid-template-columns: 1fr 1fr !important; align-items: center; }
-                .hero-right { display: flex !important; }
-                .spin-deco { display: block !important; }
-              }
-              @media (min-width: 1024px) {
-                .md-hero-grid { grid-template-columns: 55% 45% !important; }
-              }
-            `}</style>
-
-            {/* ── LEFT ── */}
-            <div>
-
-              {/* Live / category badge */}
-              <div className="anim-up d1" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  padding: '7px 16px', borderRadius: 100,
-                  background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255,255,255,0.95)',
-                  boxShadow: '0 4px 16px rgba(37,99,235,0.08)',
-                }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'liveDot 1.5s ease-in-out infinite' }} />
-                  <span style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 600, fontSize: 11, color: '#0f172a', letterSpacing: '0.06em' }}>
-                    {CatLabel.toUpperCase()} WORKSHOP
-                  </span>
-                </div>
-                {w.isLive && (
-                  <div style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6,
-                    padding: '7px 14px', borderRadius: 100,
-                    background: '#ef4444', color: 'white',
-                    fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 11,
-                  }}>
-                    <span className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: 'white' }} />
-                    LIVE NOW
-                  </div>
-                )}
-              </div>
-
-              {/* Title */}
-              <h1 className="anim-up d2" style={{
-                fontFamily: "'Clash Display', sans-serif",
-                fontWeight: 700,
-                fontSize: 'clamp(28px, 4vw, 52px)',
-                lineHeight: 1.1,
-                color: '#0f172a',
-                marginBottom: 20,
-              }}>
-                {(() => {
-                  const words = w.title.split(" ");
-                  const head = words.slice(0, Math.ceil(words.length * 0.6)).join(" ");
-                  const tail = words.slice(Math.ceil(words.length * 0.6)).join(" ");
-                  return (<>{head} <span className="text-shimmer">{tail}</span></>);
-                })()}
-              </h1>
-
-              {/* Description */}
-              <p className="anim-up d3" style={{
-                fontFamily: "'Satoshi', sans-serif",
-                color: '#475569', fontSize: 15, lineHeight: 1.75,
-                maxWidth: 520, marginBottom: 28,
-              }}>{w.shortDesc}</p>
-
-              {/* Info row */}
-              <div className="anim-up d3 stat-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 28, alignItems: 'center' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: "'Satoshi', sans-serif", fontWeight: 700, fontSize: 14, color: '#f59e0b' }}>
-                  <Star size={14} fill="currentColor" /> {w.rating}
-                  <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: 2 }}>({w.reviews})</span>
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: "'Satoshi', sans-serif", fontSize: 13, color: '#475569' }}>
-                  <Clock size={13} style={{ color: '#2563eb' }} /> {w.duration}
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: "'Satoshi', sans-serif", fontSize: 13, color: '#475569' }}>
-                  <Users size={13} style={{ color: '#2563eb' }} /> {w.trainer.students} students
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 13, color: '#ef4444' }}>
-                  <span className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
-                  Only {w.seats} seats left
-                </span>
-              </div>
-
-            
-
-            
-              {/* Quick stats badges */}
-              <div className="anim-up d5" style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 24 }}>
-                {[
-                  { icon: Shield,     color: '#10b981', label: '7-Day Guarantee' },
-                  { icon: Award,      color: '#6366f1', label: 'Certificate Included' },
-                  { icon: CheckCircle, color: '#2563eb', label: 'Expert-Led' },
-                ].map(({ icon: Icon, color, label }, i) => (
-                  <div key={i} className="stat-badge" style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 14px' }}>
-                    <Icon size={13} style={{ color }} />
-                    <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 12, color: '#334155' }}>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ── RIGHT — Image with floating badges ── */}
-            <div className="hero-right" style={{ position: 'relative', display: 'none', justifyContent: 'center', alignItems: 'center' }}>
-
-              {/* Glow */}
-              <div className="hero-img-glow" style={{ width: '80%', height: '80%', left: '10%', top: '10%' }} />
-
-              {/* Image */}
-              <div className="hero-img-frame" style={{ position: 'relative', width: '100%', maxWidth: 480, aspectRatio: '4/3' }}>
-                <img src={w.coverImg} alt={w.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                {/* overlay */}
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  background: 'linear-gradient(160deg, rgba(37,99,235,0.06) 0%, transparent 55%, rgba(0,0,0,0.28) 100%)',
-                }} />
-                {/* Category overlay pill */}
-                <div style={{
-                  position: 'absolute', top: 16, left: 16,
-                  padding: '6px 14px', borderRadius: 100,
-                  background: col.pill, color: 'white',
-                  fontFamily: "'Clash Display', sans-serif", fontWeight: 600, fontSize: 11,
-                }}>{CatLabel}</div>
-                {/* Discount bubble */}
-                <div style={{
-                  position: 'absolute', bottom: 16, right: 16,
-                  width: 64, height: 64, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #2563eb, #6366f1)',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 8px 24px rgba(37,99,235,0.4)',
-                  animation: 'floatY 4s ease-in-out infinite 0.5s',
-                }}>
-                  <span style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 16, color: 'white', lineHeight: 1 }}>{disc}%</span>
-                  <span style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>OFF</span>
-                </div>
-              </div>
-
-              {/* Floating badge — top left */}
-              <div className="orbit-badge badge-tl">
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,#2563eb,#6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Star size={13} style={{ color: 'white', fill: 'white' }} />
-                </div>
-                <div>
-                  <div style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 12, color: '#0f172a' }}>{w.rating} Rating</div>
-                  <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 10, color: '#64748b' }}>{w.reviews} reviews</div>
-                </div>
-              </div>
-
-              {/* Floating badge — bottom right */}
-              <div className="orbit-badge badge-br">
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Users size={13} style={{ color: '#10b981' }} />
-                </div>
-                <div>
-                  <div style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 12, color: '#0f172a' }}>{w.enrolled}+ Enrolled</div>
-                  <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 10, color: '#64748b' }}>Active learners</div>
-                </div>
-              </div>
-
-              {/* Floating badge — middle right */}
-              <div className="orbit-badge badge-tr">
-                <span className="live-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }} />
-                <div>
-                  <div style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 12, color: '#0f172a' }}>Live Session</div>
-                  <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 10, color: '#64748b' }}>Starts soon</div>
-                </div>
-              </div>
-
-            </div>
-          </div>
+        {/* Discount bubble */}
+        <div
+          className="float-anim2 absolute bottom-4 right-4 w-[64px] h-[64px] rounded-full flex flex-col items-center justify-center"
+          style={{
+            background: 'linear-gradient(135deg, #2563eb, #6366f1)',
+            boxShadow: '0 8px 24px rgba(37,99,235,0.45)',
+          }}
+        >
+          <span className="font-bold text-[16px] text-white leading-none" style={{ fontFamily: 'var(--font-display)' }}>{disc}%</span>
+          <span className="text-[9px] text-white/80" style={{ fontFamily: 'var(--font-body)' }}>OFF</span>
         </div>
 
-        {/* ══════════════════════════════════════════════
-            MAIN CONTENT
-        ══════════════════════════════════════════════ */}
-        <div style={{ maxWidth: 1152, margin: '0 auto', padding: '40px 20px' }}
-          className="detail-grid">
-          <style>{`
-            .detail-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
-            @media (min-width: 1024px) { .detail-grid { grid-template-columns: 1fr 360px; } }
-          `}</style>
+        {/* Seats remaining */}
+        <div
+          className="absolute bottom-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white font-bold text-[10px]"
+          style={{ fontFamily: 'var(--font-display)', background: 'rgba(239,68,68,0.92)' }}
+        >
+          <span className="live-dot w-1 h-1 rounded-full bg-white" />
+          {w.seats} seats left
+        </div>
+      </div>
+    </div>
 
-          {/* ─── LEFT ─── */}
-          <div className="anim-up d2" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+  </div>
+</div>
+
+        {/* ══════════════ MAIN CONTENT ══════════════ */}
+        <div className="max-w-7xl mx-auto gap-5 px-5 py-10 grid grid-cols-1 lg:grid-cols-[1fr_360px]">
+
+          {/* ─── LEFT COLUMN ─── */}
+          <div className="anim-up d2 flex flex-col gap-6">
 
             {/* About */}
-            <div className="content-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <div className="section-bar" />
-                <h2 style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 18, color: '#0f172a' }}>
-                  About This Workshop
-                </h2>
+            <section className="content-card-hover bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-1 h-[22px] rounded-full flex-shrink-0" style={{ background: 'linear-gradient(180deg, #2563eb, #6366f1)' }} />
+                <h2 className="font-bold text-[18px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>About This Workshop</h2>
               </div>
-              <p style={{ fontFamily: "'Satoshi', sans-serif", color: '#475569', lineHeight: 1.75, fontSize: 15 }}>{w.fullDesc}</p>
-            </div>
+              <p className="text-slate-500 leading-relaxed text-[15px]" style={{ fontFamily: 'var(--font-body)' }}>{w.fullDesc}</p>
+            </section>
 
             {/* What you'll learn */}
-            <div className="content-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <div className="section-bar" />
-                <h2 style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 18, color: '#0f172a' }}>
-                  What You'll Learn
-                </h2>
+            <section className="content-card-hover bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-1 h-[22px] rounded-full flex-shrink-0" style={{ background: 'linear-gradient(180deg, #2563eb, #6366f1)' }} />
+                <h2 className="font-bold text-[18px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>What You'll Learn</h2>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {w.price.includes.map((item, i) => (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 12,
-                    padding: '14px 16px', borderRadius: 14,
-                    background: 'linear-gradient(135deg, #f5f7ff, #eef2ff)',
-                    border: '1px solid #e0e7ff',
-                  }}>
-                    <div style={{
-                      width: 24, height: 24, borderRadius: 8, flexShrink: 0, marginTop: 1,
-                      background: 'linear-gradient(135deg, #2563eb, #6366f1)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <CheckCircle2 size={12} style={{ color: 'white' }} />
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 p-3.5 rounded-xl"
+                    style={{ background: 'linear-gradient(135deg, #f5f7ff, #eef2ff)', border: '1px solid #e0e7ff' }}
+                  >
+                    <div className="w-6 h-6 rounded-lg flex-shrink-0 mt-0.5 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2563eb, #6366f1)' }}>
+                      <CheckCircle2 size={12} className="text-white" />
                     </div>
-                    <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 500, fontSize: 13, color: '#334155' }}>{item}</span>
+                    <span className="font-medium text-[13px] text-slate-700" style={{ fontFamily: 'var(--font-body)' }}>{item}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
 
-            {/* Topics */}
-            <div className="content-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <div className="section-bar" />
-                <h2 style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 18, color: '#0f172a' }}>
-                  Topics Covered
-                </h2>
+            {/* Topics Covered */}
+            <section className="content-card-hover bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-1 h-[22px] rounded-full flex-shrink-0" style={{ background: 'linear-gradient(180deg, #2563eb, #6366f1)' }} />
+                <h2 className="font-bold text-[18px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>Topics Covered</h2>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div className="flex flex-wrap gap-2">
                 {w.tags.map((tag) => (
-                  <span key={tag} style={{
-                    padding: '7px 16px', borderRadius: 100,
-                    fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 13,
-                    background: col.bg, color: col.text, border: `1px solid ${col.border}`,
-                  }}>{tag}</span>
+                  <span
+                    key={tag}
+                    className="px-4 py-1.5 rounded-full font-semibold text-[13px]"
+                    style={{ fontFamily: 'var(--font-body)', background: col.bg, color: col.text, border: `1px solid ${col.border}` }}
+                  >
+                    {tag}
+                  </span>
                 ))}
               </div>
-            </div>
+            </section>
 
-            {/* Session snapshots */}
-            <div className="content-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-                <Camera size={18} style={{ color: '#94a3b8' }} />
-                <h2 style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 18, color: '#0f172a' }}>
-                  Session Snapshots
-                </h2>
+            {/* Session Snapshots */}
+            <section className="content-card-hover bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-2.5 mb-5">
+                <Camera size={18} className="text-slate-400" />
+                <h2 className="font-bold text-[18px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>Session Snapshots</h2>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="grid grid-cols-2 gap-3">
                 {w.photos.map((photo, idx) => (
-                  <div key={idx} className="photo-frame" style={{ position: 'relative', height: idx === 0 ? 220 : 180 }}>
-                    <img src={photo.src} alt={photo.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }} />
+                  <div
+                    key={idx}
+                    className="photo-frame relative overflow-hidden rounded-2xl"
+                    style={{ height: idx === 0 ? 200 : 160 }}
+                  >
+                    <img src={photo.src} alt={photo.label} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }} />
                     {idx === 0 && w.isLive && (
-                      <div style={{
-                        position: 'absolute', top: 10, left: 10,
-                        display: 'flex', alignItems: 'center', gap: 5,
-                        padding: '4px 10px', borderRadius: 100,
-                        background: 'rgba(239,68,68,0.9)', color: 'white',
-                        fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 9,
-                      }}>
-                        <span className="live-dot" style={{ width: 5, height: 5, borderRadius: '50%', background: 'white' }} />
-                        LIVE
+                      <div
+                        className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white font-bold text-[9px]"
+                        style={{ fontFamily: 'var(--font-display)', background: 'rgba(239,68,68,0.9)' }}
+                      >
+                        <span className="live-dot w-1 h-1 rounded-full bg-white" /> LIVE
                       </div>
                     )}
-                    <span style={{
-                      position: 'absolute', bottom: 10, left: 10,
-                      fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 11,
-                      color: 'white', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)',
-                      padding: '3px 10px', borderRadius: 8,
-                    }}>{photo.label}</span>
+                    <span
+                      className="absolute bottom-2.5 left-2.5 font-semibold text-[11px] text-white px-2.5 py-0.5 rounded-lg"
+                      style={{ fontFamily: 'var(--font-body)', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)' }}
+                    >
+                      {photo.label}
+                    </span>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
 
-            {/* How conducted */}
-            <div className="content-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <div className="section-bar" />
-                <h2 style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 18, color: '#0f172a' }}>
-                  How It's Conducted
-                </h2>
+            {/* How It's Conducted */}
+            <section className="content-card-hover bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-1 h-[22px] rounded-full flex-shrink-0" style={{ background: 'linear-gradient(180deg, #2563eb, #6366f1)' }} />
+                <h2 className="font-bold text-[18px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>How It's Conducted</h2>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 12 }}>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {w.trainer.classTypes.map((cls, i) => {
                   const Icon = ICON_MAP[cls.iconName] || Play;
                   return (
-                    <div key={i} style={{
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-                      padding: '16px 12px', borderRadius: 16, textAlign: 'center',
-                      border: '1px solid', borderColor: cls.borderColor || '#e2e8f0',
-                      background: cls.bg || '#f8fafc',
-                    }}>
-                      <div style={{
-                        width: 40, height: 40, borderRadius: 12,
-                        background: cls.bg || '#f1f5f9',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        border: `1.5px solid ${cls.borderColor || '#e2e8f0'}`,
-                      }}>
+                    <div
+                      key={i}
+                      className="flex flex-col items-center gap-2.5 p-4 rounded-2xl text-center border"
+                      style={{ borderColor: cls.borderColor || '#e2e8f0', background: cls.bg || '#f8fafc' }}
+                    >
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center border-[1.5px]"
+                        style={{ background: cls.bg || '#f1f5f9', borderColor: cls.borderColor || '#e2e8f0' }}
+                      >
                         <Icon size={18} className={cls.colorClass} />
                       </div>
-                      <div style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 600, fontSize: 12, color: '#334155' }}>{cls.type}</div>
-                      <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 10, color: '#94a3b8' }}>{cls.count}</div>
+                      <div className="font-semibold text-[12px] text-slate-700" style={{ fontFamily: 'var(--font-display)' }}>{cls.type}</div>
+                      <div className="text-[10px] text-slate-400" style={{ fontFamily: 'var(--font-body)' }}>{cls.count}</div>
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </section>
 
             {/* Trust indicators */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 12 }}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { icon: Shield,     label: "Money Back",     sub: "7-day guarantee", color: "#10b981", bg: "#ecfdf5" },
-                { icon: Award,      label: "Certificate",    sub: "On completion",   color: "#6366f1", bg: "#f5f3ff" },
-                { icon: Users,      label: "Community",      sub: "Peer network",    color: "#2563eb", bg: "#eff6ff" },
-                { icon: TrendingUp, label: "Career Support", sub: "Post-workshop",   color: "#f59e0b", bg: "#fffbeb" },
+                { icon: Shield,     label: 'Money Back',     sub: '7-day guarantee', color: '#10b981', bg: '#ecfdf5' },
+                { icon: Award,      label: 'Certificate',    sub: 'On completion',   color: '#6366f1', bg: '#f5f3ff' },
+                { icon: Users,      label: 'Community',      sub: 'Peer network',    color: '#2563eb', bg: '#eff6ff' },
+                { icon: TrendingUp, label: 'Career Support', sub: 'Post-workshop',   color: '#f59e0b', bg: '#fffbeb' },
               ].map(({ icon: Icon, label, sub, color, bg }, i) => (
-                <div key={i} style={{
-                  background: 'white', borderRadius: 16, padding: '16px 12px',
-                  border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8,
-                }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div
+                  key={i}
+                  className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col items-center text-center gap-2"
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: bg }}>
                     <Icon size={18} style={{ color }} />
                   </div>
-                  <div style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 12, color: '#0f172a' }}>{label}</div>
-                  <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 10, color: '#94a3b8' }}>{sub}</div>
+                  <div className="font-bold text-[12px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>{label}</div>
+                  <div className="text-[10px] text-slate-400" style={{ fontFamily: 'var(--font-body)' }}>{sub}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* ─── RIGHT SIDEBAR ─── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="flex flex-col gap-5">
 
             {/* Trainer card */}
-            <div className="content-card anim-right d2">
-              <p style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 600, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94a3b8', marginBottom: 16 }}>
+            <div className="anim-right d2 content-card-hover bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <p
+                className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mb-4"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 Your Trainer
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-                <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <div style={{ width: 64, height: 64, borderRadius: 16, overflow: 'hidden', border: '2px solid #e0e7ff', boxShadow: '0 4px 16px rgba(37,99,235,0.12)' }}>
-                    <img src={w.trainer.avatar} alt={w.trainer.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
+              {/* Avatar + name */}
+              <div className="flex items-center gap-4 mb-5">
+                <div className="relative flex-shrink-0">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-indigo-100 shadow-md">
+                    <img src={w.trainer.avatar} alt={w.trainer.name} className="w-full h-full object-cover" />
                   </div>
-                  <div style={{
-                    position: 'absolute', bottom: -6, right: -6,
-                    width: 24, height: 24, borderRadius: '50%', border: '2px solid white',
-                    background: 'linear-gradient(135deg, #2563eb, #6366f1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <BadgeCheck size={11} style={{ color: 'white' }} />
+                  <div
+                    className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #2563eb, #6366f1)' }}
+                  >
+                    <BadgeCheck size={11} className="text-white" />
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 16, color: '#0f172a' }}>{w.trainer.name}</div>
-                  <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 12, color: '#64748b', marginTop: 2 }}>{w.trainer.role}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4, fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 12, color: '#6366f1' }}>
+                  <div className="font-bold text-[16px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>{w.trainer.name}</div>
+                  <div className="text-[12px] text-slate-500 mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>{w.trainer.role}</div>
+                  <div className="flex items-center gap-1.5 mt-1 font-semibold text-[12px] text-indigo-500" style={{ fontFamily: 'var(--font-body)' }}>
                     <Award size={11} /> {w.trainer.exp}
                   </div>
                 </div>
               </div>
 
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '10px 14px', borderRadius: 12,
-                background: 'linear-gradient(135deg, #f0f4ff, #eef2ff)',
-                border: '1px solid #e0e7ff', marginBottom: 20,
-              }}>
-                <Users size={13} style={{ color: '#6366f1' }} />
-                <span style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 14, color: '#4338ca' }}>{w.trainer.students}</span>
-                <span style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 12, color: '#94a3b8' }}>students trained</span>
+              {/* Students stat */}
+              <div
+                className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl mb-5"
+                style={{ background: 'linear-gradient(135deg, #f0f4ff, #eef2ff)', border: '1px solid #e0e7ff' }}
+              >
+                <Users size={13} className="text-indigo-500" />
+                <span className="font-bold text-[14px] text-indigo-800" style={{ fontFamily: 'var(--font-display)' }}>{w.trainer.students}</span>
+                <span className="text-[12px] text-slate-400" style={{ fontFamily: 'var(--font-body)' }}>students trained</span>
               </div>
 
-              <p style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 600, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94a3b8', marginBottom: 10 }}>
+              {/* Certifications */}
+              <p className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mb-2.5" style={{ fontFamily: 'var(--font-display)' }}>
                 Certifications
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="flex flex-col gap-2">
                 {w.trainer.certifications.map((cert, i) => (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    padding: '8px 12px', borderRadius: 10,
-                    background: '#f0f4ff', border: '1px solid #e0e7ff',
-                    fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 12, color: '#4338ca',
-                  }}>
-                    <BadgeCheck size={12} style={{ color: '#6366f1', flexShrink: 0 }} /> {cert}
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl font-semibold text-[12px] text-indigo-700"
+                    style={{ fontFamily: 'var(--font-body)', background: '#f0f4ff', border: '1px solid #e0e7ff' }}
+                  >
+                    <BadgeCheck size={12} className="text-indigo-500 flex-shrink-0" /> {cert}
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Enroll card */}
-            <div className="anim-right d3" style={{
-              background: 'white', border: '1px solid #e2e8f0', borderRadius: 20, padding: '24px',
-              position: 'sticky', top: 76,
-            }} className="enroll-shadow">
-              <style>{`.enroll-shadow { box-shadow: 0 12px 48px rgba(37,99,235,0.16); }`}</style>
-
+            <div
+              className="anim-right d3 bg-white border border-slate-200 rounded-2xl p-6 lg:sticky lg:top-20"
+              style={{ boxShadow: '0 12px 48px rgba(37,99,235,0.16)' }}
+            >
               {/* Discount row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 5,
-                  padding: '4px 10px', borderRadius: 100,
-                  background: '#10b981', color: 'white',
-                  fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 10,
-                }}>
+              <div className="flex items-center gap-2 flex-wrap mb-2">
+                <span
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-white font-bold text-[10px]"
+                  style={{ fontFamily: 'var(--font-display)', background: '#10b981' }}
+                >
                   <Tag size={8} /> {disc}% OFF
                 </span>
-                <span style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 13, color: '#cbd5e1', textDecoration: 'line-through' }}>
+                <span className="text-[13px] text-slate-300 line-through" style={{ fontFamily: 'var(--font-body)' }}>
                   ₹{fmt(w.price.original)}
                 </span>
-                <span style={{ marginLeft: 'auto', fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 12, color: '#10b981' }}>
+                <span className="ml-auto font-semibold text-[12px] text-emerald-600" style={{ fontFamily: 'var(--font-body)' }}>
                   Save ₹{fmt(w.price.original - w.price.discounted)}
                 </span>
               </div>
 
               {/* Price */}
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                <IndianRupee size={18} style={{ color: '#0f172a' }} strokeWidth={2.5} />
-                <span style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 34, color: '#0f172a' }}>
+              <div className="flex items-baseline gap-1 mb-1">
+                <IndianRupee size={18} className="text-slate-900" strokeWidth={2.5} />
+                <span className="font-bold text-[34px] text-slate-900 leading-none" style={{ fontFamily: 'var(--font-display)' }}>
                   {fmt(w.price.discounted)}
                 </span>
               </div>
-              <p style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 12, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 5, marginBottom: 24 }}>
-                <Zap size={10} style={{ color: '#6366f1' }} /> ₹{w.price.emi}/mo × 12 at 0% interest
+              <p className="flex items-center gap-1.5 text-[12px] text-slate-400 mb-6" style={{ fontFamily: 'var(--font-body)' }}>
+                <Zap size={10} className="text-indigo-500" /> ₹{w.price.emi}/mo × 12 at 0% interest
               </p>
 
               {/* Buttons */}
-              <button className="cta-btn" style={{
-                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                padding: '14px', borderRadius: 14, fontSize: 14, marginBottom: 10,
-                fontFamily: "'Clash Display', sans-serif", fontWeight: 600,
-              }}>
+              <button
+                className="cta-btn w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-[14px] font-semibold text-white mb-2.5"
+                style={{ fontFamily: 'var(--font-display)', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}
+              >
                 <span>Enroll Now</span> <ArrowRight size={14} />
               </button>
-              <button className="sec-btn" style={{
-                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                padding: '12px', borderRadius: 14, fontSize: 13,
-                fontFamily: "'Clash Display', sans-serif", fontWeight: 600,
-              }}>
+              <button
+                className="sec-btn w-full flex items-center justify-center gap-1.5 py-3 rounded-2xl text-[13px] font-semibold text-slate-500 border border-slate-200 bg-white"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 View Schedule <ChevronRight size={13} />
               </button>
 
               {/* Includes */}
-              <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div className="mt-5 pt-5 border-t border-slate-100 flex flex-col gap-2.5">
                 {w.price.includes.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Satoshi', sans-serif", fontSize: 12, color: '#475569' }}>
-                    <CheckCircle2 size={13} style={{ color: '#10b981', flexShrink: 0 }} /> {item}
+                  <div key={i} className="flex items-center gap-2 text-[12px] text-slate-500" style={{ fontFamily: 'var(--font-body)' }}>
+                    <CheckCircle2 size={13} className="text-emerald-500 flex-shrink-0" /> {item}
                   </div>
                 ))}
               </div>
 
               {/* Scarcity */}
-              <div style={{
-                marginTop: 16,
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '10px 14px', borderRadius: 12,
-                background: '#fef2f2', border: '1px solid #fecaca',
-                fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 12, color: '#ef4444',
-              }}>
-                <span className="live-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: '#ef4444', flexShrink: 0 }} />
+              <div
+                className="mt-4 flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-semibold text-[12px] text-red-500"
+                style={{ fontFamily: 'var(--font-body)', background: '#fef2f2', border: '1px solid #fecaca' }}
+              >
+                <span className="live-dot w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
                 Only {w.seats} seats remaining — filling fast!
               </div>
             </div>
@@ -897,7 +696,6 @@ export default function WorkshopDetailPage() {
 
         {/* ── RELATED ── */}
         <RelatedWorkshops current={w} />
-
       </div>
     </>
   );
@@ -916,48 +714,44 @@ function RelatedWorkshops({ current }) {
   const catLabel = CATEGORIES.find((c) => c.id === current.category)?.label;
 
   return (
-    <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 20px 64px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <div style={{
-          width: 4, height: 22, borderRadius: 3, flexShrink: 0,
-          background: 'linear-gradient(180deg, #2563eb, #6366f1)',
-        }} />
-        <h2 style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 20, color: '#0f172a' }}>
+    <div className="max-w-6xl mx-auto px-5 pb-16">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-1 h-[22px] rounded-full flex-shrink-0" style={{ background: 'linear-gradient(180deg, #2563eb, #6366f1)' }} />
+        <h2 className="font-bold text-[20px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
           More in <span className="text-shimmer">{catLabel}</span>
         </h2>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {related.map((w) => {
-          const slug = `${w.id}-${w.title.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 50)}`;
+          const slug = `${w.id}-${w.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 50)}`;
           const discPct = Math.round(((w.price.original - w.price.discounted) / w.price.original) * 100);
 
           return (
-            <Link key={w.id} href={`/workshops/${slug}`} className="related-card"
-              style={{
-                display: 'flex', gap: 14, padding: 16,
-                background: 'white', borderRadius: 16,
-                border: '1px solid #e2e8f0', textDecoration: 'none',
-              }}
+            <Link
+              key={w.id}
+              href={`/workshops/${slug}`}
+              className="related-card flex gap-3.5 p-4 bg-white rounded-2xl border border-slate-200 no-underline"
               onMouseEnter={e => e.currentTarget.style.borderColor = '#bfdbfe'}
               onMouseLeave={e => e.currentTarget.style.borderColor = '#e2e8f0'}
             >
-              <div style={{ width: 80, height: 64, borderRadius: 12, overflow: 'hidden', flexShrink: 0 }}>
-                <img src={w.coverImg} alt={w.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }} />
+              <div className="w-20 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                <img src={w.coverImg} alt={w.title} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
               </div>
-              <div style={{ overflow: 'hidden', flex: 1 }}>
-                <h3 style={{
-                  fontFamily: "'Clash Display', sans-serif", fontWeight: 600, fontSize: 13, color: '#0f172a',
-                  lineHeight: 1.4, marginBottom: 8,
-                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                }}>{w.title}</h3>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Star size={10} style={{ color: '#f59e0b', fill: '#f59e0b' }} />
-                  <span style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 12, color: '#64748b' }}>{w.rating}</span>
-                  <span style={{ color: '#e2e8f0' }}>·</span>
-                  <span style={{ fontFamily: "'Clash Display', sans-serif", fontWeight: 700, fontSize: 13, color: '#0f172a' }}>₹{fmt(w.price.discounted)}</span>
+              <div className="overflow-hidden flex-1">
+                <h3
+                  className="font-semibold text-[13px] text-slate-900 leading-snug mb-2 line-clamp-2"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  {w.title}
+                </h3>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Star size={10} className="text-amber-400 fill-amber-400" />
+                  <span className="text-[12px] text-slate-500" style={{ fontFamily: 'var(--font-body)' }}>{w.rating}</span>
+                  <span className="text-slate-200">·</span>
+                  <span className="font-bold text-[13px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>₹{fmt(w.price.discounted)}</span>
                   {discPct > 0 && (
-                    <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 11, color: '#10b981' }}>{discPct}% off</span>
+                    <span className="font-semibold text-[11px] text-emerald-500" style={{ fontFamily: 'var(--font-body)' }}>{discPct}% off</span>
                   )}
                 </div>
               </div>

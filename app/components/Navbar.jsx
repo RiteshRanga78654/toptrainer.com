@@ -7,10 +7,11 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const Navbar = ({ open, setOpen }) => {
+const Navbar = () => {
+  const [open, setOpen] = React.useState(false);
   const navItems = [
     { name: "Find Trainers", link: "/find-trainers" },
-    { name: "Popular Workshops", link: "/workshops" },
+    { name: " Workshops", link: "/workshops" },
     
   { name: "Industry", link: "/corporate-solutions" },
   { name: "Department", link: "/corporate-solutions" },
