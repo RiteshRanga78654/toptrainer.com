@@ -1,426 +1,732 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 import {
-  Download, MapPin, Briefcase, GraduationCap,
-  Globe, Phone, Mail, Award,
+  Phone, MapPin, Mail, Linkedin, Twitter, Youtube, Globe,
+  Star, ChevronRight, Users, Award, BookOpen, Briefcase,
+  Languages, MessageSquare, Download, ExternalLink,
+  CheckCircle2, TrendingUp, Lightbulb, Target, Building2,
+  GraduationCap, Trophy, Send, Camera, Zap,
 } from "lucide-react";
-import { Linkedin, Instagram, Youtube, Facebook } from "lucide-react";
+import Footer from "../components/footer";
 
-/* ===== STYLES ===== */
-const styles = `
-  @keyframes fadeSlideUp {
-    from { opacity:0; transform:translateY(20px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity:0; } to { opacity:1; }
-  }
-  @keyframes shimmer {
-    0%   { background-position:-200% center; }
-    100% { background-position: 200% center; }
-  }
-  @keyframes pulseBlue {
-    0%,100% { box-shadow:0 0 0 0   rgba(37,99,235,0.45); }
-    50%      { box-shadow:0 0 0 9px rgba(37,99,235,0);    }
-  }
-  @keyframes borderGlow {
-    0%,100% { border-color:#2563eb; }
-    50%      { border-color:#1e3a8a; }
-  }
-  @keyframes slideInLeft {
-    from { opacity:0; transform:translateX(-16px); }
-    to   { opacity:1; transform:translateX(0); }
-  }
-  @keyframes badgePop {
-    0%   { transform:scale(0.85); opacity:0; }
-    70%  { transform:scale(1.05); }
-    100% { transform:scale(1);    opacity:1; }
-  }
-  @keyframes floatA {
-    0%,100% { transform:translateY(0px)   rotate(0deg);   }
-    33%      { transform:translateY(-28px) rotate(120deg); }
-    66%      { transform:translateY(14px)  rotate(240deg); }
-  }
-  @keyframes floatB {
-    0%,100% { transform:translateY(0px)   rotate(0deg);    }
-    40%      { transform:translateY(22px)  rotate(-90deg);  }
-    80%      { transform:translateY(-16px) rotate(-200deg); }
-  }
-  @keyframes floatC {
-    0%,100% { transform:translateX(0)  translateY(0);   }
-    50%      { transform:translateX(20px) translateY(-24px); }
-  }
-  @keyframes orbitRing {
-    from { transform:rotate(0deg); } to { transform:rotate(360deg); }
-  }
-  @keyframes pulseDot {
-    0%,100% { opacity:0.25; transform:scale(1);    }
-    50%      { opacity:0.6;  transform:scale(1.35); }
-  }
-  @keyframes driftLine {
-    0%   { transform:scaleX(0.6) translateX(-10%); opacity:0.15; }
-    50%  { transform:scaleX(1.1) translateX(5%);   opacity:0.35; }
-    100% { transform:scaleX(0.6) translateX(-10%); opacity:0.15; }
-  }
-
-  .animate-fade-slide-up { animation:fadeSlideUp 0.55s ease both; }
-  .animate-fade-in       { animation:fadeIn      0.4s  ease both; }
-  .animate-slide-in-left { animation:slideInLeft 0.45s ease both; }
-  .animate-badge-pop     { animation:badgePop    0.4s  ease both; }
-
-  .shimmer-text {
-    background:linear-gradient(90deg,#1e40af 0%,#60a5fa 40%,#1e3a8a 60%,#1e40af 100%);
-    background-size:200% auto;
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-clip:text;
-    animation:shimmer 3s linear infinite;
-  }
-
-  /* ── Background canvas ── */
-  .bg-canvas { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
-
-  .bg-hex {
-    position:absolute; inset:0; opacity:0.028;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32z' fill='none' stroke='%232563eb' stroke-width='1'/%3E%3Cpath d='M28 100L0 84V52l28-16 28 16v32z' fill='none' stroke='%232563eb' stroke-width='1'/%3E%3C/svg%3E");
-    background-size:56px 100px;
-  }
-  .bg-shape {
-    position:absolute; border-radius:50%; opacity:0.07;
-    background:radial-gradient(circle,#2563eb,#1e3a8a);
-  }
-  .bg-shape.s1 { width:420px;height:420px;top:-80px;left:-100px;   animation:floatA 14s ease-in-out infinite; }
-  .bg-shape.s2 { width:280px;height:280px;top:30%;right:-60px;     animation:floatB 18s ease-in-out infinite; }
-  .bg-shape.s3 { width:180px;height:180px;bottom:15%;left:10%;     animation:floatC 12s ease-in-out infinite; }
-  .bg-shape.s4 { width:340px;height:340px;bottom:-60px;right:15%;  animation:floatA 20s ease-in-out infinite 3s; }
-  .bg-shape.s5 { width:120px;height:120px;top:50%;left:40%;        animation:floatB 10s ease-in-out infinite 1s; }
-
-  .bg-ring { position:absolute; border-radius:50%; border:1.5px solid rgba(37,99,235,0.13); }
-  .bg-ring.r1 { width:600px;height:600px;top:-200px;left:-200px;  animation:orbitRing 30s linear infinite; }
-  .bg-ring.r2 { width:400px;height:400px;bottom:0;right:-150px;   animation:orbitRing 22s linear infinite reverse; }
-
-  .bg-dot { position:absolute; width:6px;height:6px; border-radius:50%; background:#2563eb; }
-  .bg-dot.d1 { top:18%;left:12%; animation:pulseDot 4s   ease-in-out infinite;      }
-  .bg-dot.d2 { top:42%;left:88%; animation:pulseDot 5s   ease-in-out infinite 0.8s; }
-  .bg-dot.d3 { top:72%;left:25%; animation:pulseDot 3.5s ease-in-out infinite 1.4s; }
-  .bg-dot.d4 { top:88%;left:70%; animation:pulseDot 6s   ease-in-out infinite 2s;   }
-  .bg-dot.d5 { top:55%;left:55%; animation:pulseDot 4.5s ease-in-out infinite 0.4s; }
-  .bg-dot.d6 { top:8%; left:65%; animation:pulseDot 5.5s ease-in-out infinite 1.8s; }
-
-  .bg-line { position:absolute;height:1.5px;border-radius:4px;transform-origin:center;
-    background:linear-gradient(90deg,transparent,rgba(37,99,235,0.25),transparent); }
-  .bg-line.l1 { width:260px;top:22%;left:5%;   animation:driftLine  8s ease-in-out infinite; }
-  .bg-line.l2 { width:180px;top:65%;right:8%;  animation:driftLine 11s ease-in-out infinite 2s; }
-  .bg-line.l3 { width:220px;top:80%;left:35%;  animation:driftLine  9s ease-in-out infinite 1s; }
-
-  /* ── Section / card interactions ── */
-  .section-card { transition:box-shadow 0.25s ease; }
-  .section-card:hover { box-shadow:0 4px 24px rgba(37,99,235,0.10); }
-
-  .btn-download {
-    background:linear-gradient(135deg,#2563eb,#1e40af);
-    transition:all 0.25s ease; position:relative; overflow:hidden;
-  }
-  .btn-download::after {
-    content:'';position:absolute;inset:0;
-    background:linear-gradient(135deg,#1e40af,#1e3a8a);
-    opacity:0;transition:opacity 0.25s;
-  }
-  .btn-download:hover::after  { opacity:1; }
-  .btn-download:hover         { transform:scale(1.04); box-shadow:0 4px 18px rgba(37,99,235,0.45); }
-  .btn-download > span        { position:relative; z-index:1; }
-
-  .profile-ring { animation:borderGlow 2.5s ease-in-out infinite; }
-
-  .exp-card:hover .exp-icon { animation:pulseBlue 1.2s ease infinite; }
-
-  .cert-card {
-    border:1.5px solid #e5e7eb;
-    transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;
-  }
-  .cert-card:hover {
-    transform:translateY(-4px) scale(1.02);
-    box-shadow:0 12px 32px rgba(37,99,235,0.18);
-    border-color:#2563eb;
-  }
-
-  .lang-badge { transition:background 0.2s,color 0.2s,transform 0.2s; cursor:default; }
-  .lang-badge:hover { background:#2563eb;color:#fff;transform:scale(1.08); }
-
-  .link-item { transition:color 0.2s,transform 0.2s; display:flex;align-items:center;gap:6px; }
-  .link-item:hover { color:#1e40af;transform:translateX(3px); }
-
-  .show-more-btn {
-    position:relative; color:#2563eb; font-size:0.875rem; margin-top:0.75rem; transition:color 0.2s;
-  }
-  .show-more-btn::after {
-    content:'';position:absolute;bottom:-2px;left:0;
-    width:0;height:2px;
-    background:linear-gradient(90deg,#2563eb,#1e3a8a);
-    transition:width 0.25s ease;border-radius:2px;
-  }
-  .show-more-btn:hover { color:#1e3a8a; }
-  .show-more-btn:hover::after { width:100%; }
-
-  /* ── Responsive ── */
-  @media (max-width:1024px){
-    .main-grid  { display:flex!important; flex-direction:column; }
-    .cert-grid  { grid-template-columns:repeat(2,1fr)!important; }
-  }
-  @media (max-width:640px){
-    .header-row { flex-direction:column; align-items:flex-start!important; gap:12px; }
-    .cert-grid  { grid-template-columns:1fr!important; }
-    .bg-shape.s1 { width:220px;height:220px; }
-    .bg-shape.s4 { display:none; }
-  }
-`;
-
-/* ── Background Canvas ── */
-function BackgroundCanvas() {
-  return (
-    <div className="bg-canvas">
-      <div className="bg-hex" />
-      <div className="bg-shape s1" /><div className="bg-shape s2" />
-      <div className="bg-shape s3" /><div className="bg-shape s4" /><div className="bg-shape s5" />
-      <div className="bg-ring r1"  /><div className="bg-ring r2" />
-      <div className="bg-dot d1"   /><div className="bg-dot d2"  /><div className="bg-dot d3" />
-      <div className="bg-dot d4"   /><div className="bg-dot d5"  /><div className="bg-dot d6" />
-      <div className="bg-line l1"  /><div className="bg-line l2" /><div className="bg-line l3" />
-    </div>
-  );
+// ─── Animation Hook ───────────────────────────────────────────────────────────
+function useInView(threshold = 0.15) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  return [ref, visible];
 }
 
-/* ── Shared Section wrapper ── */
-function Section({ title, children, delay = 0 }) {
+// ─── Section Wrapper ──────────────────────────────────────────────────────────
+function FadeIn({ children, delay = 0, className = "" }) {
+  const [ref, visible] = useInView();
   return (
     <div
-      className="bg-white p-5 sm:p-6 rounded-2xl shadow-sm section-card animate-fade-slide-up"
-      style={{ animationDelay:`${delay}s` }}
+      ref={ref}
+      className={`transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
     >
-      <h2 className="text-lg font-semibold mb-4 shimmer-text">{title}</h2>
       {children}
     </div>
   );
 }
 
-function InfoItem({ label, value }) {
+// ─── Section Card ─────────────────────────────────────────────────────────────
+function Card({ children, className = "" }) {
   return (
-    <p className="text-sm text-gray-700">
-      <span className="font-medium text-gray-900">{label}:</span> {value}
-    </p>
-  );
-}
-
-function ExperienceCard({ exp, index }) {
-  return (
-    <div className="flex gap-4 group exp-card animate-slide-in-left" style={{ animationDelay:`${0.08*index}s` }}>
-      <Briefcase className="text-blue-600 mt-1 flex-shrink-0 exp-icon transition-colors group-hover:text-blue-900" size={18} />
-      <div>
-        <h3 className="font-semibold group-hover:text-blue-700 transition-colors duration-200">{exp.role}</h3>
-        <p className="text-sm text-gray-600">{exp.company}</p>
-        <p className="text-xs text-gray-400">{exp.date}</p>
-        <ul className="text-sm text-gray-700 mt-2 list-disc ml-4 space-y-1">
-          {exp.points.map((p, i) => <li key={i}>{p}</li>)}
-        </ul>
-      </div>
+    <div className={`bg-white rounded-2xl shadow-sm border border-blue-100 p-6 ${className}`}>
+      {children}
     </div>
   );
 }
 
-function EducationCard({ edu, index }) {
+// ─── Section Header ───────────────────────────────────────────────────────────
+function SectionHeader({ icon: Icon, title, linkText }) {
   return (
-    <div className="flex gap-4 animate-slide-in-left" style={{ animationDelay:`${0.08*index}s` }}>
-      <GraduationCap className="text-blue-700 mt-1 flex-shrink-0" size={18} />
-      <div>
-        <h3 className="font-semibold">{edu.title}</h3>
-        <p className="text-sm text-gray-600">{edu.place}</p>
-        <p className="text-xs text-gray-400">{edu.date}</p>
-      </div>
-    </div>
-  );
-}
-
-function CertificateCard({ cert, index }) {
-  return (
-    <div className="cert-card rounded-2xl overflow-hidden animate-badge-pop bg-white" style={{ animationDelay:`${0.07*index}s` }}>
-      <div className="relative w-full" style={{ paddingBottom:"62%" }}>
-        <Image src={cert.image} alt={cert.title} fill className="object-cover" />
-      </div>
-      <div className="p-3 flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-          <Award className="text-blue-700" size={16} />
+    <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center gap-2">
+        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+          <Icon size={18} className="text-blue-700" />
         </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-gray-900 truncate">{cert.title}</p>
-          <span className="inline-flex items-center gap-1 text-xs text-blue-700 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block" />Verified
-          </span>
-        </div>
+        <h2 className="text-lg font-semibold text-black">{title}</h2>
       </div>
+      {linkText && (
+        <button className="text-sm text-blue-500 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors">
+          {linkText} <ChevronRight size={14} />
+        </button>
+      )}
     </div>
   );
 }
 
-/* ── Page ── */
-export default function ProfilePage() {
-  const [showAllExp,  setShowAllExp]  = useState(false);
-  const [showAllEdu,  setShowAllEdu]  = useState(false);
-  const [showAllCert, setShowAllCert] = useState(false);
+// ─── Stat Pill ────────────────────────────────────────────────────────────────
+function StatPill({ value, label }) {
+  return (
+    <div className="flex flex-col items-center">
+      <span className="text-2xl md:text-3xl font-bold text-white">{value}</span>
+      <span className="text-xs text-blue-200 mt-0.5 text-center">{label}</span>
+    </div>
+  );
+}
 
-  const trainer = {
-    name:"Abhay Sharma",
-    title:"Corporate Sales Trainer | Leadership Coach | B2B Growth Strategist",
-    location:"Mumbai, Maharashtra",
-    about:"Results-driven Sales Professional with 7+ years of experience in B2B sales, business development, and revenue growth across diverse industries. Proven track record of exceeding sales targets, building long-term client relationships, and driving strategic partnerships. Skilled in lead generation, pipeline management, and closing high-value deals, I specialize in understanding client needs and delivering customized solutions that create measurable business impact. Experienced in working with cross-functional teams, CRM tools, and data-driven strategies to optimize sales performance. Passionate about scaling businesses, improving customer experience, and consistently delivering value.",
-    contact:{ email:"abhay.sharma@email.com", phone:"+91 987656710", website:"https://abhaysharma.com" },
-    links:  { linkedin:"linkedin.com/in/abhay", instagram:"instagram.com/abhay", youtube:"youtube.com/@abhay", facebook:"facebook.com/abhay" },
-    details:{ Industry:"IT, SaaS & Corporate Training", Domain:"Sales & Leadership", Experience:"8+ Years", Travel:"Available Worldwide", Fees:"₹60,000/day" },
-    languages:["English","Hindi"],
-    experience:[
-      { role:"Senior Corporate Trainer",    company:"GrowthEdge Consulting", date:"2021 – Present", points:["Trained 15,000+ professionals","Improved sales conversion by 35%"] },
-      { role:"Sales Training Lead",          company:"NextGen Solutions",     date:"2019 – 2021",   points:["Led 100+ workshops"] },
-      { role:"Business Development Manager", company:"ABC Pvt Ltd",           date:"2017 – 2019",   points:["Generated ₹1Cr+ revenue"] },
-    ],
-    education:[
-      { title:"MBA in Marketing", place:"NMIMS Mumbai",    date:"2015 – 2017" },
-      { title:"BBA",              place:"Delhi University", date:"2012 – 2015" },
-    ],
-    certifications:[
-      { title:"Certified Corporate Trainer",       image:"/Images/cert1.png" },
-      { title:"NLP Practitioner",                  image:"/Images/cert2.png" },
-      { title:"Leadership Coaching Certification", image:"/Images/cert3.png" },
-      { title:"Advanced Sales Strategy",           image:"/Images/cert4.png" },
-    ],
+// ─── Tag ──────────────────────────────────────────────────────────────────────
+function Tag({ label }) {
+  return (
+    <span className="px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white border border-white/30 backdrop-blur-sm">
+      {label}
+    </span>
+  );
+}
+
+// ─── Workshop Card ────────────────────────────────────────────────────────────
+function WorkshopCard({ title, desc, image, delay }) {
+  return (
+    <FadeIn delay={delay}>
+      <div className="group rounded-2xl h-[250px] overflow-hidden border border-blue-100 bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        <div className="relative h-36 overflow-hidden">
+          <Image src={image} alt={title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300" />
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold text-blue-900 text-sm mb-1">{title}</h3>
+          <p className="text-xs text-blue-500">{desc}</p>
+        </div>
+      </div>
+    </FadeIn>
+  );
+}
+
+// ─── Article Card ─────────────────────────────────────────────────────────────
+function ArticleCard({ title, date, delay }) {
+  return (
+    <FadeIn delay={delay}>
+      <div className="flex gap-3 group cursor-pointer hover:bg-blue-50 p-2 rounded-xl transition-colors">
+        <div className="w-16 h-14 flex-shrink-0 rounded-lg bg-gradient-to-br from-blue-300 to-blue-500 flex items-center justify-center overflow-hidden">
+          <BookOpen size={20} className="text-white/80" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-blue-900 group-hover:text-blue-700 transition-colors leading-snug">{title}</p>
+          <p className="text-xs text-blue-400 mt-1">{date}</p>
+        </div>
+      </div>
+    </FadeIn>
+  );
+}
+
+// ─── Timeline Milestone ───────────────────────────────────────────────────────
+function Milestone({ icon: Icon, label, org, year, delay }) {
+  return (
+    <FadeIn delay={delay} className="flex flex-col items-center text-center w-full">
+      <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center mb-2 ring-2 ring-blue-200">
+        <Icon size={20} className="text-blue-700" />
+      </div>
+      <p className="text-xs font-semibold text-blue-900">{label}</p>
+      <p className="text-xs text-blue-500">{org}</p>
+      <p className="text-xs font-bold text-blue-700 mt-0.5">{year}</p>
+    </FadeIn>
+  );
+}
+
+// ─── Testimonial ─────────────────────────────────────────────────────────────
+function Testimonial({ quote, name, role, delay }) {
+  return (
+    <FadeIn delay={delay}>
+      <div className="bg-blue-50 rounded-2xl p-5 border border-blue-100 h-full">
+        <div className="flex gap-1 mb-3">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} size={13} className="fill-yellow-400 text-yellow-400" />
+          ))}
+        </div>
+        <p className="text-sm text-blue-800 leading-relaxed mb-4 italic">"{quote}"</p>
+        <div>
+          <p className="text-sm font-semibold text-blue-900">{name}</p>
+          <p className="text-xs text-blue-500">{role}</p>
+        </div>
+      </div>
+    </FadeIn>
+  );
+}
+
+// ─── Company Logo ─────────────────────────────────────────────────────────────
+function CompanyLogo({ name, color = "text-blue-800" }) {
+  return (
+    <div className="flex items-center justify-center px-4 py-3 rounded-xl border border-blue-100 bg-white hover:border-blue-300 hover:shadow-md transition-all duration-200 cursor-pointer">
+      <span className={`font-bold text-sm tracking-wide ${color}`}>{name}</span>
+    </div>
+  );
+}
+
+// ─── Gallery Thumb ────────────────────────────────────────────────────────────
+function GalleryThumb({ image, delay }) {
+  return (
+    <FadeIn delay={delay}>
+      <div className="aspect-square rounded-xl overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer relative group">
+        <Image src={image} alt="Gallery" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-300" />
+      </div>
+    </FadeIn>
+  );
+}
+
+// ─── Canvas Animated Background ───────────────────────────────────────────────
+// ─── Animated Background Canvas ──────────────────────────────────────────────
+function AnimatedBackground() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const rand = (min, max) => Math.random() * (max - min) + min;
+
+    // Sparse small dots
+    const dots = Array.from({ length: 50 }, () => ({
+      x: rand(0, window.innerWidth),
+      y: rand(0, window.innerHeight),
+      r: rand(1.5, 3.5),
+      vx: rand(-0.15, 0.15),
+      vy: rand(-0.2, -0.05),
+      alpha: rand(0.35, 0.7),
+      pulse: rand(0, Math.PI * 2),
+    }));
+
+    // Soft large blobs in light purple
+    const blobs = Array.from({ length: 4 }, () => ({
+      x: rand(0, window.innerWidth),
+      y: rand(0, window.innerHeight),
+      r: rand(120, 220),
+      vx: rand(-0.08, 0.08),
+      vy: rand(-0.07, 0.07),
+      hue: rand(250, 280), // purple range
+    }));
+
+    let tick = 0;
+
+    const draw = () => {
+      tick += 0.012;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Soft purple blobs
+      blobs.forEach((b) => {
+        b.x += b.vx;
+        b.y += b.vy;
+        if (b.x < -b.r) b.x = canvas.width + b.r;
+        if (b.x > canvas.width + b.r) b.x = -b.r;
+        if (b.y < -b.r) b.y = canvas.height + b.r;
+        if (b.y > canvas.height + b.r) b.y = -b.r;
+
+        const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+        g.addColorStop(0, `hsla(${b.hue}, 70%, 85%, 0.18)`);
+        g.addColorStop(1, `hsla(${b.hue}, 70%, 85%, 0)`);
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+      });
+
+      // Floating dots
+      dots.forEach((d) => {
+        d.pulse += 0.02;
+        d.x += d.vx;
+        d.y += d.vy;
+        if (d.y < -4) { d.y = canvas.height + 4; d.x = rand(0, canvas.width); }
+        if (d.x < -4) d.x = canvas.width + 4;
+        if (d.x > canvas.width + 4) d.x = -4;
+
+        // Gently pulse alpha
+        const alphaNow = d.alpha * (0.7 + 0.3 * Math.sin(d.pulse));
+
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(139, 92, 246, ${alphaNow})`; // violet-500
+        ctx.fill();
+      });
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        zIndex: -1,
+      }}
+    />
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+export default function Profile() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  const handleDownload = async () => {
+    try {
+      if (typeof window === "undefined") return;
+
+      const [{ toPng }, { jsPDF }] = await Promise.all([
+        import("html-to-image"),
+        import("jspdf"),
+      ]);
+
+      const element = document.getElementById("pdf-content");
+      if (!element) return;
+
+      const downloadBtn = document.getElementById("download-btn");
+      if (downloadBtn) downloadBtn.style.visibility = "hidden";
+
+      const dataUrl = await toPng(element, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: "#eef2ff",
+        filter: (node) => {
+          if (!node.getAttribute) return true;
+          if (node.getAttribute("data-html2canvas-ignore") === "true") return false;
+          if (node.id === "download-btn") return false;
+          if (node.tagName?.toLowerCase() === "footer") return false;
+          return true;
+        },
+      });
+
+      if (downloadBtn) downloadBtn.style.visibility = "visible";
+
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const img = new window.Image();
+      img.src = dataUrl;
+      await new Promise((resolve) => (img.onload = resolve));
+
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+      const imgHeight = (img.height * pdfWidth) / img.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+      pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+
+      pdf.save("trainer-profile.pdf");
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+    }
   };
 
   return (
     <>
-      <style>{styles}</style>
-      <BackgroundCanvas />
+      {/* ── Canvas background — fixed behind everything ── */}
+      <AnimatedBackground />
 
-      <div className="relative z-10 min-h-screen pb-10" style={{ background:"rgba(243,242,239,0.82)" }}>
+      {/* ── Page content — sits above canvas ── */}
+      <div
+        id="pdf-content"
+        className="min-h-screen relative"
+        style={{
+          position: "relative",
+          zIndex: 1,
+          fontFamily: "var(--font-geist-sans, 'Geist Sans', sans-serif)",
+          // Semi-transparent so the canvas animation shows through
+          background: "transparent",
+        }}
+      >
+        {/* ── Hero Banner ── */}
+        <div
+          id="profile-section"
+          className="relative overflow-hidden w-full max-w-7xl mx-auto bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600"
+        >
+          {/* Download Button */}
+          <button
+            id="download-btn"
+            onClick={handleDownload}
+            className="absolute top-3 right-3 mr-10 md:top-4 md:right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/50 hover:bg-blue-800 text-white text-sm font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95"
+          >
+            <Download size={15} />
+          </button>
 
-        {/* HEADER */}
-        <div className="bg-white shadow max-w-6xl mx-3 sm:mx-4 lg:mx-auto mt-4 rounded-2xl overflow-hidden animate-fade-in">
-          <div className="h-36 sm:h-52 relative">
-            <Image src="/Images/banner.png" alt="banner" fill className="object-cover" />
-            <div style={{ position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(30,58,138,.35) 0%,rgba(37,99,235,.15) 100%)" }} />
-          </div>
+          {/* Decorative blobs */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-300/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
-          <div className="px-4 sm:px-6 py-4 sm:py-6 header-row flex justify-between items-end flex-wrap gap-3">
-            <div className="flex gap-3 sm:gap-5 -mt-10 sm:-mt-16 items-end">
-              <div className="profile-ring w-20 h-20 sm:w-32 sm:h-32 relative border-4 rounded-full overflow-hidden flex-shrink-0" style={{ borderColor:"#2563eb" }}>
-                <Image src="/Images/trainee3.png" alt="profile" fill className="object-cover" />
+          <div className="relative max-w-6xl mx-auto px-4 pt-10 pb-10">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+              {/* Avatar */}
+              <div className="relative flex-shrink-0">
+                <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl bg-gradient-to-br from-blue-300 to-blue-500 flex items-center justify-center ring-4 ring-white/20 overflow-hidden shadow-2xl">
+                  <Image
+                    src="/Images/trainee1.png"
+                    alt="Trainer"
+                    width={150}
+                    height={150}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-400 rounded-full flex items-center justify-center ring-2 ring-white">
+                  <CheckCircle2 size={16} className="text-white" />
+                </div>
               </div>
-              <div className="pb-1 animate-fade-slide-up" style={{ animationDelay:"0.05s" }}>
-                <h1 className="text-lg sm:text-2xl font-bold text-gray-900">{trainer.name}</h1>
-                <p className="text-gray-600 text-xs sm:text-sm leading-snug max-w-xs sm:max-w-lg">{trainer.title}</p>
-                <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500 mt-1">
-                  <MapPin size={13} className="text-blue-600" /> {trainer.location}
+
+              {/* Info */}
+              <div className="flex-1">
+                <h1 className="text-3xl md:text-4xl font-bold text-white">Karan Malhotra</h1>
+                <p className="text-blue-200 font-medium mt-1 text-sm md:text-base">
+                  Leadership & Agile Coach &nbsp;|&nbsp; Elevate Learning Solutions Pvt. Ltd.
+                </p>
+                <p className="text-blue-300 text-sm mt-2 max-w-lg leading-relaxed">
+                  Helping leaders and teams unlock their true potential through experiential learning and practical strategies.
+                </p>
+
+                {/* Stats Row */}
+                <div className="flex flex-wrap gap-6 mt-5">
+                  <StatPill value="12+" label="Years in Training" />
+                  <div className="w-px bg-white/20 hidden sm:block" />
+                  <StatPill value="250+" label="Workshops Done" />
+                  <div className="w-px bg-white/20 hidden sm:block" />
+                  <StatPill value="15+" label="Industries Served" />
+                  <div className="w-px bg-white/20 hidden sm:block" />
+                  <div className="flex flex-col items-center">
+                    <div className="flex items-center gap-1">
+                      <Star size={18} className="fill-yellow-400 text-yellow-400" />
+                      <span className="text-2xl md:text-3xl font-bold text-white">4.8/5</span>
+                    </div>
+                    <span className="text-xs text-blue-200 mt-0.5">Trainer Rating</span>
+                  </div>
+                </div>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {["Leadership", "Agile", "Change Management", "Team Building"].map((t) => (
+                    <Tag key={t} label={t} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Company Badge */}
+              <div className="absolute bottom-4 right-4 z-10">
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-xl shadow-lg">
+                  <Building2 size={16} className="text-white" />
+                  <div className="flex flex-col leading-tight">
+                    <span className="text-xs text-blue-200">Currently at</span>
+                    <span className="text-sm font-semibold text-white">Elevate Learning Solutions</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <button className="btn-download flex items-center gap-2 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-medium text-sm shadow-md">
-              <span className="flex items-center gap-2"><Download size={15} /> Download Profile</span>
-            </button>
-          </div>
-        </div>
-
-        {/* MAIN GRID */}
-        <div className="main-grid max-w-6xl mx-auto mt-6 px-3 sm:px-4 grid gap-6" style={{ gridTemplateColumns:"2fr 1fr" }}>
-
-          {/* LEFT */}
-          <div className="space-y-6">
-            <Section title="About" delay={0.1}>
-              <p className="text-sm text-gray-700 leading-relaxed">{trainer.about}</p>
-            </Section>
-
-            <Section title="Experience" delay={0.18}>
-              <div className="space-y-5">
-                {(showAllExp ? trainer.experience : trainer.experience.slice(0,2)).map((exp,i) =>
-                  <ExperienceCard key={i} exp={exp} index={i} />)}
-              </div>
-              <button className="show-more-btn block" onClick={() => setShowAllExp(!showAllExp)}>
-                {showAllExp ? "Show less" : "Show more"}
-              </button>
-            </Section>
-
-            <Section title="Education" delay={0.26}>
-              <div className="space-y-4">
-                {(showAllEdu ? trainer.education : trainer.education.slice(0,2)).map((edu,i) =>
-                  <EducationCard key={i} edu={edu} index={i} />)}
-              </div>
-              <button className="show-more-btn block" onClick={() => setShowAllEdu(!showAllEdu)}>
-                {showAllEdu ? "Show less" : "Show more"}
-              </button>
-            </Section>
           </div>
 
-          {/* RIGHT */}
-          <div className="space-y-6">
-            <Section title="Contact" delay={0.12}>
-              <div className="space-y-2">
-                <p className="flex items-center gap-2 text-sm text-gray-700 flex-wrap">
-                  <Mail size={14} className="text-blue-600 flex-shrink-0" />
-                  <span className="break-all">{trainer.contact.email}</span>
-                </p>
-                <p className="flex items-center gap-2 text-sm text-gray-700">
-                  <Phone size={14} className="text-blue-600 flex-shrink-0" /> {trainer.contact.phone}
-                </p>
+          {/* Contact Bar */}
+          <div className="border-t border-white/10 bg-blue-900/40 backdrop-blur-sm">
+            <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-blue-200">
+                <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                  <Phone size={14} /> +91 9876543210
+                </span>
+                <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                  <MapPin size={14} /> Bengaluru, Karnataka
+                </span>
+                <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                  <Mail size={14} /> karan.malhotra@elevatelearning.com
+                </span>
               </div>
-            </Section>
-
-            <Section title="Links" delay={0.18}>
-              <div className="space-y-2">
-                <a href={trainer.contact.website} target="_blank" className="link-item text-sm text-blue-500"><Globe size={14}/> Personal Website</a>
-                <a href={trainer.links.linkedin}   target="_blank" className="link-item text-sm text-blue-500"><Linkedin  size={15}/> LinkedIn</a>
-                <a href={trainer.links.instagram}  target="_blank" className="link-item text-sm text-blue-500"><Instagram size={15}/> Instagram</a>
-                <a href={trainer.links.youtube}    target="_blank" className="link-item text-sm text-blue-500"><Youtube   size={15}/> YouTube</a>
-                <a href={trainer.links.facebook}   target="_blank" className="link-item text-sm text-blue-500"><Facebook  size={15}/> Facebook</a>
-              </div>
-            </Section>
-
-            <Section title="Location" delay={0.22}>
-              <p className="text-sm text-gray-700 flex items-center gap-2">
-                <MapPin size={14} className="text-blue-600" /> {trainer.location}
-              </p>
-            </Section>
-
-            <Section title="Additional Details" delay={0.26}>
-              <div className="space-y-1.5">
-                {Object.entries(trainer.details).map(([k,v]) => <InfoItem key={k} label={k} value={v} />)}
-              </div>
-            </Section>
-
-            <Section title="Languages" delay={0.3}>
-              <div className="flex flex-wrap gap-2">
-                {trainer.languages.map((lang,i) => (
-                  <span key={i} className="lang-badge bg-blue-50 text-blue-800 border border-blue-200 px-3 py-1 rounded-full text-sm font-medium">
-                    {lang}
-                  </span>
+              <div className="flex items-center gap-3">
+                {[
+                  { Icon: Linkedin, color: "hover:bg-blue-600" },
+                  { Icon: Twitter, color: "hover:bg-sky-500" },
+                  { Icon: Youtube, color: "hover:bg-red-500" },
+                  { Icon: Globe, color: "hover:bg-blue-500" },
+                ].map(({ Icon, color }, i) => (
+                  <button
+                    key={i}
+                    className={`w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 ${color}`}
+                  >
+                    <Icon size={15} />
+                  </button>
                 ))}
               </div>
-            </Section>
-          </div>
-        </div>
-
-        {/* CERTIFICATIONS */}
-        <div className="max-w-6xl mx-auto mt-6 px-3 sm:px-4">
-          <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-sm section-card animate-fade-slide-up" style={{ animationDelay:"0.35s" }}>
-            <h2 className="text-lg font-semibold mb-5 shimmer-text">Certifications</h2>
-            <div className="cert-grid grid gap-4" style={{ gridTemplateColumns:"repeat(2,1fr)" }}>
-              {(showAllCert ? trainer.certifications : trainer.certifications.slice(0,2)).map((cert,i) =>
-                <CertificateCard key={i} cert={cert} index={i} />)}
             </div>
-            <button className="show-more-btn block" onClick={() => setShowAllCert(!showAllCert)}>
-              {showAllCert ? "Show less" : `Show all ${trainer.certifications.length}`}
-            </button>
           </div>
         </div>
 
+        {/* ── Main Content ── */}
+        <div className="max-w-7xl mx-auto py-8 px-4">
+          <div className="flex flex-col lg:flex-row gap-6">
+
+            {/* ── Left Column ── */}
+            <div className="flex-1 space-y-6">
+
+              {/* About Me */}
+              <FadeIn>
+                <Card>
+                  <SectionHeader icon={Users} title="About Me" />
+                  <p className="text-sm text-black leading-relaxed">
+                    I help leaders and teams unlock their true potential through experiential learning and practical strategies.
+                    With over a decade of experience, I specialize in driving agile mindset, leadership excellence and organizational transformation.
+                  </p>
+                </Card>
+              </FadeIn>
+
+              {/* Details Grid */}
+              <FadeIn delay={100}>
+                <Card>
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {[
+                      { icon: Building2, title: "Industry", value: "IT & Software, BFSI, Manufacturing, Healthcare, Education, Startups" },
+                      { icon: Target, title: "Competency", value: "Leadership Development, Agile Transformation, Team Effectiveness, Change Management" },
+                      { icon: Lightbulb, title: "Domain", value: "Agile & Scrum, Emotional Intelligence, Design Thinking, Communication, OKRs" },
+                      { icon: Briefcase, title: "Trainer Type", value: "Corporate Trainer | Leadership Coach | Facilitator" },
+                      { icon: TrendingUp, title: "Commercials Charged", value: "₹75,000 – ₹1,50,000 / Workshop (Customizable as per need)" },
+                    ].map(({ icon: Icon, title, value }, i) => (
+                      <div key={i} className="flex gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Icon size={17} className="text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-blue-800 uppercase tracking-wider mb-1">{title}</p>
+                          <p className="text-sm text-black leading-snug">{value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* Popular Workshops */}
+              <FadeIn delay={150}>
+                <Card>
+                  <SectionHeader icon={Zap} title="Popular Workshops" linkText="View All" />
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <WorkshopCard title="Agile Leadership Masterclass" desc="Build agile mindset & lead high-performing teams" image="/Images/workshop1.png" delay={0} />
+                    <WorkshopCard title="Effective Communication for Leaders" desc="Communicate with clarity and impact" image="/Images/workshop2.png" delay={100} />
+                    <WorkshopCard title="Design Thinking Workshop" desc="Solve problems creatively & drive innovation" image="/Images/workshop3.png" delay={200} />
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* Gallery */}
+              <FadeIn delay={200}>
+                <Card>
+                  <SectionHeader icon={Camera} title="Gallery" />
+                  <div className="grid grid-cols-5 gap-2">
+                    {[
+                      "/Images/trainner-workshop.jpg",
+                      "/Images/trainner-workshop.jpg",
+                      "/Images/trainner-workshop.jpg",
+                      "/Images/trainner-workshop.jpg",
+                      "/Images/trainner-workshop.jpg",
+                    ].map((img, i) => (
+                      <GalleryThumb key={i} image={img} delay={i * 60} />
+                    ))}
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* Milestones */}
+              <FadeIn delay={250}>
+                <Card>
+                  <SectionHeader icon={GraduationCap} title="Educational & Professional Milestones" />
+                  <div className="relative">
+                    <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-blue-100 hidden sm:block" />
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 relative">
+                      <Milestone icon={GraduationCap} label="MBA – HR" org="Symbiosis Institute of Management" year="2008" delay={0} />
+                      <Milestone icon={Award} label="Professional Scrum Trainer (PST)" org="Scrum.org" year="2016" delay={80} />
+                      <Milestone icon={CheckCircle2} label="Certified Agile Leadership Coach" org="ICAgle" year="2018" delay={160} />
+                      <Milestone icon={Trophy} label="Leadership Excellence Award" org="Elevate Learning" year="2021" delay={240} />
+                      <Milestone icon={Star} label="Top Trainer of the Year" org="ABP Awards" year="2022" delay={320} />
+                    </div>
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* Testimonials */}
+              <FadeIn delay={300}>
+                <Card>
+                  <SectionHeader icon={MessageSquare} title="What People Say" linkText="View All" />
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <Testimonial
+                      quote="Karan's session on Agile Leadership was transformative. Very engaging and practical!"
+                      name="Priya Sharma"
+                      role="Delivery Head, Infosys"
+                      delay={0}
+                    />
+                    <Testimonial
+                      quote="One of the best trainers I have attended. Real-world examples and case studies made it so impactful."
+                      name="Rahul Mehta"
+                      role="Project Manager, TCS"
+                      delay={120}
+                    />
+                  </div>
+                </Card>
+              </FadeIn>
+            </div>
+
+            {/* ── Right Column ── */}
+            <div className="lg:w-80 space-y-6">
+
+              {/* Articles */}
+              <FadeIn delay={100}>
+                <Card>
+                  <SectionHeader icon={BookOpen} title="Articles" linkText="View All" />
+                  <div className="space-y-1">
+                    <ArticleCard title="5 Ways Agile Leaders Inspire High-Performing Teams" date="May 12, 2024" delay={0} />
+                    <ArticleCard title="The Future of Leadership in a Hybrid World" date="April 28, 2024" delay={80} />
+                    <ArticleCard title="Why Emotional Intelligence is a Game Changer" date="March 15, 2024" delay={160} />
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* Contact Details */}
+              <FadeIn delay={250}>
+                <Card>
+                  <SectionHeader icon={Phone} title="Contact Details" />
+                  <div className="space-y-3">
+                    {[
+                      { icon: Phone, text: "+91 98765 43210" },
+                      { icon: Mail, text: "karan.malhotra@elevatelearning.com" },
+                      { icon: MapPin, text: "Bengaluru, Karnataka" },
+                    ].map(({ icon: Icon, text }, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900 transition-colors cursor-pointer">
+                        <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                          <Icon size={13} className="text-blue-500" />
+                        </div>
+                        <span className="break-all">{text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* Companies */}
+              <FadeIn delay={150}>
+                <Card>
+                  <SectionHeader icon={Building2} title="Companies Worked With" />
+                  <div className="grid grid-cols-3 gap-2">
+                    <CompanyLogo name="TATA" color="text-blue-600" />
+                    <CompanyLogo name="Infosys" color="text-blue-600" />
+                    <CompanyLogo name="Wipro" color="text-blue-600" />
+                    <CompanyLogo name="HDFC" color="text-blue-600" />
+                    <CompanyLogo name="Deloitte" color="text-blue-600" />
+                    <CompanyLogo name="ICICI" color="text-blue-600" />
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* Languages */}
+              <FadeIn delay={200}>
+                <Card>
+                  <SectionHeader icon={Languages} title="Languages Known" />
+                  <div className="space-y-2">
+                    {["English", "Hindi", "Kannada"].map((lang) => (
+                      <div key={lang} className="flex items-center justify-between py-2 border-b border-blue-50 last:border-0">
+                        <span className="text-sm text-blue-800">{lang}</span>
+                        <div className="flex gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className={`w-2 h-2 rounded-full ${i < (lang === "English" ? 5 : lang === "Hindi" ? 4 : 3)
+                                  ? "bg-blue-500"
+                                  : "bg-blue-100"
+                                }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* Connect */}
+              <FadeIn delay={300}>
+                <Card>
+                  <SectionHeader icon={ExternalLink} title="Connect With Me" />
+                  <div className="space-y-2">
+                    {[
+                      { icon: Linkedin, label: "linkedin.com/in/karanmalhotra", color: "bg-blue-700" },
+                      { icon: Twitter, label: "twitter.com/karanmalhotra", color: "bg-sky-500" },
+                      { icon: Youtube, label: "youtube.com/@karanmalhotra", color: "bg-red-500" },
+                      { icon: Globe, label: "www.elevatelearning.com", color: "bg-blue-600" },
+                    ].map(({ icon: Icon, label, color }, i) => (
+                      <div key={i} className="flex items-center gap-3 p-2 rounded-xl hover:bg-blue-50 transition-colors cursor-pointer group">
+                        <div className={`w-8 h-8 rounded-lg ${color} flex items-center justify-center flex-shrink-0`}>
+                          <Icon size={14} className="text-white" />
+                        </div>
+                        <span className="text-sm text-blue-700 group-hover:text-blue-900 transition-colors truncate">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </FadeIn>
+
+              {/* CTA */}
+              <FadeIn delay={350}>
+                <div className="rounded-2xl bg-gradient-to-br from-blue-800 to-blue-600 p-5 text-white shadow-lg">
+                  <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center mb-3">
+                    <Briefcase size={18} />
+                  </div>
+                  <h3 className="font-bold text-base mb-1">Interested in Hiring Karan?</h3>
+                  <p className="text-blue-200 text-xs mb-4 leading-relaxed">Get in touch to book a workshop for your team.</p>
+                  <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-semibold text-sm transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95 mb-2">
+                    <Send size={14} /> Send Inquiry
+                  </button>
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* ── Footer — above canvas, no z-index issues ── */}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <Footer />
+      </div>
+      
+<style jsx global>{`
+  body {
+    background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 50%, #faf8ff 100%) !important;
+    min-height: 100vh;
+  }
+`}</style>
     </>
   );
 }
