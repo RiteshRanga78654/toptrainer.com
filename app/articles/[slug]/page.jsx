@@ -124,11 +124,11 @@ export default function ArticlePage() {
  const [data, setData] = useState(null);
 
 
-  useEffect(() => {
-    fetch("https://service.ireedindia.com/v1/blog?published=true&size=1000")
-      .then((res) => res.json())
-      .then((data) => setData(data));
-  }, []);
+  // useEffect(() => {
+  //   fetch("https://service.ireedindia.com/v1/blog?published=true&size=1000")
+  //     .then((res) => res.json())
+  //     .then((data) => setData(data));
+  // }, []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -153,9 +153,6 @@ export default function ArticlePage() {
 
   return (
     <div className="page" ref={articleRef}>
-      {/* ── Progress bar ── */}
-      <div className="progress-bar" style={{ width: `${scrollPct}%` }} />
-
       {/* ── Topbar ── */}
       <header className="topbar">
         <Link href="/articles" className="back-btn">← Back to Articles</Link>
@@ -167,19 +164,7 @@ export default function ArticlePage() {
       <main className="main-layout">
         {/* ── Left sticky sidebar ── */}
         <aside className="sidebar-left">
-          {/* <button className={`side-btn ${liked ? "side-liked" : ""}`} onClick={() => setLiked(!liked)}>
-            {liked ? "❤️" : "🤍"}
-            <span>{liked ? "Liked" : "Like"}</span>
-          </button>
-          <button className={`side-btn ${bookmarked ? "side-saved" : ""}`} onClick={() => setBookmarked(!bookmarked)}>
-            🔖<span>{bookmarked ? "Saved" : "Save"}</span>
-          </button>
-          <button className="side-btn" onClick={handleShare}>
-            🔗<span>Share</span>
-          </button>
-          <div className="side-progress">
-            <div className="side-progress-fill" style={{ height: `${scrollPct}%` }} />
-          </div> */}
+          
         </aside>
 
         {/* ── Article ── */}
@@ -374,7 +359,7 @@ export default function ArticlePage() {
 
         /* Layout */
         .main-layout {
-          max-width: 1200px;
+          max-width: 1700px;
           margin: 0 auto;
           padding: 2.5rem 1.5rem;
           display: grid;
