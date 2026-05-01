@@ -718,7 +718,7 @@ export default function Profile() {
 
       {/* ── Footer — above canvas, no z-index issues ── */}
       <div style={{ position: "relative", zIndex: 1 }}>
-        <Footer />
+      
       </div>
       
 <style jsx global>{`
