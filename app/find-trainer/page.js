@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo , useRef , useEffect } from "react";
+import Footer from "../components/footer";
+
 
 const trainersData = [
   {
@@ -240,7 +242,7 @@ const LOAD_MORE_COUNT = 4;
 const StarRating = ({ rating }) => (
   <div className="flex items-center gap-0.5">
     {[1].map((star) => (
-      <svg key={star} className={`w-3.5 h-3.5 ${star <= Math.round(rating) ? "text-amber-400" : "text-blue-100"}`} fill="currentColor" viewBox="0 0 20 20">
+      <svg key={star} className={`w-5 h-5 ${star <= Math.round(rating) ? "text-amber-400" : "text-blue-100"}`} fill="currentColor" viewBox="0 0 20 20">
         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
       </svg>
     ))}
@@ -357,7 +359,113 @@ const TrainerCard = ({ trainer, index }) => {
     </div>
   );
 };
+function AnimatedBackground() {
+  const canvasRef = useRef(null);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const rand = (min, max) => Math.random() * (max - min) + min;
+
+    // Sparse small dots
+    const dots = Array.from({ length: 50 }, () => ({
+      x: rand(0, window.innerWidth),
+      y: rand(0, window.innerHeight),
+      r: rand(1.5, 3.5),
+      vx: rand(-0.15, 0.15),
+      vy: rand(-0.2, -0.05),
+      alpha: rand(0.35, 0.7),
+      pulse: rand(0, Math.PI * 2),
+    }));
+
+    // Soft large blobs in light purple
+    const blobs = Array.from({ length: 4 }, () => ({
+      x: rand(0, window.innerWidth),
+      y: rand(0, window.innerHeight),
+      r: rand(120, 220),
+      vx: rand(-0.08, 0.08),
+      vy: rand(-0.07, 0.07),
+      hue: rand(250, 280), // purple range
+    }));
+
+    let tick = 0;
+
+    const draw = () => {
+      tick += 0.012;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Soft purple blobs
+      blobs.forEach((b) => {
+        b.x += b.vx;
+        b.y += b.vy;
+        if (b.x < -b.r) b.x = canvas.width + b.r;
+        if (b.x > canvas.width + b.r) b.x = -b.r;
+        if (b.y < -b.r) b.y = canvas.height + b.r;
+        if (b.y > canvas.height + b.r) b.y = -b.r;
+
+        const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+        g.addColorStop(0, `hsla(${b.hue}, 70%, 85%, 0.18)`);
+        g.addColorStop(1, `hsla(${b.hue}, 70%, 85%, 0)`);
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+      });
+
+      // Floating dots
+      dots.forEach((d) => {
+        d.pulse += 0.02;
+        d.x += d.vx;
+        d.y += d.vy;
+        if (d.y < -4) { d.y = canvas.height + 4; d.x = rand(0, canvas.width); }
+        if (d.x < -4) d.x = canvas.width + 4;
+        if (d.x > canvas.width + 4) d.x = -4;
+
+        // Gently pulse alpha
+        const alphaNow = d.alpha * (0.7 + 0.3 * Math.sin(d.pulse));
+
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(139, 92, 246, ${alphaNow})`; // violet-500
+        ctx.fill();
+      });
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        zIndex: -1,
+      }}
+    />
+  );
+}
 /* ──────────────────────────────────────────── */
 /*  Main page                                   */
 /* ──────────────────────────────────────────── */
@@ -378,7 +486,139 @@ export default function FindTrainersPage() {
 
   const popularTags = ["Sales", "Marketing", "Finance", "Tech", "Leadership", "Machine Learning"];
   const experienceOptions = ["0 – 1 years", "1 – 3 years", "3 – 5 years", "5+ years"];
+  // ── TOP RATED TRAINERS SECTION ──
+// Add this component definition before your FindTrainersPage export:
 
+const TopRatedTrainersSection = ({ trainers }) => {
+  const scrollRef = useRef(null);
+  const topRated = trainers.filter((t) => t.topRated).slice(0, 9);
+
+  const scroll = (dir) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: dir * 220, behavior: "smooth" });
+    }
+  };
+
+  return (
+    <div
+      className="rounded-2xl p-5 mb-6"
+      style={{
+        background: "white",
+        border: "1.5px solid #dbeafe",
+        boxShadow: "0 4px 24px rgba(30,58,138,0.07)",
+        animation: "fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.18s both",
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <div className="flex items-center gap-2">
+           
+            <h2 className="font-bold text-lg" style={{ color: "#0f172a", fontFamily: "'Clash Display', sans-serif" }}>
+              Top Rated Trainers
+            </h2>
+          </div>
+         
+        </div>
+       
+      </div>
+
+      {/* Scrollable row */}
+      <div className="relative flex items-center">
+        <div
+          ref={scrollRef}
+          className="flex gap-3 overflow-x-auto pb-1"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {topRated.map((trainer) => (
+            <div
+              key={trainer.id}
+              className="flex-shrink-0 flex flex-col items-center p-3 rounded-xl transition-all duration-200 cursor-pointer"
+              style={{
+                width: "160px",
+                border: "1.5px solid #dbeafe",
+                background: "#f8faff",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(30,58,138,0.12)"; e.currentTarget.style.borderColor = "#93c5fd"; e.currentTarget.style.background = "white"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "#dbeafe"; e.currentTarget.style.background = "#f8faff"; }}
+            >
+              {/* Avatar */}
+              <div className="relative mb-2">
+                <img
+                  src={trainer.image}
+                  alt={trainer.name}
+                  className="w-12 h-12 rounded-full object-cover object-top"
+                  style={{ border: "2px solid #bfdbfe" }}
+                />
+                {/* Online dot */}
+                {trainer.online && (
+                  <span
+                    className="absolute bottom-0 right-0 w-3 h-3 rounded-full"
+                    style={{ background: "#22c55e", border: "2px solid white" }}
+                  />
+                )}
+                {/* Verified badge */}
+                {trainer.verified && (
+                  <span
+                    className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                    style={{ background: "#1d4ed8" }}
+                  >
+                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                )}
+              </div>
+
+              {/* Name */}
+              <p className="text-xs font-bold text-center leading-tight" style={{ color: "#0f172a" }}>
+                {trainer.name.split(" ")[0]}{" "}
+                <span style={{ color: "#475569", fontWeight: 500 }}>{trainer.name.split(" ")[1]}</span>
+              </p>
+
+             <div className="flex justify-between items-center w-full mt-2">
+  {/* Company Left */}
+  <p className="text-xs" style={{ color: "#64748b" }}>
+    {trainer.company}
+  </p>
+
+  {/* Rating Right */}
+  <div className="flex items-center gap-1">
+    <svg className="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+    </svg>
+    <span className="text-xs font-semibold" style={{ color: "#1e3a8a" }}>
+      {trainer.rating}
+    </span>
+  </div>
+</div>
+
+            
+            </div>
+          ))}
+        </div>
+
+        {/* Scroll arrow */}
+        <button
+          onClick={() => scroll(1)}
+          className="absolute -right-3 flex items-center justify-center w-7 h-7 rounded-full transition-all"
+          style={{
+            background: "white",
+            border: "1.5px solid #bfdbfe",
+            boxShadow: "0 2px 8px rgba(30,58,138,0.12)",
+            zIndex: 2,
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = "#60a5fa"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(30,58,138,0.2)"; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = "#bfdbfe"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(30,58,138,0.12)"; }}
+        >
+          <svg className="w-3.5 h-3.5" style={{ color: "#1d4ed8" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+};
   const toggleExperience = (exp) =>
     setExperienceFilter((prev) => prev.includes(exp) ? prev.filter((e) => e !== exp) : [...prev, exp]);
 
@@ -448,10 +688,19 @@ export default function FindTrainersPage() {
   };
 
   return (
-    <div className="min-h-screen font-sans" style={{ background: "#f8faff" }}>
+    <>
+    <AnimatedBackground />
+    <div className="min-h-screen font-sans" style={{ background: "transparent" }}>
 
       {/* keyframe injection */}
       <style>{`
+      
+  body {
+    background: #f8faff;
+    min-height: 100vh;
+  }
+  @keyframes cardEntrance { ... }
+
         @keyframes cardEntrance {
           from { opacity: 0; transform: translateY(20px) scale(0.97); }
           to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -485,7 +734,7 @@ export default function FindTrainersPage() {
         {/* ── SIDEBAR ── */}
         <aside className="w-[20%] flex-shrink-0 sticky top-6" style={{ animation: "fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both" }}>
           <div
-            className="rounded-2xl p-5"
+            className="rounded-2xl mt-8 p-5"
             style={{
               background: "white",
               border: "1.5px solid #dbeafe",
@@ -512,14 +761,14 @@ export default function FindTrainersPage() {
 
             {/* Rating */}
             <div className="mb-5">
-              <h3 className="text-lg font-bold uppercase tracking-wider mb-2.5" style={{ color: "#1e3a8a" }}>Rating</h3>
+              <h3 className="text-sm font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Rating</h3>
               {[4.5, 4.0, 3.5, 3.0].map((r) => (
                 <label key={r} className="flex items-center gap-2 mb-2 cursor-pointer group">
                   <input type="radio" name="rating" checked={ratingFilter === r} onChange={() => setRatingFilter(ratingFilter === r ? null : r)} className="w-3.5 h-3.5" style={{ accentColor: "#1e3a8a" }} />
                   <span className="text-s transition-colors" style={{ color: "#475569" }}>{r} & above</span>
                   <div className="flex gap-0.5 ml-auto">
                     {[1,2,3,4,5].map((s) => (
-                      <svg key={s} className={`w-2.5 h-2.5 ${s <= r ? "text-amber-400" : "text-blue-100"}`} fill="currentColor" viewBox="0 0 20 20">
+                      <svg key={s} className={`w-4 h-3.5 ${s <= r ? "text-amber-400" : "text-blue-100"}`} fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
@@ -530,16 +779,16 @@ export default function FindTrainersPage() {
 
             {/* Price Range */}
             <div className="mb-5">
-              <h3 className="text-lg font-bold uppercase tracking-wider mb-2.5" style={{ color: "#1e3a8a" }}>Price / Hour</h3>
+              <h3 className="text-sm font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Price / Hour</h3>
               <div className="flex justify-between text-xs mb-2" style={{ color: "#64748b" }}>
                 <span>${priceRange[0]}</span><span>${priceRange[1]}+</span>
               </div>
-              <input type="range" min={10} max={200} value={priceRange[1]} onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])} className="w-full" style={{ accentColor: "#1e3a8a" }} />
+              <input type="range" min={10} max={200} value={priceRange[1]} onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])} className="w-full" style={{ accentColor: "#5376d4" }} />
             </div>
 
             {/* Experience */}
             <div className="mb-5">
-              <h3 className="text- lgfont-bold uppercase tracking-wider mb-2.5" style={{ color: "#1e3a8a" }}>Experience</h3>
+              <h3 className="text-sm font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Experience</h3>
               {experienceOptions.map((exp) => (
                 <label key={exp} className="flex items-center gap-2 mb-2 cursor-pointer">
                   <input type="checkbox" checked={experienceFilter.includes(exp)} onChange={() => toggleExperience(exp)} className="w-3.5 h-3.5 rounded" style={{ accentColor: "#1e3a8a" }} />
@@ -550,7 +799,7 @@ export default function FindTrainersPage() {
 
             {/* Skills */}
             <div className="mb-5">
-              <h3 className="text-lg font-bold uppercase tracking-wider mb-2.5" style={{ color: "#1e3a8a" }}>Skills</h3>
+              <h3 className="text-sm font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Skills</h3>
               <div className="relative mb-2">
                 <svg className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3" style={{ color: "#93c5fd" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -708,7 +957,8 @@ export default function FindTrainersPage() {
               </button>
             ))}
           </div>
-
+          {/* Top Rated Trainers */}
+<TopRatedTrainersSection trainers={trainersData} />
           {/* Results header */}
           <div className="flex items-center justify-between mb-4" style={{ animation: "fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.2s both" }}>
             <p className="text-sm" style={{ color: "#64748b" }}>
@@ -799,5 +1049,7 @@ export default function FindTrainersPage() {
         </main>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 }

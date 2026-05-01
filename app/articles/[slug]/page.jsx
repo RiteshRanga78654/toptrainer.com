@@ -115,14 +115,9 @@ const RELATED = [
 ];
 
 export default function ArticlePage() {
-  const [scrollPct, setScrollPct] = useState(0);
-  const [liked, setLiked] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
+  
   const [showToast, setShowToast] = useState(false);
   const articleRef = useRef(null);
-
- const [data, setData] = useState(null);
-
 
   // useEffect(() => {
   //   fetch("https://service.ireedindia.com/v1/blog?published=true&size=1000")
@@ -144,12 +139,6 @@ export default function ArticlePage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const handleShare = () => {
-    navigator.clipboard?.writeText(window.location.href);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2500);
-  };
 
   return (
     <div className="page" ref={articleRef}>

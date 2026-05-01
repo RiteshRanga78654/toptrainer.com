@@ -280,8 +280,7 @@ import { Star, CheckCircle } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import Navbar from "./components/Navbar";
-import Footer from "./components/footer";
+
 
 import { Brain, Mic, Monitor, BarChart3, Leaf } from "lucide-react";
 import YoutubeSection from "./components/youtube";
@@ -694,7 +693,7 @@ const GlobalStyles = () => (
 );
 
 const Page = () => {
-  const [open, setOpen] = useState(false);
+
   const scrollRef = useRef(null);
   const categoryRef = useRef(null);
   const [pause, setPause] = useState(false);
@@ -755,7 +754,7 @@ const Page = () => {
   return (
     <div className="font-sans bg-white min-h-screen">
       <GlobalStyles />
-      <Navbar open={open} setOpen={setOpen} />
+
 
       {/* ━━━ HERO SECTION ━━━ */}
       <section className="hero-bg w-full px-4 sm:px-8 md:px-16 py-8 md:py-14">
@@ -921,7 +920,7 @@ const Page = () => {
       <Category />
       <YoutubeSection />
       <Articles />
-      <Footer />
+
  
       
       

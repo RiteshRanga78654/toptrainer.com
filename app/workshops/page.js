@@ -1107,11 +1107,11 @@ const GlobalStyles = () => (
       will-change: transform, opacity;
     }
     .hero-slide.active {
-      animation: slideEnterFromRight 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
+      animation: slideEnterFromRight 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
       z-index: 2;
     }
     .hero-slide.exiting {
-      animation: slideExitToLeft 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
+      animation: slideExitToLeft 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
       z-index: 1;
     }
     .hero-slide.hidden {
@@ -1199,7 +1199,7 @@ function HeroSection() {
   /* clear exiting after animation */
   useEffect(() => {
     if (exiting === null) return;
-    const t = setTimeout(() => setExiting(null), 950);
+    const t = setTimeout(() => setExiting(null), 500);
     return () => clearTimeout(t);
   }, [exiting]);
 
@@ -1210,7 +1210,7 @@ function HeroSection() {
       position: "relative",
       overflow: "hidden",
       borderBottom: "1px solid #e2e8f0",
-      minHeight: 520,
+      minHeight: 650,
     }}>
 
       {/* ── BACKGROUND SLIDES (right-to-left) ── */}
@@ -1294,7 +1294,7 @@ background: "linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,
 
   // ✅ Responsive padding (auto adjusts for mobile)
   padding: "80px clamp(16px, 5vw, 80px) 100px",
-
+marginLeft: "40px",
   minHeight: 520,
   display: "flex",
   flexDirection: "column",
@@ -1379,10 +1379,7 @@ background: "linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,
         ))}
       </div>
 
-      {/* ── PROGRESS BAR ── */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: "#e0e7ff", zIndex: 15 }}>
-        <div key={progressKey} className="hero-progress-fill" />
-      </div>
+  
 
     </section>
   );

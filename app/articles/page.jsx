@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+
 // ─────────────────────────────────────────────
 // DATA
 // ─────────────────────────────────────────────
@@ -129,7 +130,7 @@ const FILTERS = [
 const globalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap');
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  // *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'DM Sans', sans-serif;
@@ -138,8 +139,8 @@ const globalStyles = `
     -webkit-font-smoothing: antialiased;
   }
 
-  ::-webkit-scrollbar { display: none; }
-  * { scrollbar-width: none; }
+  // ::-webkit-scrollbar { display: none; }
+  // * { scrollbar-width: none; }
 
   /* ── Card hover ── */
   .card {
@@ -330,6 +331,16 @@ const globalStyles = `
     .featured-outer { padding: 0 12px; }
     .content-wrap { padding: 1.25rem 0.75rem 3rem; }
   }
+
+  .fitpulse-page * {
+  box-sizing: border-box;
+}
+
+.fitpulse-page {
+  font-family: 'DM Sans', sans-serif;
+  background: #e0f2fe;
+  color: #0f172a;
+}
 `;
 
 // ─────────────────────────────────────────────
@@ -740,7 +751,7 @@ export default function FitPulsePage() {
     <>
       <style>{globalStyles}</style>
 
-      <main style={{ minHeight: "100vh", background: "#e0f2fe" }}>
+      <main style={{ minHeight: "100vh", background: "#e0f2fe" }} className="fitpulse-page">
         <HeroSection onSearch={handleSearch} />
         <FilterTabs active={activeFilter} onFilter={handleFilter} />
 
