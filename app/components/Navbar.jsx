@@ -10,12 +10,12 @@ import Link from "next/link";
 const Navbar = () => {
   const [open, setOpen] = React.useState(false);
   const navItems = [
-    { name: "Find Trainers", link: "/find-trainers" },
+    { name: "Find Trainers", link: "/find-trainer" },
     { name: " Workshops", link: "/workshops" },
     
-  { name: "Industry", link: "/corporate-solutions" },
-  { name: "Department", link: "/corporate-solutions" },
-  { name: "Competency", link: "/corporate-solutions" },
+  { name: "Industry", link: "/Industry" },
+  { name: "Department", link: "/department" },
+  { name: "Competency", link: "/competency" },
  { name: "Articles", link: "/articles" },
 
   ];

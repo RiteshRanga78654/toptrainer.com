@@ -233,7 +233,7 @@ export default function Industry() {
   }}
 >
       {/* Hero */}
-      <div className="relative overflow-hidden">
+      <div className="relative h-[330px] overflow-hidden">
         <div className="absolute inset-0">
   <Image
     src="/Images/industry-hero.png"
@@ -254,7 +254,7 @@ export default function Industry() {
           <p className="text-2xl sm:text-3xl font-extrabold text-blue-300 mb-8">By Industry</p>
 
           {/* Industry Tabs */}
-          <div className="flex flex-wrap gap-4 sm:gap-6">
+          <div className="flex flex-wrap mb-5 gap-4 sm:gap-6">
             {industries.map(ind => (
               <button
                 key={ind}
@@ -278,46 +278,51 @@ export default function Industry() {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pb-0">
-          <div className="bg-white rounded-t-2xl shadow-xl p-4 flex flex-wrap gap-3 items-end">
-            <div className="flex-1 min-w-[140px]">
-              <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">City</label>
-              <div className="relative">
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <select value={city} onChange={e => setCity(e.target.value)} className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none">
-                  <option value="">Select City</option>
-                  <option>Delhi</option><option>Mumbai</option><option>Bengaluru</option><option>Hyderabad</option><option>Chennai</option>
-                </select>
-              </div>
-            </div>
-           
-            <div className="flex-1 min-w-[160px]">
-              <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">Experience Level</label>
-              <select value={experience} onChange={e => setExperience(e.target.value)} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none">
-                <option value="">Any Experience</option>
-                <option>Beginner</option><option>Intermediate</option><option>Expert</option>
-              </select>
-            </div>
-            <div className="flex-1 min-w-[150px]">
-              <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">Training Type</label>
-              <select value={trainingType} onChange={e => setTrainingType(e.target.value)} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none">
-                <option value="">Any Type</option>
-                <option>Online</option><option>Offline</option><option>Hybrid</option>
-              </select>
-            </div>
-            <button className="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-sm shadow-blue-200">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              Search Trainers
-            </button>
-          </div>
-        </div>
+       
       </div>
+       {/* Search Bar */}
+       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 -mt-16">
+  <div className="bg-white rounded-2xl shadow-xl p-4 flex flex-wrap gap-3 items-end">
+    
+    <div className="flex-1 min-w-[140px]">
+      <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">City</label>
+      <div className="relative">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <select value={city} onChange={e => setCity(e.target.value)} className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none">
+          <option value="">Select City</option>
+          <option>Delhi</option><option>Mumbai</option><option>Bengaluru</option><option>Hyderabad</option><option>Chennai</option>
+        </select>
+      </div>
+    </div>
+
+    <div className="flex-1 min-w-[160px]">
+      <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">Experience Level</label>
+      <select value={experience} onChange={e => setExperience(e.target.value)} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none">
+        <option value="">Any Experience</option>
+        <option>Beginner</option><option>Intermediate</option><option>Expert</option>
+      </select>
+    </div>
+
+    <div className="flex-1 min-w-[150px]">
+      <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">Training Type</label>
+      <select value={trainingType} onChange={e => setTrainingType(e.target.value)} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none">
+        <option value="">Any Type</option>
+        <option>Online</option><option>Offline</option><option>Hybrid</option>
+      </select>
+    </div>
+
+    <button className="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-sm shadow-blue-200">
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      Search Trainers
+    </button>
+
+  </div>
+</div>
 
       {/* Trainer Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 ">

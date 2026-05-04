@@ -158,7 +158,7 @@ const TrainerCard = ({ trainer, index }) => {
   );
 };
 
-/* ── Top Rated Section ── */
+/* ── Top Rated Section 
 const TopRatedSection = ({ trainers }) => {
   const scrollRef = useRef(null);
   const topRated = trainers.filter((t) => t.topRated).slice(0, 9);
@@ -211,7 +211,7 @@ const TopRatedSection = ({ trainers }) => {
       </div>
     </div>
   );
-};
+};── */
 
 /* ── Sidebar Filter Panel ── */
 const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRange, experienceFilter, toggleExperience, selectedSkills, toggleSkill, verifiedOnly, setVerifiedOnly, availableThisWeek, setAvailableThisWeek, offersTrial, setOffersTrial, resetFilters, skillSearch, setSkillSearch }) => {
@@ -508,8 +508,8 @@ export default function FindTrainersPage() {
                 ))}
               </div>
 
-              {/* Top Rated */}
-              <TopRatedSection trainers={trainersData} />
+              {/* Top Rated 
+              <TopRatedSection trainers={trainersData} />*/}
 
               {/* Results header */}
               <div className="flex items-center justify-between mb-4">
