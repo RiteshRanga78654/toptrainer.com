@@ -52,7 +52,7 @@ a, button {
 }
 
 * {
-  font-family: 'Geist Sans', sans-serif;
+  font-family: var(--font-geist), sans-serif;
 }
 
 .font-display {
@@ -66,4 +66,12 @@ a, button {
 
 .featured-hover:hover .featured-img {
   transform: scale(1.05);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
 }

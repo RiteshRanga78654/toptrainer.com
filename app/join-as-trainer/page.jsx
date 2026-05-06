@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   UserPlus, Sparkles, Target, TrendingUp, Users,
   Mail, Phone, Globe, Linkedin, Youtube, Instagram,
@@ -141,7 +141,7 @@ const styles = `
   /* ══ SECTION CARD ══ */
   .sec-card {
     background:#fff; border-radius:15px; border:1px solid #e8eeff;
-    position:relative;  overflow:visible;
+    position:relative;  overflow:hidden;
     box-shadow:0 2px 10px rgba(29,78,216,0.055); padding:20px 22px; margin-bottom:15px; animation:cardIn .4s ease both;
   }
   @keyframes cardIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
@@ -178,11 +178,14 @@ const styles = `
   .ms-trigger-arrow { color:#94a3b8; transition:transform .2s; flex-shrink:0; }
   .ms-trigger-arrow.open { transform:rotate(180deg); }
   .ms-dropdown {
-    position:absolute; top:calc(100% + 5px); left:0; right:0;
-    z-index:9999;
-    background:#fff; border:1.5px solid #e2e8f0; border-radius:10px;
-    box-shadow:0 8px 28px rgba(29,78,216,0.18); max-height:220px; overflow-y:auto; animation:dropIn .15s ease;
-  }
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;          /* ✅ instead of right:0 */
+  z-index: 10;          /* ✅ reduce from 9999 */
+  max-height: 220px;
+  overflow-y: auto;
+}
   @keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
   .ms-dropdown::-webkit-scrollbar { width:4px; }
   .ms-dropdown::-webkit-scrollbar-thumb { background:#c7d2fe; border-radius:99px; }
@@ -236,7 +239,21 @@ const styles = `
 /* ─── MULTI-SELECT CHECKBOX COMPONENT ───────────────── */
 function MultiSelect({ label, icon, options }) {
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef(null);
   const [selected, setSelected] = useState([]);
+
+  useEffect(() => {
+  function handleClickOutside(e) {
+    if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+      setOpen(false);
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
 
   const toggle = (opt) =>
     setSelected(prev => prev.includes(opt) ? prev.filter(o => o !== opt) : [...prev, opt]);
@@ -251,7 +268,7 @@ function MultiSelect({ label, icon, options }) {
     : `${selected.slice(0, 2).join(", ")} +${selected.length - 2} more`;
 
   return (
-    <div className="tt-field" style={{ position: "relative", zIndex: open ? 100 : "auto" }}>
+    <div className="tt-field"  ref={wrapperRef} style={{ position: "relative", zIndex: open ? 5 : "auto" }}>
       <label className="tt-label">
         {icon && <span className="tt-label-icon">{icon}</span>}
         {label}
@@ -265,24 +282,25 @@ function MultiSelect({ label, icon, options }) {
           <ChevronDown size={13} className={`ms-trigger-arrow ${open ? "open" : ""}`} />
         </div>
         {open && (
-          <>
-            <div style={{ position: "fixed", inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)} />
-            <div className="ms-dropdown">
-              {options.map((opt, i) => (
-                <div key={i} className={`ms-option ${selected.includes(opt) ? "selected" : ""}`} onClick={() => toggle(opt)}>
-                  <div className={`ms-checkbox ${selected.includes(opt) ? "checked" : ""}`}>
-                    {selected.includes(opt) && (
-                      <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                        <path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
-                  </div>
-                  {opt}
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+  <div className="ms-dropdown">
+    {options.map((opt, i) => (
+      <div
+        key={i}
+        className={`ms-option ${selected.includes(opt) ? "selected" : ""}`}
+        onClick={() => toggle(opt)}
+      >
+        <div className={`ms-checkbox ${selected.includes(opt) ? "checked" : ""}`}>
+          {selected.includes(opt) && (
+            <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+              <path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </div>
+        {opt}
+      </div>
+    ))}
+  </div>
+)}
       </div>
       {selected.length > 0 && (
         <div className="ms-tags">
