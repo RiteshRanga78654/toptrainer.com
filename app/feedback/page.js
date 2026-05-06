@@ -44,8 +44,8 @@ function SubtleOrbs() {
     <div className="fixed inset-0 pointer-events-none style={{ zIndex: -1 }}">
       <style>{`
         @keyframes floatOrb {
-           0%   { transform: translateY(0px) scale(1); }
-  50%  { transform: translateY(-30px) scale(1.4); }
+          0%   { transform: translateY(0px) scale(1); }
+  50%  { transform: translateY(-50px) scale(1.5); } /* higher */
   100% { transform: translateY(0px) scale(1); }
         }
       `}</style>
@@ -304,7 +304,7 @@ export default function FeedbackForm() {
         className="min-h-screen flex items-center justify-center px-4 sm:px-8 relative"
         style={{ background: "linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 50%, #93c5fd 100%)" }}
       >
-          <SubtleOrbs />        
+          {/* <SubtleOrbs />         */}
 <style>{`
           @keyframes confettiPop {
             0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
@@ -373,7 +373,7 @@ export default function FeedbackForm() {
       className="min-h-screen flex items-center justify-center px-4 sm:px-8 py-8 sm:py-10 relative"
       style={{ background: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 40%, #bfdbfe 100%)" }}
     >
-      <SubtleOrbs />
+      {/* <SubtleOrbs /> */}
       <style>{`
         @keyframes fadeIn     { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
         @keyframes slideInFwd { from { opacity:0; transform:translateX(32px); } to { opacity:1; transform:translateX(0); } }
