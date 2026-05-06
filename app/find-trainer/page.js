@@ -214,7 +214,9 @@ const TopRatedSection = ({ trainers }) => {
 };── */
 
 /* ── Sidebar Filter Panel ── */
-const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRange, experienceFilter, toggleExperience, selectedSkills, toggleSkill, verifiedOnly, setVerifiedOnly, availableThisWeek, setAvailableThisWeek, offersTrial, setOffersTrial, resetFilters, skillSearch, setSkillSearch }) => {
+const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRange, experienceFilter,
+   toggleExperience, selectedSkills, toggleSkill, verifiedOnly, setVerifiedOnly, availableThisWeek,
+    setAvailableThisWeek, offersTrial, setOffersTrial, resetFilters, skillSearch, setSkillSearch }) => {
   const experienceOptions = ["0 – 1 years", "1 – 3 years", "3 – 5 years", "5+ years"];
   const filteredSkillOptions = allSkills.filter((s) => s.toLowerCase().includes(skillSearch.toLowerCase()));
   const inputStyle = { border: "1.5px solid #bfdbfe", borderRadius: "8px", background: "white", color: "#0f172a" };
@@ -236,7 +238,7 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
         <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Rating</h3>
         {[4.5, 4.0, 3.5, 3.0].map((r) => (
           <label key={r} className="flex items-center gap-2 mb-2 cursor-pointer">
-            <input type="radio" name="rating" checked={ratingFilter === r} onChange={() => setRatingFilter(ratingFilter === r ? null : r)} className="w-3.5 h-3.5" style={{ accentColor: "#1e3a8a" }} />
+            <input type="radio" name="rating" checked={ratingFilter === r} onChange={() => setRatingFilter(r)} className="w-3.5 h-3.5" style={{ accentColor: "#1e3a8a" }} />
             <span className="text-xs" style={{ color: "#475569" }}>{r} & above</span>
             <div className="flex gap-0.5 ml-auto">
               {[1,2,3,4,5].map((s) => (
@@ -375,7 +377,9 @@ export default function FindTrainersPage() {
 
   const inputStyle = { border: "1.5px solid #bfdbfe", borderRadius: "12px", background: "white", color: "#0f172a" };
 
-  const sidebarProps = { ratingFilter, setRatingFilter, priceRange, setPriceRange, experienceFilter, toggleExperience, selectedSkills, toggleSkill, verifiedOnly, setVerifiedOnly, availableThisWeek, setAvailableThisWeek, offersTrial, setOffersTrial, resetFilters, skillSearch, setSkillSearch };
+  const sidebarProps = { ratingFilter, setRatingFilter, priceRange, setPriceRange, experienceFilter, 
+    toggleExperience, selectedSkills, toggleSkill, verifiedOnly, setVerifiedOnly, availableThisWeek,
+     setAvailableThisWeek, offersTrial, setOffersTrial, resetFilters, skillSearch, setSkillSearch };
 
   return (
     <>
