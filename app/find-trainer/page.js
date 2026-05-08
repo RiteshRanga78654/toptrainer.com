@@ -238,7 +238,20 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
         <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Rating</h3>
         {[4.5, 4.0, 3.5, 3.0].map((r) => (
           <label key={r} className="flex items-center gap-2 mb-2 cursor-pointer">
-            <input type="radio" name="rating" checked={ratingFilter === r} onChange={() => setRatingFilter(r)} className="w-3.5 h-3.5" style={{ accentColor: "#1e3a8a" }} />
+  <input
+  type="checkbox"
+  name="rating"
+  checked={ratingFilter === r}
+onChange={() =>
+  setRatingFilter((prev) => (prev === r ? null : r))
+}
+  className="w-3.5 h-3.5 cursor-pointer
+  rounded-full appearance-none
+  border border-black-400
+   checked:bg-blue-900 checked:border-blue-900
+  "
+  style={{ accentColor: "#1e3a8a" }}
+/>
             <span className="text-xs" style={{ color: "#475569" }}>{r} & above</span>
             <div className="flex gap-0.5 ml-auto">
               {[1,2,3,4,5].map((s) => (
