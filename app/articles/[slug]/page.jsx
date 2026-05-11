@@ -2,800 +2,836 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import {
+  ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark,
+  Heart, Shield, Award, CheckCircle, Users, TrendingUp,
+  BookOpen, ArrowRight,
+} from "lucide-react";
+import { CAT_COLORS, FILTERS, makeSlug, findArticle, getRelated } from "../data";
 
-const ARTICLE = [
-  {
-    id: 1,
-    category: "Gym Trainer",
-    title: "Why Progressive Overload Is the Key to Muscle Growth",
-    readTime: "6 min read",
-    date: "28 Apr 2026",
-    views: "5.1k",
-    author: {
-      name: "Marcus Hale",
-      initials: "MH",
-      role: "Certified Strength Coach",
-      bio: "Marcus specializes in hypertrophy training and strength development with 10+ years of coaching experience.",
-    },
-    coverImage: "/articleSection/image1.jpg",
-    tags: ["Workout", "Muscle", "Strength"],
-    content: [
-      { type: "lead", text: "If you're not progressively increasing your workload, your muscles have no reason to grow." },
-      { type: "h2", text: "1. What Is Progressive Overload?" },
-      { type: "p", text: "It refers to gradually increasing weight, reps, or intensity to challenge your muscles." },
-      { type: "h2", text: "2. Why It Works" },
-      { type: "p", text: "Muscles adapt to stress. Increasing resistance forces them to grow stronger." },
-      { type: "h2", text: "Final Thoughts" },
-      { type: "p", text: "Track your workouts consistently to ensure long-term progress." }
-    ]
-  },
+// ─────────────────────────────────────────────
+// GLOBAL STYLES — merged from GlobalStyles.js
+// ─────────────────────────────────────────────
+const KEYFRAMES = `
+  @import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;600;700&display=swap');
 
-  {
-    id: 2,
-    category: "Doctor",
-    title: "The Science Behind Deep Sleep and Recovery",
-    readTime: "5 min read",
-    date: "26 Apr 2026",
-    views: "6.3k",
-    author: {
-      name: "Dr. Priya Raman",
-      initials: "PR",
-      role: "Sleep Specialist",
-      bio: "Dr. Priya focuses on sleep cycles, circadian rhythm, and recovery science.",
-    },
-    coverImage: "/articleSection/image2.jpg",
-    tags: ["Sleep", "Health", "Recovery"],
-    content: [
-      { type: "lead", text: "Deep sleep is when your body performs its most critical repair functions." },
-      { type: "h2", text: "1. Sleep Cycles Explained" },
-      { type: "p", text: "Your body cycles through REM and non-REM stages every 90 minutes." },
-      { type: "h2", text: "2. Why Deep Sleep Matters" },
-      { type: "p", text: "It boosts memory, recovery, and hormone regulation." },
-      { type: "h2", text: "Final Thoughts" },
-      { type: "p", text: "Prioritize sleep like you prioritize diet and exercise." }
-    ]
-  },
-
-  {
-    id: 3,
-    category: "Technical Expert",
-    title: "How AI Is Transforming Personalized Fitness",
-    readTime: "7 min read",
-    date: "25 Apr 2026",
-    views: "8.8k",
-    author: {
-      name: "Devon Park",
-      initials: "DP",
-      role: "AI Engineer",
-      bio: "Devon works on machine learning systems for health-tech and fitness analytics.",
-    },
-    coverImage: "/articleSection/image3.jpg",
-    tags: ["AI", "Fitness", "Technology"],
-    content: [
-      { type: "lead", text: "Artificial Intelligence is reshaping how fitness programs are designed." },
-      { type: "h2", text: "1. Data-Driven Workouts" },
-      { type: "p", text: "AI tracks performance and adapts routines in real time." },
-      { type: "h2", text: "2. Predictive Training" },
-      { type: "p", text: "Machine learning predicts optimal recovery and training loads." },
-      { type: "h2", text: "Final Thoughts" },
-      { type: "p", text: "The future of fitness is personalized and data-driven." }
-    ]
-  },
-
-  {
-    id: 4,
-    category: "Nutritionist",
-    title: "How to Eat for Energy Throughout the Day",
-    readTime: "4 min read",
-    date: "23 Apr 2026",
-    views: "4.2k",
-    author: {
-      name: "Aria Solis",
-      initials: "AS",
-      role: "Clinical Nutritionist",
-      bio: "Aria focuses on sustainable eating habits and energy optimization.",
-    },
-    coverImage: "/articleSection/image4.jpg",
-    tags: ["Diet", "Energy", "Nutrition"],
-    content: [
-      { type: "lead", text: "Your diet should fuel your day, not drain it." },
-      { type: "h2", text: "1. Balanced Meals" },
-      { type: "p", text: "Include protein, carbs, and fats in every meal." },
-      { type: "h2", text: "2. Avoid Sugar Crashes" },
-      { type: "p", text: "Limit processed sugars to maintain stable energy levels." },
-      { type: "h2", text: "Final Thoughts" },
-      { type: "p", text: "Consistency matters more than perfection." }
-    ]
-  },
-
-  {
-    id: 5,
-    category: "Mental Health Coach",
-    title: "How to Manage Midday Anxiety Effectively",
-    readTime: "6 min read",
-    date: "21 Apr 2026",
-    views: "7.5k",
-    author: {
-      name: "Yuki Tanaka",
-      initials: "YT",
-      role: "Mental Wellness Coach",
-      bio: "Yuki helps professionals manage stress, anxiety, and emotional balance.",
-    },
-    coverImage: "/articleSection/image5.jpg",
-    tags: ["Mental Health", "Anxiety", "Mindfulness"],
-    content: [
-      { type: "lead", text: "Afternoon anxiety spikes are more common than you think." },
-      { type: "h2", text: "1. Identify Triggers" },
-      { type: "p", text: "Stress, caffeine, and lack of sleep can contribute." },
-      { type: "h2", text: "2. Quick Fix Techniques" },
-      { type: "p", text: "Breathing exercises and short walks help regulate stress." },
-      { type: "h2", text: "Final Thoughts" },
-      { type: "p", text: "Build small habits to maintain mental balance." }
-    ]
-  },
-
-  {
-    id: 6,
-    category: "Fitness Coach",
-    title: "The 15-Minute Daily Mobility Routine",
-    readTime: "5 min read",
-    date: "19 Apr 2026",
-    views: "3.9k",
-    author: {
-      name: "Irena Reyes",
-      initials: "IR",
-      role: "Mobility Specialist",
-      bio: "Irena focuses on flexibility, posture correction, and injury prevention.",
-    },
-    coverImage: "/articleSection/image6.jpg",
-    tags: ["Mobility", "Flexibility", "Routine"],
-    content: [
-      { type: "lead", text: "Mobility is the foundation of long-term fitness." },
-      { type: "h2", text: "1. Why Mobility Matters" },
-      { type: "p", text: "It improves movement efficiency and prevents injuries." },
-      { type: "h2", text: "2. Daily Routine" },
-      { type: "p", text: "Focus on hips, shoulders, and spine flexibility." },
-      { type: "h2", text: "Final Thoughts" },
-      { type: "p", text: "Consistency is key for lasting results." }
-    ]
+  :root {
+    --blue-primary: #2563eb;
+    --font-display: 'Clash Display', sans-serif;
+    --font-body:    'Satoshi', sans-serif;
   }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: var(--font-body); }
+
+  /* ── Keyframes ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes floatY {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-12px); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  @keyframes blobMorph {
+    0%,100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    25%     { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    50%     { border-radius: 50% 60% 30% 60% / 30% 40% 60% 50%; }
+    75%     { border-radius: 60% 30% 60% 40% / 70% 50% 40% 60%; }
+  }
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes particleDrift {
+    0%   { transform: translateY(0) translateX(0) scale(1);          opacity: .6; }
+    33%  { transform: translateY(-28px) translateX(14px) scale(1.2); opacity: .9; }
+    66%  { transform: translateY(-12px) translateX(-9px) scale(.8);  opacity: .4; }
+    100% { transform: translateY(0) translateX(0) scale(1);          opacity: .6; }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes dotPulse {
+    0%,100% { opacity:.4; transform:scale(1); }
+    50%     { opacity:1;  transform:scale(1.4); }
+  }
+  @keyframes underlineGrow {
+    from { width: 0; }
+    to   { width: 100%; }
+  }
+  @keyframes pulseRing {
+    0%   { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+    70%  { box-shadow: 0 0 0 18px rgba(37,99,235,0); }
+    100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+  }
+  @keyframes liveDot {
+    0%,100% { opacity: 1; }
+    50%     { opacity: 0.25; }
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* ── Animation utility classes (from GlobalStyles) ── */
+  .anim-fade-up  { animation: fadeUp .7s cubic-bezier(.22,1,.36,1) both; }
+  .anim-slide-l  { animation: slideInLeft .7s cubic-bezier(.22,1,.36,1) both; }
+  .anim-scale-in { animation: scaleIn .6s cubic-bezier(.22,1,.36,1) both; }
+  .anim-float    { animation: floatY 5s ease-in-out infinite; }
+  .delay-100 { animation-delay: .1s; }
+  .delay-200 { animation-delay: .2s; }
+  .delay-300 { animation-delay: .3s; }
+  .delay-400 { animation-delay: .4s; }
+  .delay-500 { animation-delay: .5s; }
+  .delay-600 { animation-delay: .6s; }
+  .delay-700 { animation-delay: .7s; }
+
+  /* ── Hero background (from GlobalStyles) ── */
+  .hero-bg {
+    background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 40%, #eef2ff 70%, #f0fdf4 100%);
+    background-size: 300% 300%;
+    animation: gradientShift 12s ease infinite;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(37,99,235,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,99,235,.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .blob-blue {
+    position: absolute;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    background: radial-gradient(circle, rgba(37,99,235,.18) 0%, transparent 70%);
+    animation: blobMorph 12s ease-in-out infinite, floatY 8s ease-in-out infinite;
+    filter: blur(32px); pointer-events: none;
+  }
+  .blob-purple {
+    position: absolute;
+    border-radius: 40% 60% 70% 30% / 40% 60% 30% 70%;
+    background: radial-gradient(circle, rgba(139,92,246,.14) 0%, transparent 70%);
+    animation: blobMorph 15s ease-in-out infinite reverse, floatY 10s ease-in-out infinite 2s;
+    filter: blur(40px); pointer-events: none;
+  }
+
+  .particle { position: absolute; border-radius: 50%; pointer-events: none; }
+  .p1{width:6px;height:6px;background:#2563eb;top:15%;left:6%;  animation:particleDrift 6s ease-in-out infinite;}
+  .p2{width:4px;height:4px;background:#8b5cf6;top:30%;left:16%; animation:particleDrift 8s ease-in-out infinite 1s;}
+  .p3{width:7px;height:7px;background:#06b6d4;top:65%;left:4%;  animation:particleDrift 7s ease-in-out infinite 2s;}
+  .p4{width:5px;height:5px;background:#10b981;top:75%;left:20%; animation:particleDrift 9s ease-in-out infinite .5s;}
+  .p5{width:5px;height:5px;background:#f59e0b;top:20%;right:10%;animation:particleDrift 5s ease-in-out infinite 1.5s;}
+  .p6{width:4px;height:4px;background:#ef4444;top:50%;right:6%; animation:particleDrift 10s ease-in-out infinite 3s;}
+  .p7{width:6px;height:6px;background:#2563eb;top:70%;right:15%;animation:particleDrift 7s ease-in-out infinite .8s;}
+
+  /* ── Shimmer text (from GlobalStyles) ── */
+  .text-shimmer {
+    background: linear-gradient(90deg, #1d4ed8 0%, #7c3aed 30%, #1d4ed8 60%, #0891b2 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+  }
+
+  /* ── Stat badges (from GlobalStyles) ── */
+  .stat-badge {
+    background: rgba(255,255,255,.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 14px; padding: 8px 14px;
+    box-shadow: 0 4px 20px rgba(37,99,235,.08), inset 0 1px 0 rgba(255,255,255,.8);
+    transition: all .3s cubic-bezier(.22,1,.36,1);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stat-badge:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 32px rgba(37,99,235,.14); }
+
+  /* ── CTA button (from GlobalStyles) ── */
+  .cta-btn {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transition: all .3s cubic-bezier(.22,1,.36,1);
+    border: none; cursor: pointer;
+  }
+  .cta-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+    opacity: 0; transition: opacity .4s ease;
+  }
+  .cta-btn:hover::before { opacity: 1; }
+  .cta-btn:hover { box-shadow: 0 8px 30px rgba(37,99,235,.4); transform: translateY(-2px) scale(1.02); }
+  .cta-btn:active { transform: scale(.97); }
+  .cta-btn > * { position: relative; z-index: 1; }
+
+  /* ── Heading underline (from GlobalStyles) ── */
+  .heading-underline { position: relative; display: inline-block; }
+  .heading-underline::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; height: 3px;
+    background: linear-gradient(90deg, #2563eb, #7c3aed); border-radius: 2px;
+    animation: underlineGrow 1s cubic-bezier(.22,1,.36,1) .8s both;
+  }
+
+  /* ── Hero two-col ── */
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 4.5rem 1.5rem 4rem;
+    position: relative;
+    z-index: 10;
+  }
+  @media (max-width: 1024px) {
+    .hero-inner { grid-template-columns: 1fr; padding: 3rem 1.25rem; }
+    .hero-img-col { display: none !important; }
+    .main-grid { grid-template-columns: 1fr !important; }
+    .sidebar { display: none !important; }
+  }
+
+  /* ── Hero image (from GlobalStyles floatY + card style) ── */
+  .hero-img-wrap {
+    position: relative; border-radius: 24px; overflow: hidden;
+    box-shadow: 0 40px 80px rgba(37,99,235,0.2), 0 16px 40px rgba(139,92,246,0.12);
+    animation: floatY 6s ease-in-out infinite;
+    transform: translateX(12px);
+  }
+  .hero-img-wrap img { width: 100%; height: 480px; object-fit: cover; display: block; }
+
+  /* ── Progress bar ── */
+  .prog-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, #2563eb, #7c3aed, #06b6d4);
+    z-index: 300; border-radius: 0 2px 2px 0;
+    transition: width 0.12s linear;
+  }
+
+  /* ── Live dot ── */
+  .live-dot { animation: liveDot 1.5s ease-in-out infinite; display: inline-block; }
+  .pulse-ring { animation: pulseRing 4s ease-out infinite; }
+
+  /* ── Toast ── */
+  .toast { animation: toastIn 0.3s ease; }
+
+  /* ── Content layout ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+    align-items: start;
+  }
+  .rel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  @media (max-width: 900px) { .rel-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .rel-grid { grid-template-columns: 1fr; } }
+
+  /* ── Card hover effects ── */
+  .content-card-hover { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+  .content-card-hover:hover { border-color: #bfdbfe; box-shadow: 0 6px 24px rgba(37,99,235,0.08); }
+
+  .related-card {
+    transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease, border-color 0.2s ease;
+    text-decoration: none; color: inherit;
+  }
+  .related-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(37,99,235,0.12); border-color: #bfdbfe !important; }
+  .related-card:hover .related-img { transform: scale(1.05); }
+  .related-img { transition: transform 0.5s ease; }
+
+  /* ── Action buttons ── */
+  .act-btn { transition: all 0.2s ease; cursor: pointer; }
+  .act-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(37,99,235,0.15); }
+
+  /* ── TOC ── */
+  .toc-item {
+    display: block; font-size: 13px; color: #64748b;
+    text-decoration: none; padding: 0.5rem 0.75rem;
+    border-radius: 10px; font-weight: 600;
+    font-family: var(--font-body);
+    border-bottom: 1px solid rgba(37,99,235,0.08);
+    transition: all 0.15s ease; line-height: 1.45;
+  }
+  .toc-item:last-child { border-bottom: none; }
+  .toc-item:hover { color: #2563eb; padding-left: 1rem; background: rgba(37,99,235,0.06); }
+
+  /* ── Tag & misc ── */
+  .tag-pill {
+    padding: 5px 14px; border-radius: 99px;
+    border: 1px solid rgba(37,99,235,0.2);
+    font-family: var(--font-body); font-size: 12px; font-weight: 600;
+    color: #475569; cursor: pointer;
+    transition: all 0.15s; background: rgba(255,255,255,0.8);
+    display: inline-block;
+  }
+  .tag-pill:hover { border-color: #2563eb; color: #2563eb; background: rgba(37,99,235,0.06); }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #f1f5f9; }
+  ::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.2); border-radius: 99px; }
+`;
+
+const HERO_PARTICLES = [
+  { cls: "p1", size: 6, bg: "#2563eb", top: "15%", left: "6%"  },
+  { cls: "p2", size: 4, bg: "#8b5cf6", top: "30%", left: "16%" },
+  { cls: "p3", size: 7, bg: "#06b6d4", top: "65%", left: "4%"  },
+  { cls: "p4", size: 5, bg: "#10b981", top: "75%", left: "20%" },
+  { cls: "p5", size: 5, bg: "#f59e0b", top: "20%", right: "10%" },
+  { cls: "p6", size: 4, bg: "#ef4444", top: "50%", right: "6%"  },
+  { cls: "p7", size: 6, bg: "#2563eb", top: "70%", right: "15%" },
 ];
 
-const RELATED = [
-  {
-    id: 1,
-    title: "Top 10 Real Estate Courses in India After 12th",
-    date: "23 Apr 2026",
-    readTime: "6 min",
-    image: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400&q=80",
-  },
-  {
-    id: 2,
-    title: "RERA Explained: Everything First-Time Buyers Must Know",
-    date: "20 Apr 2026",
-    readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=80",
-  },
-  {
-    id: 3,
-    title: "How to Read a Property Sale Agreement in India",
-    date: "17 Apr 2026",
-    readTime: "7 min",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80",
-  },
-];
+// ─────────────────────────────────────────────
+// ARTICLE DETAIL PAGE
+// ─────────────────────────────────────────────
+export default function ArticleDetailPage() {
+  const { slug }   = useParams();
+  const article    = findArticle(slug);
 
-export default function ArticlePage() {
-  
-  const [showToast, setShowToast] = useState(false);
-  const articleRef = useRef(null);
   const [scrollPct, setScrollPct] = useState(0);
-
-  // useEffect(() => {
-  //   fetch("https://service.ireedindia.com/v1/blog?published=true&size=1000")
-  //     .then((res) => res.json())
-  //     .then((data) => setData(data));
-  // }, []);
+  const [liked,     setLiked]     = useState(false);
+  const [saved,     setSaved]     = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const pageRef = useRef(null);
 
   useEffect(() => {
-  const onScroll = () => {
-    const el = articleRef.current;
-    if (!el) return;
+    const onScroll = () => {
+      const el = pageRef.current;
+      if (!el) return;
+      const scrolled = Math.max(0, -el.getBoundingClientRect().top);
+      const total    = el.offsetHeight - window.innerHeight;
+      setScrollPct(Math.min(100, total > 0 ? (scrolled / total) * 100 : 0));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    const top = el.getBoundingClientRect().top;
-    const height = el.offsetHeight;
-    const windowH = window.innerHeight;
+  function handleShare() {
+    if (navigator.clipboard) navigator.clipboard.writeText(window.location.href);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2500);
+  }
 
-    const scrolled = Math.max(0, -top);
-    const total = height - windowH;
+  // ── 404 ──
+  if (!article) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, background: "#f8faff" }}>
+        <style>{KEYFRAMES}</style>
+        <div style={{ fontSize: 48 }}>🔍</div>
+        <h2 style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>Article not found</h2>
+        <Link href="/articles" style={{
+          display: "inline-flex", alignItems: "center", gap: 8,
+          padding: "10px 24px", borderRadius: 16, fontWeight: 700, fontSize: 14,
+          color: "#fff", textDecoration: "none",
+          background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+          fontFamily: "var(--font-display)",
+        }}>
+          <ArrowLeft size={14} /> Back to Articles
+        </Link>
+      </div>
+    );
+  }
 
-    setScrollPct(total > 0 ? (scrolled / total) * 100 : 0);
-  };
-
-  window.addEventListener("scroll", onScroll);
-  return () => window.removeEventListener("scroll", onScroll);
-}, []);
+  const col      = CAT_COLORS[article.catKey] || CAT_COLORS.gym;
+  const catLabel = FILTERS.find(f => f.id === article.catKey)?.label || article.cat;
+  const related  = getRelated(article);
+  const h2s      = article.content.filter(b => b.type === "h2");
 
   return (
-    <div className="page" ref={articleRef}>
-      {/* ── Topbar ── */}
-      <header className="topbar">
-        <Link href="/articles" className="back-btn">← Back to Articles</Link>
-      </header>
+    <>
+      <style>{KEYFRAMES}</style>
 
-      {/* ── Toast ── */}
-      {showToast && <div className="toast">✅ Link copied to clipboard!</div>}
+      {/* Progress bar */}
+      <div className="prog-bar" style={{ width: `${scrollPct}%` }} />
 
-      <main className="main-layout">
-        {/* ── Left sticky sidebar ── */}
-        <aside className="sidebar-left">
-          
-        </aside>
+      {/* Toast */}
+      {showToast && (
+        <div className="toast" style={{
+          position: "fixed", bottom: "2rem", left: "50%",
+          transform: "translateX(-50%)",
+          background: "#fff", color: "#2563eb",
+          border: "1px solid rgba(37,99,235,0.2)",
+          padding: "0.65rem 1.5rem", borderRadius: "99px",
+          fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "13px",
+          zIndex: 400, backdropFilter: "blur(12px)",
+          boxShadow: "0 8px 32px rgba(37,99,235,0.16)", whiteSpace: "nowrap",
+        }}>✅ Link copied!</div>
+      )}
 
-        {/* ── Article ── */}
-        <article className="article-body">
-          {/* Category + meta */}
-          <div className="article-meta-top">
-            <span className="cat-badge">{ARTICLE.category}</span>
-            <span className="meta-dot" />
-            <span className="meta-text">{ARTICLE.readTime}</span>
-            <span className="meta-dot" />
-            <span className="meta-text">{ARTICLE.date}</span>
-            <span className="meta-dot" />
-            <span className="meta-text">👁 {ARTICLE.views} views</span>
-          </div>
+      <div ref={pageRef} style={{ minHeight: "100vh", background: "#f8faff" }}>
 
-          {/* Title */}
-          <h1 className="article-title">{ARTICLE.title}</h1>
+        {/* ══════════════ HERO — LEFT text, RIGHT image ══════════════ */}
+        <div className="hero-bg">
 
-          {/* Author row */}
-          <div className="author-row">
-            <div className="author-avatar">{ARTICLE.author.initials}</div>
-            <div>
-              <div className="author-name">{ARTICLE.author.name}</div>
-              <div className="author-role">{ARTICLE.author.role}</div>
-            </div>
-          </div>
+          {/* Blobs */}
+          <div className="blob-blue"   style={{ width: 480, height: 480, top: "-10%", right: "-5%",  opacity: .6 }} />
+          <div className="blob-purple" style={{ width: 340, height: 340, bottom: "-8%", left: "-8%", opacity: .5 }} />
 
-          {/* Cover image */}
-          <div className="cover-wrap">
-            <img src={ARTICLE.coverImage} alt="Article cover" className="cover-img" />
-            <div className="cover-overlay" />
-          </div>
-
-          {/* Content blocks */}
-          <div className="content-blocks">
-            {ARTICLE.content.map((block, i) => {
-              if (block.type === "lead") return <p key={i} className="lead-text">{block.text}</p>;
-              if (block.type === "h2") return <h2 key={i} className="content-h2">{block.text}</h2>;
-              if (block.type === "p") return <p key={i} className="content-p">{block.text}</p>;
-              if (block.type === "callout") return (
-                <div key={i} className="callout">{block.text}</div>
-              );
-              if (block.type === "quote") return (
-                <blockquote key={i} className="pull-quote">
-                  <p>"{block.text}"</p>
-                  <cite>— {block.author}</cite>
-                </blockquote>
-              );
-              return null;
-            })}
-          </div>
-
-          {/* Tags */}
-          <div className="tags-row">
-            {ARTICLE.tags.map((t) => (
-              <span key={t} className="tag">{t}</span>
-            ))}
-          </div>
-
-          {/* Author card */}
-          <div className="author-card">
-            <div className="author-card-avatar">{ARTICLE.author.initials}</div>
-            <div>
-              <div className="author-card-name">{ARTICLE.author.name}</div>
-              <div className="author-card-role">{ARTICLE.author.role}</div>
-              <p className="author-card-bio">{ARTICLE.author.bio}</p>
-            </div>
-          </div>
-        </article>
-
-        {/* ── Right sidebar ── */}
-        <aside className="sidebar-right">
-          <div className="toc-card">
-            <div className="toc-title">📋 In This Article</div>
-            {ARTICLE.content
-              .filter((b) => b.type === "h2")
-              .map((b, i) => (
-                <a key={i} href="#" className="toc-item">{b.text}</a>
-              ))}
-          </div>
-
-          <div className="newsletter-card">
-            <div className="nl-emoji">📬</div>
-            <div className="nl-title">Get Weekly Insights</div>
-            <p className="nl-sub">Expert articles delivered to your inbox every Tuesday.</p>
-            <input className="nl-input" placeholder="Your email address" type="email" />
-            <button className="nl-btn">Subscribe Free</button>
-          </div>
-        </aside>
-      </main>
-
-      {/* ── Related Articles ── */}
-      <section className="related-section">
-        <h3 className="related-title">Related Articles</h3>
-        <div className="related-grid">
-          {RELATED.map((r) => (
-            <a key={r.id} href="#" className="related-card">
-              <img src={r.image} alt={r.title} className="related-img" />
-              <div className="related-body">
-                <p className="related-meta">{r.date} · {r.readTime} read</p>
-                <p className="related-card-title">{r.title}</p>
-              </div>
-            </a>
+          {/* Particles */}
+          {HERO_PARTICLES.map((p, i) => (
+            <div key={i} className={`particle ${p.cls}`} style={{ width: p.size, height: p.size, background: p.bg, top: p.top, left: p.left, right: p.right }} />
           ))}
+
+          {/* Two-col grid */}
+          <div className="hero-inner">
+
+            {/* ── LEFT: text content ── */}
+            <div>
+
+              {/* Top nav row */}
+              <div className="anim-fade-up" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
+                <Link href="/articles" style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12,
+                  color: "#64748b", textDecoration: "none", padding: "6px 14px",
+                  borderRadius: 10, background: "rgba(255,255,255,0.8)",
+                  border: "1px solid rgba(37,99,235,0.15)",
+                  transition: "all 0.2s ease",
+                }}>
+                  <ArrowLeft size={12} /> All Articles
+                </Link>
+
+                {/* Category chip */}
+                <div className="stat-badge">
+                  <span className="live-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: col.color, flexShrink: 0 }} />
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.08em", color: "#0f172a", textTransform: "uppercase" }}>
+                    {catLabel}
+                  </span>
+                </div>
+
+                {article.trending && (
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 99, background: "#2563eb", color: "#fff", fontWeight: 700, fontSize: 11, fontFamily: "var(--font-display)" }}>
+                    🔥 TRENDING
+                  </div>
+                )}
+              </div>
+
+              {/* Title */}
+              <h1 className="anim-slide-l delay-100" style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(26px,4vw,52px)",
+                fontWeight: 700, lineHeight: 1.15,
+                color: "#0f172a", marginBottom: 16,
+                letterSpacing: "-0.02em",
+              }}>
+                {(() => {
+                  const words = article.title.split(" ");
+                  const cut   = Math.ceil(words.length * 0.6);
+                  return (
+                    <>
+                      {words.slice(0, cut).join(" ")}{" "}
+                      <span className="text-shimmer heading-underline">{words.slice(cut).join(" ")}</span>
+                    </>
+                  );
+                })()}
+              </h1>
+
+              {/* Short desc */}
+              <p className="anim-fade-up delay-200" style={{ fontFamily: "var(--font-body)", color: "#475569", fontSize: 15, lineHeight: 1.75, marginBottom: 20, maxWidth: 520 }}>
+                {article.shortDesc}
+              </p>
+
+              {/* Meta row */}
+              <div className="anim-fade-up delay-300" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16, marginBottom: 24 }}>
+                {[
+                  { icon: Clock,    text: `${article.readTime} read` },
+                  { icon: Eye,      text: `${article.views} views`   },
+                  { icon: Calendar, text: article.date               },
+                ].map(({ icon: Icon, text }, i) => (
+                  <span key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--font-body)", fontSize: 13, color: "#64748b" }}>
+                    <Icon size={13} style={{ color: "#2563eb" }} /> {text}
+                  </span>
+                ))}
+              </div>
+
+              {/* Author chip */}
+              <div className="anim-fade-up delay-400" style={{
+                display: "inline-flex", alignItems: "center", gap: 14,
+                padding: "12px 18px", borderRadius: 16,
+                background: "rgba(255,255,255,0.8)", backdropFilter: "blur(10px)",
+                border: "1px solid rgba(37,99,235,0.15)",
+                boxShadow: "0 4px 20px rgba(37,99,235,0.08)",
+                marginBottom: 24,
+              }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 14, flexShrink: 0,
+                  background: col.avatarBg, border: `1px solid ${col.border}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: col.avatarColor,
+                }}>{article.initials}</div>
+                <div>
+                  <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#0f172a" }}>{article.author}</div>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: col.color, fontWeight: 600 }}>{article.authorRole}</div>
+                </div>
+              </div>
+
+              {/* Trust badges (from GlobalStyles stat-badge) */}
+              <div className="anim-fade-up delay-500" style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {[
+                  { icon: Shield,      color: "#10b981", label: "Expert Verified"  },
+                  { icon: Award,       color: "#6366f1", label: "In-Depth Guide"   },
+                  { icon: CheckCircle, color: "#2563eb", label: "Actionable Steps" },
+                ].map(({ icon: Icon, color, label }, i) => (
+                  <div key={i} className="stat-badge">
+                    <Icon size={13} style={{ color }} />
+                    <span style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 12, color: "#475569" }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── RIGHT: cover image (from GlobalStyles carousel card style) ── */}
+            <div className="hero-img-col anim-scale-in delay-300" style={{ position: "relative" }}>
+              {/* Glow behind image */}
+              <div className="pulse-ring" style={{
+                position: "absolute", borderRadius: "50%", pointerEvents: "none",
+                width: "80%", height: "70%", left: "10%", top: "10%",
+                background: "radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)",
+                filter: "blur(52px)",
+              }} />
+
+              <div className="hero-img-wrap">
+                <img src={article.coverImg} alt={article.title} />
+
+                {/* Gradient overlay */}
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(37,99,235,0.06) 0%, transparent 50%, rgba(0,0,0,0.28) 100%)" }} />
+
+                {/* Category pill */}
+                <div style={{
+                  position: "absolute", top: 16, left: 16,
+                  padding: "7px 14px", borderRadius: 99,
+                  background: col.pill, color: "#fff",
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+                }}>{catLabel}</div>
+
+                {/* Read time badge */}
+                <div style={{
+                  position: "absolute", bottom: 16, right: 16,
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "8px 14px", borderRadius: 99,
+                  background: "rgba(37,99,235,0.92)", color: "#fff",
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+                  boxShadow: "0 8px 24px rgba(37,99,235,0.45)",
+                }}>
+                  <BookOpen size={11} /> {article.readTime}
+                </div>
+
+                {/* Trending badge */}
+                {article.trending && (
+                  <div style={{
+                    position: "absolute", bottom: 16, left: 16,
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "8px 14px", borderRadius: 99,
+                    background: "rgba(239,68,68,0.92)", color: "#fff",
+                    fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+                  }}>
+                    <span className="live-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} />
+                    Trending
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
 
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap');
+        {/* ══════════════ MAIN CONTENT ══════════════ */}
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "2.5rem 1.25rem 5rem" }}>
+          <div className="main-grid">
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+            {/* ─── LEFT: Article body ─── */}
+            <div className="anim-fade-up delay-200" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-        .page {
-          background: #f7f8fc;
-          min-height: 100vh;
-          font-family: 'DM Sans', sans-serif;
-          position: relative;
-        }
+              {/* Action bar */}
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+                padding: "14px 20px", borderRadius: 16,
+                background: "rgba(255,255,255,0.9)",
+                border: "1px solid rgba(37,99,235,0.1)",
+                boxShadow: "0 4px 20px rgba(37,99,235,0.06)",
+              }}>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", flex: 1 }}>
+                  {article.readTime} · {article.date}
+                </span>
+                {[
+                  { icon: Heart,    label: liked ? "Liked" : "Like",  active: liked, color: "#ef4444", onClick: () => setLiked(!liked) },
+                  { icon: Bookmark, label: saved ? "Saved" : "Save",  active: saved, color: "#10b981", onClick: () => setSaved(!saved) },
+                  { icon: Share2,   label: "Share",                   active: false, color: "#2563eb", onClick: handleShare },
+                ].map((b, i) => (
+                  <button key={i} onClick={b.onClick} className="act-btn" style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    padding: "8px 16px", borderRadius: 10,
+                    fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12,
+                    border: `1px solid ${b.active ? b.color + "40" : "rgba(37,99,235,0.15)"}`,
+                    background: b.active ? b.color + "12" : "rgba(255,255,255,0.8)",
+                    color: b.active ? b.color : "#64748b",
+                  }}>
+                    <b.icon size={13} /> {b.label}
+                  </button>
+                ))}
+              </div>
 
-        /* Progress */
-        .progress-bar {
-          position: fixed;
-          top: 0; left: 0;
-          height: 3px;
-          background: linear-gradient(90deg, #6366f1, #a855f7);
-          z-index: 100;
-          transition: width 0.1s linear;
-          border-radius: 0 2px 2px 0;
-        }
+              {/* Article card */}
+              <section className="content-card-hover" style={{
+                background: "#fff", border: "1px solid #e2e8f0",
+                borderRadius: 20, padding: "clamp(1.5rem,4vw,2.5rem)",
+                boxShadow: "0 4px 20px rgba(37,99,235,0.05)",
+              }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
+                  {article.content.map((block, i) => {
+                    if (block.type === "lead") return (
+                      <p key={i} style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "clamp(1rem,2.5vw,1.1rem)",
+                        color: "#475569", lineHeight: 1.8, fontStyle: "italic",
+                        borderLeft: `4px solid ${col.color}`,
+                        padding: "1rem 1.25rem",
+                        background: col.bg,
+                        borderRadius: "0 12px 12px 0",
+                        margin: 0,
+                      }}>{block.text}</p>
+                    );
 
-        /* Topbar */
-        .topbar {
-          position: sticky;
-          top: 3px;
-          z-index: 50;
-          background: rgba(247, 248, 252, 0.85);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid #e8e8f0;
-          padding: 0.75rem 2rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .back-btn {
-          font-size: 0.875rem;
-          font-weight: 600;
-          color: #6366f1;
-          text-decoration: none;
-          transition: gap 0.2s;
-        }
-        .back-btn:hover { opacity: 0.75; }
-        .topbar-actions {
-          display: flex;
-          gap: 0.5rem;
-        }
-        .action-btn {
-          padding: 0.38rem 0.9rem;
-          border-radius: 8px;
-          border: 1.5px solid #e2e2ef;
-          background: #fff;
-          font-size: 0.8rem;
-          font-weight: 600;
-          color: #475569;
-          cursor: pointer;
-          font-family: inherit;
-          transition: all 0.18s;
-        }
-        .action-btn:hover { border-color: #6366f1; color: #6366f1; }
-        .active-like { background: #fef2f2 !important; color: #e11d48 !important; border-color: #fca5a5 !important; }
-        .active-save { background: #f0fdf4 !important; color: #16a34a !important; border-color: #86efac !important; }
-        .share-btn:hover { background: #eef2ff; }
+                    if (block.type === "h2") return (
+                      <h2 key={i} style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "clamp(1.1rem,2.5vw,1.35rem)",
+                        fontWeight: 700, color: "#0f172a",
+                        marginTop: "0.5rem", marginBottom: 0,
+                        letterSpacing: "-0.01em",
+                        display: "flex", alignItems: "center", gap: 10,
+                      }}>
+                        <span style={{ display: "inline-block", width: 4, height: 22, borderRadius: 4, flexShrink: 0, background: `linear-gradient(180deg,${col.color},#6366f1)` }} />
+                        {block.text}
+                      </h2>
+                    );
 
-        /* Toast */
-        .toast {
-          position: fixed;
-          bottom: 2rem;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #1e1b4b;
-          color: #fff;
-          padding: 0.65rem 1.5rem;
-          border-radius: 99px;
-          font-size: 0.875rem;
-          font-weight: 600;
-          z-index: 200;
-          animation: fadeUp 0.3s ease;
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-          to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
+                    if (block.type === "p") return (
+                      <p key={i} style={{ fontFamily: "var(--font-body)", fontSize: 15.5, color: "#475569", lineHeight: 1.85, margin: 0 }}>
+                        {block.text}
+                      </p>
+                    );
 
-        /* Layout */
-        .main-layout {
-          max-width: 1700px;
-          margin: 0 auto;
-          padding: 2.5rem 1.5rem;
-          display: grid;
-          grid-template-columns: 64px 1fr 280px;
-          gap: 2.5rem;
-          align-items: start;
-        }
+                    if (block.type === "callout") return (
+                      <div key={i} style={{
+                        background: col.bg, border: `1px solid ${col.border}`,
+                        borderRadius: 14, padding: "1rem 1.35rem",
+                        fontFamily: "var(--font-body)", fontSize: 14.5,
+                        color: col.text, fontWeight: 500, lineHeight: 1.65,
+                      }}>{block.text}</div>
+                    );
 
-        /* Left sidebar */
-        .sidebar-left {
-          position: sticky;
-          top: 80px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.75rem;
-        }
-        .side-btn {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 3px;
-          padding: 0.6rem;
-          border-radius: 12px;
-          border: 1.5px solid #e2e2ef;
-          background: #fff;
-          font-size: 1.1rem;
-          cursor: pointer;
-          width: 52px;
-          transition: all 0.18s;
-          font-family: inherit;
-        }
-        .side-btn span {
-          font-size: 0.6rem;
-          font-weight: 600;
-          color: #94a3b8;
-          text-transform: uppercase;
-          letter-spacing: 0.4px;
-        }
-        .side-btn:hover { border-color: #6366f1; }
-        .side-liked { background: #fef2f2; border-color: #fca5a5; }
-        .side-saved { background: #f0fdf4; border-color: #86efac; }
-        .side-progress {
-          width: 3px;
-          height: 80px;
-          background: #e2e2ef;
-          border-radius: 2px;
-          margin-top: 0.5rem;
-          overflow: hidden;
-          position: relative;
-        }
-        .side-progress-fill {
-          width: 100%;
-          background: linear-gradient(180deg, #6366f1, #a855f7);
-          border-radius: 2px;
-          transition: height 0.1s linear;
-        }
+                    if (block.type === "quote") return (
+                      <blockquote key={i} style={{
+                        margin: 0, borderLeft: "4px solid #7c3aed",
+                        padding: "1.1rem 1.5rem",
+                        background: "#f5f3ff",
+                        border: "1px solid #e9d5ff",
+                        borderLeft: "4px solid #7c3aed",
+                        borderRadius: "0 14px 14px 0",
+                      }}>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "clamp(0.95rem,2vw,1.05rem)", color: "#6d28d9", lineHeight: 1.75, marginBottom: "0.5rem", fontStyle: "italic", margin: "0 0 0.5rem" }}>
+                          "{block.text}"
+                        </p>
+                        <cite style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#7c3aed", fontWeight: 700, fontStyle: "normal" }}>
+                          — {block.author}
+                        </cite>
+                      </blockquote>
+                    );
 
-        /* Article */
-        .article-body {
-          background: #fff;
-          border-radius: 20px;
-          padding: 2.5rem 3rem;
-          border: 1px solid #ebebf5;
-          box-shadow: 0 2px 20px rgba(0,0,0,0.04);
-        }
+                    return null;
+                  })}
+                </div>
 
-        .article-meta-top {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin-bottom: 1.25rem;
-          flex-wrap: wrap;
-        }
-        .cat-badge {
-          background: #eef2ff;
-          color: #4f46e5;
-          font-size: 0.72rem;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-          padding: 3px 10px;
-          border-radius: 6px;
-        }
-        .meta-dot {
-          width: 3px; height: 3px;
-          background: #cbd5e1;
-          border-radius: 50%;
-        }
-        .meta-text {
-          font-size: 0.82rem;
-          color: #94a3b8;
-          font-weight: 500;
-        }
+                {/* Tags */}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid #f1f5f9" }}>
+                  {article.tags.map(t => <span key={t} className="tag-pill">{t}</span>)}
+                </div>
+              </section>
 
-        .article-title {
-          font-family: 'Lora', serif;
-          font-size: 2rem;
-          font-weight: 700;
-          color: #0f172a;
-          line-height: 1.35;
-          margin-bottom: 1.5rem;
-          letter-spacing: -0.3px;
-        }
+              {/* Author bio */}
+              <div style={{
+                display: "flex", gap: 16, flexWrap: "wrap", padding: "1.5rem",
+                background: col.bg, border: `1px solid ${col.border}`, borderRadius: 20,
+              }}>
+                <div style={{ width: 56, height: 56, borderRadius: 16, flexShrink: 0, background: col.avatarBg, border: `2px solid ${col.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, color: col.avatarColor }}>
+                  {article.initials}
+                </div>
+                <div style={{ flex: 1, minWidth: 160 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#0f172a" }}>{article.author}</div>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: col.color, fontWeight: 700, marginBottom: 8 }}>{article.authorRole}</div>
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: 13.5, color: "#64748b", lineHeight: 1.7, margin: 0 }}>{article.authorBio}</p>
+                </div>
+              </div>
 
-        .author-row {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          margin-bottom: 1.75rem;
-          padding-bottom: 1.5rem;
-          border-bottom: 1px solid #f1f5f9;
-        }
-        .author-avatar {
-          width: 42px; height: 42px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #10b981, #059669);
-          color: #fff;
-          font-size: 0.875rem;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-        .author-name { font-size: 0.9rem; font-weight: 700; color: #1e293b; }
-        .author-role { font-size: 0.78rem; color: #94a3b8; }
+              {/* Trust grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 12 }}>
+                {[
+                  { icon: Shield,     label: "Expert Verified",  sub: "By certified professionals", color: "#10b981", bg: "#ecfdf5" },
+                  { icon: Award,      label: "In-Depth Guide",   sub: "Evidence-backed content",   color: "#6366f1", bg: "#f5f3ff" },
+                  { icon: Users,      label: "Community",        sub: "Join the discussion",        color: "#2563eb", bg: "#eff6ff" },
+                  { icon: TrendingUp, label: "Actionable Steps", sub: "Apply it today",             color: "#f59e0b", bg: "#fffbeb" },
+                ].map(({ icon: Icon, label, sub, color, bg }, i) => (
+                  <div key={i} className="content-card-hover" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 16, display: "flex", alignItems: "center", gap: 12, boxShadow: "0 2px 10px rgba(37,99,235,0.04)" }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: bg }}>
+                      <Icon size={18} style={{ color }} />
+                    </div>
+                    <div>
+                      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "#0f172a" }}>{label}</div>
+                      <div style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "#94a3b8" }}>{sub}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        .cover-wrap {
-          position: relative;
-          border-radius: 14px;
-          overflow: hidden;
-          margin-bottom: 2rem;
-        }
-        .cover-img {
-          width: 100%;
-          height: 340px;
-          object-fit: cover;
-          display: block;
-        }
-        .cover-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(15,23,42,0.15), transparent);
-        }
+            {/* ─── RIGHT: Sidebar ─── */}
+            <div className="sidebar anim-fade-up delay-300" style={{ display: "flex", flexDirection: "column", gap: 16, position: "sticky", top: 20 }}>
 
-        /* Content */
-        .content-blocks { display: flex; flex-direction: column; gap: 1.25rem; }
+              {/* Table of Contents */}
+              <div className="content-card-hover" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 20, padding: "1.35rem", boxShadow: "0 4px 20px rgba(37,99,235,0.05)" }}>
+                <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#94a3b8", margin: "0 0 1rem" }}>
+                  📋 In This Article
+                </p>
+                {h2s.map((b, i) => (
+                  <a key={i} href="#" className="toc-item">{b.text}</a>
+                ))}
+              </div>
 
-        .lead-text {
-          font-family: 'Lora', serif;
-          font-size: 1.15rem;
-          color: #334155;
-          line-height: 1.8;
-          font-style: italic;
-          border-left: 3px solid #6366f1;
-          padding-left: 1.25rem;
-        }
-        .content-h2 {
-          font-family: 'Lora', serif;
-          font-size: 1.35rem;
-          font-weight: 700;
-          color: #0f172a;
-          margin-top: 0.75rem;
-          letter-spacing: -0.2px;
-        }
-        .content-p {
-          font-size: 0.975rem;
-          color: #475569;
-          line-height: 1.85;
-        }
-        .callout {
-          background: #eef2ff;
-          border: 1px solid #c7d2fe;
-          border-radius: 12px;
-          padding: 1rem 1.25rem;
-          font-size: 0.9rem;
-          color: #3730a3;
-          font-weight: 500;
-          line-height: 1.6;
-        }
-        .pull-quote {
-          border-left: 4px solid #a855f7;
-          padding: 1rem 1.5rem;
-          background: #faf5ff;
-          border-radius: 0 12px 12px 0;
-        }
-        .pull-quote p {
-          font-family: 'Lora', serif;
-          font-size: 1.05rem;
-          font-style: italic;
-          color: #4c1d95;
-          line-height: 1.7;
-          margin-bottom: 0.5rem;
-        }
-        .pull-quote cite {
-          font-size: 0.8rem;
-          color: #7c3aed;
-          font-weight: 600;
-        }
+              {/* Author sidebar */}
+              <div className="content-card-hover" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 20, padding: "1.35rem", boxShadow: "0 4px 20px rgba(37,99,235,0.05)" }}>
+                <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#94a3b8", margin: "0 0 1rem" }}>
+                  About the Author
+                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 14, flexShrink: 0, background: col.avatarBg, border: `1px solid ${col.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: col.avatarColor }}>
+                    {article.initials}
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#0f172a" }}>{article.author}</div>
+                    <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: col.color, fontWeight: 600 }}>{article.authorRole}</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 12, background: col.bg, border: `1px solid ${col.border}`, marginBottom: 12 }}>
+                  <Eye size={13} style={{ color: col.color, flexShrink: 0 }} />
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#0f172a" }}>{article.views}</span>
+                  <span style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#94a3b8" }}>total views</span>
+                </div>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#64748b", lineHeight: 1.65, margin: 0 }}>{article.authorBio}</p>
+              </div>
 
-        /* Tags */
-        .tags-row {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-          margin-top: 2rem;
-          padding-top: 1.5rem;
-          border-top: 1px solid #f1f5f9;
-        }
-        .tag {
-          padding: 4px 12px;
-          border-radius: 99px;
-          border: 1.5px solid #e2e8f0;
-          font-size: 0.78rem;
-          font-weight: 600;
-          color: #64748b;
-          cursor: pointer;
-          transition: all 0.15s;
-        }
-        .tag:hover { border-color: #6366f1; color: #6366f1; background: #eef2ff; }
+              {/* Newsletter CTA */}
+              <div style={{
+                borderRadius: 20, padding: "1.5rem",
+                background: "linear-gradient(135deg,#f0f9ff,#eff6ff,#f5f3ff)",
+                border: "1px solid rgba(37,99,235,0.15)",
+                boxShadow: "0 8px 32px rgba(37,99,235,0.1)",
+              }}>
+                <div style={{ fontSize: 28, marginBottom: 10 }}>📬</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#0f172a", marginBottom: 8 }}>Get Weekly Insights</div>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#64748b", lineHeight: 1.65, marginBottom: 14 }}>
+                  Expert articles from top trainers every Tuesday.
+                </p>
+                <input
+                  type="email" placeholder="Your email address"
+                  style={{
+                    width: "100%", marginBottom: 10, padding: "10px 14px",
+                    borderRadius: 12, border: "1px solid rgba(37,99,235,0.2)",
+                    background: "rgba(255,255,255,0.9)", color: "#0f172a",
+                    fontFamily: "var(--font-body)", fontSize: 13, outline: "none",
+                    boxSizing: "border-box", display: "block",
+                  }}
+                />
+                <button className="cta-btn" style={{
+                  width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  padding: "12px 0", borderRadius: 14,
+                  color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
+                }}>
+                  <span>Subscribe Free</span> <ArrowRight size={14} />
+                </button>
+              </div>
 
-        /* Author card */
-        .author-card {
-          display: flex;
-          gap: 1rem;
-          margin-top: 2rem;
-          padding: 1.5rem;
-          background: #f8faff;
-          border-radius: 14px;
-          border: 1px solid #e2e8f0;
-        }
-        .author-card-avatar {
-          width: 52px; height: 52px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #10b981, #059669);
-          color: #fff;
-          font-size: 1rem;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-        .author-card-name { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
-        .author-card-role { font-size: 0.78rem; color: #6366f1; font-weight: 600; margin-bottom: 0.35rem; }
-        .author-card-bio { font-size: 0.82rem; color: #64748b; line-height: 1.6; }
+              {/* Trust grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {[
+                  { icon: "🛡️", label: "Verified Expert" },
+                  { icon: "🏆", label: "Award-Winning"   },
+                  { icon: "👥", label: "50k+ Readers"    },
+                  { icon: "📊", label: "Data-Backed"     },
+                ].map(({ icon, label }, i) => (
+                  <div key={i} style={{
+                    background: "#fff", borderRadius: 14, border: "1px solid #e2e8f0",
+                    padding: "12px 10px", display: "flex", flexDirection: "column",
+                    alignItems: "center", gap: 6, textAlign: "center",
+                  }}>
+                    <span style={{ fontSize: 20 }}>{icon}</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: "#64748b" }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-        /* Right sidebar */
-        .sidebar-right {
-          position: sticky;
-          top: 80px;
-          display: flex;
-          flex-direction: column;
-          gap: 1.25rem;
-        }
+          {/* ══════ RELATED ARTICLES ══════ */}
+          {related.length > 0 && (
+            <section style={{ marginTop: "3rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1.5rem" }}>
+                <span style={{ display: "inline-block", width: 4, height: 24, borderRadius: 4, background: "linear-gradient(180deg,#2563eb,#6366f1)", flexShrink: 0 }} />
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.2rem,3vw,1.5rem)", fontWeight: 700, color: "#0f172a", margin: 0 }}>
+                  More <span className="text-shimmer">Articles</span>
+                </h2>
+              </div>
 
-        .toc-card {
-          background: #fff;
-          border-radius: 14px;
-          border: 1px solid #ebebf5;
-          padding: 1.25rem;
-          box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        }
-        .toc-title {
-          font-size: 0.8rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.6px;
-          color: #94a3b8;
-          margin-bottom: 0.9rem;
-        }
-        .toc-item {
-          display: block;
-          font-size: 0.825rem;
-          color: #475569;
-          text-decoration: none;
-          padding: 0.38rem 0;
-          border-bottom: 1px solid #f1f5f9;
-          font-weight: 500;
-          transition: color 0.15s;
-          line-height: 1.4;
-        }
-        .toc-item:last-child { border-bottom: none; }
-        .toc-item:hover { color: #6366f1; }
-
-        .newsletter-card {
-          background: linear-gradient(135deg, #1e1b4b, #312e81);
-          border-radius: 14px;
-          padding: 1.5rem 1.25rem;
-          color: #fff;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-        .nl-emoji { font-size: 1.5rem; }
-        .nl-title { font-size: 1rem; font-weight: 700; }
-        .nl-sub { font-size: 0.78rem; color: #a5b4fc; line-height: 1.5; }
-        .nl-input {
-          margin-top: 0.5rem;
-          padding: 0.55rem 0.875rem;
-          border-radius: 8px;
-          border: none;
-          background: rgba(255,255,255,0.12);
-          color: #fff;
-          font-size: 0.82rem;
-          font-family: inherit;
-          outline: none;
-          width: 100%;
-        }
-        .nl-input::placeholder { color: rgba(255,255,255,0.45); }
-        .nl-btn {
-          padding: 0.6rem;
-          border-radius: 8px;
-          border: none;
-          background: linear-gradient(135deg, #6366f1, #a855f7);
-          color: #fff;
-          font-size: 0.85rem;
-          font-weight: 700;
-          cursor: pointer;
-          font-family: inherit;
-          transition: opacity 0.15s;
-        }
-        .nl-btn:hover { opacity: 0.88; }
-
-        /* Related */
-        .related-section {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 1.5rem 4rem;
-        }
-        .related-title {
-          font-family: 'Lora', serif;
-          font-size: 1.4rem;
-          font-weight: 700;
-          color: #0f172a;
-          margin-bottom: 1.25rem;
-        }
-        .related-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.25rem;
-        }
-        .related-card {
-          background: #fff;
-          border-radius: 14px;
-          overflow: hidden;
-          border: 1px solid #ebebf5;
-          text-decoration: none;
-          transition: transform 0.2s, box-shadow 0.2s;
-          display: block;
-        }
-        .related-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .related-img { width: 100%; height: 140px; object-fit: cover; display: block; }
-        .related-body { padding: 1rem; }
-        .related-meta { font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.4rem; }
-        .related-card-title { font-size: 0.875rem; font-weight: 700; color: #1e293b; line-height: 1.4; }
-
-        @media (max-width: 1024px) {
-          .main-layout { grid-template-columns: 1fr; }
-          .sidebar-left, .sidebar-right { display: none; }
-          .article-body { padding: 1.75rem; }
-          .related-grid { grid-template-columns: 1fr 1fr; }
-        }
-        @media (max-width: 640px) {
-          .topbar { padding: 0.6rem 1rem; }
-          .article-title { font-size: 1.5rem; }
-          .related-grid { grid-template-columns: 1fr; }
-          .main-layout { padding: 1rem; }
-        }
-      `}</style>
-    </div>
+              <div className="rel-grid">
+                {related.map(r => {
+                  const rSlug = makeSlug(r);
+                  const rCol  = CAT_COLORS[r.catKey] || CAT_COLORS.gym;
+                  return (
+                    <Link key={r.id} href={`/articles/${rSlug}`} className="related-card" style={{
+                      background: "#fff", border: "1px solid #e2e8f0",
+                      borderRadius: 20, overflow: "hidden", display: "block",
+                    }}>
+                      <div style={{ height: 160, overflow: "hidden", position: "relative" }}>
+                        <img src={r.coverImg} alt={r.title} className="related-img"
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        <div style={{ position: "absolute", top: 10, left: 10, padding: "5px 12px", borderRadius: 99, background: rCol.pill, color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10 }}>
+                          {r.cat}
+                        </div>
+                      </div>
+                      <div style={{ padding: "16px 18px 18px" }}>
+                        <p style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#94a3b8", marginBottom: 8, marginTop: 0 }}>
+                          {r.date} · {r.readTime} read
+                        </p>
+                        <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14.5, color: "#0f172a", lineHeight: 1.4, margin: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          {r.title}
+                        </h3>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
+    </>
   );
 }

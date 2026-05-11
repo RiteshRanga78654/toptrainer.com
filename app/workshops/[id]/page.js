@@ -220,15 +220,17 @@ export default function WorkshopDetailPage() {
 
         {/* ══════════════ HERO ══════════════ */}
   
-<div className="hero-bg-anim relative" style={{ overflow: 'visible' }}>
+{/* ══════════════ HERO ══════════════ */}
+<div className="hero-bg-anim relative" style={{ overflow: 'hidden' }}>
 
   {/* Grid overlay */}
   <div
     className="absolute inset-0 pointer-events-none"
     style={{
-      backgroundImage: 'linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)',
-      backgroundSize: '44px 44px',
-      maskImage: 'radial-gradient(ellipse 80% 90% at 50% 50%, black 30%, transparent 100%)',
+      backgroundImage:
+        'linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px)',
+      backgroundSize: '48px 48px',
+      maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
     }}
   />
 
@@ -236,29 +238,31 @@ export default function WorkshopDetailPage() {
   <div
     className="blob-blue-anim absolute pointer-events-none"
     style={{
-      width: 480, height: 480, top: -100, left: -80,
-      background: 'radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%)',
-      filter: 'blur(36px)',
+      width: 360, height: 360, top: '-10%', right: '-5%',
+      borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
+      background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%)',
+      filter: 'blur(32px)', opacity: 0.6,
     }}
   />
   <div
     className="blob-purple-anim absolute pointer-events-none"
     style={{
-      width: 360, height: 360, bottom: -80, right: 80,
-      background: 'radial-gradient(circle, rgba(139,92,246,0.16) 0%, transparent 70%)',
-      filter: 'blur(44px)',
+      width: 280, height: 280, bottom: '-5%', left: '-8%',
+      borderRadius: '40% 60% 70% 30% / 40% 60% 30% 70%',
+      background: 'radial-gradient(circle, rgba(139,92,246,0.14) 0%, transparent 70%)',
+      filter: 'blur(40px)', opacity: 0.5,
     }}
   />
 
   {/* Particles */}
   {[
-    { cls: 'particle-1', size: 6, bg: '#2563eb', top: '15%', left: '6%' },
-    { cls: 'particle-2', size: 4, bg: '#8b5cf6', top: '30%', left: '16%' },
-    { cls: 'particle-3', size: 7, bg: '#06b6d4', top: '65%', left: '4%' },
-    { cls: 'particle-4', size: 5, bg: '#10b981', top: '75%', left: '20%' },
-    { cls: 'particle-5', size: 5, bg: '#f59e0b', top: '20%', right: '10%' },
-    { cls: 'particle-6', size: 4, bg: '#ef4444', top: '50%', right: '6%' },
-    { cls: 'particle-7', size: 6, bg: '#2563eb', top: '70%', right: '15%' },
+    { cls: 'particle-1', size: 6,  bg: '#2563eb', top: '14%', left: '4%' },
+    { cls: 'particle-2', size: 4,  bg: '#8b5cf6', top: '30%', left: '12%' },
+    { cls: 'particle-3', size: 7,  bg: '#06b6d4', top: '62%', left: '3%' },
+    { cls: 'particle-4', size: 5,  bg: '#10b981', top: '78%', left: '16%' },
+    { cls: 'particle-5', size: 5,  bg: '#6366f1', top: '18%', right: '6%' },
+    { cls: 'particle-6', size: 4,  bg: '#f59e0b', top: '55%', right: '4%' },
+    { cls: 'particle-7', size: 6,  bg: '#2563eb', top: '70%', right: '13%' },
   ].map((p, i) => (
     <div
       key={i}
@@ -267,161 +271,213 @@ export default function WorkshopDetailPage() {
     />
   ))}
 
-  {/* Hero inner grid */}
-  <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-10 lg:px-16 grid grid-cols-1 md:grid-cols-[1fr_480px] lg:grid-cols-[1fr_580px] items-center"
-    style={{ minHeight: '650px' }}
+  {/* ── Two-column hero inner ── */}
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '3rem',
+      alignItems: 'center',
+      maxWidth: 1280,
+      margin: '0 auto',
+      padding: '5rem 1.5rem 4.5rem',
+      position: 'relative',
+      zIndex: 10,
+    }}
+    className="hero-inner-workshop"
   >
-
-    {/* ── LEFT CONTENT ── starts right at navbar bottom with pt */}
-    <div className="flex mb-25   md:-ml-6 lg:-ml-12 flex-col items-center md:items-start text-center md:text-left pt-8 pb-10 md:pt-10 md:pb-12 lg:pt-12 lg:pb-14">
+    {/* ── LEFT ── */}
+    <div>
 
       {/* Live / category badge row */}
-      <div className="anim-up d1 flex items-center gap-3 flex-wrap justify-center md:justify-start mb-5">
-        <div
-          className="stat-badge-hover inline-flex items-center gap-2 px-4 py-2 rounded-full"
-          style={{
-            background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.95)',
+      <div className="anim-up d1" style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(37,99,235,0.15)', borderRadius: 99,
+            padding: '7px 16px', fontFamily: 'var(--font-display)', fontWeight: 700,
+            fontSize: 11, letterSpacing: '0.08em', color: '#0f172a', textTransform: 'uppercase',
             boxShadow: '0 4px 16px rgba(37,99,235,0.08)',
-          }}
-        >
-          <span className="live-dot w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-          <span className="font-semibold text-xs tracking-widest text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
+          }}>
+            <span className="live-dot" style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#10b981' }} />
             {CatLabel.toUpperCase()} WORKSHOP
           </span>
+          {w.isLive && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: 'rgba(239,68,68,0.9)', color: '#fff',
+              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11,
+              padding: '7px 14px', borderRadius: 99,
+            }}>
+              <span className="live-dot" style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#fff' }} />
+              LIVE NOW
+            </span>
+          )}
         </div>
-
-        {w.isLive && (
-          <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-500 text-white font-bold text-xs" style={{ fontFamily: 'var(--font-display)' }}>
-            <span className="live-dot w-1.5 h-1.5 rounded-full bg-white" />
-            LIVE NOW
-          </div>
-        )}
       </div>
 
       {/* Title */}
       <h1
-        className="anim-up d2 font-bold leading-tight text-slate-900 mb-4"
-        style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px, 4.5vw, 56px)' }}
+        className="anim-up d2"
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+          fontWeight: 700, lineHeight: 1.1,
+          color: '#0f172a', marginBottom: 16, letterSpacing: '-0.02em',
+        }}
       >
         {(() => {
-          const words = w.title.split(" ");
-          const head = words.slice(0, Math.ceil(words.length * 0.6)).join(" ");
-          const tail = words.slice(Math.ceil(words.length * 0.6)).join(" ");
+          const words = w.title.split(' ');
+          const head  = words.slice(0, Math.ceil(words.length * 0.6)).join(' ');
+          const tail  = words.slice(Math.ceil(words.length * 0.6)).join(' ');
           return <>{head} <span className="text-shimmer">{tail}</span></>;
         })()}
       </h1>
 
       {/* Short desc */}
-      <p className="anim-up d3 text-slate-500 text-[15px] leading-relaxed mb-6 max-w-lg" style={{ fontFamily: 'var(--font-body)' }}>
+      <p
+        className="anim-up d3"
+        style={{
+          fontFamily: 'var(--font-body)', color: '#475569',
+          fontSize: 'clamp(14px, 2vw, 16px)', lineHeight: 1.75,
+          marginBottom: 24, maxWidth: 480,
+        }}
+      >
         {w.shortDesc}
       </p>
 
       {/* Info row */}
-      <div className="anim-up d3 flex flex-wrap items-center justify-center md:justify-start gap-4 mb-6">
-        <span className="flex items-center gap-1.5 font-bold text-sm text-amber-500" style={{ fontFamily: 'var(--font-body)' }}>
+      <div className="anim-up d3" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 14, color: '#f59e0b' }}>
           <Star size={14} fill="currentColor" /> {w.rating}
-          <span className="font-normal text-slate-400 ml-0.5">({w.reviews})</span>
+          <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: 2 }}>({w.reviews})</span>
         </span>
-        <span className="flex items-center gap-1.5 text-[13px] text-slate-500" style={{ fontFamily: 'var(--font-body)' }}>
-          <Clock size={13} className="text-blue-600" /> {w.duration}
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontSize: 13, color: '#64748b' }}>
+          <Clock size={13} style={{ color: '#2563eb' }} /> {w.duration}
         </span>
-        <span className="flex items-center gap-1.5 text-[13px] text-slate-500" style={{ fontFamily: 'var(--font-body)' }}>
-          <Users size={13} className="text-blue-600" /> {w.trainer.students} students
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontSize: 13, color: '#64748b' }}>
+          <Users size={13} style={{ color: '#2563eb' }} /> {w.trainer.students} students
         </span>
-        <span className="flex items-center gap-1.5 font-semibold text-[13px] text-red-500" style={{ fontFamily: 'var(--font-body)' }}>
-          <span className="live-dot w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 13, color: '#ef4444' }}>
+          <span className="live-dot" style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} />
           Only {w.seats} seats left
         </span>
       </div>
 
-      {/* Trust badges */}
-      <div className="anim-up d5 flex flex-wrap justify-center md:justify-start gap-2.5">
+      {/* Stats row — matches articles hero exactly */}
+      <div className="anim-up d5" style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
         {[
-          { icon: Shield, color: '#10b981', label: '7-Day Guarantee' },
-          { icon: Award, color: '#6366f1', label: 'Certificate Included' },
-          { icon: CheckCircle, color: '#2563eb', label: 'Expert-Led' },
-        ].map(({ icon: Icon, color, label }, i) => (
-          <div
-            key={i}
-            className="stat-badge-hover flex items-center gap-2 px-3.5 py-2 rounded-xl"
-            style={{
-              background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.92)',
-              boxShadow: '0 4px 20px rgba(37,99,235,0.08), inset 0 1px 0 rgba(255,255,255,0.8)',
-            }}
-          >
-            <Icon size={13} style={{ color }} />
-            <span className="font-semibold text-xs text-slate-700" style={{ fontFamily: 'var(--font-body)' }}>{label}</span>
+          [w.rating,             'Expert Rating'],
+          [w.trainer.students,   'Students Trained'],
+          [`${disc}% OFF`,       'Limited Discount'],
+        ].map(([num, lbl]) => (
+          <div key={lbl} style={{ textAlign: 'left' }}>
+            <div style={{
+              fontFamily: 'var(--font-display)', fontSize: '2rem',
+              fontWeight: 700, color: '#334155', letterSpacing: '-0.01em',
+            }}>
+              {num}
+            </div>
+            <div style={{
+              fontFamily: 'var(--font-body)', fontSize: 10, color: '#94a3b8',
+              letterSpacing: '1.5px', textTransform: 'uppercase', marginTop: 2,
+            }}>
+              {lbl}
+            </div>
           </div>
         ))}
       </div>
     </div>
 
-    {/* ── RIGHT IMAGE — bleeds up behind navbar via negative margin-top ── */}
-    
-<div
-  className="anim-scale d3 relative hidden md:block self-stretch md:pl-10 lg:pl-16 mt-15"
->      {/* Glow */}
-      <div
-        className="pulse-ring absolute rounded-full pointer-events-none"
-        style={{
-          width: '80%', height: '70%', left: '10%', top: '10%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)',
-          filter: 'blur(52px)',
-        }}
-      />
+    {/* ── RIGHT: cover image ── */}
+    <div className="anim-scale d3" style={{ position: 'relative' }}>
+      {/* Glow */}
+      <div style={{
+        position: 'absolute', borderRadius: '50%', pointerEvents: 'none',
+        width: '80%', height: '70%', left: '10%', top: '10%',
+        background: 'radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)',
+        filter: 'blur(52px)',
+      }} />
 
-      {/* Image frame — full height of parent, rounded only on left side */}
+      {/* Image frame — same style as articles hero */}
       <div
-className="float-anim relative w-full h-80 overflow-hidden md:translate-x-4 lg:translate-x-15"        style={{
-          borderRadius: '24px 24px 24px 24px',  // rounded left, flush right edge
-          minHeight: '480px',
-          boxShadow: '-24px 0 80px rgba(37,99,235,0.18), 0 40px 80px rgba(37,99,235,0.16)',
+        className="float-anim"
+        style={{
+          position: 'relative', borderRadius: 24, overflow: 'hidden',
+          boxShadow: '0 40px 80px rgba(37,99,235,0.2), 0 16px 40px rgba(139,92,246,0.12)',
         }}
       >
         <img
           src={w.coverImg}
           alt={w.title}
-          className="w-full h-full object-cover   "
-          style={{ objectPosition: 'center top' }}
+          style={{ width: '100%', height: 480, objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
         />
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(37,99,235,0.06) 0%, transparent 50%, rgba(0,0,0,0.32) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(37,99,235,0.06) 0%, transparent 50%, rgba(0,0,0,0.25) 100%)' }} />
 
-        {/* Category pill */}
-        <div
-          className="absolute top-4 left-4 px-3.5 py-1.5 rounded-full text-white font-semibold text-[11px]"
-          style={{ fontFamily: 'var(--font-display)', background: col.pill }}
-        >
+        {/* Category pill — top left */}
+        <div style={{
+          position: 'absolute', top: 16, left: 16,
+          background: col.pill, color: '#fff',
+          fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11,
+          padding: '7px 14px', borderRadius: 99,
+        }}>
           {CatLabel}
         </div>
 
-        {/* Discount bubble */}
-        <div
-          className="float-anim2 absolute bottom-4 right-4 w-[64px] h-[64px] rounded-full flex flex-col items-center justify-center"
-          style={{
-            background: 'linear-gradient(135deg, #2563eb, #6366f1)',
-            boxShadow: '0 8px 24px rgba(37,99,235,0.45)',
-          }}
-        >
-          <span className="font-bold text-[16px] text-white leading-none" style={{ fontFamily: 'var(--font-display)' }}>{disc}%</span>
-          <span className="text-[9px] text-white/80" style={{ fontFamily: 'var(--font-body)' }}>OFF</span>
+        {/* Discount bubble — top right */}
+        <div style={{
+          position: 'absolute', top: 16, right: 16,
+          background: 'linear-gradient(135deg, #2563eb, #6366f1)',
+          color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 700,
+          fontSize: 11, padding: '7px 14px', borderRadius: 99,
+          boxShadow: '0 4px 16px rgba(37,99,235,0.4)',
+        }}>
+          🏷️ {disc}% OFF
         </div>
 
-        {/* Seats remaining */}
-        <div
-          className="absolute bottom-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white font-bold text-[10px]"
-          style={{ fontFamily: 'var(--font-display)', background: 'rgba(239,68,68,0.92)' }}
-        >
-          <span className="live-dot w-1 h-1 rounded-full bg-white" />
-          {w.seats} seats left
+        {/* Duration pill — bottom left */}
+        <div style={{
+          position: 'absolute', bottom: 16, left: 16,
+          display: 'flex', alignItems: 'center', gap: 6,
+          background: 'rgba(37,99,235,0.92)', color: '#fff',
+          fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11,
+          padding: '8px 14px', borderRadius: 99,
+          boxShadow: '0 8px 24px rgba(37,99,235,0.4)',
+        }}>
+          ⏱ {w.duration}
         </div>
+
+        {/* Seats pill — bottom right */}
+        {w.seats && (
+          <div style={{
+            position: 'absolute', bottom: 16, right: 16,
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(239,68,68,0.92)', color: '#fff',
+            fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11,
+            padding: '8px 14px', borderRadius: 99,
+          }}>
+            <span className="live-dot" style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#fff' }} />
+            {w.seats} seats left
+          </div>
+        )}
       </div>
     </div>
-
   </div>
+
+  {/* Responsive style for the two-col grid */}
+  <style>{`
+    @media (max-width: 900px) {
+      .hero-inner-workshop {
+        grid-template-columns: 1fr !important;
+        padding: 3rem 1.25rem !important;
+        text-align: center;
+      }
+      .hero-inner-workshop > div:last-child { display: none; }
+    }
+  `}</style>
 </div>
 
         {/* ══════════════ MAIN CONTENT ══════════════ */}
@@ -486,32 +542,32 @@ className="float-anim relative w-full h-80 overflow-hidden md:translate-x-4 lg:t
                 <Camera size={18} className="text-slate-400" />
                 <h2 className="font-bold text-[18px] text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>Session Snapshots</h2>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                {w.photos.map((photo, idx) => (
-                  <div
-                    key={idx}
-                    className="photo-frame relative overflow-hidden rounded-2xl"
-                    style={{ height: idx === 0 ? 200 : 160 }}
-                  >
-                    <img src={photo.src} alt={photo.label} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }} />
-                    {idx === 0 && w.isLive && (
-                      <div
-                        className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white font-bold text-[9px]"
-                        style={{ fontFamily: 'var(--font-display)', background: 'rgba(239,68,68,0.9)' }}
-                      >
-                        <span className="live-dot w-1 h-1 rounded-full bg-white" /> LIVE
-                      </div>
-                    )}
-                    <span
-                      className="absolute bottom-2.5 left-2.5 font-semibold text-[11px] text-white px-2.5 py-0.5 rounded-lg"
-                      style={{ fontFamily: 'var(--font-body)', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)' }}
-                    >
-                      {photo.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
+             <div className="grid grid-cols-2 gap-3">
+  {w.photos.map((photo, idx) => (
+    <div
+      key={idx}
+      className="photo-frame relative overflow-hidden rounded-2xl"
+      style={{ height: 180 }}
+    >
+      <img src={photo.src} alt={photo.label} className="w-full h-full object-cover" />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }} />
+      {idx === 0 && w.isLive && (
+        <div
+          className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white font-bold text-[9px]"
+          style={{ fontFamily: 'var(--font-display)', background: 'rgba(239,68,68,0.9)' }}
+        >
+          <span className="live-dot w-1 h-1 rounded-full bg-white" /> LIVE
+        </div>
+      )}
+      <span
+        className="absolute bottom-2.5 left-2.5 font-semibold text-[11px] text-white px-2.5 py-0.5 rounded-lg"
+        style={{ fontFamily: 'var(--font-body)', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)' }}
+      >
+        {photo.label}
+      </span>
+    </div>
+  ))}
+</div>
             </section>
 
             {/* How It's Conducted */}

@@ -1206,182 +1206,205 @@ function HeroSection() {
   const imgSrc = (slide) => slide.src || slide.fallback;
 
   return (
-    <section style={{
-      position: "relative",
-      overflow: "hidden",
-      borderBottom: "1px solid #e2e8f0",
-      minHeight: 650,
-    }}>
+      <section style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(37,99,235,0.1)', minHeight: 650 }}>
 
-      {/* ── BACKGROUND SLIDES (right-to-left) ── */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+      {/* ── Background slideshow ── */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         {SLIDES.map((slide, i) => {
-          let cls = "hero-slide hidden";
-          if (i === current) cls = "hero-slide active";
-          else if (i === exiting) cls = "hero-slide exiting";
+          let cls = 'hero-slide hidden';
+          if (i === current) cls = 'hero-slide active';
+          else if (i === exiting) cls = 'hero-slide exiting';
           return (
-            <div
-              key={i}
-              className={cls}
-              style={{ backgroundImage: `url(${imgSrc(slide)})` }}
-            />
+            <div key={i} className={cls} style={{ backgroundImage: `url(${imgSrc(slide)})` }} />
           );
         })}
       </div>
 
-      {/* ── LIGHT OVERLAY — keeps text readable, maintains light feel ── */}
+      {/* ── Gradient overlay — same as slug hero ── */}
+  <div style={{
+  position: 'absolute',
+  inset: 0,
+  zIndex: 1,
+  background: 'linear-gradient(135deg, rgba(239,246,255,0.45) 0%, rgba(245,243,255,0.35) 40%, rgba(238,242,255,0.28) 70%, rgba(240,253,244,0.25) 100%)',
+  backgroundSize: '300% 300%',
+  animation: 'gradientShift 12s ease infinite',
+}} />
+
+      {/* ── Light overlay so background image still bleeds through ── */}
       <div style={{
-        position: "absolute", inset: 0, zIndex: 1,
-background: "linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0.2) 70%, transparent 100%)",
-      }} />
-      {/* Subtle mesh grid */}
+        position: 'absolute', inset: 0, zIndex: 2,
+background: 'linear-gradient(90deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.28) 40%, rgba(255,255,255,0.08) 70%, transparent 100%)',      }} />
+
+      {/* ── Mesh grid ── */}
       <div style={{
-        position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-        backgroundImage: "linear-gradient(rgba(37,99,235,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.04) 1px,transparent 1px)",
-        backgroundSize: "48px 48px",
-        maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)",
+        position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+        backgroundImage: 'linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px)',
+        backgroundSize: '48px 48px',
+        maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
       }} />
 
-      {/* Blue blob top-left */}
+      {/* ── Blobs ── */}
       <div style={{
-        position: "absolute", top: -80, left: -80, width: 380, height: 380,
-        borderRadius: "60% 40% 30% 70%/60% 30% 70% 40%",
-        background: "radial-gradient(circle,rgba(37,99,235,0.13) 0%,transparent 70%)",
-        filter: "blur(40px)", zIndex: 3, pointerEvents: "none",
-        animation: "floatY 8s ease-in-out infinite",
+        position: 'absolute', top: -80, right: '-5%', width: 360, height: 360,
+        borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
+        background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%)',
+        filter: 'blur(32px)', zIndex: 3, pointerEvents: 'none', opacity: 0.6,
+        animation: 'blobMorph 12s ease-in-out infinite, floatY 8s ease-in-out infinite',
       }} />
-      {/* Purple blob bottom-right */}
       <div style={{
-        position: "absolute", bottom: -40, right: -40, width: 300, height: 300,
-        borderRadius: "40% 60% 70% 30%/40% 60% 30% 70%",
-        background: "radial-gradient(circle,rgba(139,92,246,0.10) 0%,transparent 70%)",
-        filter: "blur(40px)", zIndex: 3, pointerEvents: "none",
-        animation: "floatY 10s ease-in-out infinite 2s",
+        position: 'absolute', bottom: '-5%', left: '-8%', width: 280, height: 280,
+        borderRadius: '40% 60% 70% 30% / 40% 60% 30% 70%',
+        background: 'radial-gradient(circle, rgba(139,92,246,0.14) 0%, transparent 70%)',
+        filter: 'blur(40px)', zIndex: 3, pointerEvents: 'none', opacity: 0.5,
+        animation: 'blobMorph 15s ease-in-out infinite reverse, floatY 10s ease-in-out infinite 2s',
       }} />
 
-      {/* ── SLIDE LABEL TAG (top right) ── */}
+      {/* ── Particles ── */}
+      {[
+        { size: 6, bg: '#2563eb', top: '14%', left: '4%',   anim: 'particleDrift 6s ease-in-out infinite' },
+        { size: 4, bg: '#8b5cf6', top: '30%', left: '12%',  anim: 'particleDrift 8s ease-in-out infinite 1s' },
+        { size: 7, bg: '#06b6d4', top: '62%', left: '3%',   anim: 'particleDrift 7s ease-in-out infinite 2s' },
+        { size: 5, bg: '#10b981', top: '78%', left: '16%',  anim: 'particleDrift 9s ease-in-out infinite 0.5s' },
+        { size: 5, bg: '#6366f1', top: '18%', right: '6%',  anim: 'particleDrift 5s ease-in-out infinite 1.5s' },
+        { size: 4, bg: '#f59e0b', top: '55%', right: '4%',  anim: 'particleDrift 10s ease-in-out infinite 3s' },
+        { size: 6, bg: '#2563eb', top: '70%', right: '13%', anim: 'particleDrift 7s ease-in-out infinite 0.8s' },
+      ].map((p, i) => (
+        <div key={i} style={{
+          position: 'absolute', borderRadius: '50%', pointerEvents: 'none', zIndex: 4,
+          width: p.size, height: p.size, background: p.bg,
+          top: p.top, left: p.left, right: p.right,
+          animation: p.anim,
+        }} />
+      ))}
+
+      {/* ── Slide label tag ── */}
       <div style={{
-        position: "absolute", top: 20, right: 48, zIndex: 15,
-        display: "flex", alignItems: "center", gap: 6,
-        padding: "5px 12px", borderRadius: 8,
-        background: "rgba(255,255,255,0.85)", backdropFilter: "blur(10px)",
-        border: "1px solid #bfdbfe",
-        fontFamily: "'Clash Display',sans-serif", fontSize: 11, fontWeight: 600,
-        letterSpacing: "0.06em", color: "#1d4ed8",
-        boxShadow: "0 2px 8px rgba(37,99,235,0.1)",
-        transition: "opacity 0.4s ease",
+        position: 'absolute', top: 20, right: 48, zIndex: 15,
+        display: 'flex', alignItems: 'center', gap: 6,
+        padding: '7px 16px', borderRadius: 99,
+        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(37,99,235,0.15)',
+        fontFamily: "'Clash Display', sans-serif", fontSize: 11, fontWeight: 700,
+        letterSpacing: '0.07em', color: '#0f172a', textTransform: 'uppercase',
+        boxShadow: '0 4px 16px rgba(37,99,235,0.08)',
       }}>
-        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", flexShrink: 0, animation: "livePulse 1.4s ease-in-out infinite" }} />
+        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', flexShrink: 0, animation: 'livePulse 1.4s ease-in-out infinite' }} />
         {SLIDES[current].label}
       </div>
 
-      {/* ── SLIDE COUNTER (bottom right) ── */}
+      {/* ── Slide counter ── */}
       <div style={{
-        position: "absolute", bottom: 36, right: 48, zIndex: 15,
-        fontFamily: "'Clash Display',sans-serif", fontSize: 12, fontWeight: 600,
-        letterSpacing: "0.06em", color: "#94a3b8",
+        position: 'absolute', bottom: 44, right: 48, zIndex: 15,
+        fontFamily: "'Clash Display', sans-serif", fontSize: 12, fontWeight: 600,
+        letterSpacing: '0.06em', color: '#94a3b8',
       }}>
-        {String(current + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
+        {String(current + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
       </div>
 
-      {/* ── MAIN CONTENT — single column, centred left ── */}
-<div style={{
-  position: "relative",
-  zIndex: 10,
-  maxWidth: 1200,
+      {/* ── Main content ── */}
+      <div style={{
+        position: 'relative', zIndex: 10,
+        maxWidth: 1280, margin: '0 auto',
+        padding: '5rem 1.5rem 4.5rem',
+        minHeight: 580,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}>
 
-  margin: "10px",
-
-  // ✅ Responsive padding (auto adjusts for mobile)
-  padding: "80px clamp(16px, 5vw, 80px) 100px",
-marginLeft: "40px",
-  minHeight: 520,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  width: "100%",
-}}>
-
-        {/* Live badge */}
-        <div className="anim-fade-up" style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          padding: "7px 16px", borderRadius: 100,
-          background: "rgba(255,255,255,0.85)", backdropFilter: "blur(12px)",
-          border: "1px solid #bfdbfe",
-          marginBottom: 24, width: "fit-content",
-          boxShadow: "0 2px 8px rgba(37,99,235,0.08)",
-        }}>
-          <span className="online-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e", flexShrink: 0 }} />
-          <span style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.07em", color: "#0f172a" }}>
-            1,200+ EXPERTS ONLINE NOW
+        {/* Live badge — exactly like slug hero */}
+        <div className="anim-fade-up" style={{ marginBottom: 20 }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(37,99,235,0.15)', borderRadius: 99,
+            padding: '7px 16px',
+            fontFamily: "'Clash Display', sans-serif", fontWeight: 700,
+            fontSize: 11, letterSpacing: '0.08em', color: '#0f172a', textTransform: 'uppercase',
+            boxShadow: '0 4px 16px rgba(37,99,235,0.08)',
+          }}>
+            <span className="online-dot" style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#10b981' }} />
+            1,200+ Experts Online Now
           </span>
         </div>
 
-        {/* Headline */}
-        <h1 className="anim-fade-up delay-100" style={{
-          fontFamily: "'Clash Display',sans-serif", fontWeight: 700,
-          fontSize: "clamp(30px,4vw,54px)", lineHeight: 1.1,
-          color: "#0f172a", marginBottom: 18,
+        {/* Headline — Clash Display, same weight + size scale as slug */}
+        <h1 className="anim-slide-l delay-100" style={{
+          fontFamily: "'Clash Display', sans-serif",
+          fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+          fontWeight: 700, lineHeight: 1.1,
+          color: '#0f172a', marginBottom: 16, letterSpacing: '-0.02em',
         }}>
-          Master Skills Faster<br />
-          with{" "}
-          <span className="hero-text-shimmer">Top Mentors</span>
-          <br />
-          and Live Workshops
+          Master Skills Faster <br /> with{' '} 
+          <span style={{
+            background: 'linear-gradient(90deg, #1d4ed8 0%, #7c3aed 30%, #1d4ed8 60%, #0891b2 100%)',
+            backgroundSize: '200% auto',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            animation: 'shimmer 4s linear infinite',
+          }}>
+            Top Mentors
+          </span>
+          <br />and Live Workshops
         </h1>
 
-        {/* Subtext */}
+        {/* Subtext — Satoshi, same style as slug */}
         <p className="anim-fade-up delay-200" style={{
-          fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 400,
-          color: "#475569", lineHeight: 1.75,
-          maxWidth: 480, marginBottom: 32,
+          fontFamily: "'Satoshi', sans-serif",
+          color: '#475569', fontSize: 'clamp(14px, 2vw, 16px)',
+          lineHeight: 1.75, marginBottom: 32, maxWidth: 480,
         }}>
           Experience personalized mentorship, interactive sessions, and expert-led training designed for real-world success.
         </p>
 
-        {/* Stats */}
-        <div className="anim-fade-up delay-400 hero-stats" style={{
-          display: "flex", gap: 28, flexWrap: "wrap",
-          paddingTop: 28, borderTop: "1px solid #e2e8f0",
-        }}>
+        {/* Stats row — same inline number/label format as slug & articles hero */}
+        <div className="anim-fade-up delay-400" style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
           {[
-            { num: "50K+",  lbl: "Students Enrolled" },
-            { num: "320+",  lbl: "Live Workshops"    },
-            { num: "4.9★",  lbl: "Avg. Rating"       },
-            { num: "98%",   lbl: "Satisfaction"      },
-          ].map(({ num, lbl }) => (
-            <div key={lbl} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <span style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 22, fontWeight: 700, color: "#1e3a8a" }}>{num}</span>
-              <span style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 11, color: "#64748b", letterSpacing: "0.05em" }}>{lbl}</span>
+            ['50K+',  'Students Enrolled'],
+            ['320+',  'Live Workshops'],
+            ['4.9★',  'Average Rating'],
+            ['98%',   'Satisfaction'],
+          ].map(([num, lbl]) => (
+            <div key={lbl} style={{ textAlign: 'left' }}>
+              <div style={{
+                fontFamily: "'Clash Display', sans-serif",
+                fontSize: '2rem', fontWeight: 700,
+                color: '#334155', letterSpacing: '-0.01em',
+              }}>
+                {num}
+              </div>
+              <div style={{
+                fontFamily: "'Satoshi', sans-serif",
+                fontSize: 10, color: '#94a3b8',
+                letterSpacing: '1.5px', textTransform: 'uppercase', marginTop: 2,
+              }}>
+                {lbl}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── DOT CONTROLS ── */}
+      {/* ── Dot controls ── */}
       <div style={{
-        position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)",
-        zIndex: 15, display: "flex", alignItems: "center", gap: 8,
+        position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)',
+        zIndex: 15, display: 'flex', alignItems: 'center', gap: 8,
       }}>
         {SLIDES.map((_, i) => (
           <button
             key={i}
             onClick={() => { clearTimeout(timerRef.current); goTo(i); }}
             style={{
-              width: i === current ? 24 : 7,
-              height: 7,
-              borderRadius: 4,
-              background: i === current ? "#2563eb" : "#bfdbfe",
-              border: "none", cursor: "pointer", padding: 0,
-              transition: "all 0.35s ease",
+              width: i === current ? 24 : 7, height: 7, borderRadius: 4,
+              background: i === current ? '#2563eb' : '#bfdbfe',
+              border: 'none', cursor: 'pointer', padding: 0,
+              transition: 'all 0.35s ease',
             }}
           />
         ))}
       </div>
 
-  
-
     </section>
+
   );
 }
 
@@ -1714,7 +1737,7 @@ export default function WorkshopsPage() {
                   onMouseEnter={e => { e.currentTarget.style.background = '#f97316'; e.currentTarget.style.color = 'white'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#f97316'; }}
                 >
-                  Join as a Trainer <ArrowRight size={14} />
+                  Become a Trainer <ArrowRight size={14} />
                 </button>
               </div>
             </div>

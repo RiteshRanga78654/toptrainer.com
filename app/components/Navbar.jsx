@@ -11,13 +11,11 @@ const Navbar = () => {
   const [open, setOpen] = React.useState(false);
   const navItems = [
     { name: "Find Trainers", link: "/find-trainer" },
-    { name: " Workshops", link: "/workshops" },
-    
-  { name: "Industry", link: "/Industry" },
-  { name: "Department", link: "/department" },
-  { name: "Competency", link: "/competency" },
- { name: "Articles", link: "/articles" },
-
+    { name: "Workshops", link: "/workshops" },
+    { name: "Industry", link: "/Industry" },
+    { name: "Department", link: "/department" },
+    { name: "Competency", link: "/competency" },
+    { name: "Articles", link: "/articles" },
   ];
 
   return (
@@ -40,13 +38,29 @@ const Navbar = () => {
           hover:shadow-[0_8px_40px_rgba(37,99,235,0.13)]
           transition-all duration-300">
 
-            {/* Logo */}
-            <h1 className="text-lg sm:text-xl font-bold leading-none">
-              <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                Top
-              </span>{" "}
-              <span className="text-orange-400">Trainer</span>
-            </h1>
+      {/* Logo */}
+<h1 className="flex items-center gap-2 text-lg sm:text-xl font-bold leading-none -ml-2">
+  
+  {/* Logo Image */}
+  <Image
+    src="/icon.png"
+    alt="TopTrainer Logo"
+    width={32}
+    height={32}
+    className="object-contain"
+  />
+
+  {/* Text */}
+<Link href="/">
+  <span className="cursor-pointer">
+    <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+      Top
+    </span>
+    <span className="text-orange-400">Trainer</span>
+  </span>
+</Link>
+
+</h1>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
@@ -138,19 +152,30 @@ const Navbar = () => {
               </Link>
             ))}
           </nav>
-
-          {/* Buttons */}
-          {/* <div className="flex gap-3">
-           <Link
-  href="/login"
-  className="flex-1 block py-2 border border-blue-300 rounded-lg text-blue-600 bg-blue-50 text-center"
->
-  Login
+          
+<Link href="/join-as-trainer" onClick={() => setOpen(false)}>
+  <div className="w-full mb-4 py-2.5 text-center font-semibold rounded-lg 
+  bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition">
+    Join as Trainer
+  </div>
 </Link>
-            <button className="flex-1 py-2 rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-800">
-              Sign Up
-            </button>
-          </div> */}
+          {/* Buttons */}
+          <div className="flex gap-3">
+            <Link
+              href="/login"
+              className="flex-1 block py-2 border border-blue-300 rounded-lg text-blue-600 bg-blue-50 text-center"
+              onClick={() => setOpen(false)}
+            >
+              Login
+            </Link>
+            <Link
+              href="/join-as-trainer"
+              className="flex-1 py-2 rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-800 text-center"
+              onClick={() => setOpen(false)}
+            >
+              Join as Trainer
+            </Link>
+          </div>
         </div>
       )}
     </>

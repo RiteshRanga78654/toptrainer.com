@@ -52,7 +52,7 @@ a, button {
 }
 
 * {
-  font-family: var(--font-geist), sans-serif;
+  font-family: 'Geist Sans', sans-serif;
 }
 
 .font-display {
@@ -68,10 +68,3 @@ a, button {
   transform: scale(1.05);
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE/Edge */
-  scrollbar-width: none;     /* Firefox */
-}

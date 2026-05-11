@@ -42,7 +42,7 @@ const trainersData = {
         {
             name: "Aarav Mehta",
             role: "AI Productivity Coach",
-            tags: ["ChatGPT", "Automation", "AI Workflow"],
+            tags: ["ChatGPT", "Automation", "AI Workflows"],
             rating: 4.9,
             reviews: 156,
             price: 18000,
@@ -384,8 +384,7 @@ function StarRating({ rating }) {
 function TrainerCard({ trainer }) {
     const [liked, setLiked] = useState(false);
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md 
-        transition-all duration-300 overflow-hidden group flex flex-col h-full">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
             <div className="relative">
                 <div className="relative h-44 w-full overflow-hidden">
                     <Image
@@ -412,7 +411,7 @@ function TrainerCard({ trainer }) {
                 </button>
             </div>
 
-            <div className="p-4 flex flex-col flex-1">
+            <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-1.5">
                         <h3 className="font-bold text-gray-900 text-base">{trainer.name}</h3>
@@ -439,21 +438,21 @@ function TrainerCard({ trainer }) {
                     {trainer.tags.map((tag) => (
                         <span
                             key={tag}
-                            className="text-xs bg-blue-50 text-blue-700 px-2.5 py-0.5 
-                            rounded-full font-medium border border-blue-100"
+                            className="text-xs bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full font-medium border border-blue-100"
                         >
                             {tag}
                         </span>
                     ))}
                 </div>
-                <hr className="border-0 h-px bg-gray-300 my-2" />
-                <div className="flex items-center justify-between mt-auto pt-4">
-                 <a href="/profile">  <button className="bg-blue-500 text-white  font-semibold text-sm px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 group-hover:shadow-sm">
+                <div className="flex items-end justify-between mt-4">
+                    <button className="border border-blue-600 text-blue-600 font-semibold text-sm px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 group-hover:shadow-sm">
                         View Profile
-                    </button></a>
+                    </button>
 
                     <div className="text-right">
-                        <p className="text-sm text-gray-500 ">
+
+
+                        <p className="text-sm text-gray-500 mt-1">
                             {trainer.experience}
                         </p>
                     </div>
@@ -475,8 +474,8 @@ export default function Industry() {
     const [showExtra, setShowExtra] = useState(false);
     const trainers = trainersData[activeIndustry] || [];
     const displayed = showAll ? trainers : trainers.slice(0, 8);
-// console.log(trainersData["AI Tools"].length);
-// console.log(trainersData["AI Tools"]);
+console.log(trainersData["AI Tools"].length);
+console.log(trainersData["AI Tools"]);
     return (
         <div
             className="min-h-screen font-sans"
