@@ -1,8 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import Navbar from "./components/Navbar";
-import Footer from "./components/footer";
+import LayoutWrapper from "./components/LayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,8 +17,8 @@ export const metadata = {
   title: "Top Trainer",
   description: "Find the best trainers for your growth",
   icons: {
-    icon :"/icon.png"
-  }
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -29,16 +28,9 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-
-        {/* ✅ Works now */}
-        <Navbar />
-
-        <main className="flex-1">
+        <LayoutWrapper>
           {children}
-        </main>
-
-        <Footer />
-
+        </LayoutWrapper>
       </body>
     </html>
   );

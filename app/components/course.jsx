@@ -187,12 +187,11 @@
 //     );
 // }
 
-
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
-import { Star, ArrowRight, TrendingUp, Code2, Briefcase } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Star, ArrowRight, TrendingUp, Code2, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 
 /* ── Inject styles ── */
 const styles = `
@@ -212,7 +211,6 @@ const styles = `
     100% { background-position: 0% 50%; }
   }
 
-  /* mesh grid overlay */
   .pc-section::before {
     content: '';
     position: absolute;
@@ -226,7 +224,6 @@ const styles = `
     z-index: 0;
   }
 
-  /* ── Category card ── */
   .pc-cat-card {
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(16px);
@@ -258,7 +255,6 @@ const styles = `
     border-color: rgba(37, 99, 235, 0.2);
   }
 
-  /* ── Category icon pill ── */
   .pc-cat-icon {
     display: inline-flex;
     align-items: center;
@@ -274,7 +270,6 @@ const styles = `
     transform: rotate(8deg) scale(1.12);
   }
 
-  /* ── Trainer row ── */
   .pc-trainer-row {
     display: flex;
     align-items: center;
@@ -302,9 +297,7 @@ const styles = `
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .pc-trainer-row:hover::after {
-    transform: scaleY(1);
-  }
+  .pc-trainer-row:hover::after { transform: scaleY(1); }
 
   .pc-trainer-row:hover {
     background: white;
@@ -313,7 +306,6 @@ const styles = `
     transform: translateX(4px);
   }
 
-  /* ── Avatar ring animation ── */
   .pc-avatar-ring {
     position: relative;
     width: 44px;
@@ -331,9 +323,7 @@ const styles = `
     transition: opacity 0.35s ease;
   }
 
-  .pc-trainer-row:hover .pc-avatar-ring::before {
-    opacity: 1;
-  }
+  .pc-trainer-row:hover .pc-avatar-ring::before { opacity: 1; }
 
   .pc-avatar-inner {
     position: absolute;
@@ -344,7 +334,6 @@ const styles = `
     background: #e2e8f0;
   }
 
-  /* ── View button ── */
   .pc-view-btn {
     flex-shrink: 0;
     display: flex;
@@ -369,7 +358,6 @@ const styles = `
     transform: scale(1.05);
   }
 
-  /* ── Scrollbar ── */
   .pc-scroll::-webkit-scrollbar { width: 4px; }
   .pc-scroll::-webkit-scrollbar-track { background: transparent; }
   .pc-scroll::-webkit-scrollbar-thumb {
@@ -377,7 +365,6 @@ const styles = `
     border-radius: 10px;
   }
 
-  /* ── Section title shimmer ── */
   .pc-shimmer {
     background: linear-gradient(90deg, #1d4ed8 0%, #7c3aed 30%, #1d4ed8 60%, #0891b2 100%);
     background-size: 200% auto;
@@ -392,7 +379,6 @@ const styles = `
     100% { background-position:  200% center; }
   }
 
-  /* ── Tab button ── */
   .pc-tab {
     position: relative;
     padding: 8px 20px;
@@ -420,7 +406,6 @@ const styles = `
     box-shadow: 0 4px 16px rgba(37,99,235,0.3);
   }
 
-  /* ── Stagger fade-up ── */
   @keyframes pcFadeUp {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -431,7 +416,6 @@ const styles = `
     animation: pcFadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
   }
 
-  /* ── Rating star pulse ── */
   .pc-star {
     display: inline-block;
     animation: pcStarPulse 2s ease-in-out infinite;
@@ -442,7 +426,6 @@ const styles = `
     50% { transform: scale(1.2); }
   }
 
-  /* ── "See All" button ── */
   .pc-see-all {
     display: inline-flex;
     align-items: center;
@@ -478,7 +461,6 @@ const styles = `
 
   .pc-see-all span { position: relative; z-index: 1; }
 
-  /* ── Floating blob decorators ── */
   .pc-blob-1 {
     position: absolute;
     width: 350px;
@@ -515,7 +497,6 @@ const styles = `
     50%       { transform: translateY(-16px); }
   }
 
-  /* ── Card entrance ── */
   @keyframes pcCardIn {
     from { opacity: 0; transform: translateY(32px) scale(0.96); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -526,7 +507,6 @@ const styles = `
     animation: pcCardIn 0.55s cubic-bezier(0.22,1,0.36,1) forwards;
   }
 
-  /* ── Row entrance ── */
   @keyframes pcRowIn {
     from { opacity: 0; transform: translateX(-12px); }
     to   { opacity: 1; transform: translateX(0); }
@@ -537,7 +517,6 @@ const styles = `
     animation: pcRowIn 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
   }
 
-  /* ── Heading underline ── */
   .pc-underline {
     position: relative;
     display: inline-block;
@@ -560,7 +539,6 @@ const styles = `
     to   { width: 100%; }
   }
 
-  /* ── Count badge ── */
   .pc-count-badge {
     display: inline-flex;
     align-items: center;
@@ -574,9 +552,26 @@ const styles = `
     border: 1px solid rgba(37,99,235,0.15);
   }
 
-  /* ── Responsive ── */
+  /* ── Mobile scroll track ── */
+  .pc-mobile-track {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 0;
+  }
+  .pc-mobile-track::-webkit-scrollbar { display: none; }
+  .pc-mobile-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    padding: 4px 2px 8px;
+  }
+
   @media (max-width: 768px) {
-    .pc-grid { grid-template-columns: 1fr !important; }
     .pc-tabs { flex-wrap: wrap; }
   }
 `;
@@ -587,8 +582,6 @@ const categoryMeta = [
     icon: TrendingUp,
     iconBg: "bg-orange-100",
     iconColor: "#ea580c",
-    accentFrom: "#f97316",
-    accentTo:   "#ef4444",
     badge: "Hot",
     badgeColor: "bg-orange-50 text-orange-600 border-orange-200",
   },
@@ -597,8 +590,6 @@ const categoryMeta = [
     icon: Code2,
     iconBg: "bg-blue-100",
     iconColor: "#2563eb",
-    accentFrom: "#2563eb",
-    accentTo:   "#7c3aed",
     badge: "Trending",
     badgeColor: "bg-blue-50 text-blue-600 border-blue-200",
   },
@@ -607,8 +598,6 @@ const categoryMeta = [
     icon: Briefcase,
     iconBg: "bg-emerald-100",
     iconColor: "#059669",
-    accentFrom: "#10b981",
-    accentTo:   "#0891b2",
     badge: "New",
     badgeColor: "bg-emerald-50 text-emerald-600 border-emerald-200",
   },
@@ -618,40 +607,216 @@ const data = [
   {
     title: "Popular in Sales",
     items: [
-      { name: "Rahul Sharma",    skill: "Digital Marketing & Sales",         rating: "4.9", image: "/Images/trainee1.png" },
-      { name: "Anjali Verma",    skill: "B2B Sales Masterclass",             rating: "4.8", image: "/Images/trainee2.png" },
-      { name: "Aman Gupta",      skill: "Cold Calling & Lead Generation",    rating: "4.7", image: "/Images/trainee3.png" },
-      { name: "Arjun Malhotra",  skill: "Sales Strategist & Negotiation",    rating: "4.8", image: "/Images/trainee3.png" },
-      { name: "Simran Kaur",     skill: "Inside Sales Specialist",           rating: "4.7", image: "/Images/trainee2.png" },
-      { name: "Rajat Khanna",    skill: "Lead Generation & CRM Expert",      rating: "4.6", image: "/Images/trainee3.png" },
+      { name: "Rahul Sharma",   skill: "Digital Marketing & Sales",      rating: "4.9", image: "/Images/trainee1.png" },
+      { name: "Anjali Verma",   skill: "B2B Sales Masterclass",          rating: "4.8", image: "/Images/trainee2.png" },
+      { name: "Aman Gupta",     skill: "Cold Calling & Lead Generation", rating: "4.7", image: "/Images/trainee3.png" },
+      { name: "Arjun Malhotra", skill: "Sales Strategist & Negotiation", rating: "4.8", image: "/Images/trainee3.png" },
+      { name: "Simran Kaur",    skill: "Inside Sales Specialist",        rating: "4.7", image: "/Images/trainee2.png" },
+      { name: "Rajat Khanna",   skill: "Lead Generation & CRM Expert",   rating: "4.6", image: "/Images/trainee3.png" },
     ],
   },
   {
     title: "Popular in Tech",
     items: [
-      { name: "Rohit Mehta",     skill: "Full Stack Developer",              rating: "4.8", image: "/Images/trainee3.png" },
-      { name: "Sneha Kapoor",    skill: "Data Scientist",                    rating: "4.9", image: "/Images/trainee2.png" },
-      { name: "Karan Singh",     skill: "AI/ML Trainer",                     rating: "4.7", image: "/Images/trainee1.png" },
-      { name: "Aditya Verma",    skill: "Frontend Developer (React.js)",     rating: "4.8", image: "/Images/trainee3.png" },
-      { name: "Priya Nair",      skill: "Cloud Computing Engineer (AWS)",    rating: "4.7", image: "/Images/trainee2.png" },
-      { name: "Nikhil Joshi",    skill: "Cybersecurity Specialist",          rating: "4.6", image: "/Images/trainee3.png" },
+      { name: "Rohit Mehta",  skill: "Full Stack Developer",           rating: "4.8", image: "/Images/trainee3.png" },
+      { name: "Sneha Kapoor", skill: "Data Scientist",                 rating: "4.9", image: "/Images/trainee2.png" },
+      { name: "Karan Singh",  skill: "AI/ML Trainer",                  rating: "4.7", image: "/Images/trainee1.png" },
+      { name: "Aditya Verma", skill: "Frontend Developer (React.js)",  rating: "4.8", image: "/Images/trainee3.png" },
+      { name: "Priya Nair",   skill: "Cloud Computing Engineer (AWS)", rating: "4.7", image: "/Images/trainee2.png" },
+      { name: "Nikhil Joshi", skill: "Cybersecurity Specialist",       rating: "4.6", image: "/Images/trainee3.png" },
     ],
   },
   {
     title: "Popular in Business",
     items: [
-      { name: "Neha Arora",      skill: "Business Coach",                    rating: "4.8", image: "/Images/trainee2.png" },
-      { name: "Vikas Jain",      skill: "Marketing Expert",                  rating: "4.7", image: "/Images/trainee1.png" },
-      { name: "Pooja Bansal",    skill: "Communication Trainer",             rating: "4.9", image: "/Images/trainee3.png" },
-      { name: "Ritika Sinha",    skill: "Startup & Growth Consultant",       rating: "4.9", image: "/Images/trainee2.png" },
-      { name: "Manish Agarwal",  skill: "Financial Planning Expert",         rating: "4.7", image: "/Images/trainee3.png" },
-      { name: "Kavita Mehra",    skill: "HR & Leadership Coach",             rating: "4.8", image: "/Images/trainee2.png" },
+      { name: "Neha Arora",     skill: "Business Coach",               rating: "4.8", image: "/Images/trainee2.png" },
+      { name: "Vikas Jain",     skill: "Marketing Expert",             rating: "4.7", image: "/Images/trainee1.png" },
+      { name: "Pooja Bansal",   skill: "Communication Trainer",        rating: "4.9", image: "/Images/trainee3.png" },
+      { name: "Ritika Sinha",   skill: "Startup & Growth Consultant",  rating: "4.9", image: "/Images/trainee2.png" },
+      { name: "Manish Agarwal", skill: "Financial Planning Expert",    rating: "4.7", image: "/Images/trainee3.png" },
+      { name: "Kavita Mehra",   skill: "HR & Leadership Coach",        rating: "4.8", image: "/Images/trainee2.png" },
     ],
   },
 ];
 
+/* ─── Mobile Carousel ─── */
+function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
+  const scrollRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const MAX_DOTS = 8;
+
+  const getDotIndices = (total) => {
+    if (total <= MAX_DOTS) return Array.from({ length: total }, (_, i) => i);
+    const half = Math.floor(MAX_DOTS / 2);
+    let start = Math.max(0, currentIndex - half);
+    let end = start + MAX_DOTS;
+    if (end > total) { end = total; start = end - MAX_DOTS; }
+    return Array.from({ length: MAX_DOTS }, (_, i) => start + i);
+  };
+
+  const total = displayData.length;
+  const dotIndices = getDotIndices(total);
+  const showLeftEllipsis = dotIndices[0] > 0;
+  const showRightEllipsis = dotIndices[dotIndices.length - 1] < total - 1;
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const index = Math.round(el.scrollLeft / el.offsetWidth);
+    setCurrentIndex(index);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  // Reset to first card when filter changes
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ left: 0, behavior: "instant" });
+    setCurrentIndex(0);
+  }, [displayData]);
+
+  const scrollTo = useCallback((index) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const clamped = Math.max(0, Math.min(index, total - 1));
+    el.scrollTo({ left: clamped * el.offsetWidth, behavior: "smooth" });
+    setCurrentIndex(clamped);
+  }, [total]);
+
+  const prev = () => scrollTo(currentIndex - 1);
+  const next = () => scrollTo(currentIndex + 1);
+
+  return (
+    <div className="w-full">
+      {/* Scrollable track */}
+      <div ref={scrollRef} className="pc-mobile-track">
+        {displayData.map((category, idx) => {
+          const realIdx = activeTab !== null ? activeTab : idx;
+          const meta = categoryMeta[realIdx];
+          const Icon = meta.icon;
+
+          return (
+            <div key={category.title} className="pc-mobile-slide">
+              <div
+                className={`pc-cat-card ${visible ? "pc-card-anim" : "opacity-0"}`}
+                style={{ animationDelay: `${0.25 + idx * 0.12}s` }}
+              >
+                {/* Card header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <div className={`pc-cat-icon ${meta.iconBg}`} style={{ color: meta.iconColor }}>
+                      <Icon size={18} />
+                    </div>
+                    <h3 className="font-bold text-gray-800 text-lg leading-tight">{category.title}</h3>
+                    <p className="text-xs text-gray-400 mt-0.5">{category.items.length} Trainers available</p>
+                  </div>
+                  <span className={`pc-count-badge text-xs border ${meta.badgeColor}`}>
+                    {meta.badge}
+                  </span>
+                </div>
+
+                {/* Trainer list */}
+                <div className="pc-scroll space-y-2 overflow-y-auto pr-1" style={{ maxHeight: 300 }}>
+                  {category.items.map((item, i) => (
+                    <div
+                      key={i}
+                      className={`pc-trainer-row ${visible ? "pc-row-anim" : "opacity-0"}`}
+                      style={{ animationDelay: `${0.3 + idx * 0.12 + i * 0.06}s` }}
+                    >
+                      <div className="pc-avatar-ring">
+                        <div className="pc-avatar-inner">
+                          <Image src={item.image} alt={item.name} fill className="object-cover" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-800 text-sm truncate">{item.name}</p>
+                        <p className="text-xs text-gray-400 truncate">{item.skill}</p>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <span className="pc-star text-yellow-400" style={{ fontSize: 10 }}>★</span>
+                          <span className="text-xs font-semibold text-blue-600">{item.rating}</span>
+                        </div>
+                      </div>
+                      <button className="pc-view-btn">
+                        View <ArrowRight size={10} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Card footer */}
+                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                  <span className="text-xs text-gray-400">Updated today</span>
+                  <button className="text-xs font-semibold text-blue-600 hover:text-purple-600 transition-colors flex items-center gap-1">
+                    See all <ArrowRight size={10} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Navigation row */}
+      <div className="flex items-center justify-between mt-5 gap-3">
+        {/* Prev */}
+        <button
+          onClick={prev}
+          disabled={currentIndex === 0}
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 bg-white text-gray-600 font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 active:scale-95 transition-all duration-200 shadow-sm"
+        >
+          <ChevronLeft size={18} />
+          Previous
+        </button>
+
+        {/* Smart dots — max 8 */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {showLeftEllipsis && (
+            <span className="w-1.5 h-1.5 rounded-full bg-gray-300 opacity-50" />
+          )}
+          {dotIndices.map((i) => (
+            <button
+              key={i}
+              onClick={() => scrollTo(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === currentIndex
+                  ? "w-5 h-2 bg-blue-600"
+                  : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
+              }`}
+            />
+          ))}
+          {showRightEllipsis && (
+            <span className="w-1.5 h-1.5 rounded-full bg-gray-300 opacity-50" />
+          )}
+        </div>
+
+        {/* Next */}
+        <button
+          onClick={next}
+          disabled={currentIndex === total - 1}
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all duration-200 shadow-md shadow-blue-200"
+        >
+          Next
+          <ChevronRight size={18} />
+        </button>
+      </div>
+
+      {/* Counter */}
+      <p className="text-center text-xs text-gray-400 mt-3 font-medium">
+        {currentIndex + 1} / {total} categories
+      </p>
+    </div>
+  );
+}
+
+/* ── Main Component ── */
 export default function PopularCourses() {
-  const [activeTab, setActiveTab] = useState(null); // null = show all
+  const [activeTab, setActiveTab] = useState(null);
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -665,45 +830,39 @@ export default function PopularCourses() {
   }, []);
 
   const displayData = activeTab !== null ? [data[activeTab]] : data;
-
   const tabLabels = ["Sales", "Tech", "Business"];
 
   return (
     <>
       <style>{styles}</style>
 
-<section 
-  ref={sectionRef} 
-  className="pc-section w-full px-4 sm:px-8 md:px-16 pt-10 md:pt-12 pb-14 md:pb-16 relative"
->
-        {/* blobs */}
+      <section
+        ref={sectionRef}
+        className="pc-section w-full px-4 sm:px-8 md:px-16 md:pt-4 pb-14 md:pb-16 relative"
+      >
         <div className="pc-blob-1" />
         <div className="pc-blob-2" />
 
         <div className="max-w-7xl mx-auto relative z-10">
 
           {/* ── Header ── */}
-          <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 ${visible ? "pc-fade-up" : "opacity-0"}`}
-               style={{ animationDelay: "0.1s" }}>
-
+          <div
+            className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 ${visible ? "pc-fade-up" : "opacity-0"}`}
+            style={{ animationDelay: "0.1s" }}
+          >
             <div>
-              {/* pill */}
               <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-full px-4 py-1.5 mb-3 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-blue-500" style={{ animation: "pcStarPulse 1.5s ease-in-out infinite" }} />
                 <span className="text-xs font-semibold text-gray-500 tracking-wide uppercase">3,600+ Expert Trainers</span>
               </div>
-
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
-                Explore{" "}
-                <span className="pc-shimmer pc-underline">Trainers</span>
-                {" "}
+                Explore <span className="pc-shimmer pc-underline">Trainers</span>{" "}
                 <span className="text-gray-800">by Expertise</span>
               </h2>
               <p className="text-gray-500 text-sm md:text-base mt-2">
                 Handpicked experts across every domain — find your perfect match.
               </p>
             </div>
-
             <button className="pc-see-all self-start sm:self-auto">
               <span>See All Trainers</span>
               <ArrowRight size={14} style={{ position: "relative", zIndex: 1 }} />
@@ -711,12 +870,11 @@ export default function PopularCourses() {
           </div>
 
           {/* ── Tabs ── */}
-          <div className={`pc-tabs flex flex-wrap gap-2 mb-8 ${visible ? "pc-fade-up" : "opacity-0"}`}
-               style={{ animationDelay: "0.2s" }}>
-            <button
-              className={`pc-tab ${activeTab === null ? "active" : ""}`}
-              onClick={() => setActiveTab(null)}
-            >
+          <div
+            className={`pc-tabs flex flex-wrap gap-2 mb-8 ${visible ? "pc-fade-up" : "opacity-0"}`}
+            style={{ animationDelay: "0.2s" }}
+          >
+            <button className={`pc-tab ${activeTab === null ? "active" : ""}`} onClick={() => setActiveTab(null)}>
               All Categories
             </button>
             {tabLabels.map((label, idx) => (
@@ -730,13 +888,24 @@ export default function PopularCourses() {
             ))}
           </div>
 
-          {/* ── Grid ── */}
+          {/* ── MOBILE: Carousel ── */}
+          <div className="block md:hidden">
+            <MobileCarousel
+              displayData={displayData}
+              categoryMeta={categoryMeta}
+              activeTab={activeTab}
+              visible={visible}
+            />
+          </div>
+
+          {/* ── DESKTOP: Grid ── */}
           <div
-            className="pc-grid grid gap-6"
+            className="hidden md:grid gap-6"
             style={{
-              gridTemplateColumns: activeTab !== null
-                ? "minmax(0,480px)"
-                : "repeat(auto-fit, minmax(280px, 1fr))",
+              gridTemplateColumns:
+                activeTab !== null
+                  ? "minmax(0, 480px)"
+                  : "repeat(auto-fit, minmax(280px, 1fr))",
               justifyContent: activeTab !== null ? "center" : "initial",
             }}
           >
@@ -751,13 +920,9 @@ export default function PopularCourses() {
                   className={`pc-cat-card ${visible ? "pc-card-anim" : "opacity-0"}`}
                   style={{ animationDelay: `${0.25 + idx * 0.12}s` }}
                 >
-                  {/* Card header */}
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <div
-                        className={`pc-cat-icon ${meta.iconBg}`}
-                        style={{ color: meta.iconColor }}
-                      >
+                      <div className={`pc-cat-icon ${meta.iconBg}`} style={{ color: meta.iconColor }}>
                         <Icon size={18} />
                       </div>
                       <h3 className="font-bold text-gray-800 text-lg leading-tight">{category.title}</h3>
@@ -768,30 +933,18 @@ export default function PopularCourses() {
                     </span>
                   </div>
 
-                  {/* Trainer list */}
-                  <div
-                    className="pc-scroll space-y-2 overflow-y-auto pr-1"
-                    style={{ maxHeight: 300 }}
-                  >
+                  <div className="pc-scroll space-y-2 overflow-y-auto pr-1" style={{ maxHeight: 300 }}>
                     {category.items.map((item, i) => (
                       <div
                         key={i}
                         className={`pc-trainer-row ${visible ? "pc-row-anim" : "opacity-0"}`}
                         style={{ animationDelay: `${0.3 + idx * 0.12 + i * 0.06}s` }}
                       >
-                        {/* Avatar */}
                         <div className="pc-avatar-ring">
                           <div className="pc-avatar-inner">
-                            <Image
-                              src={item.image}
-                              alt={item.name}
-                              fill
-                              className="object-cover"
-                            />
+                            <Image src={item.image} alt={item.name} fill className="object-cover" />
                           </div>
                         </div>
-
-                        {/* Info */}
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-gray-800 text-sm truncate">{item.name}</p>
                           <p className="text-xs text-gray-400 truncate">{item.skill}</p>
@@ -800,22 +953,16 @@ export default function PopularCourses() {
                             <span className="text-xs font-semibold text-blue-600">{item.rating}</span>
                           </div>
                         </div>
-
-                        {/* CTA */}
                         <button className="pc-view-btn">
-                          View
-                          <ArrowRight size={10} />
+                          View <ArrowRight size={10} />
                         </button>
                       </div>
                     ))}
                   </div>
 
-                  {/* Card footer */}
                   <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
                     <span className="text-xs text-gray-400">Updated today</span>
-                    <button
-                      className="text-xs font-semibold text-blue-600 hover:text-purple-600 transition-colors flex items-center gap-1"
-                    >
+                    <button className="text-xs font-semibold text-blue-600 hover:text-purple-600 transition-colors flex items-center gap-1">
                       See all <ArrowRight size={10} />
                     </button>
                   </div>
@@ -823,6 +970,7 @@ export default function PopularCourses() {
               );
             })}
           </div>
+
         </div>
       </section>
     </>

@@ -1,702 +1,539 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-
-
-// ─────────────────────────────────────────────
-// DATA
-// ─────────────────────────────────────────────
-
-const ARTICLES = [
-  {
-    id: 1,
-    cat: "Gym Trainer", catKey: "gym",
-    catColor: "#e05a00", avatarBg: "#fff0ea", avatarColor: "#e05a00",
-    title: "5 Compound Lifts That Build More Muscle Than 30 Isolation Exercises",
-    excerpt: "Master these five foundational lifts to transform your physique and build functional, real-world strength.",
-    tags: ["Workout", "Strength", "Form"],
-    author: "Marcus Hale", initials: "MH",
-    readTime: "5 min", date: "Apr 27",
-    image: "/articleSection/image1.jpg",
-    trending: true,
-  },
-  {
-    id: 2,
-    cat: "Doctor", catKey: "doctor",
-    catColor: "#2980c8", avatarBg: "#e0f0ff", avatarColor: "#2980c8",
-    title: "The Hidden Sleep Window Most People Are Missing",
-    excerpt: "Your body has a specific 90-minute window where sleep architecture is optimal. Learn how to identify yours.",
-    tags: ["Sleep", "Recovery", "Science"],
-    author: "Dr. Priya Raman", initials: "PR",
-    readTime: "6 min", date: "Apr 26",
-    image: "/articleSection/image2.jpg",
-  },
-  {
-    id: 3,
-    cat: "Technical Expert", catKey: "tech",
-    catColor: "#8040d0", avatarBg: "#f0eaff", avatarColor: "#8040d0",
-    title: "How AI Is Quietly Rewriting Personal Training Programs",
-    excerpt: "The next era of fitness isn't about harder workouts — it's about smarter data. See how ML is predicting your optimal routine.",
-    tags: ["AI Health", "Data", "Future"],
-    author: "Devon Park", initials: "DP",
-    readTime: "4 min", date: "Apr 25",
-    image: "/articleSection/image3.jpg",
-    trending: true,
-  },
-  {
-    id: 4,
-    cat: "Nutritionist", catKey: "nutrition",
-    catColor: "#1a9e60", avatarBg: "#e0fff0", avatarColor: "#1a9e60",
-    title: "Eat For Energy, Not For Discipline",
-    excerpt: "By shifting your focus from what you can't eat to what fuels you, you naturally gravitate toward better choices.",
-    tags: ["Diet Tips", "Energy", "Mindset"],
-    author: "Aria Solis", initials: "AS",
-    readTime: "3 min", date: "Apr 23",
-    image: "/articleSection/image4.jpg",
-  },
-  {
-    id: 5,
-    cat: "Mental Health Coach", catKey: "mental",
-    catColor: "#e0507a", avatarBg: "#ffe0f0", avatarColor: "#e0507a",
-    title: "Why Your Anxiety Spikes At 3 PM (And What To Do About It)",
-    excerpt: "That mid-afternoon wave of panic isn't just in your head — it's a biological response to cortisol and blood sugar dips.",
-    tags: ["Mindfulness", "Anxiety", "Routine"],
-    author: "Yuki Tanaka", initials: "YT",
-    readTime: "7 min", date: "Apr 20",
-    image: "/articleSection/image5.jpg",
-  },
-  {
-    id: 6,
-    cat: "Fitness Coach", catKey: "fitness",
-    catColor: "#0080a0", avatarBg: "#e0f5ff", avatarColor: "#0080a0",
-    title: "The 12-Minute Mobility Routine Every Desk Worker Needs",
-    excerpt: "Sitting is systematically shortening your hip flexors. This daily sequence undoes the damage of 9 hours at a desk.",
-    tags: ["Mobility", "Posture", "Habits"],
-    author: "Coach Irena Reyes", initials: "CR",
-    readTime: "5 min", date: "Apr 18",
-    image: "/articleSection/image6.jpg",
-  },
-  {
-    id: 7,
-    cat: "Gym Trainer", catKey: "gym",
-    catColor: "#e05a00", avatarBg: "#fff0ea", avatarColor: "#e05a00",
-    title: "Progressive Overload: The Only Principle That Actually Matters",
-    excerpt: "Fad workouts come and go, but the law of progressive overload remains undefeated. Here's exactly how to track it.",
-    tags: ["Training", "Muscle", "Basics"],
-    author: "David Vance", initials: "DV",
-    readTime: "10 min", date: "Apr 16",
-    image: "/articleSection/image7.jpg",
-    trending: true,
-  },
-  {
-    id: 8,
-    cat: "Nutritionist", catKey: "nutrition",
-    catColor: "#1a9e60", avatarBg: "#e0fff0", avatarColor: "#1a9e60",
-    title: "Protein Powders Demystified: What You Actually Need",
-    excerpt: "Whey, casein, plant-based, isolate — navigating the supplement aisle is exhausting. A breakdown of what works and what's marketing.",
-    tags: ["Supplements", "Protein", "Guide"],
-    author: "Sarah Jenkins", initials: "SJ",
-    readTime: "9 min", date: "Apr 12",
-    image: "/articleSection/image8.jpg",
-  },
-  {
-    id: 9,
-    cat: "Mental Health Coach", catKey: "mental",
-    catColor: "#e0507a", avatarBg: "#ffe0f0", avatarColor: "#e0507a",
-    title: "The Power of the Morning Brain Dump",
-    excerpt: "Before you look at a screen, empty your mind onto paper. Three pages of stream-of-consciousness writing can clarify your entire day.",
-    tags: ["Journaling", "Focus", "Morning"],
-    author: "Dr. Elias Thorne", initials: "ET",
-    readTime: "8 min", date: "Apr 10",
-    image: "/articleSection/image9.jpg",
-  },
-];
-
-const FILTERS = [
-  { id: "all", label: "All Trainers", icon: "⚡" },
-  { id: "gym", label: "Gym Trainers", icon: "🏋️" },
-  { id: "doctor", label: "Doctors", icon: "🩺" },
-  { id: "fitness", label: "Fitness Coaches", icon: "🏃" },
-  { id: "tech", label: "Technical Experts", icon: "🔬" },
-  { id: "nutrition", label: "Nutritionists", icon: "🥗" },
-  { id: "mental", label: "Mental Health Coaches", icon: "🧠" },
-];
+import { CAT_COLORS, FILTERS, ARTICLES, makeSlug } from "./data";
 
 // ─────────────────────────────────────────────
-// GLOBAL STYLES (injected once)
+// GLOBAL STYLES — merged from GlobalStyles.js
 // ─────────────────────────────────────────────
-const globalStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap');
+const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;600;700&display=swap');
 
-  // *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue-primary: #2563eb;
+    --font-display: 'Clash Display', sans-serif;
+    --font-body:    'Satoshi', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #e0f2fe;
-    color: #0f172a;
-    -webkit-font-smoothing: antialiased;
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes floatY {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-12px); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  @keyframes blobMorph {
+    0%,100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    25%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    50%      { border-radius: 50% 60% 30% 60% / 30% 40% 60% 50%; }
+    75%      { border-radius: 60% 30% 60% 40% / 70% 50% 40% 60%; }
+  }
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes particleDrift {
+    0%   { transform: translateY(0) translateX(0) scale(1);          opacity:.6; }
+    33%  { transform: translateY(-30px) translateX(15px) scale(1.2); opacity:.9; }
+    66%  { transform: translateY(-15px) translateX(-10px) scale(.8); opacity:.4; }
+    100% { transform: translateY(0) translateX(0) scale(1);          opacity:.6; }
+  }
+  @keyframes slideInLeft {
+    from { opacity:0; transform:translateX(-40px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity:0; transform:scale(.85); }
+    to   { opacity:1; transform:scale(1); }
+  }
+  @keyframes dotPulse {
+    0%,100% { opacity:.4; transform:scale(1); }
+    50%      { opacity:1;  transform:scale(1.4); }
+  }
+  @keyframes underlineGrow {
+    from { width:0; }
+    to   { width:100%; }
+  }
+  @keyframes liveDot {
+    0%,100% { opacity:1; }
+    50%     { opacity:0.25; }
   }
 
-  // ::-webkit-scrollbar { display: none; }
-  // * { scrollbar-width: none; }
+  /* ── Animation utility classes (from GlobalStyles) ── */
+  .anim-fade-up  { animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both; }
+  .anim-slide-l  { animation:slideInLeft .7s cubic-bezier(.22,1,.36,1) both; }
+  .anim-scale-in { animation:scaleIn .6s cubic-bezier(.22,1,.36,1) both; }
+  .anim-float    { animation:floatY 5s ease-in-out infinite; }
+  .delay-100 { animation-delay:.1s; }
+  .delay-200 { animation-delay:.2s; }
+  .delay-300 { animation-delay:.3s; }
+  .delay-400 { animation-delay:.4s; }
+  .delay-500 { animation-delay:.5s; }
+  .delay-600 { animation-delay:.6s; }
+  .delay-700 { animation-delay:.7s; }
 
-  /* ── Card hover ── */
-  .card {
-    background: #eff6ff;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid #bfdbfe;
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  /* ── Hero background (from GlobalStyles) ── */
+  .hero-bg {
+    background:linear-gradient(135deg,#eff6ff 0%,#f5f3ff 40%,#eef2ff 70%,#f0fdf4 100%);
+    background-size:300% 300%;
+    animation:gradientShift 12s ease infinite;
+    position:relative;
+    overflow:hidden;
   }
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(30, 64, 175, 0.14);
+  .hero-bg::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(37,99,235,.04) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(37,99,235,.04) 1px,transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);
+    pointer-events:none;
   }
-  .card:hover .card-img {
-    transform: scale(1.05);
+
+  .blob-blue {
+    position:absolute;
+    border-radius:60% 40% 30% 70% / 60% 30% 70% 40%;
+    background:radial-gradient(circle,rgba(37,99,235,.18) 0%,transparent 70%);
+    animation:blobMorph 12s ease-in-out infinite, floatY 8s ease-in-out infinite;
+    filter:blur(32px); pointer-events:none;
   }
-  .card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
+  .blob-purple {
+    position:absolute;
+    border-radius:40% 60% 70% 30% / 40% 60% 30% 70%;
+    background:radial-gradient(circle,rgba(139,92,246,.14) 0%,transparent 70%);
+    animation:blobMorph 15s ease-in-out infinite reverse, floatY 10s ease-in-out infinite 2s;
+    filter:blur(40px); pointer-events:none;
   }
+
+  .particle { position:absolute; border-radius:50%; pointer-events:none; }
+  .p1{width:6px;height:6px;background:#2563eb;top:14%;left:4%;  animation:particleDrift 6s ease-in-out infinite;}
+  .p2{width:4px;height:4px;background:#8b5cf6;top:30%;left:12%; animation:particleDrift 8s ease-in-out infinite 1s;}
+  .p3{width:7px;height:7px;background:#06b6d4;top:62%;left:3%;  animation:particleDrift 7s ease-in-out infinite 2s;}
+  .p4{width:5px;height:5px;background:#10b981;top:78%;left:16%; animation:particleDrift 9s ease-in-out infinite .5s;}
+  .p5{width:5px;height:5px;background:#6366f1;top:18%;right:6%; animation:particleDrift 5s ease-in-out infinite 1.5s;}
+  .p6{width:4px;height:4px;background:#f59e0b;top:55%;right:4%; animation:particleDrift 10s ease-in-out infinite 3s;}
+  .p7{width:6px;height:6px;background:#2563eb;top:70%;right:13%;animation:particleDrift 7s ease-in-out infinite .8s;}
+
+  /* ── Shimmer text (from GlobalStyles) ── */
+  .text-shimmer {
+    background:linear-gradient(90deg,#1d4ed8 0%,#7c3aed 30%,#1d4ed8 60%,#0891b2 100%);
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    animation:shimmer 4s linear infinite;
+  }
+
+  /* ── Stat badges (from GlobalStyles) ── */
+  .stat-badge {
+    background:rgba(255,255,255,.7);
+    backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.9);
+    border-radius:14px; padding:8px 14px;
+    box-shadow:0 4px 20px rgba(37,99,235,.08),inset 0 1px 0 rgba(255,255,255,.8);
+    transition:all .3s cubic-bezier(.22,1,.36,1);
+  }
+  .stat-badge:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 32px rgba(37,99,235,.14);}
+
+  /* ── CTA button (from GlobalStyles) ── */
+  .cta-btn {
+    position:relative; overflow:hidden;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    transition:all .3s cubic-bezier(.22,1,.36,1);
+    border:none; cursor:pointer;
+  }
+  .cta-btn::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg,#1d4ed8,#7c3aed);
+    opacity:0; transition:opacity .4s ease;
+  }
+  .cta-btn:hover::before{opacity:1;}
+  .cta-btn:hover{box-shadow:0 8px 30px rgba(37,99,235,.4);transform:translateY(-2px) scale(1.02);}
+  .cta-btn:active{transform:scale(.97);}
+  .cta-btn span{position:relative;z-index:1;}
+
+  /* ── Search input (from GlobalStyles) ── */
+  .search-input{transition:all .3s cubic-bezier(.22,1,.36,1);}
+  .search-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.1),0 4px 20px rgba(37,99,235,.12);transform:translateY(-1px);}
+  .search-input:hover{border-color:#93c5fd;box-shadow:0 2px 12px rgba(37,99,235,.08);}
+
+  /* ── Heading underline (from GlobalStyles) ── */
+  .heading-underline{position:relative;display:inline-block;}
+  .heading-underline::after{content:'';position:absolute;bottom:-4px;left:0;height:3px;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:2px;animation:underlineGrow 1s cubic-bezier(.22,1,.36,1) .8s both;}
+
+  /* ── Live dot ── */
+  .live-dot{animation:liveDot 1.5s ease-in-out infinite;}
+
+  /* ── Hero two-col layout ── */
+  .hero-inner {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:3rem;
+    align-items:center;
+    max-width:1280px;
+    margin:0 auto;
+    padding:5rem 1.5rem 4.5rem;
+    position:relative;
+    z-index:10;
+  }
+  @media(max-width:900px){
+    .hero-inner{grid-template-columns:1fr;padding:3rem 1.25rem;text-align:center;}
+    .hero-right{display:none;}
+    .hero-stats{justify-content:center!important;}
+  }
+
+  /* ── Hero right image ── */
+  .hero-img-wrap {
+    position:relative; border-radius:24px; overflow:hidden;
+    box-shadow:0 40px 80px rgba(37,99,235,0.2),0 16px 40px rgba(139,92,246,0.12);
+    animation:floatY 6s ease-in-out infinite;
+  }
+  .hero-img-wrap img{width:100%;height:480px;object-fit:cover;display:block;}
+
+  /* ── Filter bar ── */
+  .filter-bar{
+    background:rgba(255,255,255,0.85);
+    border-bottom:1px solid rgba(37,99,235,0.1);
+    backdrop-filter:blur(10px);
+    padding:0 1rem;
+    position:sticky;top:0;z-index:50;
+  }
+  .filter-scroll{display:flex;gap:8px;overflow-x:auto;padding:12px 0;scrollbar-width:none;max-width:1280px;margin:0 auto;}
+  .filter-scroll::-webkit-scrollbar{display:none;}
+  .f-tab{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 18px;border-radius:99px;
+    font-family:var(--font-display);font-size:12px;font-weight:700;
+    letter-spacing:0.04em;cursor:pointer;white-space:nowrap;
+    flex-shrink:0;transition:all 0.18s cubic-bezier(0.22,1,0.36,1);border:none;
+  }
+  .f-tab:hover{transform:translateY(-2px);}
+
+  /* ── Search pill ── */
+  .srch-wrap{
+    display:flex;align-items:center;
+    background:rgba(255,255,255,0.85);
+    border:1px solid rgba(37,99,235,0.2);
+    border-radius:99px;padding:6px 6px 6px 20px;
+    box-shadow:0 4px 20px rgba(37,99,235,0.08);
+    transition:border-color 0.2s,box-shadow 0.2s;
+  }
+  .srch-wrap:focus-within{border-color:rgba(37,99,235,0.45);box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
+  .srch-input{background:none;border:none;outline:none;color:#1e293b;font-size:14px;flex:1;font-family:var(--font-body);min-width:0;}
+  .srch-input::placeholder{color:#94a3b8;}
+  .srch-btn{
+    background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;border:none;border-radius:99px;
+    padding:9px 22px;font-size:13px;font-family:var(--font-display);font-weight:700;cursor:pointer;
+    transition:opacity 0.15s,transform 0.15s;white-space:nowrap;
+  }
+  .srch-btn:hover{opacity:.88;transform:scale(1.03);}
+
+  /* ── Article grid ── */
+  .art-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media(max-width:1024px){.art-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px) {.art-grid{grid-template-columns:1fr;}}
+
+  /* ── Article card ── */
+  .art-card{
+    background:rgba(255,255,255,0.9);border:1px solid rgba(37,99,235,0.12);border-radius:20px;overflow:hidden;
+    display:flex;flex-direction:column;height:100%;backdrop-filter:blur(10px);
+    box-shadow:0 4px 20px rgba(37,99,235,0.06);
+    transition:transform 0.25s cubic-bezier(0.22,1,0.36,1),box-shadow 0.25s ease,border-color 0.2s;
+    cursor:pointer;text-decoration:none;color:inherit;
+  }
+  .art-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(37,99,235,0.16);border-color:rgba(37,99,235,0.28);}
+  .art-card:hover .art-img{transform:scale(1.07);}
+  .art-img{transition:transform 0.5s ease;width:100%;height:100%;object-fit:cover;display:block;}
 
   /* ── Featured card ── */
-  .featured-card {
-    background: #eff6ff;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid #bfdbfe;
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    display: flex;
-    flex-direction: row;
+  .feat-card{
+    background:rgba(255,255,255,0.92);border:1px solid rgba(37,99,235,0.15);border-radius:22px;overflow:hidden;
+    display:flex;flex-direction:row;backdrop-filter:blur(12px);
+    box-shadow:0 8px 40px rgba(37,99,235,0.10);
+    transition:transform 0.25s cubic-bezier(0.22,1,0.36,1),box-shadow 0.25s ease;
+    cursor:pointer;text-decoration:none;color:inherit;
   }
-  .featured-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(30, 64, 175, 0.14);
-  }
-  .featured-card:hover .featured-img {
-    transform: scale(1.05);
-  }
-  .featured-img {
-    transition: transform 0.4s ease;
+  .feat-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(37,99,235,0.2);}
+  .feat-card:hover .feat-img{transform:scale(1.05);}
+  .feat-img{transition:transform 0.5s ease;width:100%;height:100%;object-fit:cover;display:block;}
+  @media(max-width:768px){
+    .feat-card{flex-direction:column;}
+    .feat-img-wrap{width:100%!important;min-height:200px!important;}
+    .feat-body{padding:20px!important;}
   }
 
-  /* ── Search input ── */
-  .search-input::placeholder { color: #7ba8d4; }
+  /* ── Misc ── */
+  .like-btn{
+    position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;
+    background:rgba(255,255,255,0.95);border:none;display:flex;align-items:center;justify-content:center;
+    font-size:16px;cursor:pointer;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:transform 0.15s;
+  }
+  .like-btn:hover{transform:scale(1.18);}
+  .tag-pill{background:rgba(37,99,235,0.08);color:#2563eb;border:1px solid rgba(37,99,235,0.2);font-size:11px;padding:4px 11px;border-radius:99px;font-family:var(--font-body);font-weight:600;display:inline-block;}
+  .load-btn{
+    background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;border:none;
+    padding:13px 38px;border-radius:99px;font-family:var(--font-display);font-size:14px;font-weight:700;
+    cursor:pointer;letter-spacing:0.03em;transition:opacity 0.15s,transform 0.15s,box-shadow 0.15s;
+    box-shadow:0 8px 24px rgba(37,99,235,0.3);
+  }
+  .load-btn:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 12px 32px rgba(37,99,235,0.4);}
 
-  /* ── Filter tab ── */
-  .filter-tab {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 16px;
-    border-radius: 99px;
-    font-size: 13px;
-    cursor: pointer;
-    white-space: nowrap;
-    font-family: inherit;
-    font-weight: 700;
-    transition: all 0.15s;
-    flex-shrink: 0;
-  }
-
-  /* ── Like button ── */
-  .like-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(239, 246, 255, 0.95);
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.15s;
-    z-index: 2;
-  }
-  .like-btn:hover { transform: scale(1.15); }
-
-  /* ── Load more button ── */
-  .load-more-btn {
-    background: #1e40af;
-    color: #fff;
-    border: none;
-    padding: 13px 36px;
-    border-radius: 99px;
-    font-size: 14px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: inherit;
-    font-weight: 600;
-    transition: background 0.15s, transform 0.15s;
-  }
-  .load-more-btn:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
-  }
-
-  /* ── Search btn ── */
-  .search-btn {
-    background: #1e6fd4;
-    color: #fff;
-    border: none;
-    border-radius: 99px;
-    padding: 9px 22px;
-    font-size: 14px;
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: 500;
-    white-space: nowrap;
-    transition: background 0.15s;
-  }
-  .search-btn:hover { background: #155bb5; }
-
-  /* ────────────────────────────────────
-     RESPONSIVE
-  ──────────────────────────────────── */
-
-  /* Article grid: 3 → 2 → 1 */
-  .article-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  @media (max-width: 1024px) {
-    .article-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 640px) {
-    .article-grid { grid-template-columns: 1fr; }
-  }
-
-  /* Featured card: row → column on mobile */
-  @media (max-width: 768px) {
-    .featured-card { flex-direction: column; }
-    .featured-image-wrap { width: 100% !important; min-height: 220px !important; }
-    .featured-body { padding: 20px !important; }
-    .featured-title { font-size: 20px !important; }
-    .featured-desc { font-size: 14px !important; }
-  }
-
-  /* Hero text */
-  @media (max-width: 640px) {
-    .hero-stats { gap: 1.5rem !important; }
-    .hero-search-wrap { flex-direction: column; gap: 10px; border-radius: 14px !important; padding: 10px !important; }
-    .hero-search-wrap input { width: 100%; }
-    .search-btn { width: 100%; justify-content: center; border-radius: 10px !important; padding: 11px 0 !important; }
-  }
-
-  /* Filter tabs: scrollable on mobile */
-  .filter-scroll {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding: 10px 0;
-    scrollbar-width: none;
-  }
-  .filter-scroll::-webkit-scrollbar { display: none; }
-
-  @media (max-width: 768px) {
-    .filter-scroll { justify-content: flex-start; }
-  }
-
-  /* Content padding */
-  .content-wrap {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 1.75rem 1rem 4rem;
-  }
-
-  /* Featured outer */
-  .featured-outer {
-    max-width: 1450px;
-    margin: 0 auto 2rem;
-    padding: 0 20px;
-  }
-  @media (max-width: 640px) {
-    .featured-outer { padding: 0 12px; }
-    .content-wrap { padding: 1.25rem 0.75rem 3rem; }
-  }
-
-  .fitpulse-page * {
-  box-sizing: border-box;
-}
-
-.fitpulse-page {
-  font-family: 'DM Sans', sans-serif;
-  background: #e0f2fe;
-  color: #0f172a;
-}
+  ::-webkit-scrollbar{width:4px;}
+  ::-webkit-scrollbar-track{background:#f1f5f9;}
+  ::-webkit-scrollbar-thumb{background:rgba(37,99,235,0.2);border-radius:99px;}
 `;
 
 // ─────────────────────────────────────────────
-// SUB-COMPONENTS
+// ARTICLE CARD
 // ─────────────────────────────────────────────
-
-function HeroSection({ onSearch }) {
-  const [query, setQuery] = useState("");
-
-  return (
-    <section
-      style={{
-        background: "linear-gradient(135deg, #050d1a 0%, #0a1628 55%, #0d1f3c 100%)",
-        padding: "4rem 1.5rem 3rem",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Grid overlay */}
-      <div
-        style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)
-          `,
-          backgroundSize: "40px 40px",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Glows */}
-      {[
-        { top: -120, left: -120, w: 560, h: 560, color: "rgba(30,90,200,0.22)" },
-        { bottom: -100, right: -100, w: 480, h: 480, color: "rgba(0,140,255,0.15)", isBottom: true },
-      ].map((g, i) => (
-        <div key={i} style={{
-          position: "absolute",
-          ...(g.isBottom ? { bottom: g.bottom, right: g.right } : { top: g.top, left: g.left }),
-          width: g.w, height: g.h,
-          background: `radial-gradient(circle, ${g.color} 0%, transparent 65%)`,
-          pointerEvents: "none",
-        }} />
-      ))}
-      <div style={{
-        position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)",
-        width: 700, height: 300,
-        background: "radial-gradient(ellipse, rgba(56,120,255,0.12) 0%, transparent 70%)",
-        pointerEvents: "none",
-      }} />
-
-      {/* Badge */}
-      <div style={{
-        display: "inline-flex", alignItems: "center", gap: 8,
-        background: "rgba(255,255,255,0.07)",
-        border: "1px solid rgba(100,160,255,0.2)",
-        color: "#93b8e8", fontSize: 12, padding: "5px 16px",
-        borderRadius: 99, marginBottom: "1.5rem",
-        position: "relative", zIndex: 1,
-      }}>
-        <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#5eb0ff", display: "inline-block" }} />
-        The world&apos;s best experts in one place
-      </div>
-
-      {/* Headline */}
-      <h1 style={{
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: "clamp(2.6rem, 8vw, 5.5rem)",
-        color: "#fff", letterSpacing: 1,
-        lineHeight: 1.0, marginBottom: "1rem",
-        position: "relative", zIndex: 1,
-      }}>
-        Explore powerful{" "}
-        <span style={{ color: "#4da6ff" }}>insights,</span>{" "}
-        <span style={{ color: "#7dd3fc" }}>stories,</span>
-        <br />and ideas.
-      </h1>
-
-      <p style={{
-        color: "#7ba8d4", fontSize: "clamp(13px, 2.5vw, 15px)", maxWidth: 420,
-        margin: "0 auto 2rem", lineHeight: 1.65,
-        position: "relative", zIndex: 1,
-      }}>
-        Expert trainers, real results. Discover actionable insights from the people who know best.
-      </p>
-
-      {/* Search */}
-      <div
-        className="hero-search-wrap"
-        style={{
-          display: "flex", alignItems: "center",
-          background: "rgba(255,255,255,0.06)",
-          border: "1px solid rgba(100,160,255,0.2)",
-          borderRadius: 99, padding: "6px 6px 6px 20px",
-          maxWidth: 480, margin: "0 auto 2.5rem",
-          position: "relative", zIndex: 1,
-        }}
-      >
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && onSearch(query)}
-          placeholder="Search neuroscience, nutrition, habits…"
-          className="search-input"
-          style={{
-            background: "none", border: "none", outline: "none",
-            color: "#fff", fontSize: 14, flex: 1,
-            fontFamily: "inherit", minWidth: 0,
-          }}
-        />
-        <button className="search-btn" onClick={() => onSearch(query)}>
-          Search
-        </button>
-      </div>
-
-      {/* Stats */}
-      <div
-        className="hero-stats"
-        style={{
-          display: "flex", justifyContent: "center", gap: "3rem",
-          flexWrap: "wrap",
-          position: "relative", zIndex: 1,
-        }}
-      >
-        {[["500+", "Verified Trainers"], ["12k+", "Articles"], ["6", "Expert Categories"]].map(
-          ([num, label]) => (
-            <div key={label} style={{ textAlign: "center" }}>
-              <div style={{
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: "2rem", color: "#fff", letterSpacing: 0.5,
-              }}>{num}</div>
-              <div style={{
-                fontSize: 10, color: "#5a88b8",
-                letterSpacing: "1.5px", textTransform: "uppercase", marginTop: 2,
-              }}>{label}</div>
-            </div>
-          )
-        )}
-      </div>
-    </section>
-  );
-}
-
-function FilterTabs({ active, onFilter }) {
-  return (
-    <div style={{
-      background: "#dbeafe",
-      borderBottom: "1px solid #bfdbfe",
-      padding: "0 1rem",
-    }}>
-      <div className="filter-scroll" style={{ maxWidth: 1280, margin: "0 auto" }}>
-        {FILTERS.map((f) => (
-          <button
-            key={f.id}
-            onClick={() => onFilter(f.id)}
-            className="filter-tab"
-            style={{
-              border: `1px solid ${active === f.id ? "#1e40af" : "#93c5fd"}`,
-              background: active === f.id ? "#1e40af" : "#eff6ff",
-              color: active === f.id ? "#fff" : "#1e40af",
-            }}
-          >
-            <span style={{ fontSize: 14 }}>{f.icon}</span>
-            {f.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function FeaturedCard() {
-  return (
-    <div className="featured-outer">
-      <div className="featured-card">
-        {/* Image */}
-        <div
-          className="featured-image-wrap"
-          style={{ position: "relative", width: "45%", minHeight: 260, overflow: "hidden" }}
-        >
-          <Image
-            src="/articleNewSection/image-banner.png"
-            alt="featured"
-            fill
-            className="featured-img"
-            style={{ objectFit: "cover", objectPosition: "center" }}
-            priority
-          />
-        </div>
-
-        {/* Body */}
-        <div
-          className="featured-body"
-          style={{
-            padding: "28px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            flex: 1,
-          }}
-        >
-          {/* Badges */}
-          <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-            <span style={{
-              background: "#dbeafe", color: "#1d4ed8",
-              fontSize: 12, fontWeight: 700,
-              padding: "6px 14px", borderRadius: 999, letterSpacing: "0.6px",
-            }}>🔥 Trending</span>
-            <span style={{
-              background: "#ede9fe", color: "#6d28d9",
-              fontSize: 12, fontWeight: 700,
-              padding: "6px 14px", borderRadius: 999, letterSpacing: "0.6px",
-            }}>Masterclass</span>
-          </div>
-
-          {/* Title */}
-          <h2
-            className="featured-title"
-            style={{
-              fontSize: 26, fontWeight: 700,
-              color: "#0f172a", lineHeight: 1.4, marginBottom: 14,
-            }}
-          >
-            The Neuroscience of Building Habits That Actually Stick
-          </h2>
-
-          {/* Description */}
-          <p
-            className="featured-desc"
-            style={{
-              fontSize: 16, color: "#475569", lineHeight: 1.7, marginBottom: 20,
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-          >
-            Discover how top performers engineer their environments to make the right choice the
-            default — bypassing motivation entirely with neuroscience-backed systems.
-          </p>
-
-          {/* Author footer */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: "50%",
-              background: "#dbeafe",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 14, fontWeight: 700, color: "#1d4ed8",
-              flexShrink: 0,
-            }}>MC</div>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: "#1e293b" }}>Dr. Maya Collins</div>
-              <div style={{ fontSize: 13, color: "#64748b" }}>Mental Health Coach</div>
-            </div>
-            <div style={{
-              marginLeft: "auto",
-              width: 34, height: 34, borderRadius: "50%",
-              background: "#bfdbfe",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 16, color: "#1d4ed8", flexShrink: 0,
-            }}>→</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function ArticleCard({ article }) {
   const [liked, setLiked] = useState(false);
+  const slug = makeSlug(article);
+  const col  = CAT_COLORS[article.catKey] || CAT_COLORS.gym;
 
   return (
-    <div className="card">
-      {/* Image */}
+    <Link href={`/articles/${slug}`} className="art-card">
       <div style={{ position: "relative", height: 190, flexShrink: 0, overflow: "hidden" }}>
-        <img
-          src={article.image}
-          alt={article.title}
-          className="card-img"
-        />
+        <img src={article.image} alt={article.title} className="art-img" style={{ height: "100%" }} />
         {article.trending && (
           <span style={{
             position: "absolute", top: 12, left: 12,
-            background: "rgba(239,246,255,0.95)", color: "#1d4ed8",
-            fontSize: 11, fontWeight: 700,
-            padding: "5px 12px", borderRadius: 999, zIndex: 2,
+            background: "rgba(37,99,235,0.9)", color: "#fff",
+            fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700,
+            padding: "5px 12px", borderRadius: 999, zIndex: 2, letterSpacing: "0.04em",
           }}>🔥 Trending</span>
         )}
         <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLiked(!liked); }}
-          aria-label="Like article"
+          onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(!liked); }}
           className="like-btn"
-          style={{ color: liked ? "#e11d48" : "#64748b" }}
-        >
-          {liked ? "♥" : "♡"}
-        </button>
+          style={{ color: liked ? "#ef4444" : "#64748b" }}
+        >{liked ? "♥" : "♡"}</button>
       </div>
 
-      {/* Body */}
       <div style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", flex: 1 }}>
-        {/* Category */}
-        <p style={{
-          fontSize: 12, fontWeight: 700,
-          textTransform: "uppercase",
-          color: article.catColor,
-          marginBottom: 8, letterSpacing: "0.6px",
-        }}>{article.cat}</p>
-
-        {/* Title */}
-        <h3 style={{
-          fontSize: 18, fontWeight: 600,
-          color: "#0f172a", lineHeight: 1.5, marginBottom: 10,
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}>{article.title}</h3>
-
-        {/* Excerpt */}
-        <p style={{
-          fontSize: 14, color: "#64748b",
-          lineHeight: 1.6, marginBottom: 14,
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          flex: 1,
-        }}>{article.excerpt}</p>
-
-        {/* Tags */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
-          {article.tags.map((tag) => (
-            <span key={tag} style={{
-              background: "#dbeafe", color: "#1e40af",
-              fontSize: 12, padding: "5px 12px", borderRadius: 999,
-            }}>{tag}</span>
-          ))}
+        <p style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: col.color, marginBottom: 8, letterSpacing: "0.08em" }}>
+          {article.cat}
+        </p>
+        <h3 style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, color: "#0f172a", lineHeight: 1.45, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+          {article.title}
+        </h3>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: 13.5, color: "#64748b", lineHeight: 1.65, marginBottom: 14, flex: 1, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+          {article.shortDesc}
+        </p>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
+          {article.tags.map(t => <span key={t} className="tag-pill">{t}</span>)}
         </div>
-
-        {/* Footer */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 10,
-          borderTop: "1px solid #bfdbfe", paddingTop: 14,
-          marginTop: "auto",
-        }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: "50%",
-            background: article.avatarBg, color: article.avatarColor,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 12, fontWeight: 700, flexShrink: 0,
-          }}>{article.initials}</div>
-          <span style={{ fontSize: 13, color: "#94a3b8", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, borderTop: "1px solid rgba(37,99,235,0.08)", paddingTop: 13, marginTop: "auto" }}>
+          <div style={{ width: 32, height: 32, borderRadius: 10, flexShrink: 0, background: col.avatarBg, color: col.avatarColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-display)" }}>
+            {article.initials}
+          </div>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: 12.5, color: "#64748b", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {article.author} · {article.readTime} · {article.date}
           </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// ─────────────────────────────────────────────
+// FEATURED CARD
+// ─────────────────────────────────────────────
+function FeaturedCard() {
+  const featured = ARTICLES.find(a => a.trending) || ARTICLES[0];
+  const slug = makeSlug(featured);
+  const col  = CAT_COLORS[featured.catKey] || CAT_COLORS.gym;
+
+  return (
+    <div className="anim-fade-up delay-200" style={{ marginBottom: "2.5rem" }}>
+      <Link href={`/articles/${slug}`} className="feat-card">
+        <div className="feat-img-wrap" style={{ position: "relative", width: "44%", minHeight: 280, overflow: "hidden", flexShrink: 0 }}>
+          <img src={featured.coverImg} alt={featured.title} className="feat-img"
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right,transparent 60%,rgba(255,255,255,0.4))" }} />
+        </div>
+        <div className="feat-body" style={{ padding: "32px", display: "flex", flexDirection: "column", justifyContent: "center", flex: 1 }}>
+          <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
+            <span style={{ background: "rgba(37,99,235,0.1)", color: "#1d4ed8", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, padding: "6px 14px", borderRadius: 999, letterSpacing: "0.06em", border: "1px solid rgba(37,99,235,0.2)" }}>🔥 TRENDING</span>
+            <span style={{ background: col.avatarBg, color: col.color, fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, padding: "6px 14px", borderRadius: 999, letterSpacing: "0.06em", border: `1px solid ${col.border}` }}>
+              {featured.cat.toUpperCase()}
+            </span>
+          </div>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.3rem,3vw,1.7rem)", fontWeight: 700, color: "#0f172a", lineHeight: 1.35, marginBottom: 14 }}>
+            {featured.title.split(" ").slice(0, -3).join(" ")}{" "}
+            <span className="text-shimmer">{featured.title.split(" ").slice(-3).join(" ")}</span>
+          </h2>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: 15, color: "#64748b", lineHeight: 1.7, marginBottom: 22 }}>
+            {featured.shortDesc}
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 42, height: 42, borderRadius: 12, flexShrink: 0, background: col.avatarBg, border: `1px solid ${col.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: col.avatarColor }}>
+              {featured.initials}
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: "#0f172a" }}>{featured.author}</div>
+              <div style={{ fontFamily: "var(--font-body)", fontSize: 12.5, color: "#64748b" }}>{featured.authorRole}</div>
+            </div>
+            <div style={{ marginLeft: "auto", width: 36, height: 36, borderRadius: "50%", background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#2563eb", flexShrink: 0 }}>→</div>
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// HERO — left text, right image
+// ─────────────────────────────────────────────
+function ArticlesHero({ onSearch, inputVal, setInputVal }) {
+  const featured = ARTICLES.find(a => a.trending) || ARTICLES[0];
+  const col = CAT_COLORS[featured.catKey] || CAT_COLORS.gym;
+
+  return (
+    <div className="hero-bg">
+      {[1,2,3,4,5,6,7].map(i => <div key={i} className={`particle p${i}`} />)}
+      <div className="blob-blue"   style={{ width:360, height:360, top:"-10%", right:"-5%",  opacity:.6 }} />
+      <div className="blob-purple" style={{ width:280, height:280, bottom:"-5%", left:"-8%", opacity:.5 }} />
+
+      <div className="hero-inner">
+
+        {/* ── LEFT ── */}
+        <div>
+          {/* Live badge */}
+          <div className="anim-fade-up" style={{ marginBottom: 20 }}>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: "rgba(255,255,255,0.8)", backdropFilter: "blur(8px)",
+              border: "1px solid rgba(37,99,235,0.15)", borderRadius: 99,
+              padding: "7px 16px", fontFamily: "var(--font-display)", fontWeight: 700,
+              fontSize: 11, letterSpacing: "0.08em", color: "#0f172a", textTransform: "uppercase",
+              boxShadow: "0 4px 16px rgba(37,99,235,0.08)",
+            }}>
+              <span className="live-dot" style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "#2563eb" }} />
+              World's Best Expert Insights
+            </span>
+          </div>
+
+          {/* Headline */}
+          <h1 className="anim-slide-l delay-100" style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(2.2rem,5vw,3.8rem)",
+            fontWeight: 700, lineHeight: 1.1,
+            color: "#0f172a", marginBottom: 16, letterSpacing: "-0.02em",
+          }}>
+            Explore powerful{" "}
+            <span className="text-shimmer heading-underline">insights,</span>
+            {" "}stories &amp;<br />ideas.
+          </h1>
+
+          {/* Sub */}
+          <p className="anim-fade-up delay-300" style={{
+            fontFamily: "var(--font-body)", color: "#475569",
+            fontSize: "clamp(14px,2vw,16px)", lineHeight: 1.75,
+            marginBottom: 28, maxWidth: 480,
+          }}>
+            Expert trainers, real results. Discover actionable insights from the people who know best.
+          </p>
+
+          {/* Search */}
+          <div className="anim-fade-up delay-400" style={{ marginBottom: 32 }}>
+            <div className="srch-wrap">
+              <input
+                type="text"
+                value={inputVal}
+                onChange={e => setInputVal(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && onSearch(inputVal)}
+                placeholder="Search nutrition, habits, sleep…"
+                className="srch-input"
+              />
+              <button className="srch-btn" onClick={() => onSearch(inputVal)}>Search</button>
+            </div>
+          </div>
+
+          {/* Stats row */}
+     <div className="hero-stats anim-fade-up delay-500" style={{ display: "flex", flexWrap: "wrap", gap: "2rem" }}>
+  {[["500+","Verified Trainers"],["12k+","Articles"],["6","Expert Categories"]].map(([num,lbl])=>(
+    <div key={lbl} style={{ textAlign: "left" }}>
+      <div 
+        style={{ 
+          fontFamily: "var(--font-display)", 
+          fontSize: "2rem", 
+          fontWeight: 700, 
+          color: "#334155", // lighter than black
+          letterSpacing: "-0.01em" 
+        }}
+      >
+        {num}
+      </div>
+
+      <div 
+        style={{ 
+          fontFamily: "var(--font-body)", 
+          fontSize: 10, 
+          color: "#94a3b8", 
+          letterSpacing: "1.5px", 
+          textTransform: "uppercase", 
+          marginTop: 2 
+        }}
+      >
+        {lbl}
+      </div>
+    </div>
+  ))}
+</div>
+        </div>
+
+        {/* ── RIGHT: cover image of featured article ── */}
+        <div className="hero-right anim-scale-in delay-300" style={{ position: "relative" }}>
+          {/* Glow */}
+          <div style={{
+            position: "absolute", borderRadius: "50%", pointerEvents: "none",
+            width: "80%", height: "70%", left: "10%", top: "10%",
+            background: "radial-gradient(circle,rgba(99,102,241,0.22) 0%,transparent 70%)",
+            filter: "blur(52px)",
+          }} />
+
+          <div className="hero-img-wrap">
+            <img src={featured.coverImg} alt={featured.title} />
+            {/* Overlay */}
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg,rgba(37,99,235,0.06) 0%,transparent 50%,rgba(0,0,0,0.25) 100%)" }} />
+            {/* Category pill */}
+            <div style={{
+              position: "absolute", top: 16, left: 16,
+              background: col.pill, color: "#fff",
+              fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+              padding: "7px 14px", borderRadius: 99,
+            }}>{featured.cat}</div>
+            {/* Trending */}
+            {featured.trending && (
+              <div style={{
+                position: "absolute", top: 16, right: 16,
+                background: "rgba(239,68,68,0.9)", color: "#fff",
+                fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+                padding: "7px 14px", borderRadius: 99,
+              }}>🔥 Trending</div>
+            )}
+            {/* Read time */}
+            <div style={{
+              position: "absolute", bottom: 16, left: 16,
+              display: "flex", alignItems: "center", gap: 6,
+              background: "rgba(37,99,235,0.92)", color: "#fff",
+              fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+              padding: "8px 14px", borderRadius: 99,
+              boxShadow: "0 8px 24px rgba(37,99,235,0.4)",
+            }}>📖 {featured.readTime} read</div>
+          </div>
         </div>
       </div>
     </div>
@@ -706,123 +543,95 @@ function ArticleCard({ article }) {
 // ─────────────────────────────────────────────
 // MAIN PAGE
 // ─────────────────────────────────────────────
-export default function FitPulsePage() {
+export default function ArticlesPage() {
   const [activeFilter, setActiveFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery,  setSearchQuery]  = useState("");
+  const [inputVal,     setInputVal]     = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded,     setExpanded]     = useState(false);
 
-  const filteredArticles = ARTICLES.filter((a) => {
-    const matchesFilter = activeFilter === "all" || a.catKey === activeFilter;
-    const matchesSearch =
-      searchQuery === "" ||
-      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.cat.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesFilter && matchesSearch;
+  const filtered = ARTICLES.filter(a => {
+    const matchF = activeFilter === "all" || a.catKey === activeFilter;
+    const q      = searchQuery.toLowerCase();
+    const matchS = !q
+      || a.title.toLowerCase().includes(q)
+      || a.cat.toLowerCase().includes(q)
+      || a.tags.some(t => t.toLowerCase().includes(q));
+    return matchF && matchS;
   });
 
-  const visibleArticles = filteredArticles.slice(0, visibleCount);
+  const visible = filtered.slice(0, visibleCount);
 
-  const handleToggle = () => {
-    if (expanded) {
-      setVisibleCount(6);
-      setExpanded(false);
-    } else {
-      setVisibleCount(filteredArticles.length);
-      setExpanded(true);
-    }
-  };
-
-  function handleSearch(q) {
-    setSearchQuery(q);
-    setActiveFilter("all");
-    setVisibleCount(6);
-    setExpanded(false);
-  }
-
-  function handleFilter(id) {
-    setActiveFilter(id);
-    setVisibleCount(6);
-    setExpanded(false);
+  function handleSearch(q)  { setSearchQuery(q); setActiveFilter("all"); setVisibleCount(6); setExpanded(false); }
+  function handleFilter(id) { setActiveFilter(id); setVisibleCount(6); setExpanded(false); }
+  function handleToggle()   {
+    if (expanded) { setVisibleCount(6); setExpanded(false); }
+    else          { setVisibleCount(filtered.length); setExpanded(true); }
   }
 
   return (
     <>
-      <style>{globalStyles}</style>
+      <style>{STYLES}</style>
+      <main style={{ minHeight: "100vh", background: "#f8faff", fontFamily: "var(--font-body)" }}>
 
-      <main style={{ minHeight: "100vh", background: "#e0f2fe" }} className="fitpulse-page">
-        <HeroSection onSearch={handleSearch} />
-        <FilterTabs active={activeFilter} onFilter={handleFilter} />
+        {/* ══ HERO ══ */}
+        <ArticlesHero onSearch={handleSearch} inputVal={inputVal} setInputVal={setInputVal} />
 
-        <div className="content-wrap">
-          {/* Featured */}
-          {activeFilter === "all" && searchQuery === "" && <FeaturedCard />}
+        {/* ══ FILTER BAR ══ */}
+        <div className="filter-bar">
+          <div className="filter-scroll">
+            {FILTERS.map(f => (
+              <button key={f.id} onClick={() => handleFilter(f.id)} className="f-tab" style={{
+                background: activeFilter === f.id ? "linear-gradient(135deg,#1e40af,#2563eb)" : "rgba(37,99,235,0.05)",
+                color: activeFilter === f.id ? "#fff" : "#64748b",
+                border: activeFilter === f.id ? "1px solid transparent" : "1px solid rgba(37,99,235,0.12)",
+                boxShadow: activeFilter === f.id ? "0 4px 16px rgba(37,99,235,0.25)" : "none",
+              }}>
+                <span style={{ fontSize: 14 }}>{f.icon}</span> {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-          {/* Search meta */}
+        {/* ══ CONTENT ══ */}
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "2.5rem 1rem 5rem" }}>
+
+          {activeFilter === "all" && !searchQuery && <FeaturedCard />}
+
           {searchQuery && (
-            <div style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              marginBottom: "1rem", flexWrap: "wrap", gap: 8,
-            }}>
-              <p style={{ fontSize: 13, color: "#475569" }}>
-                {visibleArticles.length} result{visibleArticles.length !== 1 ? "s" : ""} for{" "}
-                <strong style={{ color: "#0f172a" }}>&quot;{searchQuery}&quot;</strong>
+            <div className="anim-fade-up" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: 8 }}>
+              <p style={{ fontFamily: "var(--font-body)", fontSize: 13.5, color: "#64748b" }}>
+                <strong style={{ color: "#0f172a" }}>{filtered.length}</strong> result{filtered.length !== 1 ? "s" : ""} for{" "}
+                <strong style={{ color: "#2563eb" }}>"{searchQuery}"</strong>
               </p>
-              <button
-                onClick={() => { setSearchQuery(""); setVisibleCount(6); setExpanded(false); }}
-                style={{
-                  background: "none", border: "1px solid #93c5fd",
-                  borderRadius: 99, padding: "4px 12px", fontSize: 12,
-                  cursor: "pointer", color: "#1e40af", fontFamily: "inherit",
-                }}
-              >
+              <button onClick={() => { setSearchQuery(""); setInputVal(""); setVisibleCount(6); setExpanded(false); }}
+                style={{ background: "none", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 99, padding: "4px 14px", fontSize: 12, cursor: "pointer", color: "#2563eb", fontFamily: "var(--font-display)" }}>
                 Clear ✕
               </button>
             </div>
           )}
 
-          {/* Section label */}
-          <p style={{
-            fontSize: 17, letterSpacing: "1.8px",
-            textTransform: "uppercase", color: "#60a5fa",
-            marginBottom: "1rem", fontWeight: 700,
-          }}>
+          <p className="anim-fade-up" style={{ fontFamily: "var(--font-display)", fontSize: 11, letterSpacing: "2px", textTransform: "uppercase", color: "#2563eb", marginBottom: "1.25rem", fontWeight: 700 }}>
             {searchQuery ? "Search Results" : "Latest Articles"}
           </p>
 
-          {/* Grid */}
-          {visibleArticles.length > 0 ? (
-            <div className="article-grid">
-              {visibleArticles.map((article) => {
-                const slug = article.title
-                  .toLowerCase()
-                  .replace(/[^a-z0-9 ]/g, "")
-                  .replace(/\s+/g, "-");
-                return (
-                  <Link
-                    key={article.id}
-                    href={`/articles/${slug}-${article.id}`}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <ArticleCard article={article} />
-                  </Link>
-                );
-              })}
+          {visible.length > 0 ? (
+            <div className="art-grid">
+              {visible.map((a, i) => (
+                <div key={a.id} className={`anim-fade-up delay-${Math.min(7, i + 1) * 100}`} style={{ height: "100%" }}>
+                  <ArticleCard article={a} />
+                </div>
+              ))}
             </div>
           ) : (
-            <div style={{
-              textAlign: "center", padding: "3rem 1rem",
-              color: "#64748b", fontSize: 16,
-            }}>
+            <div style={{ textAlign: "center", padding: "4rem 1rem", color: "#94a3b8", fontFamily: "var(--font-body)", fontSize: 16 }}>
               No articles found. Try a different search or filter.
             </div>
           )}
 
-          {/* Load more */}
-          {filteredArticles.length > 6 && (
-            <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
-              <button className="load-more-btn" onClick={handleToggle}>
+          {filtered.length > 6 && (
+            <div style={{ textAlign: "center", marginTop: "2.75rem" }}>
+              <button className="load-btn" onClick={handleToggle}>
                 {expanded ? "Show Less ↑" : "Load More Articles →"}
               </button>
             </div>
