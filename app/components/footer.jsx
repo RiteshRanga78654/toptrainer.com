@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Facebook, Twitter, Linkedin, Youtube, Instagram } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer() {
   const [checked, setChecked] = useState(false);
@@ -64,20 +65,24 @@ const socialIcons = [
           {/* Company */}
           <div>
             <h4 className="text-lg font-semibold mb-4 sm:mb-6">Company</h4>
-            <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
-              {["About", "Courses", "Mentors", "SiteMap", "Privacy Policy"].map(
-                (item, i) => (
-                  <li key={i}>
-                    <a
-                      href="#"
-                      className="hover:text-white hover:font-bold  transition-all duration-200"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                )
-              )}
-            </ul>
+        <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
+  {[
+    { name: "About", link: "/about" },
+    { name: "Courses", link: "#" },
+    { name: "Mentors", link: "#" },
+    { name: "SiteMap", link: "#" },
+    { name: "Privacy Policy", link: "/privacy-policy" },
+  ].map((item, i) => (
+    <li key={i}>
+      <a
+        href={item.link}
+        className="hover:text-white hover:font-bold transition-all duration-200"
+      >
+        {item.name}
+      </a>
+    </li>
+  ))}
+</ul>
           </div>
 
           {/* Links */}
