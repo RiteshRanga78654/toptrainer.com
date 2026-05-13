@@ -1,5 +1,7 @@
+"use client";
+
 import {
-  Document, Page, Text, View, StyleSheet, Link,
+  Document, Page, Text, View, StyleSheet, Link, Image,
 } from "@react-pdf/renderer";
 
 const C = {
@@ -15,12 +17,13 @@ const C = {
 
 const styles = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: C.dark, backgroundColor: C.white, paddingHorizontal: 40, paddingVertical: 36 },
-  header: { marginBottom: 20, borderBottomWidth: 2, borderBottomColor: C.primary, paddingBottom: 16 },
+  header: { marginBottom: 20, borderBottomWidth: 2, borderBottomColor: C.primary, paddingBottom: 16, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  logo: { width: 80, height: 80, objectFit: "contain" },
   name: { fontSize: 26, fontFamily: "Helvetica-Bold", color: C.dark, marginBottom: 4 },
   headline: { fontSize: 12, color: C.primary, marginBottom: 6, fontFamily: "Helvetica-Bold" },
   tagline: { fontSize: 10, color: C.muted, marginBottom: 12 },
   contactRow: { flexDirection: "row", flexWrap: "wrap", gap: 14, marginTop: 8 },
-  contactItem: { fontSize: 9, color: C.muted },
+  contactItem: { fontSize: 9, marginTop: 1, color: C.muted },
   statsRow: { flexDirection: "row", justifyContent: "space-between", backgroundColor: C.lightBg, borderRadius: 6, padding: 12, marginBottom: 18 },
   statBox: { alignItems: "center", flex: 1 },
   statValue: { fontSize: 16, fontFamily: "Helvetica-Bold", color: C.primary },
@@ -135,17 +138,22 @@ export function TrainerPDFDocument() {
     <Document title={`${t.name} - Trainer Profile`} author={t.name}>
       <Page size="A4" style={styles.page}>
 
+        {/* HEADER with logo */}
         <View style={styles.header}>
-          <Text style={styles.name}>{t.name}</Text>
-          <Text style={styles.headline}>{t.headline}</Text>
-          <Text style={styles.tagline}>{t.tagline}</Text>
-          <View style={styles.contactRow}>
-            <Text style={styles.contactItem}>Phone: {t.phone}</Text>
-            <Text style={styles.contactItem}>  |  Location: {t.location}</Text>
-            <Text style={styles.contactItem}>  |  Email: {t.email}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.name}>{t.name}</Text>
+            <Text style={styles.headline}>{t.headline}</Text>
+            <Text style={styles.tagline}>{t.tagline}</Text>
+            <View style={styles.contactRow}>
+              <Text style={styles.contactItem}>Phone: {t.phone}</Text>
+              <Text style={styles.contactItem}>  |  Location: {t.location}</Text>
+              <Text style={styles.contactItem}>  |  Email: {t.email}</Text>
+            </View>
           </View>
+          <Image style={styles.logo} src="/icon.png" />
         </View>
 
+        {/* STATS */}
         <View style={styles.statsRow}>
           {t.stats.map((s, i) => (
             <View key={i} style={{ flexDirection: "row", flex: 1 }}>
@@ -158,16 +166,19 @@ export function TrainerPDFDocument() {
           ))}
         </View>
 
+        {/* EXPERTISE */}
         <Section title="Areas of Expertise">
           <View style={styles.tagsRow}>
             {t.skills.map((s, i) => <Text key={i} style={styles.tag}>{s}</Text>)}
           </View>
         </Section>
 
+        {/* ABOUT */}
         <Section title="About">
           <Text style={styles.bodyText}>{t.about}</Text>
         </Section>
 
+        {/* DETAILS */}
         <Section title="Profile Details">
           <View style={styles.twoCol}>
             <View style={styles.col}>
@@ -189,10 +200,12 @@ export function TrainerPDFDocument() {
           </View>
         </Section>
 
+        {/* EXPERIENCE */}
         <Section title="Experience">
           {t.experience.map((e, i) => <Entry key={i} {...e} />)}
         </Section>
 
+        {/* MILESTONES */}
         <Section title="Educational & Professional Milestones">
           <View style={{ position: "relative" }}>
             <View style={styles.milestoneLine} />
@@ -209,6 +222,7 @@ export function TrainerPDFDocument() {
           </View>
         </Section>
 
+        {/* TESTIMONIALS */}
         <Section title="What People Say">
           <View style={[styles.twoCol, { gap: 8 }]}>
             {t.testimonials.map((test, i) => (
@@ -222,6 +236,7 @@ export function TrainerPDFDocument() {
           </View>
         </Section>
 
+        {/* SOCIAL */}
         <Section title="Connect With Me">
           <View style={styles.socialRow}>
             {t.social.map((s, i) => (
@@ -232,6 +247,7 @@ export function TrainerPDFDocument() {
           </View>
         </Section>
 
+        {/* CTA */}
         <View style={styles.ctaBox}>
           <Text style={styles.ctaText}>Interested in Hiring {t.name.split(" ")[0]}?</Text>
           <Text style={styles.ctaSubText}>Get in touch · {t.email}</Text>

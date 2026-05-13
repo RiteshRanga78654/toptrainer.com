@@ -12,7 +12,6 @@ import {
 import Footer from "../components/footer";
 import DownloadButton from "./DownloadButton";
 
-// ─── Animation Hook ───────────────────────────────────────────────────────────
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -174,12 +173,23 @@ function AnimatedBackground() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let animId;
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
     resize();
     window.addEventListener("resize", resize);
     const rand = (min, max) => Math.random() * (max - min) + min;
-    const dots = Array.from({ length: 50 }, () => ({ x: rand(0, window.innerWidth), y: rand(0, window.innerHeight), r: rand(1.5, 3.5), vx: rand(-0.15, 0.15), vy: rand(-0.2, -0.05), alpha: rand(0.35, 0.7), pulse: rand(0, Math.PI * 2) }));
-    const blobs = Array.from({ length: 4 }, () => ({ x: rand(0, window.innerWidth), y: rand(0, window.innerHeight), r: rand(120, 220), vx: rand(-0.08, 0.08), vy: rand(-0.07, 0.07), hue: rand(250, 280) }));
+    const dots = Array.from({ length: 50 }, () => ({
+      x: rand(0, window.innerWidth), y: rand(0, window.innerHeight),
+      r: rand(1.5, 3.5), vx: rand(-0.15, 0.15), vy: rand(-0.2, -0.05),
+      alpha: rand(0.35, 0.7), pulse: rand(0, Math.PI * 2),
+    }));
+    const blobs = Array.from({ length: 4 }, () => ({
+      x: rand(0, window.innerWidth), y: rand(0, window.innerHeight),
+      r: rand(120, 220), vx: rand(-0.08, 0.08), vy: rand(-0.07, 0.07),
+      hue: rand(250, 280),
+    }));
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       blobs.forEach((b) => {
@@ -206,12 +216,19 @@ function AnimatedBackground() {
       animId = requestAnimationFrame(draw);
     };
     draw();
-    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
   }, []);
-  return <canvas ref={canvasRef} style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: -1 }} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: -1 }}
+    />
+  );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function Profile() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -232,10 +249,8 @@ export default function Profile() {
         {/* ── Hero Banner ── */}
         <div className="relative overflow-hidden w-full max-w-7xl mx-auto bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600">
 
-          {/* ── Download Button ── */}
           <DownloadButton />
 
-          {/* Decorative blobs */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-300/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
@@ -416,6 +431,7 @@ export default function Profile() {
                   </div>
                 </Card>
               </FadeIn>
+
             </div>
 
             {/* ── Right Column ── */}
