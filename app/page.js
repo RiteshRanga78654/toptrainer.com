@@ -282,6 +282,7 @@ import YoutubeSection from "./components/youtube";
 import PopularCourses from "./components/course";
 import Category from "./components/category";
 import Articles from "./components/article";
+import Trainer from "./components/trainer";
 import Image from "next/image";
 
 /* ━━━ GLOBAL STYLES ━━━ */
@@ -757,6 +758,7 @@ className="cat-card flex-shrink-0 w-[45%] sm:w-[45%] md:w-auto"
       <Category />
       <YoutubeSection />
       <Articles />
+      <Trainer />
     </div>
   );
 };

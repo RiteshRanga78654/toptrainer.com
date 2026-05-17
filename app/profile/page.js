@@ -7,7 +7,7 @@ import {
   Star, ChevronRight, Users, Award, BookOpen, Briefcase,
   Languages, MessageSquare, Download, ExternalLink,
   CheckCircle2, TrendingUp, Lightbulb, Target, Building2,
-  GraduationCap, Trophy, Send, Camera, Zap,
+  GraduationCap, Trophy, Send, Camera, Zap, Play, ShieldCheck,
 } from "lucide-react";
 import Footer from "../components/footer";
 import DownloadButton from "./DownloadButton";
@@ -229,6 +229,15 @@ function AnimatedBackground() {
   );
 }
 
+// WhatsApp SVG Icon component
+function WhatsAppIcon({ size = 15 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  );
+}
+
 export default function Profile() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -270,8 +279,17 @@ export default function Profile() {
               {/* Info */}
               <div className="flex-1">
                 <h1 className="text-3xl md:text-4xl font-bold text-white">Karan Malhotra</h1>
-                <p className="text-blue-200 font-medium mt-1 text-sm md:text-base">
-                  Leadership & Agile Coach &nbsp;|&nbsp; Elevate Learning Solutions Pvt. Ltd.
+
+                {/* ── Contact details moved below name ── */}
+                <div className="flex flex-wrap items-center gap-4 text-sm text-blue-200 mt-2 mb-2">
+                
+                  <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                    <MapPin size={13} /> Bengaluru, Karnataka
+                  </span>
+                </div>
+
+                <p className="text-blue-200 font-medium text-sm md:text-base">
+                  Agile Coach &nbsp;|&nbsp; Elevate Learning Solutions Pvt. Ltd.
                 </p>
                 <p className="text-blue-300 text-sm mt-2 max-w-lg leading-relaxed">
                   Helping leaders and teams unlock their true potential through experiential learning and practical strategies.
@@ -294,7 +312,7 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mt-4">
-                  {["Leadership", "Agile", "Change Management", "Team Building"].map((t) => (
+                  {["City", "Agile", "Change Management", "Team Building"].map((t) => (
                     <Tag key={t} label={t} />
                   ))}
                 </div>
@@ -313,31 +331,24 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Contact Bar */}
+          {/* Contact Bar — social icons only */}
           <div className="border-t border-white/10 bg-blue-900/40 backdrop-blur-sm">
-            <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-4 text-sm text-blue-200">
-                <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
-                  <Phone size={14} /> +91 9876543210
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
-                  <MapPin size={14} /> Bengaluru, Karnataka
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
-                  <Mail size={14} /> karan.malhotra@elevatelearning.com
-                </span>
-              </div>
+            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-end gap-3">
               <div className="flex items-center gap-3">
                 {[
-                  { Icon: Linkedin, color: "hover:bg-blue-600" },
-                  { Icon: Twitter, color: "hover:bg-sky-500" },
-                  { Icon: Youtube, color: "hover:bg-red-500" },
-                  { Icon: Globe, color: "hover:bg-blue-500" },
-                ].map(({ Icon, color }, i) => (
-                  <button key={i} className={`w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 ${color}`}>
+                  { Icon: Linkedin, color: "hover:bg-blue-600", label: "LinkedIn" },
+                  { Icon: Twitter, color: "hover:bg-sky-500", label: "Twitter" },
+                  { Icon: Youtube, color: "hover:bg-red-500", label: "YouTube" },
+                  { Icon: Globe, color: "hover:bg-blue-500", label: "Website" },
+                ].map(({ Icon, color, label }, i) => (
+                  <button key={i} aria-label={label} className={`w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 ${color}`}>
                     <Icon size={15} />
                   </button>
                 ))}
+                {/* WhatsApp icon */}
+                <button aria-label="WhatsApp" className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 hover:bg-green-500">
+                  <WhatsAppIcon size={15} />
+                </button>
               </div>
             </div>
           </div>
@@ -419,6 +430,26 @@ export default function Profile() {
                       <Milestone icon={Star} label="Top Trainer of the Year" org="ABP Awards" year="2022" delay={320} />
                     </div>
                   </div>
+
+                  {/* ── Training Certifications sub-section ── */}
+                  <div className="mt-6 pt-5 border-t border-blue-100">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <ShieldCheck size={18} className="text-blue-700" />
+                      </div>
+                      <h2 className="text-lg font-semibold text-black">Training Certifications</h2>
+                    </div>
+                    <div className="relative">
+                      <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-blue-100 hidden sm:block" />
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 relative">
+                        <Milestone icon={ShieldCheck} label="Certified Scrum Master (CSM)" org="Scrum Alliance" year="2014" delay={0} />
+                        <Milestone icon={Award} label="Professional Scrum Trainer (PST)" org="Scrum.org" year="2016" delay={80} />
+                        <Milestone icon={CheckCircle2} label="Certified Agile Coach (ICP-ACC)" org="ICAgile" year="2018" delay={160} />
+                        <Milestone icon={ShieldCheck} label="DISC Certified Trainer" org="John Maxwell Team" year="2019" delay={240} />
+                        <Milestone icon={Star} label="Certified Design Thinking Facilitator" org="IDEO" year="2021" delay={320} />
+                      </div>
+                    </div>
+                  </div>
                 </Card>
               </FadeIn>
 
@@ -448,6 +479,45 @@ export default function Profile() {
                 </Card>
               </FadeIn>
 
+              <FadeIn delay={170}>
+                <Card>
+                  <SectionHeader icon={Play} title="Featured Video" />
+                  <div className="space-y-3">
+                    {/* Video embed placeholder */}
+                    <div className="relative w-full rounded-xl overflow-hidden bg-blue-950 aspect-video group cursor-pointer">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <div className="w-14 h-14 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300">
+                          <Play size={24} className="text-white fill-white ml-1" />
+                        </div>
+                        <span className="text-xs text-blue-200 mt-1">Watch Preview</span>
+                      </div>
+                      {/* Decorative gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-800/60 via-blue-900/40 to-blue-950/80" />
+                      <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                        <p className="text-xs font-semibold text-white leading-snug">Agile Leadership Masterclass — Introduction</p>
+                        <p className="text-xs text-blue-300 mt-0.5">12:45 mins</p>
+                      </div>
+                    </div>
+                    {/* Additional video thumbnails */}
+                    {[
+                      { title: "Design Thinking for Teams", duration: "8:20 mins" },
+                      { title: "Emotional Intelligence at Work", duration: "10:05 mins" },
+                    ].map((v, i) => (
+                      <div key={i} className="flex gap-3 group cursor-pointer hover:bg-blue-50 p-2 rounded-xl transition-colors">
+                        <div className="w-16 h-12 flex-shrink-0 rounded-lg bg-gradient-to-br from-blue-700 to-blue-900 flex items-center justify-center relative overflow-hidden">
+                          <Play size={16} className="text-white fill-white z-10" />
+                          <div className="absolute inset-0 bg-blue-800/60" />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <p className="text-sm font-medium text-blue-900 group-hover:text-blue-700 transition-colors leading-snug">{v.title}</p>
+                          <p className="text-xs text-blue-400 mt-0.5">{v.duration}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </FadeIn>
+
               <FadeIn delay={250}>
                 <Card>
                   <SectionHeader icon={Phone} title="Contact Details" />
@@ -455,13 +525,14 @@ export default function Profile() {
                     {[
                       { icon: Phone, text: "+91 98765 43210" },
                       { icon: Mail, text: "karan.malhotra@elevatelearning.com" },
-                      { icon: MapPin, text: "Bengaluru, Karnataka" },
+                      { icon: MapPin, text: "No. 42, 3rd Cross, Koramangala 5th Block, Bengaluru, Karnataka – 560095" },
+                      { icon: Globe, text: "www.elevatelearning.com" },
                     ].map(({ icon: Icon, text }, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900 transition-colors cursor-pointer">
-                        <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                      <div key={i} className="flex items-start gap-2 text-sm text-blue-700 hover:text-blue-900 transition-colors cursor-pointer">
+                        <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <Icon size={13} className="text-blue-500" />
                         </div>
-                        <span className="break-all">{text}</span>
+                        <span className="break-all leading-snug">{text}</span>
                       </div>
                     ))}
                   </div>
@@ -501,39 +572,6 @@ export default function Profile() {
                 </Card>
               </FadeIn>
 
-              <FadeIn delay={300}>
-                <Card>
-                  <SectionHeader icon={ExternalLink} title="Connect With Me" />
-                  <div className="space-y-2">
-                    {[
-                      { icon: Linkedin, label: "linkedin.com/in/karanmalhotra", color: "bg-blue-700" },
-                      { icon: Twitter, label: "twitter.com/karanmalhotra", color: "bg-sky-500" },
-                      { icon: Youtube, label: "youtube.com/@karanmalhotra", color: "bg-red-500" },
-                      { icon: Globe, label: "www.elevatelearning.com", color: "bg-blue-600" },
-                    ].map(({ icon: Icon, label, color }, i) => (
-                      <div key={i} className="flex items-center gap-3 p-2 rounded-xl hover:bg-blue-50 transition-colors cursor-pointer group">
-                        <div className={`w-8 h-8 rounded-lg ${color} flex items-center justify-center flex-shrink-0`}>
-                          <Icon size={14} className="text-white" />
-                        </div>
-                        <span className="text-sm text-blue-700 group-hover:text-blue-900 transition-colors truncate">{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </FadeIn>
-
-              <FadeIn delay={350}>
-                <div className="rounded-2xl bg-gradient-to-br from-blue-800 to-blue-600 p-5 text-white shadow-lg">
-                  <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center mb-3">
-                    <Briefcase size={18} />
-                  </div>
-                  <h3 className="font-bold text-base mb-1">Interested in Hiring Karan?</h3>
-                  <p className="text-blue-200 text-xs mb-4 leading-relaxed">Get in touch to book a workshop for your team.</p>
-                  <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-semibold text-sm transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95 mb-2">
-                    <Send size={14} /> Send Inquiry
-                  </button>
-                </div>
-              </FadeIn>
 
             </div>
           </div>

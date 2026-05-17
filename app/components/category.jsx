@@ -514,7 +514,7 @@ const Category = () => {
         </div>
 
         {/* ── Bottom CTA ── */}
-        <div className="bg-gradient-to-r from-blue-700 to-indigo-800 mt-4 py-14 px-6 text-center">
+        {/* <div className="bg-gradient-to-r from-blue-700 to-indigo-800 mt-4 py-14 px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3">
             Are you an expert? Become a Trainer.
           </h2>
@@ -524,7 +524,7 @@ const Category = () => {
           <button className="bg-amber-400 text-amber-900 font-bold px-8 py-3 rounded-xl hover:bg-amber-300 transition-all duration-200 text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
             Apply as a Trainer →
           </button>
-        </div>
+        </div> */}
 
       </div>
     </>
