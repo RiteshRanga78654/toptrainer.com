@@ -8,6 +8,7 @@ import {
   Languages, MessageSquare, Download, ExternalLink,
   CheckCircle2, TrendingUp, Lightbulb, Target, Building2,
   GraduationCap, Trophy, Send, Camera, Zap, Play, ShieldCheck,
+  Facebook, Instagram,
 } from "lucide-react";
 import Footer from "../components/footer";
 import DownloadButton from "./DownloadButton";
@@ -229,7 +230,6 @@ function AnimatedBackground() {
   );
 }
 
-// WhatsApp SVG Icon component
 function WhatsAppIcon({ size = 15 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -246,6 +246,17 @@ export default function Profile() {
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  const socialRow1 = [
+    { Icon: Linkedin, color: "hover:bg-blue-600", label: "LinkedIn" },
+    { Icon: Twitter,  color: "hover:bg-sky-500",  label: "Twitter"  },
+    { Icon: Youtube,  color: "hover:bg-red-500",   label: "YouTube"  },
+  ];
+  const socialRow2 = [
+    { Icon: Globe,     color: "hover:bg-blue-500",  label: "Website"   },
+    { Icon: Facebook,  color: "hover:bg-blue-700",  label: "Facebook"  },
+    { Icon: Instagram, color: "hover:bg-pink-500",  label: "Instagram" },
+  ];
 
   return (
     <>
@@ -264,40 +275,68 @@ export default function Profile() {
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-300/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
           <div className="relative max-w-6xl mx-auto px-4 pt-6 pb-10">
-            <div className="flex flex-col md:flex-row items-start gap-6">
+            
+            {/* Main Flex Wrapper: Column on mobile, Row on Desktop */}
+            <div className="flex flex-col md:flex-row items-stretch md:items-start gap-6">
 
-              {/* ── CHANGE 1: Avatar column with social icons stacked below ── */}
-              <div className="flex flex-col items-center gap-4 flex-shrink-0">
-                {/* Avatar — aligned to top with name */}
-                <div className="relative">
-                  <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl bg-gradient-to-br from-blue-300 to-blue-500 flex items-center justify-center ring-4 ring-white/20 overflow-hidden shadow-2xl">
-                    <Image src="/Images/trainee1.png" alt="Trainer" width={150} height={150} className="w-full h-full object-cover" />
+              {/* TOP LAYOUT CONTAINER FOR MOBILE (Image Left, Social Icons Right) */}
+              <div className="flex flex-row items-center justify-between md:flex-col md:justify-start gap-4 flex-shrink-0 w-full md:w-auto">
+
+                {/* Avatar Wrapper with absolute WhatsApp tag */}
+                <div className="relative flex-shrink-0">
+                  <div className="w-24 h-24 md:w-36 md:h-36 rounded-2xl bg-gradient-to-br from-blue-300 to-blue-500 flex items-center justify-center ring-4 ring-white/20 overflow-hidden shadow-2xl">
+                    <Image
+                      src="/Images/trainee1.png"
+                      alt="Trainer"
+                      width={150}
+                      height={150}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-400 rounded-full flex items-center justify-center ring-2 ring-white">
-                    <CheckCircle2 size={16} className="text-white" />
-                  </div>
+
+                  {/* WhatsApp button positioned at bottom right corner */}
+                  <a
+                    href="https://wa.me/919876543210"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="WhatsApp"
+                    className="absolute -bottom-1 -right-1 w-8 h-8 md:w-9 md:h-9 bg-green-500 rounded-full flex items-center justify-center ring-2 ring-white hover:bg-green-600 transition-colors shadow-md z-10"
+                  >
+                    <WhatsAppIcon size={16} />
+                  </a>
                 </div>
 
-                {/* Social icons directly below avatar */}
-                <div className="flex items-center gap-2 flex-wrap justify-center">
-                  {[
-                    { Icon: Linkedin, color: "hover:bg-blue-600", label: "LinkedIn" },
-                    { Icon: Twitter, color: "hover:bg-sky-500", label: "Twitter" },
-                    { Icon: Youtube, color: "hover:bg-red-500", label: "YouTube" },
-                    { Icon: Globe, color: "hover:bg-blue-500", label: "Website" },
-                  ].map(({ Icon, color, label }, i) => (
-                    <button key={i} aria-label={label} className={`w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 ${color}`}>
-                      <Icon size={15} />
-                    </button>
-                  ))}
-                  <button aria-label="WhatsApp" className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 hover:bg-green-500">
-                    <WhatsAppIcon size={15} />
-                  </button>
+                {/* Social Icons Container (Flows naturally onto the right on mobile, below image on desktop) */}
+                <div className="flex flex-col gap-2 items-end md:items-center">
+                  {/* Row 1 */}
+                  <div className="flex items-center gap-2">
+                    {socialRow1.map(({ Icon, color, label }, i) => (
+                      <button
+                        key={i}
+                        aria-label={label}
+                        className={`w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 ${color}`}
+                      >
+                        <Icon size={15} />
+                      </button>
+                    ))}
+                  </div>
+                  {/* Row 2 */}
+                  <div className="flex items-center gap-2">
+                    {socialRow2.map(({ Icon, color, label }, i) => (
+                      <button
+                        key={i}
+                        aria-label={label}
+                        className={`w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 ${color}`}
+                      >
+                        <Icon size={15} />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* Info */}
-              <div className="flex-1">
+              {/* ── Lower Details Block on Mobile, Flows Side-by-Side on Desktop ── */}
+              <div className="flex-1 min-w-0 mt-2 md:mt-0">
                 <h1 className="text-3xl md:text-4xl font-bold text-white">Karan Malhotra</h1>
 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-blue-200 mt-2 mb-2">
@@ -337,7 +376,7 @@ export default function Profile() {
               </div>
 
               {/* Company Badge */}
-              <div className="absolute bottom-4 right-4 z-10">
+              {/* <div className="absolute bottom-4 right-4 z-10 hidden sm:block">
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-xl shadow-lg">
                   <Building2 size={16} className="text-white" />
                   <div className="flex flex-col leading-tight">
@@ -345,12 +384,10 @@ export default function Profile() {
                     <span className="text-sm font-semibold text-white">Elevate Learning Solutions</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
+
             </div>
           </div>
-
-          {/* ── CHANGE 1: Contact bar below hero — social icons REMOVED from here ── */}
-          {/* The bar is kept only if you need other content; otherwise can be removed entirely */}
         </div>
 
         {/* ── Main Content ── */}
@@ -371,7 +408,7 @@ export default function Profile() {
                 </Card>
               </FadeIn>
 
-              {/* ── CHANGE 3: Testimonials moved here, right after About Me ── */}
+              {/* Testimonials */}
               <FadeIn delay={80}>
                 <Card>
                   <SectionHeader icon={MessageSquare} title="What People Say" linkText="View All" />
@@ -382,7 +419,7 @@ export default function Profile() {
                 </Card>
               </FadeIn>
 
-              {/* ── CHANGE 2: Profile details — single column, one by one ── */}
+              {/* Profile Details */}
               <FadeIn delay={100}>
                 <Card>
                   <div className="flex flex-col divide-y divide-blue-50">
@@ -407,6 +444,7 @@ export default function Profile() {
                 </Card>
               </FadeIn>
 
+              {/* Popular Workshops */}
               <FadeIn delay={150}>
                 <Card>
                   <SectionHeader icon={Zap} title="Popular Workshops" linkText="View All" />
@@ -418,6 +456,7 @@ export default function Profile() {
                 </Card>
               </FadeIn>
 
+              {/* Gallery */}
               <FadeIn delay={200}>
                 <Card>
                   <SectionHeader icon={Camera} title="Gallery" />
@@ -429,9 +468,10 @@ export default function Profile() {
                 </Card>
               </FadeIn>
 
+              {/* Milestones */}
               <FadeIn delay={250}>
                 <Card>
-                  <SectionHeader icon={GraduationCap} title="Educational & Professional Milestones" />
+                  <SectionHeader icon={GraduationCap} title="Professional Experience" />
                   <div className="relative">
                     <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-blue-100 hidden sm:block" />
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 relative">
@@ -443,13 +483,13 @@ export default function Profile() {
                     </div>
                   </div>
 
-                  {/* Training Certifications sub-section */}
+                  {/* Education & Certifications  sub-section */}
                   <div className="mt-6 pt-5 border-t border-blue-100">
                     <div className="flex items-center gap-2 mb-4">
                       <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
                         <ShieldCheck size={18} className="text-blue-700" />
                       </div>
-                      <h2 className="text-lg font-semibold text-black">Training Certifications</h2>
+                      <h2 className="text-lg font-semibold text-black">Education & Certifications </h2>
                     </div>
                     <div className="relative">
                       <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-blue-100 hidden sm:block" />
@@ -464,8 +504,6 @@ export default function Profile() {
                   </div>
                 </Card>
               </FadeIn>
-
-              {/* ── CHANGE 3: Testimonials REMOVED from here (moved above) ── */}
 
             </div>
 
