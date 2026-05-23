@@ -7,9 +7,10 @@ export default function DownloadButton() {
   const [mounted, setMounted] = useState(false);
   const [PDFDownloadLink, setPDFDownloadLink] = useState(null);
   const [TrainerPDFDocument, setTrainerPDFDocument] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Dynamically import both modules only on client side
+    setIsMobile(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
     Promise.all([
       import("@react-pdf/renderer"),
       import("./TrainerProfilePdf"),
@@ -20,12 +21,33 @@ export default function DownloadButton() {
     });
   }, []);
 
+  const buttonClass =
+    "w-9 h-9 rounded-full bg-white/10 backdrop-blur border border-white/50 flex items-center justify-center text-white hover:bg-blue-800 transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95";
+
   if (!mounted || !PDFDownloadLink || !TrainerPDFDocument) {
     return (
-      <button
-        disabled
-        className="absolute top-3 right-3 mr-10 md:top-4 md:right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/50 text-white text-sm font-medium opacity-50 cursor-not-allowed"
-      >
+      <button disabled className={`${buttonClass} opacity-50 cursor-not-allowed`}>
+        <Download size={15} />
+      </button>
+    );
+  }
+
+  if (isMobile && typeof navigator !== "undefined" && navigator.share) {
+    const handleShare = async () => {
+      try {
+        const { pdf } = await import("@react-pdf/renderer");
+        const blob = await pdf(<TrainerPDFDocument />).toBlob();
+        const file = new File([blob], "Karan_Malhotra_Profile.pdf", {
+          type: "application/pdf",
+        });
+        await navigator.share({ title: "Karan Malhotra Profile", files: [file] });
+      } catch (err) {
+        console.error("Share failed:", err);
+      }
+    };
+
+    return (
+      <button onClick={handleShare} className={buttonClass}>
         <Download size={15} />
       </button>
     );
@@ -35,16 +57,13 @@ export default function DownloadButton() {
     <PDFDownloadLink
       document={<TrainerPDFDocument />}
       fileName="Karan_Malhotra_Profile.pdf"
-      className="absolute top-3 right-3 mr-10 md:top-4 md:right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/50 hover:bg-blue-800 text-white text-sm font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95"
+      className={buttonClass}
     >
       {({ loading }) =>
         loading ? (
-          <span className="text-xs text-white">Preparing...</span>
+          <span className="text-xs text-white">...</span>
         ) : (
-          <>
-            <Download size={15} />
-            <span className="hidden sm:inline text-xs">Download </span>
-          </>
+          <Download size={15} />
         )
       }
     </PDFDownloadLink>
