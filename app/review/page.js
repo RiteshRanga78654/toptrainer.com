@@ -1,10 +1,10 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import {
   User, Building2, MapPin, Calendar, BookOpen,
   Star, MessageSquare, ChevronRight, ChevronLeft,
   CheckCircle, Send, Edit2, Headphones, BarChart2,
-  Users, Sparkles, Shield, Clock, TrendingUp,
+  Users, Shield, Clock, TrendingUp,
 } from "lucide-react";
 
 const STEPS = [
@@ -13,55 +13,29 @@ const STEPS = [
   { id: 3, label: "Review & submit", shortLabel: "Review" },
 ];
 
-const RATING_LABELS = ["", "Poor", "Fair", "Good", "Great", "Excellent"];
-
-// ─── Star Rating ─────────────────────────────────────────────────────────────
-function StarRating({ value, onChange }) {
+// ─── Star Rating (inline) ─────────────────────────────────────────────────────
+function InlineStars({ value, onChange }) {
   const [hovered, setHovered] = useState(0);
   const display = hovered || value || 0;
-
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="flex gap-1 sm:gap-2">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="button"
-            onClick={() => onChange(star)}
-            onMouseEnter={() => setHovered(star)}
-            onMouseLeave={() => setHovered(0)}
-            className="focus:outline-none transition-all duration-200 hover:scale-125 active:scale-110"
-            style={{
-              transform: display >= star ? "scale(1.18)" : "scale(1)",
-              animation: value === star ? "starPop 0.3s ease" : "none",
-            }}
-          >
-            <Star
-              size={28}
-              fill={display >= star ? "#1d4ed8" : "none"}
-              stroke={display >= star ? "#1d4ed8" : "#93c5fd"}
-              className="transition-all duration-200"
-            />
-          </button>
-        ))}
-      </div>
-
-      <div
-        className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium"
-        style={{
-          opacity: display > 0 ? 1 : 0,
-          transform: display > 0 ? "translateY(0) scale(1)" : "translateY(-6px) scale(0.9)",
-          transition: "opacity 0.25s ease, transform 0.25s ease",
-          minHeight: "24px",
-          pointerEvents: "none",
-          background: "rgba(219,234,254,0.9)",
-          border: "1px solid #93c5fd",
-          color: "#1e40af",
-        }}
-      >
-        <span>{RATING_EMOJIS[display]}</span>
-        
-      </div>
+    <div className="flex gap-0.5 shrink-0">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => onChange(star)}
+          onMouseEnter={() => setHovered(star)}
+          onMouseLeave={() => setHovered(0)}
+          className="focus:outline-none transition-transform duration-150 hover:scale-125 active:scale-110"
+        >
+          <Star
+            size={20}
+            fill={display >= star ? "#1d4ed8" : "none"}
+            stroke={display >= star ? "#1d4ed8" : "#93c5fd"}
+            className="transition-all duration-150"
+          />
+        </button>
+      ))}
     </div>
   );
 }
@@ -115,72 +89,63 @@ function StepIndicator({ current }) {
   );
 }
 
-// ─── Compact Rating Row ───────────────────────────────────────────────────────
-function CompactRatingRow({ icon: Icon, title, description, rating, comment, onRating, onComment, delay }) {
-  const [expanded, setExpanded] = useState(false);
+// ─── Rating Row (always-visible stars + comment) ───────────────────────────────
+function RatingRow({ icon: Icon, title, description, rating, comment, onRating, onComment, delay }) {
   return (
     <div
       className="rounded-2xl overflow-hidden animate-slideUp"
       style={{ border: "1px solid #bfdbfe", animationDelay: `${delay}ms` }}
     >
+      {/* Header: icon + title left | stars right */}
       <div
-        className="flex items-center justify-between p-3 sm:p-4 cursor-pointer"
+        className="flex items-center justify-between px-3 pt-3 pb-2"
         style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)" }}
-        onClick={() => setExpanded((e) => !e)}
       >
-        <div className="flex items-center gap-3">
-          <div className="p-1.5 bg-white rounded-lg shadow-sm shrink-0" style={{ boxShadow: "0 2px 8px rgba(37,99,235,0.12)" }}>
-            <Icon size={16} style={{ color: "#2563eb" }} />
+        <div className="flex items-center gap-2.5">
+          <div
+            className="p-1.5 bg-white rounded-lg shrink-0"
+            style={{ boxShadow: "0 2px 8px rgba(37,99,235,0.12)" }}
+          >
+            <Icon size={14} style={{ color: "#2563eb" }} />
           </div>
           <div>
-            <p className="font-bold text-gray-800 text-sm">{title}</p>
+            <p className="font-bold text-gray-800 text-sm leading-tight">{title}</p>
             <p className="text-gray-500 text-xs">{description}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {rating !== null ? (
-            <div className="flex gap-0.5">
-              {[1,2,3,4,5].map((s) => (
-                <Star key={s} size={12} fill={s <= rating ? "#1d4ed8" : "none"} stroke={s <= rating ? "#1d4ed8" : "#bfdbfe"} />
-              ))}
-            </div>
-          ) : (
-            <span className="text-xs text-gray-400 italic">Rate</span>
-          )}
-          <ChevronRight
-            size={14}
-            style={{ color: "#93c5fd", transform: expanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
-          />
-        </div>
+        <InlineStars value={rating} onChange={onRating} />
       </div>
 
-      {expanded && (
-        <div className="p-3 sm:p-4 space-y-3" style={{ background: "#fff" }}>
-          <div className="flex justify-center">
-            <StarRating value={rating} onChange={onRating} />
-          </div>
-          <div>
-            <label className="text-xs font-bold tracking-widest text-gray-400 uppercase flex items-center gap-1.5 mb-1">
-              <MessageSquare size={10} /> Comment
-              <span className="font-normal normal-case">(optional)</span>
-            </label>
-            <div className="relative">
-              <textarea
-                value={comment}
-                onChange={(e) => onComment(e.target.value)}
-                maxLength={500}
-                rows={2}
-                placeholder="Share your thoughts..."
-                className="w-full px-3 py-2 rounded-xl text-gray-700 text-sm resize-none transition-all duration-200 placeholder-gray-300"
-                style={{ border: "1px solid #bfdbfe", background: "#eff6ff", outline: "none" }}
-                onFocus={(e) => { e.target.style.boxShadow = "0 0 0 3px rgba(96,165,250,0.25)"; e.target.style.borderColor = "#60a5fa"; e.target.style.background = "#fff"; }}
-                onBlur={(e) => { e.target.style.boxShadow = "none"; e.target.style.borderColor = "#bfdbfe"; e.target.style.background = "#eff6ff"; }}
-              />
-              <span className="absolute bottom-2 right-3 text-xs text-gray-300">{comment.length}/500</span>
-            </div>
-          </div>
+      {/* Comment always visible below */}
+      <div className="px-3 pb-3 pt-2 bg-white">
+        <div className="relative">
+          <textarea
+            value={comment}
+            onChange={(e) => onComment(e.target.value)}
+            maxLength={500}
+            rows={1}
+            placeholder="Add a comment (optional)..."
+            className="w-full px-3 py-1.5 rounded-xl text-gray-700 text-xs resize-none transition-all duration-200 placeholder-gray-300"
+            style={{
+              border: "1px solid #bfdbfe",
+              background: "#eff6ff",
+              outline: "none",
+              lineHeight: "1.5",
+            }}
+            onFocus={(e) => {
+              e.target.style.boxShadow = "0 0 0 3px rgba(96,165,250,0.25)";
+              e.target.style.borderColor = "#60a5fa";
+              e.target.style.background = "#fff";
+            }}
+            onBlur={(e) => {
+              e.target.style.boxShadow = "none";
+              e.target.style.borderColor = "#bfdbfe";
+              e.target.style.background = "#eff6ff";
+            }}
+          />
+          <span className="absolute bottom-2 right-3 text-[10px] text-gray-300">{comment.length}/500</span>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -207,7 +172,7 @@ function ReviewRow({ num, label, rating, delay }) {
         {rating !== null ? (
           <div className="flex gap-0.5">
             {[1, 2, 3, 4, 5].map((s) => (
-              <Star key={s} size={12} fill={s <= rating ? "#1d4ed8" : "none"} stroke={s <= rating ? "#1d4ed8" : "#bfdbfe"} className="sm:w-3.5 sm:h-3.5" />
+              <Star key={s} size={12} fill={s <= rating ? "#1d4ed8" : "none"} stroke={s <= rating ? "#1d4ed8" : "#bfdbfe"} />
             ))}
           </div>
         ) : (
@@ -276,17 +241,11 @@ export default function FeedbackForm() {
           className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-12 max-w-md w-full text-center space-y-4 relative"
           style={{ border: "1px solid rgba(147,197,253,0.6)", zIndex: 1 }}
         >
-          <div className="relative mx-auto w-fit">
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{ background: "radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%)", transform: "scale(1.8)" }}
-            />
-            <div
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto anim-confetti relative"
-              style={{ background: "linear-gradient(135deg,#dbeafe,#93c5fd)" }}
-            >
-              <CheckCircle style={{ color: "#1d4ed8" }} size={36} />
-            </div>
+          <div
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto anim-confetti"
+            style={{ background: "linear-gradient(135deg,#dbeafe,#93c5fd)" }}
+          >
+            <CheckCircle style={{ color: "#1d4ed8" }} size={36} />
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 anim-fade-up" style={{ animationDelay: "100ms" }}>
             Thank you!
@@ -305,7 +264,18 @@ export default function FeedbackForm() {
             </div>
           )}
           <button
-            onClick={() => { setSubmitted(false); setStep(1); setData(d => ({ ...d, overall: { rating: null, comment: "" }, delivery: { rating: null, comment: "" }, content: { rating: null, comment: "" }, engagement: { rating: null, comment: "" }, extra: "" })); }}
+            onClick={() => {
+              setSubmitted(false);
+              setStep(1);
+              setData((d) => ({
+                ...d,
+                overall:    { rating: null, comment: "" },
+                delivery:   { rating: null, comment: "" },
+                content:    { rating: null, comment: "" },
+                engagement: { rating: null, comment: "" },
+                extra: "",
+              }));
+            }}
             className="mt-4 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95 anim-fade-up"
             style={{ background: "linear-gradient(135deg,#3b82f6,#1d4ed8)", animationDelay: "500ms" }}
           >
@@ -328,13 +298,11 @@ export default function FeedbackForm() {
         @keyframes slideInBck { from { opacity:0; transform:translateX(-32px); } to { opacity:1; transform:translateX(0); } }
         @keyframes slideUp    { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
         @keyframes stepPulse  { 0%,100% { box-shadow:0 0 0 0 rgba(37,99,235,.4); } 50% { box-shadow:0 0 0 6px rgba(37,99,235,0); } }
-        @keyframes starPop    { 0% { transform:scale(1); } 40% { transform:scale(1.4); } 100% { transform:scale(1.18); } }
         @keyframes bounceSoft { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
 
-        .animate-fade-in    { animation: fadeIn 0.4s ease both; }
-        .animate-slideIn    { animation: ${animDir === "forward" ? "slideInFwd" : "slideInBck"} 0.35s cubic-bezier(.25,.8,.25,1) both; }
-        .animate-slideUp    { animation: slideUp 0.4s ease both; }
-        .animate-bounce-soft{ animation: bounceSoft 1.8s ease-in-out infinite; }
+        .animate-fade-in  { animation: fadeIn 0.4s ease both; }
+        .animate-slideIn  { animation: ${animDir === "forward" ? "slideInFwd" : "slideInBck"} 0.35s cubic-bezier(.25,.8,.25,1) both; }
+        .animate-slideUp  { animation: slideUp 0.4s ease both; }
 
         input, textarea, select { font-family: inherit; }
         input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
@@ -369,14 +337,7 @@ export default function FeedbackForm() {
           position: relative;
           overflow: hidden;
         }
-        .btn-primary::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: rgba(255,255,255,0);
-          transition: background 0.2s;
-        }
-        .btn-primary:hover::after { background: rgba(255,255,255,0.1); }
+        .btn-primary:hover { opacity: 0.92; }
         .btn-primary:active { transform: scale(0.97); }
 
         .btn-ghost {
@@ -418,17 +379,17 @@ export default function FeedbackForm() {
 
           <div className="space-y-4">
             {[
-              { Icon: Shield, label: "Secure Feedback", sub: "Handled responsibly, used for improvement", from: "#eff6ff", to: "#dbeafe", text: "#1d4ed8" },
-              { Icon: Clock,  label: "Takes 2 Minutes", sub: "Fast and focused questions only",           from: "#dbeafe", to: "#bfdbfe", text: "#2563eb" },
-              { Icon: TrendingUp, label: "Drives Change", sub: "Your input improves trainer performance", from: "#eff6ff", to: "#dbeafe", text: "#1e40af" },
-            ].map(({ Icon, label, sub, from, to, text }, i) => (
+              { Icon: Shield,     label: "Secure Feedback", sub: "Handled responsibly, used for improvement" },
+              { Icon: Clock,      label: "Takes 2 Minutes", sub: "Fast and focused questions only" },
+              { Icon: TrendingUp, label: "Drives Change",   sub: "Your input improves trainer performance" },
+            ].map(({ Icon, label, sub }, i) => (
               <div
                 key={label}
                 className="flex items-start gap-3 p-3 rounded-2xl bg-white/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 animate-slideUp"
                 style={{ border: "1px solid #dbeafe", animationDelay: `${i * 80}ms` }}
               >
-                <div className="p-2 rounded-lg shrink-0" style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}>
-                  <Icon className="w-4 h-4" style={{ color: text }} />
+                <div className="p-2 rounded-lg shrink-0" style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)" }}>
+                  <Icon className="w-4 h-4" style={{ color: "#2563eb" }} />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">{label}</p>
@@ -476,10 +437,7 @@ export default function FeedbackForm() {
               {/* ── Step 1: Session Details ──────────────────────────────── */}
               {step === 1 && (
                 <div className="space-y-4 sm:space-y-5 mt-2">
-                  <div
-                    className="p-3 sm:p-4 rounded-2xl"
-                    style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)" }}
-                  >
+                  <div className="p-3 sm:p-4 rounded-2xl" style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)" }}>
                     <h3 className="font-bold text-gray-800 text-base sm:text-lg flex items-center gap-2">
                       <BookOpen size={18} style={{ color: "#2563eb" }} />
                       Session Details
@@ -499,8 +457,7 @@ export default function FeedbackForm() {
                       { icon: BookOpen,  label: "Topic / module", key: "topic",    type: "text", placeholder: "e.g. Leadership basics" },
                     ].map(({ icon: Icon, label, key, type, placeholder }, i) => (
                       <div key={key} className="animate-slideUp" style={{ animationDelay: `${i * 60}ms` }}>
-                        <label className="text-xs font-bold tracking-widest uppercase flex items-center gap-1.5 mb-1.5"
-                          style={{ color: "#64748b" }}>
+                        <label className="text-xs font-bold tracking-widest uppercase flex items-center gap-1.5 mb-1.5" style={{ color: "#64748b" }}>
                           <Icon size={12} style={{ color: "#3b82f6" }} />
                           {label}
                         </label>
@@ -517,64 +474,49 @@ export default function FeedbackForm() {
                 </div>
               )}
 
-              {/* ── Step 2: All Ratings in one box ──────────────────────── */}
+              {/* ── Step 2: Ratings (inline stars + comment always visible) ─ */}
               {step === 2 && (
-                <div className="space-y-4 mt-2 animate-slideUp">
-                  <div
-                    className="p-3 sm:p-4 rounded-2xl"
-                    style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)" }}
-                  >
-                    <h3 className="font-bold text-gray-800 text-base sm:text-lg flex items-center gap-2">
-                      <BarChart2 size={18} style={{ color: "#2563eb" }} />
-                      Rate your session
-                    </h3>
-                    <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
-                      Tap each category to expand and rate. All are optional.
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <CompactRatingRow
-                      icon={BarChart2}
-                      title="Overall impression"
-                      description="How was the session overall?"
-                      rating={data.overall.rating}
-                      comment={data.overall.comment}
-                      onRating={(v) => setSection("overall", "rating", v)}
-                      onComment={(v) => setSection("overall", "comment", v)}
-                      delay={0}
-                    />
-                    <CompactRatingRow
-                      icon={Headphones}
-                      title="Delivery"
-                      description="How clearly did the trainer communicate?"
-                      rating={data.delivery.rating}
-                      comment={data.delivery.comment}
-                      onRating={(v) => setSection("delivery", "rating", v)}
-                      onComment={(v) => setSection("delivery", "comment", v)}
-                      delay={60}
-                    />
-                    <CompactRatingRow
-                      icon={BookOpen}
-                      title="Content quality"
-                      description="Was the material relevant and well structured?"
-                      rating={data.content.rating}
-                      comment={data.content.comment}
-                      onRating={(v) => setSection("content", "rating", v)}
-                      onComment={(v) => setSection("content", "comment", v)}
-                      delay={120}
-                    />
-                    <CompactRatingRow
-                      icon={Users}
-                      title="Engagement"
-                      description="How engaging and interactive was the session?"
-                      rating={data.engagement.rating}
-                      comment={data.engagement.comment}
-                      onRating={(v) => setSection("engagement", "rating", v)}
-                      onComment={(v) => setSection("engagement", "comment", v)}
-                      delay={180}
-                    />
-                  </div>
+                <div className="space-y-3 mt-2">
+                  <RatingRow
+                    icon={BarChart2}
+                    title="Overall Feedback"
+                    // description="How was the session overall?"
+                    rating={data.overall.rating}
+                    comment={data.overall.comment}
+                    onRating={(v) => setSection("overall", "rating", v)}
+                    onComment={(v) => setSection("overall", "comment", v)}
+                    delay={0}
+                  />
+                  <RatingRow
+                    icon={Headphones}
+                    title="Communication & Delivery"
+                    // description="How clearly did the trainer communicate?"
+                    rating={data.delivery.rating}
+                    comment={data.delivery.comment}
+                    onRating={(v) => setSection("delivery", "rating", v)}
+                    onComment={(v) => setSection("delivery", "comment", v)}
+                    delay={60}
+                  />
+                  <RatingRow
+                    icon={BookOpen}
+                    title="Training Content"
+                    // description="Was the material relevant and well structured?"
+                    rating={data.content.rating}
+                    comment={data.content.comment}
+                    onRating={(v) => setSection("content", "rating", v)}
+                    onComment={(v) => setSection("content", "comment", v)}
+                    delay={120}
+                  />
+                  <RatingRow
+                    icon={Users}
+                    title="Session Engagement Level"
+                    // description="How engaging and interactive was the session?"
+                    rating={data.engagement.rating}
+                    comment={data.engagement.comment}
+                    onRating={(v) => setSection("engagement", "rating", v)}
+                    onComment={(v) => setSection("engagement", "comment", v)}
+                    delay={180}
+                  />
                 </div>
               )}
 
@@ -639,7 +581,7 @@ export default function FeedbackForm() {
                       <span className="font-bold text-sm" style={{ color: "#1d4ed8" }}>Average score</span>
                       <div className="flex items-center gap-2">
                         <div className="flex gap-0.5">
-                          {[1,2,3,4,5].map((s) => (
+                          {[1, 2, 3, 4, 5].map((s) => (
                             <Star key={s} size={14} fill={s <= Math.round(avg) ? "#1d4ed8" : "none"} stroke="#1d4ed8" />
                           ))}
                         </div>
