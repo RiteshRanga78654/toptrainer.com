@@ -28,13 +28,13 @@ export default function Footer() {
     "Corporate Training",
     "Technical Skills",
   ];
-const socialIcons = [
-  { Icon: Facebook, color: "hover:bg-blue-600" },
-  { Icon: Twitter, color: "hover:bg-sky-400" },
-  { Icon: Linkedin, color: "hover:bg-blue-700" },
-  { Icon: Youtube, color: "hover:bg-red-600" },
-  { Icon: Instagram, color: "hover:bg-pink-500" },
-];
+  const socialIcons = [
+    { Icon: Facebook, color: "hover:bg-blue-600" },
+    { Icon: Twitter, color: "hover:bg-sky-400" },
+    { Icon: Linkedin, color: "hover:bg-blue-700" },
+    { Icon: Youtube, color: "hover:bg-red-600" },
+    { Icon: Instagram, color: "hover:bg-pink-500" },
+  ];
   return (
     <footer className="bg-[#114FA3] text-white">
       {/* Main grid */}
@@ -65,24 +65,24 @@ const socialIcons = [
           {/* Company */}
           <div>
             <h4 className="text-lg font-semibold mb-4 sm:mb-6">Company</h4>
-        <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
-  {[
-    { name: "About", link: "/about" },
-    { name: "Courses", link: "#" },
-    { name: "Mentors", link: "#" },
-    { name: "SiteMap", link: "#" },
-    { name: "Privacy Policy", link: "/privacy-policy" },
-  ].map((item, i) => (
-    <li key={i}>
-      <a
-        href={item.link}
-        className="hover:text-white hover:font-bold transition-all duration-200"
-      >
-        {item.name}
-      </a>
-    </li>
-  ))}
-</ul>
+            <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
+              {[
+                { name: "About", link: "/about" },
+                { name: "Courses", link: "#" },
+                { name: "Mentors", link: "#" },
+                { name: "SiteMap", link: "#" },
+                { name: "Privacy Policy", link: "/privacy-policy" },
+              ].map((item, i) => (
+                <li key={i}>
+                  <a
+                    href={item.link}
+                    className="hover:text-white hover:font-bold transition-all duration-200"
+                  >
+                    {item.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Links */}
@@ -90,17 +90,17 @@ const socialIcons = [
             <h4 className="text-lg font-semibold mb-4 sm:mb-6">Links</h4>
             <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
               {[
-                "Contact Us",
-                "FAQ's",
-                "Terms and Conditions",
-                "Trainers Review",
+                { name: "Contact Us", link: "#" },
+                { name: "FAQ's", link: "#" },
+                { name: "Terms and Conditions", link: "#" },
+                { name: "Trainers Review", link: "/review" },
               ].map((item, i) => (
                 <li key={i}>
                   <a
-                    href="#"
-                    className="hover:text-white hover:font-bold  transition-all duration-200"
+                    href={item.link}
+                    className="hover:text-white hover:font-bold transition-all duration-200"
                   >
-                    {item}
+                    {item.name}
                   </a>
                 </li>
               ))}
@@ -131,16 +131,16 @@ const socialIcons = [
           </div>
 
           {/* Social Icons */}
-        <div className="flex gap-4 mt-6 mb-8">
-  {socialIcons.map(({ Icon, color }, i) => (
-    <div
-      key={i}
-      className={`w-11 h-10 flex items-center justify-center rounded-full bg-white text-[#114FA3] shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:text-white hover:scale-110 hover:shadow-xl ${color}`}
-    >
-      <Icon size={18} />
-    </div>
-  ))}
-</div>
+          <div className="flex gap-4 mt-6 mb-8">
+            {socialIcons.map(({ Icon, color }, i) => (
+              <div
+                key={i}
+                className={`w-11 h-10 flex items-center justify-center rounded-full bg-white text-[#114FA3] shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:text-white hover:scale-110 hover:shadow-xl ${color}`}
+              >
+                <Icon size={18} />
+              </div>
+            ))}
+          </div>
 
           {/* reCAPTCHA-style checkbox */}
           <div
@@ -149,9 +149,8 @@ const socialIcons = [
           >
             <div className="flex items-center gap-2 sm:gap-3">
               <div
-                className={`w-4 h-4 sm:w-5 sm:h-5 border-2 rounded flex items-center justify-center ${
-                  checked ? "bg-green-500 border-green-500" : "border-gray-400"
-                }`}
+                className={`w-4 h-4 sm:w-5 sm:h-5 border-2 rounded flex items-center justify-center ${checked ? "bg-green-500 border-green-500" : "border-gray-400"
+                  }`}
               >
                 {checked && (
                   <span className="text-white text-[10px] sm:text-xs">✓</span>
