@@ -21,7 +21,7 @@ function HeroSection() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 p-6 bg-white rounded-3xl shadow-md gap-4 border-slate-100">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-base font-semibold text-slate-900">Hero Section</h2>
@@ -115,7 +115,7 @@ function ExpertSection() {
   const selectedSet = selected[activeTab]
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 p-6 bg-white rounded-3xl shadow-md gap-4 border-slate-100">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-base font-semibold text-slate-900">Expert Section</h2>
@@ -150,7 +150,7 @@ function ExpertSection() {
       </div>
 
       <Card>
-        <div className="p-4 border-b border-slate-100">
+        <div className="p-4 border-b border-slate-100 ">
           <p className="text-sm font-semibold text-slate-900 capitalize">Select {activeTab} Experts ({selectedSet.size}/6)</p>
         </div>
         <div className="p-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -186,7 +186,7 @@ function OtherSections() {
     { label: "Competency", icon: "🎯", desc: "Manage competencies", href: "/admin/competency", color: "bg-violet-50" },
   ]
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 p-6 bg-white rounded-3xl shadow-md gap-4 border-slate-100">
       <div>
         <h2 className="text-base font-semibold text-slate-900">Other Home Sections</h2>
         <p className="text-sm text-slate-500 mt-0.5">Manage the content for other sections on homepage</p>
@@ -215,7 +215,7 @@ function GeneralSettingsTab() {
   const update = (key, value) => setSettings(prev => ({ ...prev, [key]: value }))
 
   return (
-    <div className="space-y-5 max-w-2xl">
+    <div className="space-y-5 p-6 bg-white rounded-3xl shadow-md gap-4 border-slate-100">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold text-slate-900">General Settings</h2>
         <Button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 3000) }}>Save Changes</Button>
@@ -275,25 +275,13 @@ export default function HomepagePage() {
         </a>
       </div>
 
-      <Card className="overflow-hidden">
-        <div className="px-5 border-b border-slate-200">
-          <div className="flex gap-1">
-            {tabs.map(t => (
-              <button key={t.key} onClick={() => router.push(`/admin/homepage?tab=${t.key}`)}
-                className={cn("px-4 py-3.5 text-sm font-medium relative whitespace-nowrap",
-                  tab === t.key ? "text-blue-600 tab-active" : "text-slate-500 hover:text-slate-700")}>
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="p-5">
-          {tab === "hero" && <HeroSection />}
-          {tab === "expert" && <ExpertSection />}
-          {tab === "other" && <OtherSections />}
-          {tab === "general" && <GeneralSettingsTab />}
-        </div>
-      </Card>
+      <div className="p-5 flex flex-col gap-6">
+        <HeroSection />
+        <ExpertSection />
+        <OtherSections />
+        <GeneralSettingsTab />
+      </div>
+   
     </div>
   )
 }

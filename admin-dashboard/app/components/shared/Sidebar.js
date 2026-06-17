@@ -20,14 +20,7 @@ const adminNav = [
     label: 'MAIN', items: [
       { label: 'Dashboard',  href: '/admin',                icon: LayoutDashboard, exact: true },
       { label: 'Trainers',   href: '/admin/trainers',       icon: GraduationCap },
-      {
-        label: 'Homepage',   href: '/admin/homepage',       icon: Home,
-        children: [
-          { label: 'Hero Section',   href: '/admin/homepage?tab=hero' },
-          { label: 'Expert Section', href: '/admin/homepage?tab=expert' },
-          { label: 'Other Sections', href: '/admin/homepage?tab=other' },
-        ]
-      },
+      { label: 'Homepage',   href: '/admin/homepage',       icon: Home },
       { label: 'Workshops',  href: '/admin/workshops',    icon: BookOpen },
       { label: 'Articles',   href: '/admin/articles',     icon: FileText },
       { label: 'Industry',   href: '/admin/industries',   icon: Building2 },
