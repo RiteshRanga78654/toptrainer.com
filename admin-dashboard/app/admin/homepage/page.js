@@ -72,84 +72,102 @@ export default function HomepagePage() {
         </a>
       </div>
 
-      {/* ── 1. Hero Slider ─────────────────────────────────────────────────── */}
+      {/* ── 1. Hero Slider Images ───────────────────────────────────────────── */}
       <Card>
+        {/* Card header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-              <Image size={14} className="text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-900">Hero Slider</p>
-              <p className="text-xs text-slate-500">Up to 4 images · max 20 words per caption</p>
-            </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">Hero Slider Images</p>
+            <p className="text-xs text-slate-400 mt-0.5">Up to 4 images. These rotate at the top of the homepage.</p>
           </div>
-          <div className="flex items-center gap-2.5">
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
-              {images.length}/4
-            </span>
-            <Button onClick={saveHero} size="sm">Save</Button>
-          </div>
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
+            {images.filter(i => i.active).length} / 4 Used
+          </span>
         </div>
 
-        <div className="p-5">
-          <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            {images.map((img, idx) => {
-              const wc   = wordCount(img.caption)
-              const over = wc > 20
-              return (
-                <div key={img.id} className={cn(
-                  "group flex flex-col bg-white border rounded-xl overflow-hidden transition-shadow hover:shadow-sm",
-                  img.active ? "border-slate-200" : "border-dashed border-slate-300 opacity-60"
-                )}>
-                  <div className="relative aspect-video bg-slate-100 overflow-hidden upload-zone cursor-pointer">
-                    <span className="absolute top-2 left-2 z-10 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white text-[10px] font-bold">{idx + 1}</span>
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
-                      <Toggle checked={img.active} onChange={() => toggleActive(img.id)} />
-                      <button onClick={() => removeImage(img.id)}
-                        className="w-6 h-6 bg-red-500 hover:bg-red-600 rounded-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 size={10} />
-                      </button>
-                    </div>
+        {/* Slide rows */}
+        <div className="p-4 space-y-3">
+          {images.map((img) => {
+            const wc   = wordCount(img.caption)
+            const over = wc > 20
+            return (
+              <div key={img.id} className="flex items-start gap-3 bg-white border border-slate-200 rounded-xl p-3">
+                {/* Drag handle */}
+                <div className="mt-3 text-slate-300 cursor-grab select-none flex-shrink-0" title="Drag to reorder">
+                  <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor">
+                    <circle cx="2" cy="2" r="1.5"/><circle cx="8" cy="2" r="1.5"/>
+                    <circle cx="2" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/>
+                    <circle cx="2" cy="14" r="1.5"/><circle cx="8" cy="14" r="1.5"/>
+                  </svg>
+                </div>
+
+                {/* Thumbnail + change image */}
+                <div className="flex-shrink-0">
+                  <div className="relative w-28 h-20 rounded-lg overflow-hidden bg-slate-100 group cursor-pointer upload-zone">
                     <img src={img.url} alt={img.caption} className="w-full h-full object-cover" />
-                    <div className="upload-overlay absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1.5">
-                      <Upload size={16} className="text-white" />
-                      <span className="text-white text-[11px] font-medium">Change</span>
+                    <div className="upload-overlay absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Upload size={14} className="text-white" />
+                      <span className="text-white text-[10px] font-medium">Upload</span>
                     </div>
                   </div>
-                  <div className="p-3 space-y-1.5">
-                    <textarea
-                      value={img.caption}
-                      onChange={e => updateCaption(img.id, e.target.value)}
-                      rows={3}
-                      placeholder="Enter caption..."
-                      className="w-full text-xs text-slate-700 border border-slate-200 rounded-lg px-2.5 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-                    />
-                    <span className={cn("text-[11px] font-medium flex items-center gap-1", over ? "text-red-500" : "text-emerald-600")}>
-                      {!over && <Check size={9} />}
-                      {wc}{over ? "/20 — too long" : " words"}
-                    </span>
+                  <button className="mt-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium w-full text-left">
+                    Change Image
+                  </button>
+                </div>
+
+                {/* Caption */}
+                <div className="flex-1 min-w-0">
+                  <label className="text-xs font-medium text-slate-600 mb-1 block">Caption Text</label>
+                  <input
+                    type="text"
+                    value={img.caption}
+                    onChange={e => updateCaption(img.id, e.target.value)}
+                    placeholder="Enter caption..."
+                    className={cn(
+                      "w-full text-sm text-slate-700 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400",
+                      over ? "border-red-300 bg-red-50" : "border-slate-200"
+                    )}
+                  />
+                  {over && (
+                    <p className="text-[11px] text-red-500 mt-1">{wc}/20 words — too long</p>
+                  )}
+                </div>
+
+                {/* Active toggle + delete */}
+                <div className="flex flex-col items-end gap-3 flex-shrink-0 pt-1">
+                  <div className="flex items-center gap-2">
+                    <Toggle checked={img.active} onChange={() => toggleActive(img.id)} />
+                    <span className="text-xs font-medium text-slate-600">Active</span>
                   </div>
+                  <button
+                    onClick={() => removeImage(img.id)}
+                    className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all"
+                    title="Remove slide"
+                  >
+                    <Trash2 size={13} />
+                  </button>
                 </div>
-              )
-            })}
+              </div>
+            )
+          })}
 
-            {images.length < 4 && (
-              <button className="border-2 border-dashed border-slate-200 rounded-xl min-h-[160px] flex flex-col items-center justify-center gap-2 hover:border-blue-300 hover:bg-blue-50/30 group transition-colors">
-                <div className="w-9 h-9 rounded-full bg-slate-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
-                  <Plus size={16} className="text-slate-400 group-hover:text-blue-500" />
-                </div>
-                <span className="text-sm text-slate-500 group-hover:text-blue-600 font-medium">Add Image</span>
-              </button>
-            )}
-          </div>
-
+          {/* Add Another Slide */}
           {images.length < 4 && (
-            <div className="mt-4 flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-lg px-4 py-2.5">
-              <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] shrink-0 font-bold">i</div>
-              <p className="text-xs text-blue-700">With fewer than 4 images, slides loop every <b>{settings.heroSliderInterval}s</b>.</p>
-            </div>
+            <button className="w-full border-2 border-dashed border-slate-200 rounded-xl py-3.5 flex items-center justify-center gap-2 text-sm font-medium text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/40 transition-all">
+              <Plus size={16} />
+              Add Another Slide
+            </button>
           )}
+        </div>
+
+        {/* Footer save */}
+        <div className="px-4 pb-4 flex items-center justify-between">
+          {images.length < 4 && (
+            <p className="text-xs text-slate-400">Slides loop every <b className="text-slate-600">{settings.heroSliderInterval}s</b></p>
+          )}
+          <div className="ml-auto">
+            <Button onClick={saveHero} size="sm">Save Changes</Button>
+          </div>
         </div>
       </Card>
 
