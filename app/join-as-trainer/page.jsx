@@ -2,25 +2,103 @@
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import {
-  UserPlus, Sparkles, Target, TrendingUp, Users,
-  Mail, Phone, Globe, Linkedin, Youtube, Instagram,
-  Facebook, MapPin, Briefcase, Award, BookOpen,
-  DollarSign, Plane, Languages, Star,
-  Upload, FileText, CheckCircle, Building2, Camera, ChevronDown,
-  Plus, Trash2, Image as ImageIcon, Video, GraduationCap, Link,
-  Trophy, Zap, Globe2
+  UserPlus,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Users,
+  Mail,
+  Phone,
+  Globe,
+  Linkedin,
+  Youtube,
+  Instagram,
+  Facebook,
+  MapPin,
+  Briefcase,
+  Award,
+  BookOpen,
+  DollarSign,
+  Plane,
+  Languages,
+  Star,
+  Upload,
+  FileText,
+  CheckCircle,
+  Building2,
+  Camera,
+  ChevronDown,
+  Plus,
+  Trash2,
+  Image as ImageIcon,
+  Video,
+  GraduationCap,
+  Link,
+  Trophy,
+  Zap,
+  Globe2,
+  Group,
+  GroupIcon,
+  PersonStanding,
+  AreaChart,
 } from "lucide-react";
 import { createPortal } from "react-dom";
+import { GroupAnimation } from "framer-motion";
 
 const LOCATION_DATA = {
   India: {
-    Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Solapur", "Thane"],
-    Delhi: ["New Delhi", "Dwarka", "Rohini", "Saket", "Vasant Kunj", "Karol Bagh"],
-    Karnataka: ["Bengaluru", "Mysuru", "Mangaluru", "Hubli", "Belagavi", "Tumkur"],
-    "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli"],
-    Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar"],
+    Maharashtra: [
+      "Mumbai",
+      "Pune",
+      "Nagpur",
+      "Nashik",
+      "Aurangabad",
+      "Solapur",
+      "Thane",
+    ],
+    Delhi: [
+      "New Delhi",
+      "Dwarka",
+      "Rohini",
+      "Saket",
+      "Vasant Kunj",
+      "Karol Bagh",
+    ],
+    Karnataka: [
+      "Bengaluru",
+      "Mysuru",
+      "Mangaluru",
+      "Hubli",
+      "Belagavi",
+      "Tumkur",
+    ],
+    "Tamil Nadu": [
+      "Chennai",
+      "Coimbatore",
+      "Madurai",
+      "Tiruchirappalli",
+      "Salem",
+      "Tirunelveli",
+    ],
+    Gujarat: [
+      "Ahmedabad",
+      "Surat",
+      "Vadodara",
+      "Rajkot",
+      "Bhavnagar",
+      "Jamnagar",
+    ],
     Rajasthan: ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Bikaner", "Ajmer"],
-    "Uttar Pradesh": ["Lucknow", "Kanpur", "Agra", "Varanasi", "Prayagraj", "Meerut", "Noida", "Ghaziabad"],
+    "Uttar Pradesh": [
+      "Lucknow",
+      "Kanpur",
+      "Agra",
+      "Varanasi",
+      "Prayagraj",
+      "Meerut",
+      "Noida",
+      "Ghaziabad",
+    ],
     "West Bengal": ["Kolkata", "Howrah", "Asansol", "Siliguri", "Durgapur"],
     Telangana: ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar"],
     Punjab: ["Chandigarh", "Ludhiana", "Amritsar", "Jalandhar", "Patiala"],
@@ -32,46 +110,123 @@ const LOCATION_DATA = {
     Goa: ["Panaji", "Margao", "Vasco da Gama", "Mapusa"],
   },
   "United States": {
-    California: ["Los Angeles", "San Francisco", "San Diego", "San Jose", "Sacramento", "Fresno"],
+    California: [
+      "Los Angeles",
+      "San Francisco",
+      "San Diego",
+      "San Jose",
+      "Sacramento",
+      "Fresno",
+    ],
     "New York": ["New York City", "Buffalo", "Rochester", "Albany", "Syracuse"],
-    Texas: ["Houston", "Dallas", "Austin", "San Antonio", "Fort Worth", "El Paso"],
+    Texas: [
+      "Houston",
+      "Dallas",
+      "Austin",
+      "San Antonio",
+      "Fort Worth",
+      "El Paso",
+    ],
     Florida: ["Miami", "Orlando", "Tampa", "Jacksonville", "St. Petersburg"],
     Illinois: ["Chicago", "Aurora", "Naperville", "Rockford", "Springfield"],
     Washington: ["Seattle", "Spokane", "Tacoma", "Bellevue", "Olympia"],
     Georgia: ["Atlanta", "Columbus", "Savannah", "Augusta", "Macon"],
-    Massachusetts: ["Boston", "Worcester", "Springfield", "Cambridge", "Lowell"],
-    "North Carolina": ["Charlotte", "Raleigh", "Greensboro", "Durham", "Winston-Salem"],
+    Massachusetts: [
+      "Boston",
+      "Worcester",
+      "Springfield",
+      "Cambridge",
+      "Lowell",
+    ],
+    "North Carolina": [
+      "Charlotte",
+      "Raleigh",
+      "Greensboro",
+      "Durham",
+      "Winston-Salem",
+    ],
     Arizona: ["Phoenix", "Tucson", "Mesa", "Chandler", "Scottsdale"],
   },
   "United Kingdom": {
-    England: ["London", "Manchester", "Birmingham", "Leeds", "Liverpool", "Bristol", "Sheffield", "Newcastle"],
+    England: [
+      "London",
+      "Manchester",
+      "Birmingham",
+      "Leeds",
+      "Liverpool",
+      "Bristol",
+      "Sheffield",
+      "Newcastle",
+    ],
     Scotland: ["Edinburgh", "Glasgow", "Aberdeen", "Dundee", "Inverness"],
     Wales: ["Cardiff", "Swansea", "Newport", "Bangor", "St Davids"],
     "Northern Ireland": ["Belfast", "Derry", "Armagh", "Lisburn", "Newry"],
   },
   Australia: {
-    "New South Wales": ["Sydney", "Newcastle", "Wollongong", "Central Coast", "Albury"],
+    "New South Wales": [
+      "Sydney",
+      "Newcastle",
+      "Wollongong",
+      "Central Coast",
+      "Albury",
+    ],
     Victoria: ["Melbourne", "Geelong", "Ballarat", "Bendigo", "Shepparton"],
-    Queensland: ["Brisbane", "Gold Coast", "Sunshine Coast", "Townsville", "Cairns"],
-    "Western Australia": ["Perth", "Bunbury", "Geraldton", "Albany", "Kalgoorlie"],
+    Queensland: [
+      "Brisbane",
+      "Gold Coast",
+      "Sunshine Coast",
+      "Townsville",
+      "Cairns",
+    ],
+    "Western Australia": [
+      "Perth",
+      "Bunbury",
+      "Geraldton",
+      "Albany",
+      "Kalgoorlie",
+    ],
     "South Australia": ["Adelaide", "Mount Gambier", "Whyalla", "Port Augusta"],
   },
   Canada: {
-    Ontario: ["Toronto", "Ottawa", "Mississauga", "Brampton", "Hamilton", "London"],
-    "British Columbia": ["Vancouver", "Surrey", "Burnaby", "Richmond", "Kelowna"],
+    Ontario: [
+      "Toronto",
+      "Ottawa",
+      "Mississauga",
+      "Brampton",
+      "Hamilton",
+      "London",
+    ],
+    "British Columbia": [
+      "Vancouver",
+      "Surrey",
+      "Burnaby",
+      "Richmond",
+      "Kelowna",
+    ],
     Quebec: ["Montreal", "Quebec City", "Laval", "Gatineau", "Longueuil"],
     Alberta: ["Calgary", "Edmonton", "Red Deer", "Lethbridge", "Medicine Hat"],
     Manitoba: ["Winnipeg", "Brandon", "Steinbach", "Thompson"],
   },
   "United Arab Emirates": {
     Dubai: ["Dubai City", "Deira", "Bur Dubai", "Jumeirah", "Business Bay"],
-    "Abu Dhabi": ["Abu Dhabi City", "Al Ain", "Khalifa City", "Mohammed Bin Zayed City"],
+    "Abu Dhabi": [
+      "Abu Dhabi City",
+      "Al Ain",
+      "Khalifa City",
+      "Mohammed Bin Zayed City",
+    ],
     Sharjah: ["Sharjah City", "Khor Fakkan", "Dibba Al Hisn"],
     Ajman: ["Ajman City"],
     Ras: ["Ras Al Khaimah City", "Al Jazeera Al Hamra"],
   },
   Singapore: {
-    "Central Region": ["Downtown Core", "Marina Bay", "Orchard", "Buona Vista", "Clementi"],
+    "Central Region": [
+      "Downtown Core",
+      "Marina Bay",
+      "Orchard",
+      "Buona Vista",
+      "Clementi",
+    ],
     "East Region": ["Tampines", "Pasir Ris", "Bedok", "Changi"],
     "North Region": ["Woodlands", "Yishun", "Sembawang"],
     "West Region": ["Jurong", "Bukit Batok", "Choa Chu Kang", "Tuas"],
@@ -84,7 +239,8 @@ const COUNTRIES = Object.keys(LOCATION_DATA).sort();
 const GLOBAL_MARKETS = [
   {
     label: "Asian Market",
-    countries: "Japan, South Korea, Hong Kong, Sri Lanka, Bangladesh, Nepal, Bhutan",
+    countries:
+      "Japan, South Korea, Hong Kong, Sri Lanka, Bangladesh, Nepal, Bhutan",
   },
   {
     label: "South East Asia",
@@ -104,7 +260,8 @@ const GLOBAL_MARKETS = [
   },
   {
     label: "UK & Europe",
-    countries: "United Kingdom, Germany, France, Netherlands, Spain, Italy, Sweden",
+    countries:
+      "United Kingdom, Germany, France, Netherlands, Spain, Italy, Sweden",
   },
 ];
 
@@ -467,45 +624,104 @@ function MultiSelect({ label, icon, options }) {
   const updatePosition = () => {
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
-    setDropdownStyle({ position: "fixed", top: rect.bottom + 6, left: rect.left, width: rect.width, zIndex: 999999 });
+    setDropdownStyle({
+      position: "fixed",
+      top: rect.bottom + 6,
+      left: rect.left,
+      width: rect.width,
+      zIndex: 999999,
+    });
   };
 
-  useEffect(() => { if (open) updatePosition(); }, [open]);
+  useEffect(() => {
+    if (open) updatePosition();
+  }, [open]);
 
-  const toggle = (opt) => setSelected(prev => prev.includes(opt) ? prev.filter(o => o !== opt) : [...prev, opt]);
-  const remove = (opt, e) => { e.stopPropagation(); setSelected(prev => prev.filter(o => o !== opt)); };
-  const displayText = selected.length === 0 ? null : selected.length <= 2 ? selected.join(", ") : `${selected.slice(0, 2).join(", ")} +${selected.length - 2} more`;
+  const toggle = (opt) =>
+    setSelected((prev) =>
+      prev.includes(opt) ? prev.filter((o) => o !== opt) : [...prev, opt],
+    );
+  const remove = (opt, e) => {
+    e.stopPropagation();
+    setSelected((prev) => prev.filter((o) => o !== opt));
+  };
+  const displayText =
+    selected.length === 0
+      ? null
+      : selected.length <= 2
+        ? selected.join(", ")
+        : `${selected.slice(0, 2).join(", ")} +${selected.length - 2} more`;
 
   return (
-    <div className="tt-field" ref={wrapperRef} style={{ position: "relative", zIndex: open ? 100 : 1 }}>
+    <div
+      className="tt-field"
+      ref={wrapperRef}
+      style={{ position: "relative", zIndex: open ? 100 : 1 }}
+    >
       <label className="tt-label">
         {icon && <span className="tt-label-icon">{icon}</span>}
         {label}
       </label>
       <div className="ms-wrapper">
-        <div className="tt-input-icon" style={{ zIndex: 1 }}>{icon}</div>
-        <div ref={triggerRef} className={`ms-trigger ${open ? "open" : ""}`} onClick={() => setOpen(o => !o)}>
-          <span className={`ms-trigger-text ${!displayText ? "ms-trigger-placeholder" : ""}`}>{displayText || "Select options"}</span>
-          <ChevronDown size={13} className={`ms-trigger-arrow ${open ? "open" : ""}`} />
+        <div className="tt-input-icon" style={{ zIndex: 1 }}>
+          {icon}
         </div>
-        {open && typeof document !== "undefined" && createPortal(
-          <div className="ms-dropdown" style={dropdownStyle}>
-            {options.map((opt, i) => (
-              <div key={i} className={`ms-option ${selected.includes(opt) ? "selected" : ""}`} onClick={() => toggle(opt)}>
-                <div className={`ms-checkbox ${selected.includes(opt) ? "checked" : ""}`}>
-                  {selected.includes(opt) && <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+        <div
+          ref={triggerRef}
+          className={`ms-trigger ${open ? "open" : ""}`}
+          onClick={() => setOpen((o) => !o)}
+        >
+          <span
+            className={`ms-trigger-text ${!displayText ? "ms-trigger-placeholder" : ""}`}
+          >
+            {displayText || "Select options"}
+          </span>
+          <ChevronDown
+            size={13}
+            className={`ms-trigger-arrow ${open ? "open" : ""}`}
+          />
+        </div>
+        {open &&
+          typeof document !== "undefined" &&
+          createPortal(
+            <div className="ms-dropdown" style={dropdownStyle}>
+              {options.map((opt, i) => (
+                <div
+                  key={i}
+                  className={`ms-option ${selected.includes(opt) ? "selected" : ""}`}
+                  onClick={() => toggle(opt)}
+                >
+                  <div
+                    className={`ms-checkbox ${selected.includes(opt) ? "checked" : ""}`}
+                  >
+                    {selected.includes(opt) && (
+                      <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                        <path
+                          d="M1 3.5L3.5 6L8 1"
+                          stroke="white"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                  {opt}
                 </div>
-                {opt}
-              </div>
-            ))}
-          </div>,
-          document.body
-        )}
+              ))}
+            </div>,
+            document.body,
+          )}
       </div>
       {selected.length > 0 && (
         <div className="ms-tags">
           {selected.map((opt, i) => (
-            <span className="ms-tag" key={i}>{opt}<span className="ms-tag-x" onClick={e => remove(opt, e)}>✕</span></span>
+            <span className="ms-tag" key={i}>
+              {opt}
+              <span className="ms-tag-x" onClick={(e) => remove(opt, e)}>
+                ✕
+              </span>
+            </span>
           ))}
         </div>
       )}
@@ -513,19 +729,26 @@ function MultiSelect({ label, icon, options }) {
   );
 }
 
-
 /* ─── WORKSHOP PHOTO SLOT ────────────────────────────── */
 function WorkshopPhotoSlot({ index, photo, onUpload }) {
   return (
     <div className="workshop-photo-slot">
-      <input type="file" accept="image/*" onChange={e => { const f = e.target.files[0]; if (f) onUpload(index, URL.createObjectURL(f)); }} />
-      {photo
-        ? <img src={photo} alt={`Workshop photo ${index + 1}`} />
-        : <>
-            <Camera size={16} color="#93c5fd" />
-            <span className="workshop-photo-slot-label">Photo {index + 1}</span>
-          </>
-      }
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const f = e.target.files[0];
+          if (f) onUpload(index, URL.createObjectURL(f));
+        }}
+      />
+      {photo ? (
+        <img src={photo} alt={`Workshop photo ${index + 1}`} />
+      ) : (
+        <>
+          <Camera size={16} color="#93c5fd" />
+          <span className="workshop-photo-slot-label">Photo {index + 1}</span>
+        </>
+      )}
     </div>
   );
 }
@@ -534,7 +757,11 @@ function WorkshopPhotoSlot({ index, photo, onUpload }) {
 function WorkshopEntry({ num, onRemove }) {
   const [photos, setPhotos] = useState([null, null, null]);
   const handlePhoto = (idx, url) => {
-    setPhotos(prev => { const n = [...prev]; n[idx] = url; return n; });
+    setPhotos((prev) => {
+      const n = [...prev];
+      n[idx] = url;
+      return n;
+    });
   };
 
   return (
@@ -542,35 +769,143 @@ function WorkshopEntry({ num, onRemove }) {
       <div className="workshop-entry-header">
         <span className="workshop-entry-num">Workshop #{num}</span>
         {num > 1 && (
-          <button type="button" className="workshop-remove-btn" onClick={onRemove}>
+          <button
+            type="button"
+            className="workshop-remove-btn"
+            onClick={onRemove}
+          >
             <Trash2 size={11} /> Remove
           </button>
         )}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "11px 14px", marginBottom: 11 }}>
-        <Field label="Company Name" icon={<Building2 size={13} />} placeholder="Client / Company name" />
-        <Field label="Title of Workshop" icon={<BookOpen size={13} />} placeholder="Workshop title" />
-        <Field label="Duration" icon={<Star size={13} />} placeholder="e.g. 2 Days / 16 Hours" />
-        <Field label="Location" icon={<MapPin size={13} />} placeholder="City, Country" />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "11px 14px",
+          marginBottom: 11,
+        }}
+      >
+        <Field
+          label="Company Name"
+          icon={<Building2 size={13} />}
+          placeholder="Client / Company name"
+        />
+        <Field
+          label="Title of Workshop"
+          icon={<BookOpen size={13} />}
+          placeholder="Workshop title"
+        />
+        <Field
+          label="Duration"
+          icon={<Star size={13} />}
+          placeholder="e.g. 2 Days / 16 Hours"
+        />
+        <Field
+          label="Location"
+          icon={<MapPin size={13} />}
+          placeholder="City, Country"
+        />
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "11px 14px", marginBottom: 11 }}>
-        <Sel label="Industry" icon={<Briefcase size={13} />} options={["Real Estate","IT & Digital","Media & Entertainment","Banking & Finance","Telecommunications","Hospitality & Aviation","Healthcare & Pharma","Education Sector","Retail Industry","Automobile","Jewellery","FMCG","Other"]} />
-        <Sel label="Domain" icon={<Target size={13} />} options={["Logistics & Operations","Soft Skills Development","Sales & Business Development","Leadership Transformation","International Market Expansion","Customer Service Excellence","Branding & Communications","Other"]} />
-        <Sel label="Competency" icon={<Star size={13} />} options={["AI Tools & Generative AI","Strategic Thinking","Communication & Narrative Building","Multitasking Ability","Team Building & Management","Innovation","Big Picture Thinking","Time Management","Other"]} />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "11px 14px",
+          marginBottom: 11,
+        }}
+      >
+        <Sel
+          label="Industry"
+          icon={<Briefcase size={13} />}
+          options={[
+            "Real Estate",
+            "IT & Digital",
+            "Media & Entertainment",
+            "Banking & Finance",
+            "Telecommunications",
+            "Hospitality & Aviation",
+            "Healthcare & Pharma",
+            "Education Sector",
+            "Retail Industry",
+            "Automobile",
+            "Jewellery",
+            "FMCG",
+            "Other",
+          ]}
+        />
+        <Sel
+          label="Domain"
+          icon={<Target size={13} />}
+          options={[
+            "Logistics & Operations",
+            "Soft Skills Development",
+            "Sales & Business Development",
+            "Leadership Transformation",
+            "International Market Expansion",
+            "Customer Service Excellence",
+            "Branding & Communications",
+            "Other",
+          ]}
+        />
+        <Sel
+          label="Competency"
+          icon={<Star size={13} />}
+          options={[
+            "AI Tools & Generative AI",
+            "Strategic Thinking",
+            "Communication & Narrative Building",
+            "Multitasking Ability",
+            "Team Building & Management",
+            "Innovation",
+            "Big Picture Thinking",
+            "Time Management",
+            "Other",
+          ]}
+        />
       </div>
       <div style={{ marginBottom: 11 }}>
-        <Field label="Total Participants" icon={<Users size={13} />} placeholder="e.g. 45" />
+        <Field
+          label="Total Participants"
+          icon={<Users size={13} />}
+          placeholder="e.g. 45"
+        />
       </div>
       <div style={{ marginBottom: 13 }}>
         <div className="tt-field">
-          <label className="tt-label"><span className="tt-label-icon"><FileText size={11} /></span>Summary <span style={{ color: "#94a3b8", fontWeight: 400 }}>(max 100 words)</span></label>
-          <textarea className="tt-input no-icon" style={{ height: 80 }} maxLength={600} placeholder="Brief summary of the workshop — objectives, key topics, outcomes..." />
+          <label className="tt-label">
+            <span className="tt-label-icon">
+              <FileText size={11} />
+            </span>
+            Summary{" "}
+            <span style={{ color: "#94a3b8", fontWeight: 400 }}>
+              (max 100 words)
+            </span>
+          </label>
+          <textarea
+            className="tt-input no-icon"
+            style={{ height: 80 }}
+            maxLength={600}
+            placeholder="Brief summary of the workshop — objectives, key topics, outcomes..."
+          />
         </div>
       </div>
       <div>
-        <div className="tt-label" style={{ marginBottom: 7 }}><span className="tt-label-icon"><Camera size={11} /></span>Upload Workshop Photos (up to 3)</div>
+        <div className="tt-label" style={{ marginBottom: 7 }}>
+          <span className="tt-label-icon">
+            <Camera size={11} />
+          </span>
+          Upload Workshop Photos (up to 3)
+        </div>
         <div style={{ display: "flex", gap: 10 }}>
-          {photos.map((p, i) => <WorkshopPhotoSlot key={i} index={i} photo={p} onUpload={handlePhoto} />)}
+          {photos.map((p, i) => (
+            <WorkshopPhotoSlot
+              key={i}
+              index={i}
+              photo={p}
+              onUpload={handlePhoto}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -583,17 +918,59 @@ function AwardEntry({ num, onRemove }) {
     <div className="entry-card">
       <div className="entry-card-header">
         <span className="entry-num-badge">Award #{num}</span>
-        {num > 1 && <button type="button" className="remove-entry-btn" onClick={onRemove}><Trash2 size={11} /> Remove</button>}
+        {num > 1 && (
+          <button type="button" className="remove-entry-btn" onClick={onRemove}>
+            <Trash2 size={11} /> Remove
+          </button>
+        )}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "11px 14px" }}>
-        <Field label="Award / Recognition Title" icon={<Trophy size={13} />} placeholder="e.g. Leadership Excellence Award" />
-        <Field label="Awarded By (Organisation)" icon={<Building2 size={13} />} placeholder="e.g. Elevate Learning, NASSCOM" />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "11px 14px",
+        }}
+      >
+        <Field
+          label="Award / Recognition Title"
+          icon={<Trophy size={13} />}
+          placeholder="e.g. Leadership Excellence Award"
+        />
+        <Field
+          label="Awarded By (Organisation)"
+          icon={<Building2 size={13} />}
+          placeholder="e.g. Elevate Learning, NASSCOM"
+        />
         <Field label="Year" icon={<Star size={13} />} placeholder="e.g. 2023" />
-        <Sel label="Award Category" icon={<Award size={13} />} options={["Training Excellence","Leadership","Innovation","Industry Recognition","Community Impact","Academic Achievement","Other"]} />
+        <Sel
+          label="Award Category"
+          icon={<Award size={13} />}
+          options={[
+            "Training Excellence",
+            "Leadership",
+            "Innovation",
+            "Industry Recognition",
+            "Community Impact",
+            "Academic Achievement",
+            "Other",
+          ]}
+        />
         <div style={{ gridColumn: "1/-1" }}>
           <div className="tt-field">
-            <label className="tt-label"><span className="tt-label-icon"><FileText size={11} /></span>Brief Description <span style={{ color: "#94a3b8", fontWeight: 400 }}>(optional)</span></label>
-            <textarea className="tt-input no-icon" style={{ height: 70 }} placeholder="Short note about this award or what it represents..." />
+            <label className="tt-label">
+              <span className="tt-label-icon">
+                <FileText size={11} />
+              </span>
+              Brief Description{" "}
+              <span style={{ color: "#94a3b8", fontWeight: 400 }}>
+                (optional)
+              </span>
+            </label>
+            <textarea
+              className="tt-input no-icon"
+              style={{ height: 70 }}
+              placeholder="Short note about this award or what it represents..."
+            />
           </div>
         </div>
       </div>
@@ -607,19 +984,86 @@ function ExperienceEntry({ num, onRemove }) {
     <div className="entry-card">
       <div className="entry-card-header">
         <span className="entry-num-badge">Experience #{num}</span>
-        {num > 1 && <button type="button" className="remove-entry-btn" onClick={onRemove}><Trash2 size={11} /> Remove</button>}
+        {num > 1 && (
+          <button type="button" className="remove-entry-btn" onClick={onRemove}>
+            <Trash2 size={11} /> Remove
+          </button>
+        )}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "11px 14px" }}>
-        <Field label="Job Title / Role" icon={<Briefcase size={13} />} placeholder="e.g. Head of L&D Practice" />
-        <Field label="Organisation / Company" icon={<Building2 size={13} />} placeholder="e.g. Elevate Learning" />
-        <Field label="Start Year" icon={<Star size={13} />} placeholder="e.g. 2019" />
-        <Field label="End Year" icon={<Star size={13} />} placeholder="e.g. 2023  (leave blank if current)" />
-        <Sel label="Employment Type" icon={<Briefcase size={13} />} options={["Full-Time","Part-Time","Freelance / Consulting","Contract","Self-Employed","Other"]} />
-        <Sel label="Industry" icon={<Target size={13} />} options={["Real Estate","IT & Digital","Media & Entertainment","Banking & Finance","Telecommunications","Hospitality & Aviation","Healthcare & Pharma","Education Sector","Retail Industry","Automobile","Jewellery","FMCG","Other"]} />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "11px 14px",
+        }}
+      >
+        <Field
+          label="Job Title / Role"
+          icon={<Briefcase size={13} />}
+          placeholder="e.g. Head of L&D Practice"
+        />
+        <Field
+          label="Organisation / Company"
+          icon={<Building2 size={13} />}
+          placeholder="e.g. Elevate Learning"
+        />
+        <Field
+          label="Start Year"
+          icon={<Star size={13} />}
+          placeholder="e.g. 2019"
+        />
+        <Field
+          label="End Year"
+          icon={<Star size={13} />}
+          placeholder="e.g. 2023  (leave blank if current)"
+        />
+        <Sel
+          label="Employment Type"
+          icon={<Briefcase size={13} />}
+          options={[
+            "Full-Time",
+            "Part-Time",
+            "Freelance / Consulting",
+            "Contract",
+            "Self-Employed",
+            "Other",
+          ]}
+        />
+        <Sel
+          label="Industry"
+          icon={<Target size={13} />}
+          options={[
+            "Real Estate",
+            "IT & Digital",
+            "Media & Entertainment",
+            "Banking & Finance",
+            "Telecommunications",
+            "Hospitality & Aviation",
+            "Healthcare & Pharma",
+            "Education Sector",
+            "Retail Industry",
+            "Automobile",
+            "Jewellery",
+            "FMCG",
+            "Other",
+          ]}
+        />
         <div style={{ gridColumn: "1/-1" }}>
           <div className="tt-field">
-            <label className="tt-label"><span className="tt-label-icon"><FileText size={11} /></span>Key Responsibilities / Achievements <span style={{ color: "#94a3b8", fontWeight: 400 }}>(optional)</span></label>
-            <textarea className="tt-input no-icon" style={{ height: 75 }} placeholder="Describe your key contributions, responsibilities, and achievements in this role..." />
+            <label className="tt-label">
+              <span className="tt-label-icon">
+                <FileText size={11} />
+              </span>
+              Key Responsibilities / Achievements{" "}
+              <span style={{ color: "#94a3b8", fontWeight: 400 }}>
+                (optional)
+              </span>
+            </label>
+            <textarea
+              className="tt-input no-icon"
+              style={{ height: 75 }}
+              placeholder="Describe your key contributions, responsibilities, and achievements in this role..."
+            />
           </div>
         </div>
       </div>
@@ -633,12 +1077,34 @@ function CertificateEntry({ num, onRemove }) {
     <div className="entry-card">
       <div className="entry-card-header">
         <span className="entry-num-badge">Certificate #{num}</span>
-        {num > 1 && <button type="button" className="remove-entry-btn" onClick={onRemove}><Trash2 size={11} /> Remove</button>}
+        {num > 1 && (
+          <button type="button" className="remove-entry-btn" onClick={onRemove}>
+            <Trash2 size={11} /> Remove
+          </button>
+        )}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "11px 14px" }}>
-        <Field label="Certificate / Degree Name" icon={<Award size={13} />} placeholder="e.g. Certified Scrum Master (CSM)" />
-        <Field label="Issuing Organisation" icon={<Building2 size={13} />} placeholder="e.g. Scrum Alliance" />
-        <Field label="Year Obtained" icon={<Star size={13} />} placeholder="e.g. 2016" />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "11px 14px",
+        }}
+      >
+        <Field
+          label="Certificate / Degree Name"
+          icon={<Award size={13} />}
+          placeholder="e.g. Certified Scrum Master (CSM)"
+        />
+        <Field
+          label="Issuing Organisation"
+          icon={<Building2 size={13} />}
+          placeholder="e.g. Scrum Alliance"
+        />
+        <Field
+          label="Year Obtained"
+          icon={<Star size={13} />}
+          placeholder="e.g. 2016"
+        />
       </div>
     </div>
   );
@@ -646,73 +1112,164 @@ function CertificateEntry({ num, onRemove }) {
 
 /* ─── MAIN COMPONENT ─────────────────────────────────── */
 export default function JoinTrainee() {
-  const [profilePic, setProfilePic]       = useState(null);
-  const [bannerImg, setBannerImg]         = useState(null);
-  const [profileFiles, setProfileFiles]   = useState([]);
-  const [certFiles, setCertFiles]         = useState([]);
+  const [profilePic, setProfilePic] = useState(null);
+  const [bannerImg, setBannerImg] = useState(null);
+  const [profileFiles, setProfileFiles] = useState([]);
+  const [certFiles, setCertFiles] = useState([]);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
-  const [galleryURLs, setGalleryURLs]     = useState([]);
-  const [videoURLs, setVideoURLs]         = useState([""]);
-  const [workshops, setWorkshops]         = useState([1]);
-  const [awards, setAwards]               = useState([1]);
-  const [experiences, setExperiences]     = useState([1]);
-  const [certificates, setCertificates]   = useState([1]);
+  const [galleryURLs, setGalleryURLs] = useState([]);
+  const [videoURLs, setVideoURLs] = useState([""]);
+  const [workshops, setWorkshops] = useState([1]);
+  const [awards, setAwards] = useState([1]);
+  const [experiences, setExperiences] = useState([1]);
+  const [certificates, setCertificates] = useState([1]);
+  const [entityType, setEntityType] = useState("");
 
-  const handleProfilePic    = (e) => { const f = e.target.files[0]; if (f) setProfilePic(URL.createObjectURL(f)); };
-  const handleBannerImg     = (e) => { const f = e.target.files[0]; if (f) setBannerImg(URL.createObjectURL(f)); };
+  // company type states
+  const [cities, setCities] = "";
+  const [branches, setBranches] = "";
+  const [fullTrainers, setFullTrainers] = "";
+  const [teamStrength, setTeamStrength] = "";
+
+  const handleProfilePic = (e) => {
+    const f = e.target.files[0];
+    if (f) setProfilePic(URL.createObjectURL(f));
+  };
+  const handleBannerImg = (e) => {
+    const f = e.target.files[0];
+    if (f) setBannerImg(URL.createObjectURL(f));
+  };
   const handleGalleryPhotos = (e) => {
     const files = Array.from(e.target.files || []);
     setGalleryPhotos(files);
-    setGalleryURLs(files.map(f => URL.createObjectURL(f)));
+    setGalleryURLs(files.map((f) => URL.createObjectURL(f)));
   };
 
-  const addWorkshop    = () => { if (workshops.length < 15) setWorkshops(p => [...p, p.length + 1]); };
-  const removeWorkshop = (idx) => setWorkshops(p => p.filter((_, i) => i !== idx));
-  const addAward       = () => { if (awards.length < 10) setAwards(p => [...p, p.length + 1]); };
-  const removeAward    = (idx) => setAwards(p => p.filter((_, i) => i !== idx));
-  const addExp         = () => { if (experiences.length < 10) setExperiences(p => [...p, p.length + 1]); };
-  const removeExp      = (idx) => setExperiences(p => p.filter((_, i) => i !== idx));
-  const addCert        = () => { if (certificates.length < 10) setCertificates(p => [...p, p.length + 1]); };
-  const removeCert     = (idx) => setCertificates(p => p.filter((_, i) => i !== idx));
-  const handleVideoURL = (i, val) => { setVideoURLs(prev => { const n = [...prev]; n[i] = val; return n; }); };
+  const addWorkshop = () => {
+    if (workshops.length < 15) setWorkshops((p) => [...p, p.length + 1]);
+  };
+  const removeWorkshop = (idx) =>
+    setWorkshops((p) => p.filter((_, i) => i !== idx));
+  const addAward = () => {
+    if (awards.length < 10) setAwards((p) => [...p, p.length + 1]);
+  };
+  const removeAward = (idx) => setAwards((p) => p.filter((_, i) => i !== idx));
+  const addExp = () => {
+    if (experiences.length < 10) setExperiences((p) => [...p, p.length + 1]);
+  };
+  const removeExp = (idx) =>
+    setExperiences((p) => p.filter((_, i) => i !== idx));
+  const addCert = () => {
+    if (certificates.length < 10) setCertificates((p) => [...p, p.length + 1]);
+  };
+  const removeCert = (idx) =>
+    setCertificates((p) => p.filter((_, i) => i !== idx));
+  const handleVideoURL = (i, val) => {
+    setVideoURLs((prev) => {
+      const n = [...prev];
+      n[i] = val;
+      return n;
+    });
+  };
 
   function LocationSelects() {
     const [country, setCountry] = useState("");
-    const [state, setState]     = useState("");
-    const [city, setCity]       = useState("");
-    const states = country ? Object.keys(LOCATION_DATA[country] || {}).sort() : [];
-    const cities = (country && state) ? (LOCATION_DATA[country]?.[state] || []).sort() : [];
-    const handleCountry = (e) => { setCountry(e.target.value); setState(""); setCity(""); };
-    const handleState   = (e) => { setState(e.target.value); setCity(""); };
+    const [state, setState] = useState("");
+    const [city, setCity] = useState("");
+    const states = country
+      ? Object.keys(LOCATION_DATA[country] || {}).sort()
+      : [];
+    const cities =
+      country && state ? (LOCATION_DATA[country]?.[state] || []).sort() : [];
+    const handleCountry = (e) => {
+      setCountry(e.target.value);
+      setState("");
+      setCity("");
+    };
+    const handleState = (e) => {
+      setState(e.target.value);
+      setCity("");
+    };
     return (
       <div className="col-3">
         <div className="tt-field">
-          <label className="tt-label"><span className="tt-label-icon"><MapPin size={11} /></span>Country</label>
+          <label className="tt-label">
+            <span className="tt-label-icon">
+              <MapPin size={11} />
+            </span>
+            Country
+          </label>
           <div className="tt-input-wrap">
-            <div className="tt-input-icon"><MapPin size={13} /></div>
-            <select className="tt-input" value={country} onChange={handleCountry}>
+            <div className="tt-input-icon">
+              <MapPin size={13} />
+            </div>
+            <select
+              className="tt-input"
+              value={country}
+              onChange={handleCountry}
+            >
               <option value="">Select Country</option>
-              {COUNTRIES.map((c, i) => <option key={i} value={c}>{c}</option>)}
+              {COUNTRIES.map((c, i) => (
+                <option key={i} value={c}>
+                  {c}
+                </option>
+              ))}
             </select>
           </div>
         </div>
         <div className="tt-field">
-          <label className="tt-label"><span className="tt-label-icon"><MapPin size={11} /></span>State / Province</label>
+          <label className="tt-label">
+            <span className="tt-label-icon">
+              <MapPin size={11} />
+            </span>
+            State / Province
+          </label>
           <div className="tt-input-wrap">
-            <div className="tt-input-icon"><MapPin size={13} /></div>
-            <select className="tt-input" value={state} onChange={handleState} disabled={!country}>
-              <option value="">{country ? "Select State" : "Select Country first"}</option>
-              {states.map((s, i) => <option key={i} value={s}>{s}</option>)}
+            <div className="tt-input-icon">
+              <MapPin size={13} />
+            </div>
+            <select
+              className="tt-input"
+              value={state}
+              onChange={handleState}
+              disabled={!country}
+            >
+              <option value="">
+                {country ? "Select State" : "Select Country first"}
+              </option>
+              {states.map((s, i) => (
+                <option key={i} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </div>
         </div>
         <div className="tt-field">
-          <label className="tt-label"><span className="tt-label-icon"><MapPin size={11} /></span>City</label>
+          <label className="tt-label">
+            <span className="tt-label-icon">
+              <MapPin size={11} />
+            </span>
+            City
+          </label>
           <div className="tt-input-wrap">
-            <div className="tt-input-icon"><MapPin size={13} /></div>
-            <select className="tt-input" value={city} onChange={e => setCity(e.target.value)} disabled={!state}>
-              <option value="">{state ? "Select City" : "Select State first"}</option>
-              {cities.map((c, i) => <option key={i} value={c}>{c}</option>)}
+            <div className="tt-input-icon">
+              <MapPin size={13} />
+            </div>
+            <select
+              className="tt-input"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              disabled={!state}
+            >
+              <option value="">
+                {state ? "Select City" : "Select State first"}
+              </option>
+              {cities.map((c, i) => (
+                <option key={i} value={c}>
+                  {c}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -724,26 +1281,50 @@ export default function JoinTrainee() {
     <>
       <style>{styles}</style>
       <div className="tt-wrap">
-
         {/* SIDEBAR */}
         <aside className="tt-sidebar">
           <div className="sb-logo">
-            <div className="sb-logo-icon"><Sparkles size={17} /></div>
-            <span className="sb-logo-text">Top<span>Trainer</span></span>
+            <div className="sb-logo-icon">
+              <Sparkles size={17} />
+            </div>
+            <span className="sb-logo-text">
+              Top<span>Trainer</span>
+            </span>
           </div>
-          <div className="sb-badge"><UserPlus size={11} /> JOIN AS A TRAINER</div>
+          <div className="sb-badge">
+            <UserPlus size={11} /> JOIN AS A TRAINER
+          </div>
           <h2 className="sb-heading">
-            Build Your Profile.<br />Share Your Expertise.<br />
+            Build Your Profile.
+            <br />
+            Share Your Expertise.
+            <br />
             <span>Grow Your Impact.</span>
           </h2>
           <p className="sb-desc">
-            TopTrainer connects you with organizations and individuals looking for professional guidance and training.
+            TopTrainer connects you with organizations and individuals looking
+            for professional guidance and training.
           </p>
           <div className="sb-features">
             {[
-              { icon: <Sparkles size={14} />, title: "Showcase Your Expertise", desc: "Highlight your skills, experience and areas of training.", d: "0.3s" },
-              { icon: <Target size={14} />,   title: "Reach The Right People",  desc: "Get discovered by clients searching for the right trainer.", d: "0.38s" },
-              { icon: <TrendingUp size={14} />, title: "Grow Your Business",    desc: "Build your brand, expand your network and opportunities.", d: "0.46s" },
+              {
+                icon: <Sparkles size={14} />,
+                title: "Showcase Your Expertise",
+                desc: "Highlight your skills, experience and areas of training.",
+                d: "0.3s",
+              },
+              {
+                icon: <Target size={14} />,
+                title: "Reach The Right People",
+                desc: "Get discovered by clients searching for the right trainer.",
+                d: "0.38s",
+              },
+              {
+                icon: <TrendingUp size={14} />,
+                title: "Grow Your Business",
+                desc: "Build your brand, expand your network and opportunities.",
+                d: "0.46s",
+              },
             ].map((f, i) => (
               <div className="sb-feat" key={i} style={{ animationDelay: f.d }}>
                 <div className="sb-feat-icon">{f.icon}</div>
@@ -755,7 +1336,9 @@ export default function JoinTrainee() {
             ))}
           </div>
           <div className="sb-bottom">
-            <div className="sb-bottom-icon"><Users size={16} /></div>
+            <div className="sb-bottom-icon">
+              <Users size={16} />
+            </div>
             <div>
               <div className="sb-bottom-title">Empowering Trainers</div>
               <div className="sb-bottom-sub">To inspire growth everywhere</div>
@@ -765,13 +1348,16 @@ export default function JoinTrainee() {
 
         {/* MAIN */}
         <main className="tt-main">
-
           {/* Header */}
           <div className="form-header-inner">
-            <div className="form-header-icon"><BookOpen size={21} /></div>
+            <div className="form-header-icon">
+              <BookOpen size={21} />
+            </div>
             <div>
               <div className="form-header-title">Trainer Profile</div>
-              <div className="form-header-sub">Complete all sections to get discovered by top organizations</div>
+              <div className="form-header-sub">
+                Complete all sections to get discovered by top organizations
+              </div>
             </div>
           </div>
 
@@ -781,14 +1367,33 @@ export default function JoinTrainee() {
               {/* Left col: pic box + label + sub + choose button */}
               <div className="profile-pic-col">
                 <div className="profile-pic-box">
-                  {profilePic
-                    ? <Image src={profilePic} alt="Profile" width={92} height={92} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
-                    : <Users size={30} color="#93c5fd" />
-                  }
+                  {profilePic ? (
+                    <Image
+                      src={profilePic}
+                      alt="Profile"
+                      width={92}
+                      height={92}
+                      style={{
+                        objectFit: "cover",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    />
+                  ) : (
+                    <Users size={30} color="#93c5fd" />
+                  )}
                 </div>
                 <div className="profile-pic-label">Profile Photo</div>
-                <div className="profile-pic-sub">JPG, PNG or WEBP · Max 2MB</div>
-                <input type="file" id="picUpload" accept="image/png,image/jpeg,image/webp" onChange={handleProfilePic} style={{ display: "none" }} />
+                <div className="profile-pic-sub">
+                  JPG, PNG or WEBP · Max 2MB
+                </div>
+                <input
+                  type="file"
+                  id="picUpload"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleProfilePic}
+                  style={{ display: "none" }}
+                />
                 <label htmlFor="picUpload" className="choose-photo-btn">
                   <Upload size={12} /> Choose Photo
                 </label>
@@ -796,39 +1401,160 @@ export default function JoinTrainee() {
 
               {/* Right col: fields */}
               <div className="profile-fields-col">
-                <Field label="Full Name"    icon={<UserPlus size={13} />}  placeholder="Enter your full name" />
-                <Field label="Company Name" icon={<Building2 size={13} />} placeholder="Enter your company / org name" />
                 <div style={{ gridColumn: "1/-1" }}>
-                  <Field label="Subject Line" icon={<Star size={13} />} placeholder="e.g. Senior Corporate Trainer | Leadership & Sales Expert" />
+                  <Field
+                    label="Full Name"
+                    icon={<UserPlus size={13} />}
+                    placeholder="Enter your full name"
+                  />
                 </div>
                 <div style={{ gridColumn: "1/-1" }}>
-                  <Field label="Tag Line" icon={<Star size={13} />} placeholder="e.g. Helping leaders and teams unlock their true potential through experiential learning." />
+                  <Field
+                    label="Subject Line"
+                    icon={<Star size={13} />}
+                    placeholder="e.g. Senior Corporate Trainer | Leadership & Sales Expert"
+                  />
+                </div>
+                <div style={{ gridColumn: "1/-1" }}>
+                  <Field
+                    label="Tag Line"
+                    icon={<Star size={13} />}
+                    placeholder="e.g. Helping leaders and teams unlock their true potential through experiential learning."
+                  />
+                </div>
+
+                {/* Entity Type */}
+                <div style={{ gridColumn: "1/-1" }}>
+                  <div className="tt-field">
+                    <label className="tt-label">
+                      <span className="tt-label-icon">
+                        <Building2 size={13} />
+                      </span>
+                      Entity Type
+                    </label>
+                    <div className="tt-input-wrap">
+                      <div className="tt-input-icon">
+                        <Building2 size={13} />
+                      </div>
+                      <select
+                        className="tt-input text-"
+                        value={entityType}
+                        onChange={(e) => setEntityType(e.target.value)}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="Individual">Individual</option>
+                        <option value="Company">Company</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* if company 
+            
+              ⁠ ⁠No. of Branches
+              ⁠ ⁠Name of Cities
+              ⁠ ⁠Full Time Trainers
+              ⁠ ⁠Total Team Strength
+          
+            */}
+            {entityType === "Company" && (
+              <Sec
+                icon={<Mail size={16} />}
+                title="Company Details"
+                sub="Information about your company"
+              >
+                <div className="field-grid col-2">
+                  <Field
+                    label="⁠No. of Branches"
+                    icon={<Building2 size={13}/>}
+                    placeholder="e.g. 3"
+                    value={branches}
+                    onChange={e=>setBranches(e.target.value)}
+                  />
+                  <Field
+                    label="Name of Cities"
+                    icon={<AreaChart size={13} />}
+                    placeholder="e.g. Delhi, Pune, Mumbai"
+                    value={cities}
+                    onChange={e=>setCities(e.target.value)}
+                  />
+                  <Field
+                    label="⁠⁠Full Time Trainers"
+                    icon={<PersonStanding size={13} />}
+                    placeholder="e.g. 5"
+                    value={fullTrainers}
+                    onChange={e=>setFullTrainers(e.target.value)}
+                  />
+                  <Field
+                    label="⁠Total Team Strength"
+                    icon={<GroupIcon size={13} />}
+                    placeholder="e.g. 7"
+                    value={teamStrength}
+                    onChange={e=>setTeamStrength(e.target.value)}
+                  />
+                </div>
+              </Sec>
+            )}
+
             {/* Banner below the profile row */}
             <div>
               <div className="tt-label" style={{ marginBottom: 6 }}>
-                <span className="tt-label-icon"><ImageIcon size={11} /></span>Banner Image
-                <span style={{ color: "#94a3b8", fontWeight: 400, marginLeft: 4 }}>· Recommended 1200×300px</span>
+                <span className="tt-label-icon">
+                  <ImageIcon size={11} />
+                </span>
+                Banner Image
+                <span
+                  style={{ color: "#94a3b8", fontWeight: 400, marginLeft: 4 }}
+                >
+                  · Recommended 1200×300px
+                </span>
               </div>
               <div className="banner-upload-zone">
-                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleBannerImg} />
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleBannerImg}
+                />
                 {bannerImg ? (
                   <>
-                    <img src={bannerImg} alt="Banner" className="banner-preview-img" />
+                    <img
+                      src={bannerImg}
+                      alt="Banner"
+                      className="banner-preview-img"
+                    />
                     <div className="banner-overlay">
                       <Camera size={20} color="#fff" />
                       <span className="banner-overlay-text">Change Banner</span>
-                      <span className="banner-overlay-sub">JPG, PNG, WEBP · Max 5MB</span>
+                      <span className="banner-overlay-sub">
+                        JPG, PNG, WEBP · Max 5MB
+                      </span>
                     </div>
                   </>
                 ) : (
                   <>
                     <ImageIcon size={26} color="#93c5fd" />
-                    <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: "0.78rem", color: "#1e3a8a", marginTop: 6 }}>Click or drag to upload Banner Image</div>
-                    <div style={{ fontSize: "0.65rem", color: "#94a3b8", marginTop: 2 }}>JPG, PNG, WEBP · Max 5MB · Recommended 1200×300px</div>
+                    <div
+                      style={{
+                        fontFamily: "'Plus Jakarta Sans',sans-serif",
+                        fontWeight: 700,
+                        fontSize: "0.78rem",
+                        color: "#1e3a8a",
+                        marginTop: 6,
+                      }}
+                    >
+                      Click or drag to upload Banner Image
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "0.65rem",
+                        color: "#94a3b8",
+                        marginTop: 2,
+                      }}
+                    >
+                      JPG, PNG, WEBP · Max 5MB · Recommended 1200×300px
+                    </div>
                   </>
                 )}
               </div>
@@ -836,77 +1562,263 @@ export default function JoinTrainee() {
           </div>
 
           {/* 1 · Contact */}
-          <Sec icon={<Mail size={16} />} title="Contact Details" sub="How clients will reach you">
+          <Sec
+            icon={<Mail size={16} />}
+            title="Contact Details"
+            sub="How clients will reach you"
+          >
             <div className="field-grid col-3">
-              <Field label="Email Address"   icon={<Mail size={13} />}  placeholder="you@example.com" />
-              <Field label="Mobile Number"   icon={<Phone size={13} />} placeholder="+91 9034565817" />
-              <Field label="WhatsApp Number" icon={<Phone size={13} />} placeholder="+91 9034565817" />
+              <Field
+                label="Email Address"
+                icon={<Mail size={13} />}
+                placeholder="you@example.com"
+              />
+              <Field
+                label="Mobile Number"
+                icon={<Phone size={13} />}
+                placeholder="+91 9034565817"
+              />
+              <Field
+                label="WhatsApp Number"
+                icon={<Phone size={13} />}
+                placeholder="+91 9034565817"
+              />
               <LocationSelects />
             </div>
           </Sec>
 
           {/* 2 · Online Presence */}
-          <Sec icon={<Globe size={16} />} title="Online Presence" sub="Your digital footprint across platforms">
+          <Sec
+            icon={<Globe size={16} />}
+            title="Online Presence"
+            sub="Your digital footprint across platforms"
+          >
             <div className="field-grid">
-              <Field label="Website / Portfolio" icon={<Globe size={13} />}      placeholder="https://yourwebsite.com" />
-              <Field label="LinkedIn Profile"    icon={<Linkedin size={13} />}   placeholder="https://linkedin.com/in/..." />
-              <Field label="YouTube Channel"     icon={<Youtube size={13} />}    placeholder="https://youtube.com/@..." />
-              <Field label="Instagram Handle"    icon={<Instagram size={13} />}  placeholder="https://instagram.com/..." />
-              <Field label="Facebook Page"       icon={<Facebook size={13} />}   placeholder="https://facebook.com/..." />
+              <Field
+                label="Website / Portfolio"
+                icon={<Globe size={13} />}
+                placeholder="https://yourwebsite.com"
+              />
+              <Field
+                label="LinkedIn Profile"
+                icon={<Linkedin size={13} />}
+                placeholder="https://linkedin.com/in/..."
+              />
+              <Field
+                label="YouTube Channel"
+                icon={<Youtube size={13} />}
+                placeholder="https://youtube.com/@..."
+              />
+              <Field
+                label="Instagram Handle"
+                icon={<Instagram size={13} />}
+                placeholder="https://instagram.com/..."
+              />
+              <Field
+                label="Facebook Page"
+                icon={<Facebook size={13} />}
+                placeholder="https://facebook.com/..."
+              />
             </div>
           </Sec>
 
           {/* 3 · Expertise & Domain */}
-          <Sec icon={<Briefcase size={16} />} title="Expertise & Domain" sub="Select all that apply — multiple choices allowed">
+          <Sec
+            icon={<Briefcase size={16} />}
+            title="Expertise & Domain"
+            sub="Select all that apply — multiple choices allowed"
+          >
             <div className="field-grid">
-              <MultiSelect label="Industry & Sector Expertise" icon={<Briefcase size={13} />} options={["Real Estate","IT & Digital","Media & Entertainment","Banking & Finance","Telecommunications","Hospitality & Aviation","Healthcare & Pharma","Education Sector","Retail Industry","Automobile","Jewellery","FMCG","Other"]} />
-              <MultiSelect label="Domain & Departmental Expertise" icon={<Target size={13} />} options={["Logistics & Operations","Soft Skills Development","Sales & Business Development","Leadership Transformation","International Market Expansion","Customer Service Excellence","Branding & Communications","Other"]} />
-              <MultiSelect label="Competency Expertise" icon={<Star size={13} />} options={["AI Tools & Generative AI","Strategic Thinking","Communication & Narrative Building","Multitasking Ability","Team Building & Management","Innovation","Big Picture Thinking","Time Management","Other"]} />
-              <Sel label="Trainer Type" icon={<UserPlus size={13} />} options={["Faculty / Professor","Business Consultant","Motivational Speaker","Life Coach","Industry Trainers","Technical / Digital Trainer","Personality Coach","Behavioral Trainer","Executive Coach","Other"]} />
+              <MultiSelect
+                label="Industry & Sector Expertise"
+                icon={<Briefcase size={13} />}
+                options={[
+                  "Real Estate",
+                  "IT & Digital",
+                  "Media & Entertainment",
+                  "Banking & Finance",
+                  "Telecommunications",
+                  "Hospitality & Aviation",
+                  "Healthcare & Pharma",
+                  "Education Sector",
+                  "Retail Industry",
+                  "Automobile",
+                  "Jewellery",
+                  "FMCG",
+                  "Other",
+                ]}
+              />
+              <MultiSelect
+                label="Domain & Departmental Expertise"
+                icon={<Target size={13} />}
+                options={[
+                  "Logistics & Operations",
+                  "Soft Skills Development",
+                  "Sales & Business Development",
+                  "Leadership Transformation",
+                  "International Market Expansion",
+                  "Customer Service Excellence",
+                  "Branding & Communications",
+                  "Other",
+                ]}
+              />
+              <MultiSelect
+                label="Competency Expertise"
+                icon={<Star size={13} />}
+                options={[
+                  "AI Tools & Generative AI",
+                  "Strategic Thinking",
+                  "Communication & Narrative Building",
+                  "Multitasking Ability",
+                  "Team Building & Management",
+                  "Innovation",
+                  "Big Picture Thinking",
+                  "Time Management",
+                  "Other",
+                ]}
+              />
+              <Sel
+                label="Trainer Type"
+                icon={<UserPlus size={13} />}
+                options={[
+                  "Faculty / Professor",
+                  "Business Consultant",
+                  "Motivational Speaker",
+                  "Life Coach",
+                  "Industry Trainers",
+                  "Technical / Digital Trainer",
+                  "Personality Coach",
+                  "Behavioral Trainer",
+                  "Executive Coach",
+                  "Other",
+                ]}
+              />
             </div>
           </Sec>
 
           {/* 4 · Profile Summary & Documents */}
-          <Sec icon={<FileText size={16} />} title="Profile Summary & Documents" sub="Your story and supporting materials">
+          <Sec
+            icon={<FileText size={16} />}
+            title="Profile Summary & Documents"
+            sub="Your story and supporting materials"
+          >
             <div className="field-grid">
               <div className="col-2">
                 <div className="tt-field">
-                  <label className="tt-label"><span className="tt-label-icon"><FileText size={11} /></span>Profile Summary</label>
-                  <textarea className="tt-input no-icon" placeholder="Briefly describe your training background, achievements, and what makes you unique..." />
+                  <label className="tt-label">
+                    <span className="tt-label-icon">
+                      <FileText size={11} />
+                    </span>
+                    Profile Summary
+                  </label>
+                  <textarea
+                    className="tt-input no-icon"
+                    placeholder="Briefly describe your training background, achievements, and what makes you unique..."
+                  />
                 </div>
               </div>
               <div className="col-3">
                 <div>
-                  <div className="tt-label" style={{ marginBottom: 5 }}><span className="tt-label-icon"><Upload size={11} /></span>Upload Profile (PDF)</div>
+                  <div className="tt-label" style={{ marginBottom: 5 }}>
+                    <span className="tt-label-icon">
+                      <Upload size={11} />
+                    </span>
+                    Upload Profile (PDF)
+                  </div>
                   <div className="upload-zone">
-                    <input type="file" accept="application/pdf" onChange={e => setProfileFiles(Array.from(e.target.files || []))} />
-                    <div className="upload-zone-icon"><FileText size={17} /></div>
-                    <div className="upload-zone-title">Click or drag to upload Profile</div>
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) =>
+                        setProfileFiles(Array.from(e.target.files || []))
+                      }
+                    />
+                    <div className="upload-zone-icon">
+                      <FileText size={17} />
+                    </div>
+                    <div className="upload-zone-title">
+                      Click or drag to upload Profile
+                    </div>
                     <div className="upload-zone-sub">PDF only · Max 5MB</div>
                   </div>
-                  <div>{profileFiles.map((f, i) => <span className="file-chip" key={i}><CheckCircle size={10} />{f.name}</span>)}</div>
-                </div>
-                <div>
-                  <div className="tt-label" style={{ marginBottom: 5 }}><span className="tt-label-icon"><Award size={11} /></span>Upload Certificates</div>
-                  <div className="upload-zone">
-                    <input type="file" multiple accept="image/*,application/pdf" onChange={e => setCertFiles(Array.from(e.target.files || []))} />
-                    <div className="upload-zone-icon"><Award size={17} /></div>
-                    <div className="upload-zone-title">Click or drag to upload</div>
-                    <div className="upload-zone-sub">PDF, JPG, PNG · Multiple allowed</div>
+                  <div>
+                    {profileFiles.map((f, i) => (
+                      <span className="file-chip" key={i}>
+                        <CheckCircle size={10} />
+                        {f.name}
+                      </span>
+                    ))}
                   </div>
-                  <div>{certFiles.map((f, i) => <span className="file-chip" key={i}><CheckCircle size={10} />{f.name}</span>)}</div>
                 </div>
                 <div>
-                  <div className="tt-label" style={{ marginBottom: 5 }}><span className="tt-label-icon"><Camera size={11} /></span>Upload Photos in Gallery</div>
+                  <div className="tt-label" style={{ marginBottom: 5 }}>
+                    <span className="tt-label-icon">
+                      <Award size={11} />
+                    </span>
+                    Upload Certificates
+                  </div>
                   <div className="upload-zone">
-                    <input type="file" multiple accept="image/*" onChange={handleGalleryPhotos} />
-                    <div className="upload-zone-icon"><ImageIcon size={17} /></div>
-                    <div className="upload-zone-title">Click or drag photos</div>
-                    <div className="upload-zone-sub">JPG, PNG, WEBP · Multiple allowed</div>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,application/pdf"
+                      onChange={(e) =>
+                        setCertFiles(Array.from(e.target.files || []))
+                      }
+                    />
+                    <div className="upload-zone-icon">
+                      <Award size={17} />
+                    </div>
+                    <div className="upload-zone-title">
+                      Click or drag to upload
+                    </div>
+                    <div className="upload-zone-sub">
+                      PDF, JPG, PNG · Multiple allowed
+                    </div>
+                  </div>
+                  <div>
+                    {certFiles.map((f, i) => (
+                      <span className="file-chip" key={i}>
+                        <CheckCircle size={10} />
+                        {f.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="tt-label" style={{ marginBottom: 5 }}>
+                    <span className="tt-label-icon">
+                      <Camera size={11} />
+                    </span>
+                    Upload Photos in Gallery
+                  </div>
+                  <div className="upload-zone">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleGalleryPhotos}
+                    />
+                    <div className="upload-zone-icon">
+                      <ImageIcon size={17} />
+                    </div>
+                    <div className="upload-zone-title">
+                      Click or drag photos
+                    </div>
+                    <div className="upload-zone-sub">
+                      JPG, PNG, WEBP · Multiple allowed
+                    </div>
                   </div>
                   {galleryURLs.length > 0 && (
                     <div className="photo-previews">
-                      {galleryURLs.map((url, i) => <img key={i} src={url} alt={`Gallery ${i + 1}`} className="photo-thumb" />)}
+                      {galleryURLs.map((url, i) => (
+                        <img
+                          key={i}
+                          src={url}
+                          alt={`Gallery ${i + 1}`}
+                          className="photo-thumb"
+                        />
+                      ))}
                     </div>
                   )}
                 </div>
@@ -915,31 +1827,102 @@ export default function JoinTrainee() {
               {/* Video URLs */}
               <div className="col-2" style={{ marginTop: 4 }}>
                 <div className="tt-label" style={{ marginBottom: 8 }}>
-                  <span className="tt-label-icon"><Video size={11} /></span>Video URLs
-                  <span style={{ color: "#94a3b8", fontWeight: 400, marginLeft: 4 }}>· Add up to 10 video links (YouTube, Vimeo, etc.)</span>
+                  <span className="tt-label-icon">
+                    <Video size={11} />
+                  </span>
+                  Video URLs
+                  <span
+                    style={{ color: "#94a3b8", fontWeight: 400, marginLeft: 4 }}
+                  >
+                    · Add up to 10 video links (YouTube, Vimeo, etc.)
+                  </span>
                 </div>
                 {videoURLs.map((url, i) => (
-                  <div className="video-url-row" key={i} style={{ marginBottom: 8 }}>
+                  <div
+                    className="video-url-row"
+                    key={i}
+                    style={{ marginBottom: 8 }}
+                  >
                     <span className="video-url-num">{i + 1}</span>
                     <div className="tt-input-wrap" style={{ flex: 1 }}>
-                      <div className="tt-input-icon"><Link size={13} /></div>
-                      <input type="url" className="tt-input" placeholder="https://youtube.com/watch?v=..." value={url} onChange={e => handleVideoURL(i, e.target.value)} />
+                      <div className="tt-input-icon">
+                        <Link size={13} />
+                      </div>
+                      <input
+                        type="url"
+                        className="tt-input"
+                        placeholder="https://youtube.com/watch?v=..."
+                        value={url}
+                        onChange={(e) => handleVideoURL(i, e.target.value)}
+                      />
                     </div>
                     {i > 0 && (
-                      <button type="button" onClick={() => setVideoURLs(prev => prev.filter((_, idx) => idx !== i))}
-                        style={{ display:"inline-flex",alignItems:"center",gap:4,padding:"5px 10px",background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:7,fontSize:"0.68rem",fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif",cursor:"pointer",flexShrink:0 }}
-                        onMouseEnter={e=>e.currentTarget.style.background="#fecaca"} onMouseLeave={e=>e.currentTarget.style.background="#fee2e2"}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setVideoURLs((prev) =>
+                            prev.filter((_, idx) => idx !== i),
+                          )
+                        }
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 4,
+                          padding: "5px 10px",
+                          background: "#fee2e2",
+                          color: "#dc2626",
+                          border: "none",
+                          borderRadius: 7,
+                          fontSize: "0.68rem",
+                          fontWeight: 600,
+                          fontFamily: "'Plus Jakarta Sans',sans-serif",
+                          cursor: "pointer",
+                          flexShrink: 0,
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = "#fecaca")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "#fee2e2")
+                        }
+                      >
                         <Trash2 size={11} /> Remove
                       </button>
                     )}
                   </div>
                 ))}
                 {videoURLs.length < 10 && (
-                  <button type="button" onClick={() => setVideoURLs(prev => [...prev, ""])}
-                    style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:7,width:"100%",padding:"9px",marginTop:2,background:"#eff6ff",border:"1.5px dashed #93c5fd",borderRadius:11,color:"#1d4ed8",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:"0.76rem",cursor:"pointer" }}
-                    onMouseEnter={e=>{e.currentTarget.style.background="#dbeafe";e.currentTarget.style.borderColor="#3b82f6";}}
-                    onMouseLeave={e=>{e.currentTarget.style.background="#eff6ff";e.currentTarget.style.borderColor="#93c5fd";}}>
-                    <Plus size={13} /> Add Another Video URL ({videoURLs.length}/10)
+                  <button
+                    type="button"
+                    onClick={() => setVideoURLs((prev) => [...prev, ""])}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 7,
+                      width: "100%",
+                      padding: "9px",
+                      marginTop: 2,
+                      background: "#eff6ff",
+                      border: "1.5px dashed #93c5fd",
+                      borderRadius: 11,
+                      color: "#1d4ed8",
+                      fontFamily: "'Plus Jakarta Sans',sans-serif",
+                      fontWeight: 700,
+                      fontSize: "0.76rem",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#dbeafe";
+                      e.currentTarget.style.borderColor = "#3b82f6";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#eff6ff";
+                      e.currentTarget.style.borderColor = "#93c5fd";
+                    }}
+                  >
+                    <Plus size={13} /> Add Another Video URL ({videoURLs.length}
+                    /10)
                   </button>
                 )}
               </div>
@@ -947,105 +1930,260 @@ export default function JoinTrainee() {
           </Sec>
 
           {/* 5 · Awards & Recognition */}
-          <Sec icon={<Trophy size={16} />} title="Awards & Recognition" sub={`Showcase your achievements · ${awards.length} added`}>
+          <Sec
+            icon={<Trophy size={16} />}
+            title="Awards & Recognition"
+            sub={`Showcase your achievements · ${awards.length} added`}
+          >
             {awards.map((_, idx) => (
-              <AwardEntry key={idx} num={idx + 1} onRemove={() => removeAward(idx)} />
+              <AwardEntry
+                key={idx}
+                num={idx + 1}
+                onRemove={() => removeAward(idx)}
+              />
             ))}
             {awards.length < 10 && (
-              <button type="button" className="add-entry-btn" onClick={addAward}>
+              <button
+                type="button"
+                className="add-entry-btn"
+                onClick={addAward}
+              >
                 <Plus size={14} /> Add Another Award ({awards.length}/10)
               </button>
             )}
           </Sec>
 
           {/* 6 · Professional Experience */}
-          <Sec icon={<Briefcase size={16} />} title="Professional Experience" sub={`Your career journey · ${experiences.length} added`}>
+          <Sec
+            icon={<Briefcase size={16} />}
+            title="Professional Experience"
+            sub={`Your career journey · ${experiences.length} added`}
+          >
             {experiences.map((_, idx) => (
-              <ExperienceEntry key={idx} num={idx + 1} onRemove={() => removeExp(idx)} />
+              <ExperienceEntry
+                key={idx}
+                num={idx + 1}
+                onRemove={() => removeExp(idx)}
+              />
             ))}
             {experiences.length < 10 && (
               <button type="button" className="add-entry-btn" onClick={addExp}>
-                <Plus size={14} /> Add Another Experience ({experiences.length}/10)
+                <Plus size={14} /> Add Another Experience ({experiences.length}
+                /10)
               </button>
             )}
           </Sec>
 
           {/* 7 · Educational Milestones */}
-          <Sec icon={<GraduationCap size={16} />} title="Educational Milestones" sub="Your academic qualifications and certifications">
+          <Sec
+            icon={<GraduationCap size={16} />}
+            title="Educational Milestones"
+            sub="Your academic qualifications and certifications"
+          >
             <div className="field-grid">
               <div className="col-3">
                 <div>
-                  <div className="tt-label" style={{ marginBottom: 5 }}><span className="tt-label-icon"><GraduationCap size={11} /></span>Highest Qualification</div>
+                  <div className="tt-label" style={{ marginBottom: 5 }}>
+                    <span className="tt-label-icon">
+                      <GraduationCap size={11} />
+                    </span>
+                    Highest Qualification
+                  </div>
                   <div className="tt-input-wrap">
-                    <div className="tt-input-icon"><GraduationCap size={13} /></div>
-                    <input type="text" className="tt-input" placeholder="e.g. MBA, B.Tech, PhD..." />
+                    <div className="tt-input-icon">
+                      <GraduationCap size={13} />
+                    </div>
+                    <input
+                      type="text"
+                      className="tt-input"
+                      placeholder="e.g. MBA, B.Tech, PhD..."
+                    />
                   </div>
                 </div>
                 <div>
-                  <div className="tt-label" style={{ marginBottom: 5 }}><span className="tt-label-icon"><Building2 size={11} /></span>Institution / University</div>
+                  <div className="tt-label" style={{ marginBottom: 5 }}>
+                    <span className="tt-label-icon">
+                      <Building2 size={11} />
+                    </span>
+                    Institution / University
+                  </div>
                   <div className="tt-input-wrap">
-                    <div className="tt-input-icon"><Building2 size={13} /></div>
-                    <input type="text" className="tt-input" placeholder="e.g. IIM Ahmedabad, Delhi University..." />
+                    <div className="tt-input-icon">
+                      <Building2 size={13} />
+                    </div>
+                    <input
+                      type="text"
+                      className="tt-input"
+                      placeholder="e.g. IIM Ahmedabad, Delhi University..."
+                    />
                   </div>
                 </div>
                 <div>
-                  <div className="tt-label" style={{ marginBottom: 5 }}><span className="tt-label-icon"><Star size={11} /></span>Year of Completion</div>
+                  <div className="tt-label" style={{ marginBottom: 5 }}>
+                    <span className="tt-label-icon">
+                      <Star size={11} />
+                    </span>
+                    Year of Completion
+                  </div>
                   <div className="tt-input-wrap">
-                    <div className="tt-input-icon"><Star size={13} /></div>
-                    <input type="text" className="tt-input" placeholder="e.g. 2012" />
+                    <div className="tt-input-icon">
+                      <Star size={13} />
+                    </div>
+                    <input
+                      type="text"
+                      className="tt-input"
+                      placeholder="e.g. 2012"
+                    />
                   </div>
                 </div>
               </div>
             </div>
-            <div style={{ marginTop: 18, borderTop: "1.5px solid #eef2ff", paddingTop: 16 }}>
-              <div className="tt-label" style={{ marginBottom: 12, fontSize: "0.78rem" }}>
-                <span className="tt-label-icon"><Award size={13} /></span>
+            <div
+              style={{
+                marginTop: 18,
+                borderTop: "1.5px solid #eef2ff",
+                paddingTop: 16,
+              }}
+            >
+              <div
+                className="tt-label"
+                style={{ marginBottom: 12, fontSize: "0.78rem" }}
+              >
+                <span className="tt-label-icon">
+                  <Award size={13} />
+                </span>
                 Certifications &amp; Additional Qualifications
-                <span style={{ color: "#94a3b8", fontWeight: 400, marginLeft: 4 }}>· Add up to 10</span>
+                <span
+                  style={{ color: "#94a3b8", fontWeight: 400, marginLeft: 4 }}
+                >
+                  · Add up to 10
+                </span>
               </div>
               {certificates.map((_, idx) => (
-                <CertificateEntry key={idx} num={idx + 1} onRemove={() => removeCert(idx)} />
+                <CertificateEntry
+                  key={idx}
+                  num={idx + 1}
+                  onRemove={() => removeCert(idx)}
+                />
               ))}
               {certificates.length < 10 && (
-                <button type="button" className="add-entry-btn" onClick={addCert}>
-                  <Plus size={14} /> Add Another Certificate ({certificates.length}/10)
+                <button
+                  type="button"
+                  className="add-entry-btn"
+                  onClick={addCert}
+                >
+                  <Plus size={14} /> Add Another Certificate (
+                  {certificates.length}/10)
                 </button>
               )}
             </div>
           </Sec>
 
           {/* 8 · Workshop Details */}
-          <Sec icon={<MapPin size={16} />} title="Workshop Details" sub={`Add up to 15 workshops · ${workshops.length} added`}>
+          <Sec
+            icon={<MapPin size={16} />}
+            title="Workshop Details"
+            sub={`Add up to 15 workshops · ${workshops.length} added`}
+          >
             {workshops.map((_, idx) => (
-              <WorkshopEntry key={idx} num={idx + 1} onRemove={() => removeWorkshop(idx)} />
+              <WorkshopEntry
+                key={idx}
+                num={idx + 1}
+                onRemove={() => removeWorkshop(idx)}
+              />
             ))}
             {workshops.length < 15 && (
-              <button type="button" className="add-workshop-btn" onClick={addWorkshop}>
+              <button
+                type="button"
+                className="add-workshop-btn"
+                onClick={addWorkshop}
+              >
                 <Plus size={14} /> Add Another Workshop ({workshops.length}/15)
               </button>
             )}
           </Sec>
 
-        
           {/* 10 · Additional Details */}
-          <Sec icon={<Award size={16} />} title="Additional Details" sub="Your credentials, style and reach">
+          <Sec
+            icon={<Award size={16} />}
+            title="Additional Details"
+            sub="Your credentials, style and reach"
+          >
             <div className="field-grid">
-              <Sel label="Open to Travel for Workshop"    icon={<Plane size={13} />}      options={["Within City","Within State","Upto 50kms","Zonal Travel Only","PAN India","Global Trainer"]} />
-              <Sel label="Languages Fluent"               icon={<Languages size={13} />}  options={["Hindi","English","Other"]} />
-              <Sel label="Trainer Certifications"         icon={<Award size={13} />}      options={["ICF Certified Coach","POSH Trainer","Technical Skills Certified","Other"]} />
-              <Sel label="Training & Workshop Experience" icon={<TrendingUp size={13} />} options={["15 years and above","10 - 15 years","5 - 10 years","2 - 5 years","Emerging Trainer"]} />
-              <Sel label="Audience & Seniority Level"     icon={<Users size={13} />}      options={["Freshers & Students","New Joinees","Entry Level","Mid-level Management","CXOs & Leadership","Entrepreneurs & Founders","Staff Level","Other"]} />
-              <Sel label="Commercials / Fees per Day"     icon={<DollarSign size={13} />} options={["Upto ₹15,000","₹15,000 - ₹30,000","₹30,000 - ₹50,000","₹50,000 - ₹1,00,000","₹1,00,000 and above"]} />
+              <Sel
+                label="Open to Travel for Workshop"
+                icon={<Plane size={13} />}
+                options={[
+                  "Within City",
+                  "Within State",
+                  "Upto 50kms",
+                  "Zonal Travel Only",
+                  "PAN India",
+                  "Global Trainer",
+                ]}
+              />
+              <Sel
+                label="Languages Fluent"
+                icon={<Languages size={13} />}
+                options={["Hindi", "English", "Other"]}
+              />
+              <Sel
+                label="Trainer Certifications"
+                icon={<Award size={13} />}
+                options={[
+                  "ICF Certified Coach",
+                  "POSH Trainer",
+                  "Technical Skills Certified",
+                  "Other",
+                ]}
+              />
+              <Sel
+                label="Training & Workshop Experience"
+                icon={<TrendingUp size={13} />}
+                options={[
+                  "15 years and above",
+                  "10 - 15 years",
+                  "5 - 10 years",
+                  "2 - 5 years",
+                  "Emerging Trainer",
+                ]}
+              />
+              <Sel
+                label="Audience & Seniority Level"
+                icon={<Users size={13} />}
+                options={[
+                  "Freshers & Students",
+                  "New Joinees",
+                  "Entry Level",
+                  "Mid-level Management",
+                  "CXOs & Leadership",
+                  "Entrepreneurs & Founders",
+                  "Staff Level",
+                  "Other",
+                ]}
+              />
+              <Sel
+                label="Commercials / Fees per Day"
+                icon={<DollarSign size={13} />}
+                options={[
+                  "Upto ₹15,000",
+                  "₹15,000 - ₹30,000",
+                  "₹30,000 - ₹50,000",
+                  "₹50,000 - ₹1,00,000",
+                  "₹1,00,000 and above",
+                ]}
+              />
             </div>
           </Sec>
 
           {/* Submit */}
           <div className="submit-wrap">
             <button type="button" className="submit-btn">
-              <span><Sparkles size={15} /> Create My Trainer Profile</span>
+              <span>
+                <Sparkles size={15} /> Create My Trainer Profile
+              </span>
             </button>
           </div>
-
         </main>
       </div>
     </>
@@ -1094,7 +2232,9 @@ function Sel({ label, icon, options }) {
         {icon && <div className="tt-input-icon">{icon}</div>}
         <select className="tt-input">
           <option value="">Select an option</option>
-          {options.map((o, i) => <option key={i}>{o}</option>)}
+          {options.map((o, i) => (
+            <option key={i}>{o}</option>
+          ))}
         </select>
       </div>
     </div>
