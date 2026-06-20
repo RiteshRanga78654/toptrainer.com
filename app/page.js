@@ -596,49 +596,98 @@ const sortedCategories = [...categories].sort((a, b) =>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center max-w-7xl mx-auto relative z-10">
 
           {/* LEFT */}
-          <div className="text-center md:text-left order-2 md:order-1 px-1 sm:px-0">
-            <div className="anim-fade-up inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-full px-3 sm:px-4 py-1.5 mb-3 sm:mb-4 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-green-400" style={{animation:'dotPulse 1.5s ease-in-out infinite'}}/>
-              <span className="text-[10px] sm:text-xs font-semibold text-gray-600 tracking-wide uppercase">1,200+ Experts Online Now</span>
-            </div>
+         {/* LEFT */}
+<div className="text-center md:text-left order-2 md:order-1 px-1 sm:px-0">
+  
+  {/* TOP BADGE */}
+  <div className="anim-fade-up inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-full px-3 sm:px-4 py-1.5 mb-3 sm:mb-4 shadow-sm">
+    
+    <span
+      className="w-2 h-2 rounded-full bg-green-400"
+      style={{ animation: "dotPulse 1.5s ease-in-out infinite" }}
+    />
 
-            <h1 className="anim-slide-l delay-100 text-2xl xs:text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-              Connect with{" "}
-              <span className="text-shimmer heading-underline">Expert Trainers</span>{" "}
-              to Achieve Your Goals
-            </h1>
+    {/* BOX 2 */}
+    <span className="text-[10px] sm:text-xs font-semibold text-gray-600 tracking-wide uppercase">
+      320+ Workshops Published
+    </span>
+  </div>
 
-            <p className="anim-fade-up delay-300 text-gray-500 mt-3 md:mt-4 text-sm sm:text-base md:text-lg leading-relaxed">
-              Personalized learning, live 1-on-1 sessions, and guidance from top-rated professionals.
-            </p>
+  {/* HEADING */}
+  <h1 className="anim-slide-l delay-100 text-2xl xs:text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
+    Connect with{" "}
+    <span className="text-shimmer heading-underline">
+      Expert Trainers
+    </span>{" "}
+    to Achieve Your Goals
+  </h1>
 
-            <div className="anim-fade-up delay-400 flex flex-col sm:flex-row gap-3 mt-5 md:mt-6">
-              <input
-                type="text"
-                placeholder="What do you want to learn?"
-                className="search-input flex-1 min-w-0 px-4 sm:px-5 py-3 rounded-xl border border-gray-200 shadow-sm text-sm md:text-base"
-              />
-              <button className="cta-btn px-5 py-3 text-white rounded-xl font-medium text-sm md:text-base whitespace-nowrap">
-                <span>Find a Trainer →</span>
-              </button>
-            </div>
+  {/* DESCRIPTION */}
+  <p className="anim-fade-up delay-300 text-gray-500 mt-3 md:mt-4 text-sm sm:text-base md:text-lg leading-relaxed">
+    Personalized learning, live 1-on-1 sessions, and guidance from top-rated professionals.
+  </p>
 
-            <div className="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-3 mt-4 sm:mt-6">
-              {[
-                {icon:<Star className="text-yellow-500" size={14}/>, bold:"4.9/5 Rating", sub:"2,500+ reviews",   d:"delay-500"},
-                {icon:<CheckCircle className="text-green-500" size={14}/>, bold:"1,200+", sub:"Verified Experts", d:"delay-600"},
-                {icon:<CheckCircle className="text-green-500" size={14}/>, bold:"50,000+",sub:"1-on-1 Sessions",  d:"delay-700"},
-              ].map(s=>(
-                <div key={s.bold} className={`stat-badge anim-fade-up ${s.d} flex items-center gap-1.5 sm:gap-2`}>
-                  {s.icon}
-                  <div>
-                    <p className="font-semibold text-gray-800 text-xs sm:text-sm">{s.bold}</p>
-                    <p className="text-[10px] sm:text-xs text-gray-500">{s.sub}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+  {/* SEARCH */}
+  <div className="anim-fade-up delay-400 flex flex-col sm:flex-row gap-3 mt-5 md:mt-6">
+    
+    <input
+      type="text"
+      placeholder="What do you want to learn?"
+      className="search-input flex-1 min-w-0 px-4 sm:px-5 py-3 rounded-xl border border-gray-200 shadow-sm text-sm md:text-base"
+    />
+
+    <button className="cta-btn px-5 py-3 text-white rounded-xl font-medium text-sm md:text-base whitespace-nowrap">
+      <span>Find a Trainer →</span>
+    </button>
+  </div>
+
+  {/* STATS */}
+  <div className="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-3 mt-4 sm:mt-6">
+    
+    {[
+      {
+        icon: <Star className="text-yellow-500" size={14} />,
+        bold: "15,000+",
+        sub: "Authentic Reviews",
+        d: "delay-500",
+      },
+
+      {
+        icon: <CheckCircle className="text-green-500" size={14} />,
+        bold: "1,200+",
+        sub: "Verified Experts",
+        d: "delay-600",
+      },
+
+      {
+        icon: <CheckCircle className="text-green-500" size={14} />,
+        bold: "320+",
+        sub: "Workshops Published",
+        d: "delay-700",
+      },
+    ].map((s) => (
+      
+      <div
+        key={s.bold}
+        className={`stat-badge anim-fade-up ${s.d} flex items-center gap-1.5 sm:gap-2`}
+      >
+        
+        {s.icon}
+
+        <div>
+          <p className="font-semibold text-gray-800 text-xs sm:text-sm">
+            {s.bold}
+          </p>
+
+          <p className="text-[10px] sm:text-xs text-gray-500">
+            {s.sub}
+          </p>
+        </div>
+
+      </div>
+    ))}
+  </div>
+</div>
 
           {/* RIGHT – Image Carousel */}
 <div className="hidden md:block order-1 md:order-2 anim-scale-in delay-300">  <div className="carousel-outer">

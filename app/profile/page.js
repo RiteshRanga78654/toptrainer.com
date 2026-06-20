@@ -293,7 +293,7 @@ export default function Profile() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-300/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
-            <div className="relative w-full px-6 pt-6 pb-10">
+            <div className="relative max-w-6xl mx-auto px-6 pt-6 pb-10">
               <div className="flex flex-col md:flex-row items-stretch md:items-start gap-6">
 
                 {/* Left block: Avatar + Social Icons */}

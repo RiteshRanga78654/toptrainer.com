@@ -71,6 +71,7 @@ export default function Footer() {
                 { name: "Courses", link: "#" },
                 { name: "Mentors", link: "#" },
                 { name: "SiteMap", link: "#" },
+                { name: "Blogs", link: "/blogs" },
                 { name: "Privacy Policy", link: "/privacy-policy" },
               ].map((item, i) => (
                 <li key={i}>
