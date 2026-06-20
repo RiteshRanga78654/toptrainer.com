@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 
 import {
   Building2,
@@ -31,6 +32,7 @@ const CATEGORIES_DATA = [
 
 const FEED_DATA = [
   {
+    slug: "how-to-choose-the-right-corporate-trainer",
     tag: "Corporate Training",
     title: "How to Choose the Right Corporate Trainer for Your Organization",
     image:
@@ -44,6 +46,7 @@ const FEED_DATA = [
     time: "6 min read",
   },
   {
+    slug: "7-ld-strategies-to-build-a-future-ready-workforce",
     tag: "L&D Strategies",
     title: "7 L&D Strategies to Build a Future-Ready Workforce",
     image:
@@ -57,6 +60,7 @@ const FEED_DATA = [
     time: "5 min read",
   },
   {
+    slug: "the-most-in-demand-soft-skills-in-2024",
     tag: "Soft Skills",
     title: "The Most In-Demand Soft Skills in 2024",
     image:
@@ -70,6 +74,7 @@ const FEED_DATA = [
     time: "4 min read",
   },
   {
+    slug: "how-technology-is-transforming-corporate-training",
     tag: "Technology in Training",
     title: "How Technology is Transforming Corporate Training",
     image:
@@ -212,50 +217,52 @@ const BlogCard = ({ data }) => {
     TAG_COLORS[data.tag] || "bg-gray-100 text-gray-600 border border-gray-200";
 
   return (
-    <article className="flex gap-3 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group">
-      {/* Thumbnail */}
-      <div className="flex-shrink-0 w-50 h-58 rounded-xl overflow-hidden">
-        <img
-          src={data.image}
-          alt={data.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-col justify-between flex-1 min-w-0 py-0.5">
-        <div>
-          {/* Tag */}
-          <span className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full mb-1.5 ${tagClass}`}>
-            {data.tag}
-          </span>
-
-          {/* Title */}
-          <h3 className="font-bold text-gray-900 text-lg leading-snug mb-1 group-hover:text-blue-700 transition-colors line-clamp-2">
-            {data.title}
-          </h3>
-
-          {/* Subtext */}
-          <p className="text-gray-500 text-[11px] leading-relaxed line-clamp-2">
-            {data.subtext}
-          </p>
-        </div>
-
-        {/* Author row */}
-        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+    <Link href={`/blogs/${data.slug}`} className="block group">
+      <article className="flex gap-3 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
+        {/* Thumbnail */}
+        <div className="flex-shrink-0 w-50 h-58 rounded-xl overflow-hidden">
           <img
-            src={data.authorImage}
-            alt={data.authorName}
-            className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+            src={data.image}
+            alt={data.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          <span className="text-[11px] font-medium text-gray-700">{data.authorName}</span>
-          <span className="text-gray-300 text-xs">•</span>
-          <span className="text-[11px] text-gray-400">{data.date}</span>
-          <span className="text-gray-300 text-xs">•</span>
-          <span className="text-[11px] text-gray-400">{data.time}</span>
         </div>
-      </div>
-    </article>
+
+        {/* Content */}
+        <div className="flex flex-col justify-between flex-1 min-w-0 py-0.5">
+          <div>
+            {/* Tag */}
+            <span className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full mb-1.5 ${tagClass}`}>
+              {data.tag}
+            </span>
+
+            {/* Title */}
+            <h3 className="font-bold text-gray-900 text-lg leading-snug mb-1 group-hover:text-blue-700 transition-colors line-clamp-2">
+              {data.title}
+            </h3>
+
+            {/* Subtext */}
+            <p className="text-gray-500 text-[11px] leading-relaxed line-clamp-2">
+              {data.subtext}
+            </p>
+          </div>
+
+          {/* Author row */}
+          <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+            <img
+              src={data.authorImage}
+              alt={data.authorName}
+              className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+            />
+            <span className="text-[11px] font-medium text-gray-700">{data.authorName}</span>
+            <span className="text-gray-300 text-xs">•</span>
+            <span className="text-[11px] text-gray-400">{data.date}</span>
+            <span className="text-gray-300 text-xs">•</span>
+            <span className="text-[11px] text-gray-400">{data.time}</span>
+          </div>
+        </div>
+      </article>
+    </Link>
   );
 };
 
