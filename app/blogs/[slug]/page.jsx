@@ -34,11 +34,20 @@ const FEED_DATA = [
     authorRole: "Learning & Development Specialist",
     authorBio:
       "Priya writes about corporate training, leadership development, and building high-performance teams.",
-    tags: ["Corporate Training", "L&D", "Trainer Selection", "Workplace Learning", "Skills Development"],
+    tags: [
+      "Corporate Training",
+      "L&D",
+      "Trainer Selection",
+      "Workplace Learning",
+      "Skills Development",
+    ],
     title: "How to Choose the Right Corporate Trainer for Your Organization",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=900&auto=format&fit=crop",
-    subtext: "Key factors to consider when selecting a trainer who can deliver real impact.",
-    authorImage: "https://ui-avatars.com/api/?name=Priya+Mehta&background=2563eb&color=fff",
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?w=900&auto=format&fit=crop",
+    subtext:
+      "Key factors to consider when selecting a trainer who can deliver real impact.",
+    authorImage:
+      "https://ui-avatars.com/api/?name=Priya+Mehta&background=2563eb&color=fff",
     authorName: "Priya Mehta",
     date: "May 20, 2024",
     time: "6 min read",
@@ -82,22 +91,53 @@ const FEED_DATA = [
       "Rahul focuses on aligning learning strategy with business outcomes for enterprise organisations.",
     tags: ["L&D", "Workforce", "Strategy", "Future of Work", "Corporate"],
     title: "7 L&D Strategies to Build a Future-Ready Workforce",
-    image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=900&auto=format&fit=crop",
-    subtext: "Practical strategies to align learning initiatives with business goals.",
-    authorImage: "https://ui-avatars.com/api/?name=Rahul+Desai&background=0e4b8c&color=fff",
+    image:
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=900&auto=format&fit=crop",
+    subtext:
+      "Practical strategies to align learning initiatives with business goals.",
+    authorImage:
+      "https://ui-avatars.com/api/?name=Rahul+Desai&background=0e4b8c&color=fff",
     authorName: "Rahul Desai",
     date: "May 18, 2024",
     time: "5 min read",
     intro:
       "The pace of change in business has never been faster. L&D leaders must evolve beyond traditional training calendars and embrace strategies that create continuously learning organisations.",
     sections: [
-      { icon: Target,      heading: "1. Align Learning with Business Strategy",  body: "Every L&D initiative should map directly to a business outcome. Partner with department heads quarterly to identify the skills gaps that most impact growth." },
-      { icon: Zap,         heading: "2. Embrace Microlearning",                  body: "Short, focused modules (5–10 minutes) fit into the flow of work. They are easier to update, easier to complete, and statistically more likely to be retained." },
-      { icon: Users,       heading: "3. Build a Coaching Culture",               body: "Pair formal training with peer-to-peer coaching. Employees learn more from each other than from any external program alone." },
-      { icon: UserCheck,   heading: "4. Invest in Manager Capability",           body: "Managers are the single biggest lever in workforce development. Equip them to hold developmental conversations and give feedback consistently." },
-      { icon: Brain,       heading: "5. Use Data to Personalise Learning",       body: "Learning platforms with AI can surface the right content at the right time. Use engagement data to iterate and retire content that isn't working." },
-      { icon: BarChart2,   heading: "6. Measure Learning Transfer, Not Completion", body: "Completion rates measure compliance. Behaviour change measures impact. Design assessments that capture application on the job." },
-      { icon: Shield,      heading: "7. Create Psychological Safety",            body: "People learn best when they feel safe to fail. Normalise experimentation and position mistakes as learning opportunities." },
+      {
+        icon: Target,
+        heading: "1. Align Learning with Business Strategy",
+        body: "Every L&D initiative should map directly to a business outcome. Partner with department heads quarterly to identify the skills gaps that most impact growth.",
+      },
+      {
+        icon: Zap,
+        heading: "2. Embrace Microlearning",
+        body: "Short, focused modules (5–10 minutes) fit into the flow of work. They are easier to update, easier to complete, and statistically more likely to be retained.",
+      },
+      {
+        icon: Users,
+        heading: "3. Build a Coaching Culture",
+        body: "Pair formal training with peer-to-peer coaching. Employees learn more from each other than from any external program alone.",
+      },
+      {
+        icon: UserCheck,
+        heading: "4. Invest in Manager Capability",
+        body: "Managers are the single biggest lever in workforce development. Equip them to hold developmental conversations and give feedback consistently.",
+      },
+      {
+        icon: Brain,
+        heading: "5. Use Data to Personalise Learning",
+        body: "Learning platforms with AI can surface the right content at the right time. Use engagement data to iterate and retire content that isn't working.",
+      },
+      {
+        icon: BarChart2,
+        heading: "6. Measure Learning Transfer, Not Completion",
+        body: "Completion rates measure compliance. Behaviour change measures impact. Design assessments that capture application on the job.",
+      },
+      {
+        icon: Shield,
+        heading: "7. Create Psychological Safety",
+        body: "People learn best when they feel safe to fail. Normalise experimentation and position mistakes as learning opportunities.",
+      },
     ],
     conclusion:
       "Future-proofing your workforce is not a one-time project. It requires embedding continuous learning into the culture, systems, and leadership behaviours of your organisation.",
@@ -110,20 +150,43 @@ const FEED_DATA = [
       "Anjali helps professionals unlock their potential through soft-skills coaching and career strategy.",
     tags: ["Soft Skills", "Career", "2024", "Communication", "Leadership"],
     title: "The Most In-Demand Soft Skills in 2024",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&auto=format&fit=crop",
-    subtext: "Skills that professionals need to thrive in the modern workplace.",
-    authorImage: "https://ui-avatars.com/api/?name=Anjali+Shah&background=2563eb&color=fff",
+    image:
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&auto=format&fit=crop",
+    subtext:
+      "Skills that professionals need to thrive in the modern workplace.",
+    authorImage:
+      "https://ui-avatars.com/api/?name=Anjali+Shah&background=2563eb&color=fff",
     authorName: "Anjali Shah",
     date: "May 15, 2024",
     time: "4 min read",
     intro:
       "As automation handles more routine tasks, human skills are becoming the primary differentiator between good and exceptional professionals.",
     sections: [
-      { icon: Brain,       heading: "1. Adaptive Thinking",                      body: "The ability to pivot quickly and reframe problems is essential in an era of constant disruption. Employers actively seek candidates who demonstrate flexibility." },
-      { icon: UserCheck,   heading: "2. Emotional Intelligence (EQ)",            body: "Self-awareness, empathy, and the ability to manage relationships under pressure are consistently ranked among the top hiring criteria across industries." },
-      { icon: MessageSquare, heading: "3. Communication Across Formats",         body: "From async Slack messages to executive presentations, clarity across formats has never mattered more." },
-      { icon: Lightbulb,   heading: "4. Critical Thinking",                      body: "With information overload the norm, the ability to evaluate sources, identify bias, and synthesise information into sound decisions is invaluable." },
-      { icon: Users,       heading: "5. Collaboration in Hybrid Environments",   body: "Professionals who can build rapport and maintain trust across geographies and time zones stand out in today's distributed workplaces." },
+      {
+        icon: Brain,
+        heading: "1. Adaptive Thinking",
+        body: "The ability to pivot quickly and reframe problems is essential in an era of constant disruption. Employers actively seek candidates who demonstrate flexibility.",
+      },
+      {
+        icon: UserCheck,
+        heading: "2. Emotional Intelligence (EQ)",
+        body: "Self-awareness, empathy, and the ability to manage relationships under pressure are consistently ranked among the top hiring criteria across industries.",
+      },
+      {
+        icon: MessageSquare,
+        heading: "3. Communication Across Formats",
+        body: "From async Slack messages to executive presentations, clarity across formats has never mattered more.",
+      },
+      {
+        icon: Lightbulb,
+        heading: "4. Critical Thinking",
+        body: "With information overload the norm, the ability to evaluate sources, identify bias, and synthesise information into sound decisions is invaluable.",
+      },
+      {
+        icon: Users,
+        heading: "5. Collaboration in Hybrid Environments",
+        body: "Professionals who can build rapport and maintain trust across geographies and time zones stand out in today's distributed workplaces.",
+      },
     ],
     conclusion:
       "Investing in soft skills is no longer optional. Organisations that prioritise human capability alongside technical training will be far better positioned to adapt and grow.",
@@ -134,22 +197,51 @@ const FEED_DATA = [
     authorRole: "EdTech Strategist",
     authorBio:
       "Karan explores how emerging technology is reshaping the future of learning and development.",
-    tags: ["Technology", "EdTech", "AI", "Corporate Training", "Future of Learning"],
+    tags: [
+      "Technology",
+      "EdTech",
+      "AI",
+      "Corporate Training",
+      "Future of Learning",
+    ],
     title: "How Technology is Transforming Corporate Training",
-    image: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=900&auto=format&fit=crop",
-    subtext: "Explore the latest tools and trends shaping the future of learning.",
-    authorImage: "https://ui-avatars.com/api/?name=Karan+Malhotra&background=0e4b8c&color=fff",
+    image:
+      "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=900&auto=format&fit=crop",
+    subtext:
+      "Explore the latest tools and trends shaping the future of learning.",
+    authorImage:
+      "https://ui-avatars.com/api/?name=Karan+Malhotra&background=0e4b8c&color=fff",
     authorName: "Karan Malhotra",
     date: "May 12, 2024",
     time: "6 min read",
     intro:
       "Technology is no longer a nice-to-have in corporate training — it is the backbone of scalable, personalised, and measurable workforce development.",
     sections: [
-      { icon: Brain,       heading: "1. AI-Powered Learning Paths",              body: "Modern LMS platforms use machine learning to recommend content based on role, past engagement, and skill gaps, reducing irrelevant content and accelerating competency." },
-      { icon: Cpu,         heading: "2. Immersive Learning with VR/AR",          body: "Companies like Walmart and UPS have deployed VR for safety and service training. Immersive environments improve retention by up to 75% vs traditional e-learning." },
-      { icon: Globe,       heading: "3. Social and Collaborative Platforms",     body: "Tools like Notion and Loom have transformed knowledge-sharing from top-down exercise into a peer-driven ecosystem." },
-      { icon: BarChart2,   heading: "4. Real-Time Analytics",                   body: "Modern L&D teams can now track not just completion but engagement, quiz scores, and post-training behaviours — enabling rapid iteration." },
-      { icon: TrendingUp,  heading: "5. Generative AI as a Training Partner",   body: "AI tutors that provide instant feedback and simulate role-play conversations are already being piloted by enterprises and will become standard within two years." },
+      {
+        icon: Brain,
+        heading: "1. AI-Powered Learning Paths",
+        body: "Modern LMS platforms use machine learning to recommend content based on role, past engagement, and skill gaps, reducing irrelevant content and accelerating competency.",
+      },
+      {
+        icon: Cpu,
+        heading: "2. Immersive Learning with VR/AR",
+        body: "Companies like Walmart and UPS have deployed VR for safety and service training. Immersive environments improve retention by up to 75% vs traditional e-learning.",
+      },
+      {
+        icon: Globe,
+        heading: "3. Social and Collaborative Platforms",
+        body: "Tools like Notion and Loom have transformed knowledge-sharing from top-down exercise into a peer-driven ecosystem.",
+      },
+      {
+        icon: BarChart2,
+        heading: "4. Real-Time Analytics",
+        body: "Modern L&D teams can now track not just completion but engagement, quiz scores, and post-training behaviours — enabling rapid iteration.",
+      },
+      {
+        icon: TrendingUp,
+        heading: "5. Generative AI as a Training Partner",
+        body: "AI tutors that provide instant feedback and simulate role-play conversations are already being piloted by enterprises and will become standard within two years.",
+      },
     ],
     conclusion:
       "The organisations that embrace technology not as a replacement for human trainers, but as a complement, will unlock learning experiences that are faster, smarter, and more impactful.",
@@ -161,10 +253,10 @@ const FEED_DATA = [
 // ─────────────────────────────────────────────
 
 const TAG_COLORS = {
-  "Corporate Training":    "bg-blue-50 text-blue-700",
-  "L&D Strategies":        "bg-indigo-50 text-indigo-700",
-  "Soft Skills":           "bg-emerald-50 text-emerald-700",
-  "Technology in Training":"bg-cyan-50 text-cyan-700",
+  "Corporate Training": "bg-blue-50 text-blue-700",
+  "L&D Strategies": "bg-indigo-50 text-indigo-700",
+  "Soft Skills": "bg-emerald-50 text-emerald-700",
+  "Technology in Training": "bg-cyan-50 text-cyan-700",
 };
 
 // ─────────────────────────────────────────────
@@ -191,53 +283,48 @@ export default async function BlogPostPage({ params }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
         {/* ── Breadcrumb ── */}
-        <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-8">
-          <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+        <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-6 overflow-hidden">
+          <Link href="/" className="hover:text-blue-600 transition-colors whitespace-nowrap">Home</Link>
           <span>›</span>
-          <Link href="/blogs" className="hover:text-blue-600 transition-colors">Blog</Link>
+          <Link href="/blogs" className="hover:text-blue-600 transition-colors whitespace-nowrap">Blog</Link>
           <span>›</span>
-          <span className="text-gray-500">{post.tag}</span>
-          <span>›</span>
-          <span className="text-gray-700 truncate max-w-xs">{post.title}</span>
+          <span className="text-gray-500 whitespace-nowrap">{post.tag}</span>
+          <span className="hidden sm:inline">›</span>
+          <span className="hidden sm:inline text-gray-700 truncate">{post.title}</span>
         </nav>
 
         {/* ── Two-column layout ── */}
-        <div className="flex gap-10 items-start">
-
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* ══════════ LEFT: Main Content ══════════ */}
           <main className="flex-1 min-w-0">
-
             {/* Tag */}
-            <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mb-4 ${tagClass}`}>
+            <span
+              className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mb-4 ${tagClass}`}
+            >
               {post.tag}
             </span>
 
             {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-3">
               {post.title}
             </h1>
 
             {/* Subtext */}
-            <p className="text-gray-500 text-base leading-relaxed mb-5">
+            <p className="text-gray-500 text-sm sm:text-base leading-relaxed mb-4">
               {post.subtext}
             </p>
 
             {/* Author + meta + share row */}
-            <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-5 mb-6 flex-wrap">
-              <div className="flex items-center gap-3">
-                <img
-                  src={post.authorImage}
-                  alt={post.authorName}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-gray-200 pb-4 mb-5">
+              <div className="flex items-center gap-3 flex-wrap">
+                <img src={post.authorImage} alt={post.authorName} className="w-9 h-9 rounded-full object-cover" />
                 <div>
-                  <p className="text-sm font-semibold text-gray-800 leading-tight">{post.authorName}</p>
-                  <p className="text-xs text-gray-400">{post.authorRole}</p>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-800 leading-tight">{post.authorName}</p>
+                  <p className="text-[10px] sm:text-xs text-gray-400">{post.authorRole}</p>
                 </div>
-                <div className="flex items-center gap-3 ml-4 text-xs text-gray-400">
+                <div className="flex items-center gap-2 text-[10px] sm:text-xs text-gray-400">
                   <span>{post.date}</span>
                   <span>•</span>
                   <span>{post.time}</span>
@@ -256,8 +343,34 @@ export default async function BlogPostPage({ params }) {
               </div>
             </div>
 
+            {/* Table of Contents — mobile only, shown right after author row */}
+            <div className="lg:hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-5">
+              <p className="font-bold text-gray-800 text-sm mb-2">Table of Contents</p>
+              <ol className="flex flex-col gap-0.5">
+                {post.sections.map((section, i) => {
+                  const label = section.heading.replace(/^\d+\.\s/, "");
+                  return (
+                    <li key={i}>
+                      <span className={`block text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                        i === 0
+                          ? "bg-blue-50 text-blue-700 font-semibold"
+                          : "text-gray-500 hover:text-blue-600 hover:bg-gray-50"
+                      }`}>
+                        {i + 1}. {label}
+                      </span>
+                    </li>
+                  );
+                })}
+                <li>
+                  <span className="block text-xs px-3 py-1.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-gray-50 cursor-pointer transition-colors">
+                    Conclusion
+                  </span>
+                </li>
+              </ol>
+            </div>
+
             {/* Hero Image */}
-            <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-8">
+            <div className="w-full h-48 sm:h-64 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden mb-6">
               <img
                 src={post.image}
                 alt={post.title}
@@ -282,8 +395,12 @@ export default async function BlogPostPage({ params }) {
                       <Icon size={18} className="text-blue-600" />
                     </div>
                     <div>
-                      <h2 className="text-sm font-bold text-gray-900 mb-1">{section.heading}</h2>
-                      <p className="text-gray-500 text-sm leading-relaxed">{section.body}</p>
+                      <h2 className="text-sm font-bold text-gray-900 mb-1">
+                        {section.heading}
+                      </h2>
+                      <p className="text-gray-500 text-sm leading-relaxed">
+                        {section.body}
+                      </p>
                     </div>
                   </div>
                 );
@@ -296,8 +413,12 @@ export default async function BlogPostPage({ params }) {
                 <Star size={16} className="text-blue-600" />
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-800 mb-1">Conclusion</p>
-                <p className="text-sm text-gray-600 leading-relaxed">{post.conclusion}</p>
+                <p className="text-sm font-bold text-gray-800 mb-1">
+                  Conclusion
+                </p>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {post.conclusion}
+                </p>
               </div>
             </div>
 
@@ -322,9 +443,13 @@ export default async function BlogPostPage({ params }) {
                 className="w-14 h-14 rounded-full object-cover flex-shrink-0"
               />
               <div>
-                <p className="font-bold text-gray-900 text-sm">{post.authorName}</p>
+                <p className="font-bold text-gray-900 text-sm">
+                  {post.authorName}
+                </p>
                 <p className="text-xs text-gray-400 mb-1">{post.authorRole}</p>
-                <p className="text-sm text-gray-500 leading-relaxed">{post.authorBio}</p>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {post.authorBio}
+                </p>
                 <button className="mt-2 w-7 h-7 flex items-center justify-center rounded-md bg-blue-600 hover:bg-blue-700 transition-colors">
                   <Linkedin size={14} className="text-white" />
                 </button>
@@ -332,12 +457,13 @@ export default async function BlogPostPage({ params }) {
             </div>
           </main>
 
-          {/* ══════════ RIGHT: Sidebar ══════════ */}
-          <aside className="w-72 flex-shrink-0 flex flex-col gap-5 sticky top-8">
-
-            {/* Table of Contents */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <p className="font-bold text-gray-800 text-sm mb-3">Table of Contents</p>
+          {/* Sidebar — full width below article on mobile, fixed width on desktop */}
+          <aside className="w-full lg:w-72 flex-shrink-0 flex flex-col gap-5 lg:sticky lg:top-8">
+            {/* Table of Contents — desktop sidebar only */}
+            <div className="hidden lg:block bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <p className="font-bold text-gray-800 text-sm mb-3">
+                Table of Contents
+              </p>
               <ol className="flex flex-col gap-1">
                 {post.sections.map((section, i) => {
                   const label = section.heading.replace(/^\d+\.\s/, "");
@@ -365,7 +491,9 @@ export default async function BlogPostPage({ params }) {
 
             {/* Share this article */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <p className="font-bold text-gray-800 text-sm mb-3">Share this article</p>
+              <p className="font-bold text-gray-800 text-sm mb-3">
+                Share this article
+              </p>
               <div className="flex items-center gap-2">
                 {[Facebook, Linkedin, Twitter, Link2].map((Icon, i) => (
                   <button
@@ -380,12 +508,19 @@ export default async function BlogPostPage({ params }) {
 
             {/* Related Articles */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <p className="font-bold text-gray-800 text-sm mb-4">Related Articles</p>
+              <p className="font-bold text-gray-800 text-sm mb-4">
+                Related Articles
+              </p>
               <div className="flex flex-col gap-4">
                 {related.map((r) => {
-                  const relTagClass = TAG_COLORS[r.tag] || "bg-gray-100 text-gray-600";
+                  const relTagClass =
+                    TAG_COLORS[r.tag] || "bg-gray-100 text-gray-600";
                   return (
-                    <Link key={r.slug} href={`/blogs/${r.slug}`} className="flex gap-3 group">
+                    <Link
+                      key={r.slug}
+                      href={`/blogs/${r.slug}`}
+                      className="flex gap-3 group"
+                    >
                       <div className="flex-shrink-0 w-16 h-14 rounded-xl overflow-hidden">
                         <img
                           src={r.image}
@@ -394,7 +529,9 @@ export default async function BlogPostPage({ params }) {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-1 ${relTagClass}`}>
+                        <span
+                          className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-1 ${relTagClass}`}
+                        >
                           {r.tag}
                         </span>
                         <p className="text-xs font-semibold text-gray-800 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
@@ -423,7 +560,9 @@ export default async function BlogPostPage({ params }) {
                   <MailOpen size={18} className="text-blue-600" />
                 </div>
               </div>
-              <p className="font-bold text-gray-800 text-sm mb-1">Stay ahead in L&D</p>
+              <p className="font-bold text-gray-800 text-sm mb-1">
+                Stay ahead in L&D
+              </p>
               <p className="text-xs text-gray-400 leading-relaxed mb-4">
                 Subscribe to get the latest insights delivered to your inbox.
               </p>
@@ -436,7 +575,6 @@ export default async function BlogPostPage({ params }) {
                 Subscribe
               </button>
             </div>
-
           </aside>
         </div>
       </div>
