@@ -85,7 +85,7 @@ const articles = [
     date: "Apr 03, 2026",
     views: "3,890",
     shares: "29",
-    image: "/articleImages/photo6.jfif",
+    image: "/Images/2026-02-14T05-30-01.539Z-001.png",
     initials: "SM",
     featured: false,
     read: "5 min",
@@ -409,8 +409,8 @@ function MobileCarousel({ articles }) {
 /* ━━━ MAIN COMPONENT ━━━ */
 export default function Articles() {
   const [activeFilter, setActiveFilter] = useState("All Topics");
-  const [visibleCount, setVisibleCount] = useState(4);
-  const INITIAL_COUNT = 4;
+  const [visibleCount, setVisibleCount] = useState(6);
+  const INITIAL_COUNT = 6;
 
   const filtered =
     activeFilter === "All Topics"

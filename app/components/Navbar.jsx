@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React from "react";
@@ -23,7 +21,6 @@ const Navbar = () => {
     <>
       {/* ━━ STICKY WRAPPER ━━ */}
       <div className="sticky top-0 left-0 right-0 z-[100] relative">
-
         {/* 🔥 CENTER BLUR ONLY */}
         <div className="absolute top-0 left-0 right-0 pointer-events-none">
           <div className="max-w-[1290px] mx-auto h-[50px] backdrop-blur-lg bg-white/30 rounded-2xl"></div>
@@ -31,44 +28,42 @@ const Navbar = () => {
 
         {/* CONTENT */}
         <div className="relative px-2 md:px-4 py-2">
-
           {/* ━━ INNER NAV ━━ */}
-          <div className="w-full md:max-w-[1290px] md:mx-auto flex items-center justify-between px-4 md:px-5 py-3
+          <div
+            className="w-full md:max-w-[1290px] md:mx-auto flex items-center justify-between px-4 md:px-5 py-3
           bg-white/80 backdrop-blur-xl border border-white/70 rounded-xl md:rounded-2xl
           shadow-[0_4px_24px_rgba(37,99,235,0.08)]
           hover:shadow-[0_8px_40px_rgba(37,99,235,0.13)]
-          transition-all duration-300">
+          transition-all duration-300"
+          >
+            {/* Logo */}
+            <h1 className="flex items-center gap-2 text-lg sm:text-xl font-bold leading-none -ml-2">
+              {/* Logo Image */}
+              <Image
+                src="/icon.png"
+                alt="TopTrainer Logo"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
 
-      {/* Logo */}
-<h1 className="flex items-center gap-2 text-lg sm:text-xl font-bold leading-none -ml-2">
-  
-  {/* Logo Image */}
-  <Image
-    src="/icon.png"
-    alt="TopTrainer Logo"
-    width={32}
-    height={32}
-    className="object-contain"
-  />
-
-  {/* Text */}
-<Link href="/">
-  <span className="cursor-pointer">
-    <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-      Top
-    </span>
-    <span className="text-orange-400">Trainer</span>
-  </span>
-</Link>
-
-</h1>
+              {/* Text */}
+              <Link href="/">
+                <span className="cursor-pointer">
+                  <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                    Top
+                  </span>
+                  <span className="text-orange-400">Trainer</span>
+                </span>
+              </Link>
+            </h1>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
               {navItems.map((item) => (
                 <Link key={item.name} href={item.link}>
                   <span
-                    className="relative text-[13.5px] font-medium text-slate-600 px-3 py-1.5 rounded-lg cursor-pointer
+                    className="block relative text-[13.5px] font-medium text-slate-600 px-3 py-1.5 rounded-lg cursor-pointer
                     hover:text-blue-700 hover:bg-blue-50 transition-all duration-200
                     after:content-[''] after:absolute after:left-3 after:right-3 after:bottom-1
                     after:h-[2px] after:bg-gradient-to-r after:from-blue-600 after:to-purple-500
@@ -82,30 +77,24 @@ const Navbar = () => {
 
             {/* Right Side */}
             <div className="hidden md:flex items-center gap-3">
-
               {/* User */}
-             <Link href="/join-as-trainer">
-  <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full pl-3 pr-3 py-2 cursor-pointer hover:bg-blue-100 transition">
-    
-
-    <div>
-      <p className="text-[13.5px] font-semibold text-slate-800">
-        Join as Trainer
-      </p>
-    </div>
-
-  </div>
-</Link>
+              <Link href="/join-as-trainer">
+                <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full pl-3 pr-3 py-2 cursor-pointer hover:bg-blue-100 transition">
+                  <div>
+                    <p className="text-[13.5px] font-semibold text-slate-800">
+                      Join as Trainer
+                    </p>
+                  </div>
+                </div>
+              </Link>
 
               {/* Login */}
-             <Link
-  href="/login"
-  className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition inline-block text-center"
->
-  Login
-</Link>
-
-             
+              <Link
+                href="/login"
+                className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition inline-block text-center"
+              >
+                Login
+              </Link>
             </div>
 
             {/* Mobile Button */}
@@ -124,7 +113,6 @@ const Navbar = () => {
       {/* ━━ MOBILE MENU ━━ */}
       {open && (
         <div className="fixed inset-0 z-[200] bg-white/90 backdrop-blur-lg px-5 py-8 overflow-y-auto">
-
           {/* Top */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-lg font-bold">
@@ -153,13 +141,15 @@ const Navbar = () => {
               </Link>
             ))}
           </nav>
-          
-<Link href="/join-as-trainer" onClick={() => setOpen(false)}>
-  <div className="w-full mb-4 py-2.5 text-center font-semibold rounded-lg 
-  bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition">
-    Join as Trainer
-  </div>
-</Link>
+
+          <Link href="/join-as-trainer" onClick={() => setOpen(false)}>
+            <div
+              className="w-full mb-4 py-2.5 text-center font-semibold rounded-lg 
+  bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition"
+            >
+              Join as Trainer
+            </div>
+          </Link>
           {/* Buttons */}
           <div className="flex gap-3">
             <Link

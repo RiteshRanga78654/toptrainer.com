@@ -7,23 +7,22 @@ import Footer from "./footer";
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
- const hideLayout =
-  pathname.startsWith("/profile") ||
-  pathname.startsWith("/login") ||
-  pathname.startsWith("/about") ||
-  pathname.startsWith("/admin") ||
-  pathname.startsWith("/auth") ||
-  pathname.startsWith("/trainer");
+  const hideNavbar =
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/trainer");
 
   return (
     <>
-      {!hideLayout && <Navbar />}
+      {!hideNavbar && <Navbar />}
 
       <main className="flex-1">
         {children}
       </main>
 
-      {!hideLayout && <Footer />}
+      {!hideNavbar && <Footer />}
     </>
   );
 }
