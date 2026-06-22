@@ -1,3 +1,4 @@
+// code of main "/" page.js
 //  "use client";
 
 // import { Star, CheckCircle } from "lucide-react";
@@ -588,7 +589,7 @@ const sortedCategories = [...categories].sort((a, b) =>
     <div className="font-sans bg-white min-h-screen">
       <GlobalStyles />
 
-      <section className="hero-bg w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 md:py-14">
+      <section className="hero-bg w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-[100px] pb-8 sm:pt-[110px] sm:pb-10 md:pt-[120px] md:pb-14 -mt-[80px]">
         {[1,2,3,4,5,6,7,8].map(i=><div key={i} className={`particle particle-${i}`}/>)}
         <div className="blob-blue"   style={{width:350,height:350,top:'-10%',right:'-5%',opacity:.6}}/>
         <div className="blob-purple" style={{width:280,height:280,bottom:'-5%',left:'-8%',opacity:.5}}/>
