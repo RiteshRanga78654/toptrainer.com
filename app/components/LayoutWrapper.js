@@ -10,7 +10,10 @@ export default function LayoutWrapper({ children }) {
  const hideLayout =
   pathname.startsWith("/profile") ||
   pathname.startsWith("/login") ||
-  pathname.startsWith("/about");
+  pathname.startsWith("/about") ||
+  pathname.startsWith("/admin") ||
+  pathname.startsWith("/auth") ||
+  pathname.startsWith("/trainer");
 
   return (
     <>
