@@ -619,10 +619,10 @@ export default function WorkshopFormModal({ workshop, onSave, onClose }) {
               <input className="finp" placeholder="leadership, communication, soft-skills"
                 value={form.tags} onChange={e => set("tags", e.target.value)} />
             </Field>
-            <Field label="Your Certifications" hint="Comma-separated — shown on the workshop detail page.">
+            {/* <Field label="Your Certifications" hint="Comma-separated — shown on the workshop detail page.">
               <input className="finp" placeholder="ICF Certified Coach, PMP, SHRM-SCP"
                 value={form.certifications} onChange={e => set("certifications", e.target.value)} />
-            </Field>
+            </Field> */}
 
             {/* ── How It's Conducted ── */}
             <div className="msec">How It's Conducted</div>

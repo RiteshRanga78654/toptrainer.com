@@ -508,7 +508,7 @@ export default function ArticleFormModal({ article, onSave, onClose }) {
             </Field>
 
             {/* ── Author ── */}
-            <div className="msec">Author</div>
+            {/* <div className="msec">Author</div>
             <div className="fcols">
               <Field label="Author Name" required>
                 <input
@@ -542,7 +542,7 @@ export default function ArticleFormModal({ article, onSave, onClose }) {
                   value={form.initials} onChange={e => set("initials", e.target.value.toUpperCase())}
                 />
               </Field>
-            </div>
+            </div> */}
 
             {/* ── Tags ── */}
             <div className="msec">Tags &amp; Visibility</div>
@@ -564,7 +564,7 @@ export default function ArticleFormModal({ article, onSave, onClose }) {
               </div>
             </Field>
 
-            <div className="chk-row">
+            {/* <div className="chk-row">
               <label className="chk-label">
                 <input
                   type="checkbox" checked={form.trending}
@@ -572,7 +572,7 @@ export default function ArticleFormModal({ article, onSave, onClose }) {
                 />
                 Mark as Trending 🔥
               </label>
-            </div>
+            </div> */}
 
             {/* ── Content ── */}
             <div className="msec">Article Content</div>
