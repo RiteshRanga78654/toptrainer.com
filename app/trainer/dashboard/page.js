@@ -261,11 +261,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill,minmax(185px,1fr))',
-        gap: 8, marginBottom: 28,
-      }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2 mb-7">
         <StatCard label="Profile Views"      value={totalViews.toLocaleString()} icon={Eye}        color="#0891b2" bg="#ecfeff" delay={180} href="/trainer/analytics" />
         <StatCard label="Published Articles" value={publishedArticles}           icon={TrendingUp} color="#16a34a" bg="#f0fdf4" delay={120} href="/trainer/articles" />
         <StatCard label="Total Workshops"    value={workshops.length}            icon={BookOpen}   color="#2563eb" bg="#eff6ff" delay={0}   href="/trainer/workshops" />
