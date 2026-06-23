@@ -82,10 +82,10 @@ const GLOBAL_CSS = `
 // ─── Nav items ────────────────────────────────────────────────────────────────
 const NAV = [
   { href: '/trainer/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/trainer/profile',   label: 'Profile',   icon: User            },
   { href: '/trainer/articles',  label: 'Articles',  icon: FileText        },
   { href: '/trainer/workshops', label: 'Workshops', icon: BookOpen        },
   { href: '/trainer/analytics', label: 'Analytics', icon: BarChart2       },
-  { href: '/trainer/profile',   label: 'Profile',   icon: User            },
 ]
 
 // ─── Auth Guard ───────────────────────────────────────────────────────────────

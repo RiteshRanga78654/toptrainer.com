@@ -264,12 +264,12 @@ export default function DashboardPage() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill,minmax(185px,1fr))',
-        gap: 14, marginBottom: 28,
+        gap: 8, marginBottom: 28,
       }}>
+        <StatCard label="Profile Views"      value={totalViews.toLocaleString()} icon={Eye}        color="#0891b2" bg="#ecfeff" delay={180} href="/trainer/analytics" />
+        <StatCard label="Published Articles" value={publishedArticles}           icon={TrendingUp} color="#16a34a" bg="#f0fdf4" delay={120} href="/trainer/articles" />
         <StatCard label="Total Workshops"    value={workshops.length}            icon={BookOpen}   color="#2563eb" bg="#eff6ff" delay={0}   href="/trainer/workshops" />
         <StatCard label="Total Articles"     value={articles.length}             icon={FileText}   color="#7c3aed" bg="#f5f3ff" delay={60}  href="/trainer/articles" />
-        <StatCard label="Published Articles" value={publishedArticles}           icon={TrendingUp} color="#16a34a" bg="#f0fdf4" delay={120} href="/trainer/articles" />
-        <StatCard label="Total Views"        value={totalViews.toLocaleString()} icon={Eye}        color="#0891b2" bg="#ecfeff" delay={180} href="/trainer/analytics" />
         <StatCard label="Upcoming Sessions"  value={upcomingWorkshops}           icon={Star}       color="#d97706" bg="#fffbeb" delay={240} href="/trainer/workshops" />
         <StatCard label="Fill Rate"          value={fillRate}                    icon={Users}      color="#dc2626" bg="#fff1f2" delay={300} suffix="%" href="/trainer/analytics" />
       </div>
