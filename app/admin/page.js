@@ -9,10 +9,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <StatCard label="Trainers" value={dashboardStats.totalTrainers} change="+3 this month" icon={<GraduationCap size={18} className="text-blue-600" />} color="bg-blue-50" />
-        <StatCard label="Learners" value={dashboardStats.totalLearners.toLocaleString()} change="+124 this month" icon={<Users size={18} className="text-violet-600" />} color="bg-violet-50" />
-        <StatCard label="Workshops" value={dashboardStats.totalWorkshops} icon={<BookOpen size={18} className="text-emerald-600" />} color="bg-emerald-50" />
-        <StatCard label="Articles" value={dashboardStats.totalArticles} icon={<Newspaper size={18} className="text-amber-600" />} color="bg-amber-50" />
+        <StatCard label="Total Users" value={dashboardStats.totalLearners.toLocaleString()} change="+124 this month" icon={<Users size={18} className="text-violet-600" />} color="bg-violet-50" />
+        <StatCard label="Total Trainers" value={dashboardStats.totalTrainers} change="+3 this month" icon={<GraduationCap size={18} className="text-blue-600" />} color="bg-blue-50" />
+        <StatCard label="Total Articles" value={dashboardStats.totalArticles} icon={<Newspaper size={18} className="text-amber-600" />} color="bg-amber-50" />
+        <StatCard label="Total Workshops" value={dashboardStats.totalWorkshops} icon={<BookOpen size={18} className="text-emerald-600" />} color="bg-emerald-50" />
         <StatCard label="Revenue" value={`$${(dashboardStats.monthlyRevenue / 1000).toFixed(1)}k`} change="+12.3%" icon={<DollarSign size={18} className="text-pink-600" />} color="bg-pink-50" />
         <StatCard label="Enrollments" value={dashboardStats.activeEnrollments} icon={<TrendingUp size={18} className="text-cyan-600" />} color="bg-cyan-50" />
       </div>

@@ -41,6 +41,7 @@ import {
   GroupIcon,
   PersonStanding,
   AreaChart,
+  Lock,
 } from "lucide-react";
 import { createPortal } from "react-dom";
 import { GroupAnimation } from "framer-motion";
@@ -1560,6 +1561,33 @@ export default function JoinTrainee() {
               </div>
             </div>
           </div>
+
+          {/* 0 · Account Setup */}
+          <Sec
+            icon={<Lock size={16} />}
+            title="Account Setup"
+            sub="Create your login credentials"
+          >
+            <div className="field-grid col-3">
+              <Field
+                label="Account Email"
+                icon={<Mail size={13} />}
+                placeholder="you@example.com"
+              />
+              <Field
+                label="Password"
+                icon={<Lock size={13} />}
+                placeholder="Create a strong password"
+                type="password"
+              />
+              <Field
+                label="Confirm Password"
+                icon={<Lock size={13} />}
+                placeholder="Confirm your password"
+                type="password"
+              />
+            </div>
+          </Sec>
 
           {/* 1 · Contact */}
           <Sec
