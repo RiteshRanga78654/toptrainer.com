@@ -1,13 +1,24 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { Mail, Lock, Eye, EyeOff, User, Phone, Rocket, ShieldCheck, Calendar, Chrome, Facebook } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  User,
+  Phone,
+  Rocket,
+  ShieldCheck,
+  Calendar,
+  Chrome,
+  Facebook,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { login, clearError } from '../../store/slices/authSlice';
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { login, clearError } from "../../store/slices/authSlice";
 
 export default function UserTrainerLoginPage() {
   const router = useRouter();
@@ -25,7 +36,13 @@ export default function UserTrainerLoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.replace(user.role === 'admin' ? '/admin' : user.role === "trainer" ? '/trainer/dashboard':"/user/dashboard");
+      router.replace(
+        user.role === "admin"
+          ? "/admin"
+          : user.role === "trainer"
+            ? "/trainer/dashboard"
+            : "/user/dashboard",
+      );
     }
   }, [user, router]);
 
@@ -38,7 +55,7 @@ export default function UserTrainerLoginPage() {
     try {
       await dispatch(login({ ...form, role })).unwrap();
     } catch (err) {
-      console.error('Login failed:', err);
+      console.error("Login failed:", err);
     }
   };
 
@@ -123,15 +140,32 @@ export default function UserTrainerLoginPage() {
 
       {/* LEFT COLUMN: Hero Section (Light Blue/Purple Theme) */}
       <div className="hidden lg:flex flex-col w-[40%] xl:w-[45%] relative px-10 py-10 xl:px-14 xl:py-12 bg-gradient-to-br from-blue-50 to-purple-50">
-        
         {/* Decorative Grid Overlay (optional) */}
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.2, backgroundImage: 'linear-gradient(rgba(37,99,235,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.15) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.2,
+            backgroundImage:
+              "linear-gradient(rgba(37,99,235,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.15) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            pointerEvents: "none",
+          }}
+        />
 
         {/* Logo */}
         <div className="left-anim-1 flex items-center gap-3 mb-16 relative z-10">
-          <Image src="/icon.png" alt="TopTrainer Logo" width={40} height={40} className="object-contain" />
+          <Image
+            src="/icon.png"
+            alt="TopTrainer Logo"
+            width={40}
+            height={40}
+            className="object-contain"
+          />
           <span className="font-display font-bold text-xl tracking-tight leading-none">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Top</span>
+            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              Top
+            </span>
             <span className="text-orange-400">Trainer</span>
           </span>
         </div>
@@ -139,7 +173,9 @@ export default function UserTrainerLoginPage() {
         {/* Hero Content */}
         <div className="flex-1 flex flex-col justify-center max-w-md relative z-10">
           <div className="left-anim-2 inline-flex items-center self-start px-4 py-1.5 rounded-full border border-blue-200 bg-white/60 backdrop-blur-sm shadow-sm mb-6">
-            <span className="text-blue-600 text-sm font-medium">Join thousands of learners</span>
+            <span className="text-blue-600 text-sm font-medium">
+              Join thousands of learners
+            </span>
           </div>
 
           <h1 className="left-anim-3 font-display text-4xl xl:text-5xl font-bold text-gray-800 leading-[1.15] tracking-tight mb-5">
@@ -149,23 +185,43 @@ export default function UserTrainerLoginPage() {
           </h1>
 
           <p className="left-anim-4 text-gray-500 text-base leading-relaxed mb-12 max-w-sm">
-            Create your free account and get matched with expert trainers tailored to your goals and schedule.
+            Create your free account and get matched with expert trainers
+            tailored to your goals and schedule.
           </p>
 
           {/* Features */}
           <div className="space-y-6">
             {[
-              { icon: <Rocket size={18} className="text-blue-600" />, title: "Get Started in Minutes", desc: "Quick setup — pick your interests and start exploring right away.", delay: "left-anim-4" },
-              { icon: <ShieldCheck size={18} className="text-blue-600" />, title: "Verified Trainers Only", desc: "Every trainer is background-checked and skill-verified.", delay: "left-anim-5" },
-              { icon: <Calendar size={18} className="text-blue-600" />, title: "Flexible Scheduling", desc: "Book sessions that fit your lifestyle — anytime, anywhere.", delay: "left-anim-5" },
+              {
+                icon: <Rocket size={18} className="text-blue-600" />,
+                title: "Get Started in Minutes",
+                desc: "Quick setup — pick your interests and start exploring right away.",
+                delay: "left-anim-4",
+              },
+              {
+                icon: <ShieldCheck size={18} className="text-blue-600" />,
+                title: "Verified Trainers Only",
+                desc: "Every trainer is background-checked and skill-verified.",
+                delay: "left-anim-5",
+              },
+              {
+                icon: <Calendar size={18} className="text-blue-600" />,
+                title: "Flexible Scheduling",
+                desc: "Book sessions that fit your lifestyle — anytime, anywhere.",
+                delay: "left-anim-5",
+              },
             ].map((f, i) => (
               <div key={i} className={`${f.delay} flex items-start gap-4`}>
                 <div className="w-10 h-10 rounded-full bg-white shadow-sm border border-blue-100 flex items-center justify-center flex-shrink-0">
                   {f.icon}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-1">{f.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
+                  <h3 className="text-sm font-bold text-gray-800 mb-1">
+                    {f.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">
+                    {f.desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -174,50 +230,51 @@ export default function UserTrainerLoginPage() {
 
         {/* Left Footer */}
         <div className="left-anim-5 mt-auto pt-8 relative z-10">
-          <p className="text-xs text-gray-400 font-medium">© 2024 TopTrainer. All rights reserved.</p>
+          <p className="text-xs text-gray-400 font-medium">
+            © 2024 TopTrainer. All rights reserved.
+          </p>
         </div>
       </div>
 
       {/* RIGHT COLUMN: Registration Form */}
       <div className="flex-1 flex flex-col bg-white relative px-6 py-8 sm:px-12 lg:px-16 xl:px-24">
-        
-        {/* Top Right Actions */}
-        <div className="w-full flex justify-end mb-8 anim-1">
-          <p className="text-sm text-gray-500 font-medium">
-            New here?{" "}
-            <Link href="/auth/register" className="text-blue-600 font-bold hover:text-blue-700 transition-colors">
-              Join Us
-            </Link>
-          </p>
-        </div>
-
         {/* Mobile Logo (visible only on small screens) */}
         <div className="lg:hidden flex items-center gap-2 mb-10 anim-1">
-          <Image src="/icon.png" alt="TopTrainer Logo" width={36} height={36} className="object-contain" />
+          <Image
+            src="/icon.png"
+            alt="TopTrainer Logo"
+            width={36}
+            height={36}
+            className="object-contain"
+          />
           <span className="font-display font-bold text-xl tracking-tight leading-none">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Top</span>
+            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              Top
+            </span>
             <span className="text-orange-400">Trainer</span>
           </span>
         </div>
 
         {/* Form Container */}
         <div className="flex-1 flex flex-col justify-center max-w-[520px] w-full mx-auto">
-          
           <div className="anim-2 w-full p-8 sm:p-10 rounded-2xl border border-gray-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h2 className="font-display text-3xl font-bold text-gray-900 mb-2 ">Welcome Back!</h2>
-            <p className="text-gray-500 text-sm mb-8">Login into your trainer or user account</p>
+            <h2 className="font-display text-3xl font-bold text-gray-900 mb-2 ">
+              Welcome Back!
+            </h2>
+            <p className="text-gray-500 text-sm mb-8">
+              Login into your trainer or user account
+            </p>
 
             <form onSubmit={handleLogin} className="space-y-5">
-              
               <div className="flex w-full gap-3 anim-3">
-                <button 
+                <button
                   type="button"
                   onClick={() => setRole("trainer")}
                   className={`p-3 border w-full rounded-lg font-semibold text-sm transition-all ${role === "trainer" ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm" : "border-gray-200 bg-white text-gray-500 hover:border-blue-400 hover:bg-gray-50"}`}
                 >
                   Trainer
                 </button>
-                <button 
+                <button
                   type="button"
                   onClick={() => setRole("user")}
                   className={`p-3 border w-full rounded-lg font-semibold text-sm transition-all ${role === "user" ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm" : "border-gray-200 bg-white text-gray-500 hover:border-blue-400 hover:bg-gray-50"}`}
@@ -231,20 +288,26 @@ export default function UserTrainerLoginPage() {
                   {error}
                 </div>
               )}
-                  
 
               {/* Email */}
               <div className="anim-4">
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">Email address</label>
-                <div className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === 'email' ? 'border-blue-500' : 'border-gray-200'} bg-white`}>
-                  <Mail size={16} color={focusedField === 'email' ? '#2563eb' : '#9ca3af'} />
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  Email address
+                </label>
+                <div
+                  className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === "email" ? "border-blue-500" : "border-gray-200"} bg-white`}
+                >
+                  <Mail
+                    size={16}
+                    color={focusedField === "email" ? "#2563eb" : "#9ca3af"}
+                  />
                   <input
                     type="email"
                     name="email"
                     placeholder="Enter your email"
                     value={form.email}
                     onChange={handleChange}
-                    onFocus={() => setFocusedField('email')}
+                    onFocus={() => setFocusedField("email")}
                     onBlur={() => setFocusedField(null)}
                     className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
                     required
@@ -252,36 +315,46 @@ export default function UserTrainerLoginPage() {
                 </div>
               </div>
 
-             
-
               {/* Password */}
               <div className="anim-5">
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">Password</label>
-                <div className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === 'password' ? 'border-blue-500' : 'border-gray-200'} bg-white`}>
-                  <Lock size={16} color={focusedField === 'password' ? '#2563eb' : '#9ca3af'} />
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  Password
+                </label>
+                <div
+                  className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === "password" ? "border-blue-500" : "border-gray-200"} bg-white`}
+                >
+                  <Lock
+                    size={16}
+                    color={focusedField === "password" ? "#2563eb" : "#9ca3af"}
+                  />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Enter your password"
                     value={form.password}
                     onChange={handleChange}
-                    onFocus={() => setFocusedField('password')}
+                    onFocus={() => setFocusedField("password")}
                     onBlur={() => setFocusedField(null)}
                     className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
                     required
                   />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-gray-400 hover:text-blue-600 transition-colors focus:outline-none">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-gray-400 hover:text-blue-600 transition-colors focus:outline-none"
+                  >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
 
-              
-
               {/* Submit Button */}
               <div className="anim-6 pt-2">
-                <button type="submit" disabled={loading}
-                  className="login-btn w-full py-3.5 rounded-lg text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-80">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="login-btn w-full py-3.5 rounded-lg text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-80"
+                >
                   {loading ? (
                     <div className="flex gap-1.5 items-center">
                       <div className="loading-dot w-1.5 h-1.5 rounded-full bg-white" />
@@ -294,28 +367,73 @@ export default function UserTrainerLoginPage() {
                 </button>
               </div>
 
+              {role === "user" ? (
+                <div className="w-full flex justify-center mb-8 anim-1">
+                  <p className="text-sm text-gray-500 font-medium">
+                    New here?{" "}
+                    <Link
+                      href="/auth/register"
+                      className="text-blue-600 font-bold hover:text-blue-700 transition-colors"
+                    >
+                      Join Us
+                    </Link>
+                  </p>
+                </div>
+              ) : (
+                <div className="w-full flex justify-center mb-8 anim-1">
+                  <p className="text-sm text-gray-500 font-medium">
+                    Want to be a Trainer?{" "}
+                    <Link
+                      href="/join-as-trainer"
+                      className="text-blue-600 font-bold hover:text-blue-700 transition-colors"
+                    >
+                      Join as a Trainer
+                    </Link>
+                  </p>
+                </div>
+              )}
+
               {/* Divider */}
               <div className="anim-6 flex items-center gap-3 my-5">
                 <div className="flex-1 h-px bg-gray-100" />
-                <span className="text-xs text-gray-400 font-medium">or login up with</span>
+                <span className="text-xs text-gray-400 font-medium">
+                  or login up with
+                </span>
                 <div className="flex-1 h-px bg-gray-100" />
               </div>
 
               {/* Socials */}
               <div className="anim-7 flex flex-col gap-3">
-                <button type="button" className="social-btn w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:border-gray-300 bg-white">
+                <button
+                  type="button"
+                  className="social-btn w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:border-gray-300 bg-white"
+                >
                   <Chrome size={18} className="text-[#EA4335]" />
                   Login with Google
                 </button>
-                <button type="button" className="social-btn w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:border-gray-300 bg-white">
-                  <Facebook size={18} className="text-[#1877F2]" fill="#1877F2" />
+                <button
+                  type="button"
+                  className="social-btn w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:border-gray-300 bg-white"
+                >
+                  <Facebook
+                    size={18}
+                    className="text-[#1877F2]"
+                    fill="#1877F2"
+                  />
                   Login with Facebook
                 </button>
               </div>
 
               <div className="anim-7 mt-6 text-center">
                 <p className="text-xs text-gray-400">
-                  By signing up, you agree to our <a href="#" className="text-blue-600 hover:underline">Terms of Use</a> and <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
+                  By signing up, you agree to our{" "}
+                  <a href="#" className="text-blue-600 hover:underline">
+                    Terms of Use
+                  </a>{" "}
+                  and{" "}
+                  <a href="#" className="text-blue-600 hover:underline">
+                    Privacy Policy
+                  </a>
                 </p>
               </div>
             </form>
@@ -323,9 +441,24 @@ export default function UserTrainerLoginPage() {
 
           {/* Right Footer */}
           <div className="anim-7 hidden lg:flex items-center justify-end gap-6 mt-8">
-            <a href="#" className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors">Terms of Use</a>
-            <a href="#" className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors">Contact Us</a>
+            <a
+              href="#"
+              className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="#"
+              className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors"
+            >
+              Terms of Use
+            </a>
+            <a
+              href="#"
+              className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors"
+            >
+              Contact Us
+            </a>
           </div>
         </div>
       </div>

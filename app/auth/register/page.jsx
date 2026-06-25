@@ -456,7 +456,7 @@ export default function UserRegistrationPage() {
 
               <div className="w-full flex justify-center mb-8 anim-1">
                 <p className="text-sm text-gray-500 font-medium">
-                    want to become a trainer?{" "}
+                    Want to be a Trainer?{" "}
                   <Link
                     href="/join-as-trainer"
                     className="text-blue-600 font-bold hover:text-blue-700 transition-colors"
