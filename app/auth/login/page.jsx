@@ -1,8 +1,12 @@
 
-export default function UserTrainerLogin(){
+export default function UserTrainerLoginPage(){
+
+
+
+    
     return(
         <div>
-            hi
+            UserTrainerLoginPage
         </div>
     )
 }
