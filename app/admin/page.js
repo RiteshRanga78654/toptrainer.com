@@ -13,7 +13,7 @@ export default function DashboardPage() {
         <StatCard label="Total Trainers" value={dashboardStats.totalTrainers} change="+3 this month" icon={<GraduationCap size={18} className="text-blue-600" />} color="bg-blue-50" />
         <StatCard label="Total Articles" value={dashboardStats.totalArticles} icon={<Newspaper size={18} className="text-amber-600" />} color="bg-amber-50" />
         <StatCard label="Total Workshops" value={dashboardStats.totalWorkshops} icon={<BookOpen size={18} className="text-emerald-600" />} color="bg-emerald-50" />
-        <StatCard label="Total Videos" value={`$${(dashboardStats.monthlyRevenue / 1000).toFixed(1)}k`} change="+12.3%" icon={<DollarSign size={18} className="text-pink-600" />} color="bg-pink-50" />
+        <StatCard label="Total Videos" value={`${(dashboardStats.monthlyRevenue / 1000).toFixed(1)}k`} change="+12.3%" icon={<DollarSign size={18} className="text-pink-600" />} color="bg-pink-50" />
         <StatCard label="Total Page Views Last 1 month" value={dashboardStats.activeEnrollments} icon={<TrendingUp size={18} className="text-cyan-600" />} color="bg-cyan-50" />
       </div>
 

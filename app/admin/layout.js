@@ -3,9 +3,15 @@ import Sidebar from "../components/shared/Sidebar"
 import TopBar from "../components/admin/TopBar"
 import AuthGuard from "../components/shared/AuthGuard"
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 
 export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const pathname = usePathname()
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
 
   return (
     <AuthGuard requiredRole="admin">

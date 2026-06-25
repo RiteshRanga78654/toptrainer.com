@@ -90,7 +90,7 @@ const Navbar = () => {
 
               {/* Login */}
               <Link
-                href="/login"
+                href="/auth/login"
                 className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition inline-block text-center"
               >
                 Login

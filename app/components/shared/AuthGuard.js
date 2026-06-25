@@ -1,6 +1,6 @@
 'use client'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMe } from '../../store/slices/authSlice'
 import { Zap } from 'lucide-react'
@@ -12,13 +12,16 @@ function getToken() {
 
 export default function AuthGuard({ children, requiredRole }) {
   const router = useRouter()
+  const pathname = usePathname()
   const dispatch = useDispatch()
   const { user, initialized, loading } = useSelector((state) => state.auth)
+
+  const loginRoute = pathname?.startsWith('/admin') ? '/admin/login' : '/auth/login'
 
   useEffect(() => {
     const token = getToken()
     if (!token) {
-      router.replace('/auth/login')
+      router.replace(loginRoute)
       return
     }
     if (!initialized) {
@@ -29,7 +32,7 @@ export default function AuthGuard({ children, requiredRole }) {
   useEffect(() => {
     if (!initialized) return
     if (!user) {
-      router.replace('/auth/login')
+      router.replace(loginRoute)
       return
     }
     if (requiredRole && user.role !== requiredRole) {

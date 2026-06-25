@@ -1,13 +1,12 @@
 
 
-
-
 export default function UserDashboard(){
 
 
-    return (
+
+    return(
         <div>
-            hi
+            user dashboard
         </div>
     )
 }
