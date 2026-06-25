@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import {
   UserPlus,
   Sparkles,
@@ -42,9 +42,12 @@ import {
   PersonStanding,
   AreaChart,
   Lock,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { createPortal } from "react-dom";
 import { GroupAnimation } from "framer-motion";
+import { set } from "react-hook-form";
 
 const LOCATION_DATA = {
   India: {
@@ -1125,6 +1128,10 @@ export default function JoinTrainee() {
   const [experiences, setExperiences] = useState([1]);
   const [certificates, setCertificates] = useState([1]);
   const [entityType, setEntityType] = useState("");
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPass, setConfirmPass] = useState("")
+
 
   // company type states
   const [cities, setCities] = "";
@@ -1573,18 +1580,25 @@ export default function JoinTrainee() {
                 label="Account Email"
                 icon={<Mail size={13} />}
                 placeholder="you@example.com"
+                value={email}
+                onChange={e=>setEmail(e.target.value)}
+
               />
               <Field
                 label="Password"
                 icon={<Lock size={13} />}
                 placeholder="Create a strong password"
                 type="password"
+                value={password}
+                onChange={e=>setPassword(e.target.value)}
               />
               <Field
                 label="Confirm Password"
                 icon={<Lock size={13} />}
                 placeholder="Confirm your password"
                 type="password"
+                value={confirmPass}
+                onChange={e=>setConfirmPass(e.target.value)}
               />
             </div>
           </Sec>
@@ -2234,16 +2248,28 @@ function Sec({ icon, title, sub, children }) {
   );
 }
 
-function Field({ label, icon, placeholder }) {
+function Field({ label, icon, placeholder, type = "text", ...props }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const inputType = type === "password" ? (showPassword ? "text" : "password") : type;
+
   return (
     <div className="tt-field">
       <label className="tt-label">
         {icon && <span className="tt-label-icon">{icon}</span>}
         {label}
       </label>
-      <div className="tt-input-wrap">
+      <div className="tt-input-wrap relative">
         {icon && <div className="tt-input-icon">{icon}</div>}
-        <input type="text" placeholder={placeholder} className="tt-input" />
+        <input type={inputType} placeholder={placeholder} className="tt-input" {...props} />
+        {type === "password" && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 focus:outline-none"
+          >
+            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        )}
       </div>
     </div>
   );
