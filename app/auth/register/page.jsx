@@ -35,6 +35,7 @@ export default function UserRegistrationPage() {
   const handleRegister = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    // Simulate API call
     setTimeout(() => setIsLoading(false), 2000);
   };
 
@@ -43,12 +44,11 @@ export default function UserRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen flex font-sans bg-white">
+    <div className="min-h-screen flex flex-col font-sans bg-white">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        * { font-family: 'DM Sans', sans-serif; }
-        .font-display { font-family: 'Syne', sans-serif; }
+        * { font-family: 'Inter', sans-serif; }
 
         @keyframes fadeSlideUp {
           from { opacity: 0; transform: translateY(24px); }
@@ -77,37 +77,32 @@ export default function UserRegistrationPage() {
         .left-anim-4 { animation: fadeSlideRight 0.7s ease both 0.4s; }
         .left-anim-5 { animation: fadeSlideRight 0.7s ease both 0.5s; }
 
-        .social-btn {
-          transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .social-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .social-btn:active {
-          transform: translateY(0) scale(0.98);
-        }
-
         .input-field {
-          transition: all 0.25s ease;
+          transition: all 0.2s ease;
         }
         .input-field:focus-within {
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-          border-color: #2563eb !important;
+          box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+          border-color: #4f46e5 !important;
         }
 
         .login-btn {
-          background: #2563eb;
-          transition: all 0.3s ease;
+          background: #5A5FE0;
+          transition: all 0.2s ease;
         }
         .login-btn:hover {
-          background: #1d4ed8;
+          background: #4A4FC0;
           transform: translateY(-1px);
-          box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+          box-shadow: 0 6px 20px rgba(90, 95, 224, 0.25);
         }
         .login-btn:active {
           transform: translateY(0);
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+        
+        .social-btn {
+          transition: all 0.2s ease;
+        }
+        .social-btn:hover {
+          background: #f9fafb;
         }
 
         .loading-dot {
@@ -117,162 +112,133 @@ export default function UserRegistrationPage() {
         .loading-dot:nth-child(3) { animation-delay: 0.32s; }
       `}</style>
 
-      {/* LEFT COLUMN: Hero Section (Light Blue/Purple Theme) */}
-      <div className="hidden lg:flex flex-col w-[40%] xl:w-[45%] relative px-10 py-10 xl:px-14 xl:py-12 bg-gradient-to-br from-blue-50 to-purple-50">
-        {/* Decorative Grid Overlay (optional) */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            opacity: 0.2,
-            backgroundImage:
-              "linear-gradient(rgba(37,99,235,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.15) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Logo */}
-        <div className="left-anim-1 flex items-center gap-3 mb-16 relative z-10">
+      {/* Header */}
+      <header className="w-full flex justify-between items-center py-5 px-8 sm:px-14 lg:px-16 border-b border-gray-100 bg-white z-20">
+        <div className="flex items-center gap-2">
           <Image
             src="/icon.png"
-            alt="TopTrainer Logo"
-            width={40}
-            height={40}
+            alt="toptrainer Logo"
+            width={28}
+            height={28}
             className="object-contain"
           />
-          <span className="font-display font-bold text-xl tracking-tight leading-none">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Top
-            </span>
-            <span className="text-orange-400">Trainer</span>
+          <span className="font-bold text-[22px] tracking-tight text-gray-900">
+            TopTrainer
           </span>
         </div>
-
-        {/* Hero Content */}
-        <div className="flex-1 flex flex-col justify-center max-w-md relative z-10">
-          <div className="left-anim-2 inline-flex items-center self-start px-4 py-1.5 rounded-full border border-blue-200 bg-white/60 backdrop-blur-sm shadow-sm mb-6">
-            <span className="text-blue-600 text-sm font-medium">
-              Join thousands of learners
-            </span>
-          </div>
-
-          <h1 className="left-anim-3 font-display text-4xl xl:text-5xl font-bold text-gray-800 leading-[1.15] tracking-tight mb-5">
-            Start your <br />
-            learning journey <br />
-            <span className="text-blue-600">today.</span>
-          </h1>
-
-          <p className="left-anim-4 text-gray-500 text-base leading-relaxed mb-12 max-w-sm">
-            Create your free account and get matched with expert trainers
-            tailored to your goals and schedule.
-          </p>
-
-          {/* Features */}
-          <div className="space-y-6">
-            {[
-              {
-                icon: <Rocket size={18} className="text-blue-600" />,
-                title: "Get Started in Minutes",
-                desc: "Quick setup — pick your interests and start exploring right away.",
-                delay: "left-anim-4",
-              },
-              {
-                icon: <ShieldCheck size={18} className="text-blue-600" />,
-                title: "Verified Trainers Only",
-                desc: "Every trainer is background-checked and skill-verified.",
-                delay: "left-anim-5",
-              },
-              {
-                icon: <Calendar size={18} className="text-blue-600" />,
-                title: "Flexible Scheduling",
-                desc: "Book sessions that fit your lifestyle — anytime, anywhere.",
-                delay: "left-anim-5",
-              },
-            ].map((f, i) => (
-              <div key={i} className={`${f.delay} flex items-start gap-4`}>
-                <div className="w-10 h-10 rounded-full bg-white shadow-sm border border-blue-100 flex items-center justify-center flex-shrink-0">
-                  {f.icon}
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-1">
-                    {f.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    {f.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="text-[14px] text-gray-500 font-medium hidden sm:block">
+          Already have an account?{" "}
+          <Link href="/auth/login" className="text-[#5A5FE0] font-semibold hover:underline">
+            Login
+          </Link>
         </div>
+      </header>
 
-        {/* Left Footer */}
-        <div className="left-anim-5 mt-auto pt-8 relative z-10">
-          <p className="text-xs text-gray-400 font-medium">
-            © 2024 TopTrainer. All rights reserved.
-          </p>
-        </div>
-      </div>
+      {/* Main Content */}
+      <main className="flex-1 w-full max-w-[1600px] mx-auto flex flex-col lg:flex-row relative">
+        
+        {/* LEFT COLUMN: Hero Section */}
+        <div className="w-full lg:w-[45%] flex flex-col pt-12 pb-16 px-8 sm:px-14 lg:px-16 bg-[#F8F9FC] relative z-10 lg:border-r border-gray-100">
+          
+          <div className="flex-1 flex flex-col max-w-[500px]">
+            {/* Badge */}
+            <div className="left-anim-2 inline-flex items-center self-start mb-8 border border-blue-200 bg-transparent rounded-full px-4 py-1.5">
+              <span className="text-[#5A5FE0] text-[13px] font-semibold tracking-wide">
+                Join thousands of learners
+              </span>
+            </div>
 
-      {/* RIGHT COLUMN: Registration Form */}
-      <div className="flex-1 flex flex-col bg-white relative px-6 py-8 sm:px-12 lg:px-16 xl:px-24">
-        {/* Top Right Actions */}
-        <div className="w-full flex justify-end mb-8 anim-1">
-          <p className="text-sm text-gray-500 font-medium">
-            Already have an account?{" "}
-            <Link
-              href="/auth/login"
-              className="text-blue-600 font-bold hover:text-blue-700 transition-colors"
-            >
-              Login
-            </Link>
-          </p>
-        </div>
+            {/* Heading */}
+            <h1 className="left-anim-3 text-[42px] sm:text-[48px] font-bold text-[#111827] leading-[1.15] tracking-tight mb-6">
+              Start your <br />
+              learning journey <br />
+              <span className="text-[#5A5FE0]">today.</span>
+            </h1>
 
-        {/* Mobile Logo (visible only on small screens) */}
-        <div className="lg:hidden flex items-center gap-2 mb-10 anim-1">
-          <Image
-            src="/icon.png"
-            alt="TopTrainer Logo"
-            width={36}
-            height={36}
-            className="object-contain"
-          />
-          <span className="font-display font-bold text-xl tracking-tight leading-none">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Top
-            </span>
-            <span className="text-orange-400">Trainer</span>
-          </span>
-        </div>
-
-        {/* Form Container */}
-        <div className="flex-1 flex flex-col justify-center max-w-[520px] w-full mx-auto">
-          <div className="anim-2 w-full p-8 sm:p-10 rounded-2xl border border-gray-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h2 className="font-display text-3xl font-bold text-gray-900 mb-2">
-              Create your User Account
-            </h2>
-            <p className="text-gray-500 text-sm mb-8">
-              It only takes a minute.
+            {/* Subheading */}
+            <p className="left-anim-4 text-gray-500 text-[16px] leading-[1.6] mb-12 max-w-[440px]">
+              Create your free account and get matched with expert trainers tailored to your goals and schedule.
             </p>
 
+            {/* Features List */}
+            <div className="space-y-8">
+              {[
+                {
+                  icon: <Rocket size={20} className="text-[#5A5FE0]" />,
+                  title: "Get Started in Minutes",
+                  desc: "Quick setup — pick your interests and start exploring right away.",
+                  delay: "left-anim-4",
+                  bg: "bg-[#F0F2FF]"
+                },
+                {
+                  icon: <ShieldCheck size={20} className="text-[#5A5FE0]" />,
+                  title: "Verified Trainers Only",
+                  desc: "Every trainer is background-checked and skill-verified.",
+                  delay: "left-anim-5",
+                  bg: "bg-[#F0F2FF]"
+                },
+                {
+                  icon: <Calendar size={20} className="text-[#5A5FE0]" />,
+                  title: "Flexible Scheduling",
+                  desc: "Book sessions that fit your lifestyle — anytime, anywhere.",
+                  delay: "left-anim-5",
+                  bg: "bg-[#F0F2FF]"
+                },
+              ].map((f, i) => (
+                <div key={i} className={`${f.delay} flex items-start gap-5`}>
+                  <div className={`w-12 h-12 rounded-full ${f.bg} flex items-center justify-center flex-shrink-0`}>
+                    {f.icon}
+                  </div>
+                  <div className="pt-0.5">
+                    <h3 className="text-[16px] font-bold text-gray-900 mb-1">
+                      {f.title}
+                    </h3>
+                    <p className="text-[14px] text-gray-500 leading-relaxed max-w-[320px]">
+                      {f.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Registration Form Card */}
+        <div className="w-full lg:w-[55%] flex items-center justify-center p-6 lg:p-12 xl:p-16 relative z-10 bg-white">
+          
+          <div className="sm:hidden text-center mb-8 w-full">
+            <span className="text-[14px] text-gray-500 font-medium">
+              Already have an account?{" "}
+              <Link href="/auth/login" className="text-[#5A5FE0] font-semibold hover:underline">
+                Login
+              </Link>
+            </span>
+          </div>
+
+          <div className="anim-2 w-full max-w-[560px] bg-white rounded-[1.5rem] p-8 sm:p-10 border border-gray-200">
+            
+            {/* Header */}
+            <div className="mb-8">
+              <h2 className="text-[28px] font-bold text-gray-900 mb-2 tracking-tight">
+                Create your account
+              </h2>
+              <p className="text-gray-500 text-[15px]">
+                It only takes a minute.
+              </p>
+            </div>
+
             <form onSubmit={handleRegister} className="space-y-5">
+              
               {/* Name Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 anim-3">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                <div className="space-y-2">
+                  <label className="block text-[13px] font-semibold text-gray-800">
                     First name
                   </label>
                   <div
-                    className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === "firstName" ? "border-blue-500" : "border-gray-200"} bg-white`}
+                    className={`input-field flex items-center gap-3 px-4 py-3 rounded-xl border ${focusedField === "firstName" ? "border-[#5A5FE0]" : "border-gray-200"} bg-white`}
                   >
-                    <User
-                      size={16}
-                      color={
-                        focusedField === "firstName" ? "#2563eb" : "#9ca3af"
-                      }
-                    />
+                    <User size={18} className="text-gray-400" strokeWidth={1.5} />
                     <input
                       type="text"
                       name="firstName"
@@ -281,24 +247,19 @@ export default function UserRegistrationPage() {
                       onChange={handleChange}
                       onFocus={() => setFocusedField("firstName")}
                       onBlur={() => setFocusedField(null)}
-                      className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
+                      className="flex-1 outline-none text-[15px] text-gray-900 placeholder-gray-400 w-full bg-transparent font-medium"
                       required
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                <div className="space-y-2">
+                  <label className="block text-[13px] font-semibold text-gray-800">
                     Last name
                   </label>
                   <div
-                    className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === "lastName" ? "border-blue-500" : "border-gray-200"} bg-white`}
+                    className={`input-field flex items-center gap-3 px-4 py-3 rounded-xl border ${focusedField === "lastName" ? "border-[#5A5FE0]" : "border-gray-200"} bg-white`}
                   >
-                    <User
-                      size={16}
-                      color={
-                        focusedField === "lastName" ? "#2563eb" : "#9ca3af"
-                      }
-                    />
+                    <User size={18} className="text-gray-400" strokeWidth={1.5} />
                     <input
                       type="text"
                       name="lastName"
@@ -307,7 +268,7 @@ export default function UserRegistrationPage() {
                       onChange={handleChange}
                       onFocus={() => setFocusedField("lastName")}
                       onBlur={() => setFocusedField(null)}
-                      className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
+                      className="flex-1 outline-none text-[15px] text-gray-900 placeholder-gray-400 w-full bg-transparent font-medium"
                       required
                     />
                   </div>
@@ -315,17 +276,14 @@ export default function UserRegistrationPage() {
               </div>
 
               {/* Email */}
-              <div className="anim-4">
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              <div className="anim-4 space-y-2">
+                <label className="block text-[13px] font-semibold text-gray-800">
                   Email address
                 </label>
                 <div
-                  className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === "email" ? "border-blue-500" : "border-gray-200"} bg-white`}
+                  className={`input-field flex items-center gap-3 px-4 py-3 rounded-xl border ${focusedField === "email" ? "border-[#5A5FE0]" : "border-gray-200"} bg-white`}
                 >
-                  <Mail
-                    size={16}
-                    color={focusedField === "email" ? "#2563eb" : "#9ca3af"}
-                  />
+                  <Mail size={18} className="text-gray-400" strokeWidth={1.5} />
                   <input
                     type="email"
                     name="email"
@@ -334,24 +292,21 @@ export default function UserRegistrationPage() {
                     onChange={handleChange}
                     onFocus={() => setFocusedField("email")}
                     onBlur={() => setFocusedField(null)}
-                    className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
+                    className="flex-1 outline-none text-[15px] text-gray-900 placeholder-gray-400 w-full bg-transparent font-medium"
                     required
                   />
                 </div>
               </div>
 
               {/* Phone */}
-              <div className="anim-4">
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              <div className="anim-4 space-y-2">
+                <label className="block text-[13px] font-semibold text-gray-800">
                   Phone number
                 </label>
                 <div
-                  className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === "phone" ? "border-blue-500" : "border-gray-200"} bg-white`}
+                  className={`input-field flex items-center gap-3 px-4 py-3 rounded-xl border ${focusedField === "phone" ? "border-[#5A5FE0]" : "border-gray-200"} bg-white`}
                 >
-                  <Phone
-                    size={16}
-                    color={focusedField === "phone" ? "#2563eb" : "#9ca3af"}
-                  />
+                  <Phone size={18} className="text-gray-400" strokeWidth={1.5} />
                   <input
                     type="tel"
                     name="phone"
@@ -360,23 +315,20 @@ export default function UserRegistrationPage() {
                     onChange={handleChange}
                     onFocus={() => setFocusedField("phone")}
                     onBlur={() => setFocusedField(null)}
-                    className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
+                    className="flex-1 outline-none text-[15px] text-gray-900 placeholder-gray-400 w-full bg-transparent font-medium"
                   />
                 </div>
               </div>
 
               {/* Password */}
-              <div className="anim-5">
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              <div className="anim-5 space-y-2">
+                <label className="block text-[13px] font-semibold text-gray-800">
                   Password
                 </label>
                 <div
-                  className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === "password" ? "border-blue-500" : "border-gray-200"} bg-white`}
+                  className={`input-field flex items-center gap-3 px-4 py-3 rounded-xl border ${focusedField === "password" ? "border-[#5A5FE0]" : "border-gray-200"} bg-white`}
                 >
-                  <Lock
-                    size={16}
-                    color={focusedField === "password" ? "#2563eb" : "#9ca3af"}
-                  />
+                  <Lock size={18} className="text-gray-400" strokeWidth={1.5} />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -385,31 +337,28 @@ export default function UserRegistrationPage() {
                     onChange={handleChange}
                     onFocus={() => setFocusedField("password")}
                     onBlur={() => setFocusedField(null)}
-                    className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
+                    className="flex-1 outline-none text-[15px] text-gray-900 placeholder-gray-400 w-full bg-transparent font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 hover:text-blue-600 transition-colors focus:outline-none"
+                    className="text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
                   </button>
                 </div>
               </div>
 
               {/* Confirm Password */}
-              <div className="anim-5 mb-2">
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              <div className="anim-5 mb-2 space-y-2">
+                <label className="block text-[13px] font-semibold text-gray-800">
                   Confirm password
                 </label>
                 <div
-                  className={`input-field flex items-center gap-2.5 px-3.5 py-3 rounded-lg border ${focusedField === "confirm" ? "border-blue-500" : "border-gray-200"} bg-white`}
+                  className={`input-field flex items-center gap-3 px-4 py-3 rounded-xl border ${focusedField === "confirm" ? "border-[#5A5FE0]" : "border-gray-200"} bg-white`}
                 >
-                  <Lock
-                    size={16}
-                    color={focusedField === "confirm" ? "#2563eb" : "#9ca3af"}
-                  />
+                  <Lock size={18} className="text-gray-400" strokeWidth={1.5} />
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
@@ -418,32 +367,32 @@ export default function UserRegistrationPage() {
                     onChange={handleChange}
                     onFocus={() => setFocusedField("confirm")}
                     onBlur={() => setFocusedField(null)}
-                    className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
+                    className="flex-1 outline-none text-[15px] text-gray-900 placeholder-gray-400 w-full bg-transparent font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="text-gray-400 hover:text-blue-600 transition-colors focus:outline-none"
+                    className="text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
                   >
                     {showConfirmPassword ? (
-                      <EyeOff size={16} />
+                      <EyeOff size={18} strokeWidth={1.5} />
                     ) : (
-                      <Eye size={16} />
+                      <Eye size={18} strokeWidth={1.5} />
                     )}
                   </button>
                 </div>
               </div>
 
               {/* Submit Button */}
-              <div className="anim-6 pt-2">
+              <div className="anim-6 pt-4">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="login-btn w-full py-3.5 rounded-lg text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-80"
+                  className="login-btn w-full py-3.5 rounded-xl text-white font-semibold text-[15px] flex items-center justify-center gap-2 disabled:opacity-80"
                 >
                   {isLoading ? (
-                    <div className="flex gap-1.5 items-center">
+                    <div className="flex gap-1.5 items-center h-6">
                       <div className="loading-dot w-1.5 h-1.5 rounded-full bg-white" />
                       <div className="loading-dot w-1.5 h-1.5 rounded-full bg-white" />
                       <div className="loading-dot w-1.5 h-1.5 rounded-full bg-white" />
@@ -454,87 +403,87 @@ export default function UserRegistrationPage() {
                 </button>
               </div>
 
-              <div className="w-full flex justify-center mb-8 anim-1">
-                <p className="text-sm text-gray-500 font-medium">
-                    Want to be a Trainer?{" "}
-                  <Link
-                    href="/join-as-trainer"
-                    className="text-blue-600 font-bold hover:text-blue-700 transition-colors"
-                  >
-                    Join as a Trainer
-                  </Link>
-                </p>
-              </div>
+              <div className="anim-7 mt-4 text-center p-2">
+                  <p className="text-[14px] text-gray-500 font-medium">
+                    Wanna be a Trainer?{" "}
+                    <Link
+                      href="/join-as-trainer"
+                      className="text-[#5A5FE0] font-semibold hover:underline"
+                    >
+                      Join as a Trainer
+                    </Link>
+                  </p>
+                </div>
 
               {/* Divider */}
-              <div className="anim-6 flex items-center gap-3 my-5">
-                <div className="flex-1 h-px bg-gray-100" />
-                <span className="text-xs text-gray-400 font-medium">
+              <div className="anim-6 flex items-center gap-3 mb-6">
+                <div className="flex-1 h-[1px] bg-gray-100" />
+                <span className="text-[13px] text-gray-400 font-medium">
                   or sign up with
                 </span>
-                <div className="flex-1 h-px bg-gray-100" />
+                <div className="flex-1 h-[1px] bg-gray-100" />
               </div>
 
               {/* Socials */}
               <div className="anim-7 flex flex-col gap-3">
                 <button
                   type="button"
-                  className="social-btn w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:border-gray-300 bg-white"
+                  className="social-btn w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 text-gray-700 text-[14px] font-semibold bg-white"
                 >
-                  <Chrome size={18} className="text-[#EA4335]" />
+                  <Chrome size={20} className="text-[#EA4335]" />
                   Sign up with Google
                 </button>
                 <button
                   type="button"
-                  className="social-btn w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:border-gray-300 bg-white"
+                  className="social-btn w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 text-gray-700 text-[14px] font-semibold bg-white"
                 >
                   <Facebook
-                    size={18}
+                    size={20}
                     className="text-[#1877F2]"
                     fill="#1877F2"
+                    strokeWidth={0}
                   />
                   Sign up with Facebook
                 </button>
               </div>
 
-              <div className="anim-7 mt-6 text-center">
-                <p className="text-xs text-gray-400">
+              <div className="anim-7 mt-6 text-center pt-2">
+                <p className="text-[13px] text-gray-500 font-medium leading-relaxed">
                   By signing up, you agree to our{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
+                  <Link href="/terms" className="text-[#5A5FE0] hover:underline">
                     Terms of Use
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
+                  </Link>
+                  {" "}and{" "}
+                  <Link href="/privacy" className="text-[#5A5FE0] hover:underline">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </p>
               </div>
             </form>
           </div>
-
-          {/* Right Footer */}
-          <div className="anim-7 hidden lg:flex items-center justify-end gap-6 mt-8">
-            <a
-              href="#"
-              className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="#"
-              className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors"
-            >
-              Terms of Use
-            </a>
-            <a
-              href="#"
-              className="text-xs font-semibold text-gray-400 hover:text-gray-800 transition-colors"
-            >
-              Contact Us
-            </a>
-          </div>
         </div>
-      </div>
+
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full bg-white border-t border-gray-100 py-6 px-8 sm:px-14 lg:px-16 flex flex-col sm:flex-row items-center justify-between gap-4 z-20">
+        <p className="text-[13px] text-gray-500 font-medium">
+          © 2024 toptrainer. All rights reserved.
+        </p>
+        <div className="flex items-center gap-4 md:gap-6">
+          <Link href="/privacy" className="text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors">
+            Privacy Policy
+          </Link>
+          <span className="text-gray-300">|</span>
+          <Link href="/terms" className="text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors">
+            Terms of Use
+          </Link>
+          <span className="text-gray-300">|</span>
+          <Link href="/contact" className="text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors">
+            Contact Us
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 }
