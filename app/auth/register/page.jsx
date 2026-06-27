@@ -138,7 +138,7 @@ export default function UserRegistrationPage() {
       <main className="flex-1 w-full max-w-[1600px] mx-auto flex flex-col lg:flex-row relative">
         
         {/* LEFT COLUMN: Hero Section */}
-        <div className="w-full lg:w-[45%] flex flex-col pt-12 pb-16 px-8 sm:px-14 lg:px-16 bg-[#F8F9FC] relative z-10 lg:border-r border-gray-100">
+        <div className="hidden lg:flex w-full lg:w-[45%] flex-col pt-12 pb-16 px-8 sm:px-14 lg:px-16 bg-[#F8F9FC] relative z-10 lg:border-r border-gray-100">
           
           <div className="flex-1 flex flex-col max-w-[500px]">
             {/* Badge */}
@@ -204,9 +204,9 @@ export default function UserRegistrationPage() {
         </div>
 
         {/* RIGHT COLUMN: Registration Form Card */}
-        <div className="w-full lg:w-[55%] flex items-center justify-center p-6 lg:p-12 xl:p-16 relative z-10 bg-white">
+        <div className="w-full lg:w-[55%] flex flex-col items-center justify-center p-6 lg:p-12 xl:p-16 relative z-10 bg-white min-h-[calc(100vh-100px)] lg:min-h-0">
           
-          <div className="sm:hidden text-center mb-8 w-full">
+          <div className="sm:hidden text-center mb-8 w-full anim-1">
             <span className="text-[14px] text-gray-500 font-medium">
               Already have an account?{" "}
               <Link href="/auth/login" className="text-[#5A5FE0] font-semibold hover:underline">
