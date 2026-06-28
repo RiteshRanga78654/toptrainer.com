@@ -1,8 +1,10 @@
 import TrainerProfile from '../models/trainerProfile.js';
 import generateToken from '../utils/generationToken.js';
+import aysncHandler from "../middleware/asyncMiddlewire.js"
 
-export const registerTrainer = async (req, res) => {
-  try {
+export const registerTrainer = aysncHandler(
+  async (req, res) => {
+
 const {email, password, confirmPassword, fullName} = req.body;
 if(!email || !password || !confirmPassword || !fullName) {
   return res.status(400).json({
@@ -37,21 +39,12 @@ if(existingTrainer){
         "Trainer profile submitted successfully. Waiting for admin approval.",
       trainer,
     });
+}
+)
 
-} catch (error) {
-
-  console.log(error);
-
-  res.status(500).json({
-    success: false,
-    message: error.message,
-  });
- }
-};
-
-export const loginTrainer = async (req, res) => {
-  try {
-
+export const loginTrainer = aysncHandler(
+  async (req, res) => {
+ 
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -107,21 +100,13 @@ export const loginTrainer = async (req, res) => {
       trainer,
     });
 
-  } catch (error) {
-
-    console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+}
+);
 
 
-export const logoutTrainer = async (req, res) => {
-  try {
-
+export const logoutTrainer = aysncHandler(
+  async (req, res) => {
+ 
     res.cookie("trainerToken", "", {
       httpOnly: true,
       expires: new Date(0),
@@ -132,18 +117,11 @@ export const logoutTrainer = async (req, res) => {
       message: "Logged out successfully",
     });
 
-  } catch (error) {
+}
+);
 
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-
-};
-
-export const getMyProfile = async (req, res) => {
-  try {
+export const getMyProfile = aysncHandler(
+  async (req, res) => {
 
     const trainer = await TrainerProfile.findById(
       req.trainer._id
@@ -160,20 +138,14 @@ export const getMyProfile = async (req, res) => {
       success: true,
       trainer,
     });
-
-  } catch (error) {
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+}
+);
 
 
-export const updateMyProfile = async (req, res) => {
-  try {
+export const updateMyProfile = aysncHandler(
 
+  async (req, res) => {
+  
     const trainer =
       await TrainerProfile.findByIdAndUpdate(
         req.trainer._id,
@@ -190,13 +162,6 @@ export const updateMyProfile = async (req, res) => {
       trainer,
     });
 
-  } catch (error) {
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
+}
+);
 

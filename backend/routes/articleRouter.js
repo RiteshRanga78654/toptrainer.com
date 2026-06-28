@@ -2,7 +2,7 @@ import express from "express";
 
 import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle } from "../controllers/articleContoller";
 
-import { protectAdmin } from "../middleware/adminMiddleware";
+import { protectAdmin } from "../middleware/adminAuthMiddleware";
 import { protectTrainer } from "../middleware/trainerAuthMiddleware.js";
 
 const router = express.Router();

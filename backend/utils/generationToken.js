@@ -14,7 +14,7 @@ const generateToken = (res, id) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: (process.env.COOKIES_EXPIRE || 7 )* 24 * 60 * 60 * 1000,
     });
 
     return token;

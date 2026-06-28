@@ -1,13 +1,14 @@
-import User from '../models/user.js';   
+import Admin from '../models/admin.js';   
 import generateToken from '../utils/generationToken.js';
-import bcrypt from 'bcryptjs';                      
+import bcrypt from 'bcryptjs';  
+import asyncHandler from '../middleware/asyncMiddlewire.js';                   
 
 
-export const loginAdmin = async (req, res) => {
-   try{
+export const loginAdmin = asyncHandler(async (req, res) => {
+
     const {email, password} = req.body;
 
-    const admin = await User.findOne({email});
+    const admin = await Admin.findOne({email});
 
     if(!admin){
         return res.status(404).json({
@@ -33,10 +34,5 @@ export const loginAdmin = async (req, res) => {
         role: admin.role,
       },
     });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-}
+
+});

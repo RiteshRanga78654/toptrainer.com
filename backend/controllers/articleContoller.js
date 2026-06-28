@@ -61,7 +61,7 @@ export const getMyPublishedArticles = async (req,res) => {
 const creatorID = req.admin?._id || req.trainer?._id;
 
 const articles = await Article.find({
-    createdBy: creatorId,
+    createdBy: creatorID,
     status: "published",
 }).sort({createdAt: -1});
 
