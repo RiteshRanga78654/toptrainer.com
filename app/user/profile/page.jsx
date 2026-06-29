@@ -176,7 +176,7 @@ export default function UserProfile() {
 
                     <div className="flex flex-col gap-5">
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 mt-0.5">
+                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 mt-0.5">
                                 <GraduationCap className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
