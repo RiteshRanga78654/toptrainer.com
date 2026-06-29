@@ -12,8 +12,7 @@ export default function LayoutWrapper({ children }) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/auth") ||
-    pathname.startsWith("/trainer") ||
-    pathname.startsWith("/user");
+    pathname.startsWith("/trainer");
 
   return (
     <>
