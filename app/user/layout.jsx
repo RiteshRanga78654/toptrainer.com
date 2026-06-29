@@ -39,7 +39,7 @@ export default function UserLayout({ children }) {
                 <div className="bg-indigo-600 p-1.5 rounded-lg flex items-center justify-center">
                     <GraduationCap className="text-white w-6 h-6" />
                 </div>
-                <span className="font-bold text-xl tracking-tight text-slate-900">TrainConnect</span>
+                <span className="font-bold text-xl tracking-tight text-slate-900">TopTrainer</span>
             </div>
             <button className="lg:hidden text-slate-500 hover:text-slate-900" onClick={() => setSidebarOpen(false)}>
                 <X className="w-5 h-5" />
