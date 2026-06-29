@@ -78,6 +78,18 @@ export default function UserLayout({ children }) {
                         View and manage all your saved trainer profiles and workshops. <span className="text-indigo-600 font-medium ml-1">6 trainers, 3 workshops saved.</span>
                     </p>
                 </div>
+            ) : pathname.startsWith('/user/settings') ? (
+                <div>
+                    <h1 className="text-[28px] font-bold text-slate-900">
+                        Account Settings
+                    </h1>
+                </div>
+            ) : pathname.startsWith('/user/profile') ? (
+                <div>
+                    <h1 className="text-[28px] font-bold text-slate-900">
+                        User Profile
+                    </h1>
+                </div>
             ) : (
                 <div>
                     <h1 className="text-[28px] font-bold text-slate-900 flex items-center gap-2">
