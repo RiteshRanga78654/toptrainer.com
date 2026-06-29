@@ -30,37 +30,37 @@ export default function ShortlistedProfiles() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center justify-between gap-4 mb-8">
-        <div className="flex gap-4 flex-1">
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+        <div className="flex gap-4 flex-1 overflow-x-auto pb-2 lg:pb-0 no-scrollbar w-full">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[140px]">
             <div className="flex items-center gap-2">
               <Briefcase className="w-4 h-4 text-slate-400" /> Industry
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
           
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[170px]">
             <div className="flex items-center gap-2">
               <Network className="w-4 h-4 text-slate-400" /> Department/Domain
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
 
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[180px]">
             <div className="flex items-center gap-2">
               <Target className="w-4 h-4 text-slate-400" /> Competencies/Skills
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
 
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[150px]">
             <div className="flex items-center gap-2">
               <CircleDollarSign className="w-4 h-4 text-slate-400" /> Price Range
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
 
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[200px]">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-slate-400" /> Mode (Online/Offline)
             </div>
@@ -68,14 +68,14 @@ export default function ShortlistedProfiles() {
           </button>
         </div>
 
-        <button className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-semibold text-slate-700">
+        <button className="flex w-full lg:w-auto items-center justify-center lg:justify-between gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-semibold text-slate-700 flex-shrink-0">
           Sort by <ChevronDown className="w-4 h-4 text-slate-400 ml-1" />
         </button>
       </div>
 
-      <div className="grid grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-10">
         {/* Left Column: Trainer Cards (Span 3 cols) */}
-        <div className="col-span-3 grid grid-cols-3 gap-6">
+        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {trainers.map((trainer, idx) => (
             <div key={idx} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow group flex flex-col h-full relative">
               
@@ -121,7 +121,7 @@ export default function ShortlistedProfiles() {
           ))}
 
           {/* Pagination */}
-          <div className="col-span-3 flex items-center justify-center gap-4 mt-4">
+          <div className="lg:col-span-3 sm:col-span-2 col-span-1 flex items-center justify-center gap-4 mt-4">
             <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 transition-colors shadow-sm">
                 <ChevronLeft className="w-5 h-5" />
             </button>

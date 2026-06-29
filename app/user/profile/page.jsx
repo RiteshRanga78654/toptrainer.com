@@ -19,8 +19,8 @@ export default function UserProfile() {
         </div>
         
         {/* Profile Content */}
-        <div className="px-8 pb-8 flex justify-between items-end relative -mt-16">
-            <div className="flex gap-6 items-end">
+        <div className="px-4 md:px-8 pb-8 flex flex-col md:flex-row justify-between items-center md:items-end relative -mt-16 text-center md:text-left gap-4 md:gap-0">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center md:items-end">
                 {/* Profile Photo */}
                 <div className="relative">
                     <img 
@@ -34,7 +34,7 @@ export default function UserProfile() {
                 </div>
                 
                 <div className="mb-2">
-                    <div className="flex items-center gap-3 mb-1">
+                    <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
                         <h1 className="text-2xl font-bold text-slate-900">Aris Lee</h1>
                         <span className="px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold border border-blue-100">
                             Learner
@@ -42,7 +42,7 @@ export default function UserProfile() {
                     </div>
                     <p className="text-sm font-medium text-slate-700 mb-3">Associate Product Manager at Innovate Solutions</p>
                     
-                    <div className="flex items-center gap-5 text-[13px] text-slate-500 font-medium">
+                    <div className="flex flex-col md:flex-row items-center gap-3 md:gap-5 text-[13px] text-slate-500 font-medium">
                         <div className="flex items-center gap-1.5">
                             <Mail className="w-4 h-4" /> aris.lee@learner.com
                         </div>
@@ -63,7 +63,7 @@ export default function UserProfile() {
       </div>
 
       {/* Two Column Layout */}
-      <div className="grid grid-cols-[1.5fr_1fr] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8">
         
         {/* Left Column: My Profile Details */}
         <div>
@@ -79,7 +79,7 @@ export default function UserProfile() {
                         <h3 className="text-[17px] font-bold text-slate-900">My Learning Goals</h3>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-x-12 gap-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                         <div>
                             <div className="flex justify-between text-[13px] font-bold text-slate-900 mb-2">
                                 <span>Master Python for Data Science</span>

@@ -32,37 +32,37 @@ export default function ExploreTrainers() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center justify-between gap-4 mb-8">
-        <div className="flex gap-4 flex-1">
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+        <div className="flex gap-4 flex-1 overflow-x-auto pb-2 lg:pb-0 no-scrollbar w-full">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[140px]">
             <div className="flex items-center gap-2">
               <Briefcase className="w-4 h-4 text-slate-400" /> Industry
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
           
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[170px]">
             <div className="flex items-center gap-2">
               <Network className="w-4 h-4 text-slate-400" /> Department/Domain
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
 
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[180px]">
             <div className="flex items-center gap-2">
               <Target className="w-4 h-4 text-slate-400" /> Competencies/Skills
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
 
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[150px]">
             <div className="flex items-center gap-2">
               <CircleDollarSign className="w-4 h-4 text-slate-400" /> Price Range
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
 
-          <button className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700">
+          <button className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-medium text-slate-700 min-w-[200px]">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-slate-400" /> Mode (Online/Offline)
             </div>
@@ -70,13 +70,13 @@ export default function ExploreTrainers() {
           </button>
         </div>
 
-        <button className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-semibold text-slate-700">
-          Sort by <SlidersHorizontal className="w-4 h-4 text-slate-400 ml-1" />
+        <button className="flex w-full lg:w-auto items-center justify-center lg:justify-between gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-semibold text-slate-700 flex-shrink-0">
+          Sort by <ChevronDown className="w-4 h-4 text-slate-400 ml-1" />
         </button>
       </div>
 
       {/* Trainer Cards Grid */}
-      <div className="grid grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
         {trainers.map((trainer, idx) => (
           <div key={idx} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow group flex flex-col h-full">
             <div className="relative h-[200px] w-full bg-slate-100 flex items-center justify-center text-slate-300">
@@ -123,32 +123,32 @@ export default function ExploreTrainers() {
 
       {/* Pagination */}
       <div className="flex flex-col items-center justify-center gap-4">
-        <div className="flex items-center gap-2">
-          <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors shadow-sm">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors shadow-sm">
             <ChevronLeft className="w-5 h-5" />
           </button>
           
-          <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-600 text-white font-bold shadow-sm">
+          <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-indigo-600 text-white font-bold shadow-sm">
             1
           </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 font-semibold transition-colors">
+          <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 font-semibold transition-colors">
             2
           </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 font-semibold transition-colors">
+          <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 font-semibold transition-colors hidden sm:flex">
             3
           </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 font-semibold transition-colors">
+          <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 font-semibold transition-colors hidden sm:flex">
             4
           </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 font-semibold transition-colors">
-            5
+          <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 font-semibold transition-colors">
+            ...
           </button>
           
-          <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors shadow-sm ml-2">
+          <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors shadow-sm sm:ml-2">
             <ChevronRight className="w-5 h-5" />
           </button>
           
-          <button className="ml-4 flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-semibold text-slate-700">
+          <button className="mt-2 sm:mt-0 sm:ml-4 flex items-center gap-2 px-4 py-2 sm:py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-sm font-semibold text-slate-700 w-full sm:w-auto justify-center">
             16 per page <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
         </div>

@@ -9,8 +9,7 @@ import Link from 'next/link';
 export default function UserDashboard() {
   return (
     <>
-        {/* Top 3 Cards Grid */}
-        <div className="grid grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {/* New Trainers */}
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between h-[280px]">
                 <div>
@@ -90,8 +89,8 @@ export default function UserDashboard() {
         </div>
 
         {/* Middle Section */}
-        <div className="grid grid-cols-3 gap-6 mb-6">
-            <div className="col-span-2 flex flex-col gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="lg:col-span-2 flex flex-col gap-6">
                 {/* Post your requirement */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                     <div className="flex justify-between items-start mb-6">
@@ -103,32 +102,32 @@ export default function UserDashboard() {
                             Create New Requirement
                         </button>
                     </div>
-                    <div className="flex justify-between items-start pt-5 border-t border-slate-100">
-                        <div className="flex flex-col gap-1.5 w-1/5">
+                    <div className="flex flex-wrap md:flex-nowrap justify-between items-start pt-5 border-t border-slate-100 gap-4 md:gap-0">
+                        <div className="flex flex-col gap-1.5 w-full md:w-1/5">
                             <div className="flex items-center gap-2 text-slate-700 font-semibold text-[13px]">
                                 <PenTool className="w-[18px] h-[18px] text-slate-400" /> Define Your Need
                             </div>
                             <span className="text-[11px] text-slate-400 pl-7">Specify your training goals</span>
                         </div>
-                        <div className="flex flex-col gap-1.5 w-1/5">
+                        <div className="flex flex-col gap-1.5 w-full md:w-1/5">
                             <div className="flex items-center gap-2 text-slate-700 font-semibold text-[13px]">
                                 <Monitor className="w-[18px] h-[18px] text-slate-400" /> Preferred Mode
                             </div>
                             <span className="text-[11px] text-slate-400 pl-7">Online, In-person or Both</span>
                         </div>
-                        <div className="flex flex-col gap-1.5 w-1/5">
+                        <div className="flex flex-col gap-1.5 w-full md:w-1/5">
                             <div className="flex items-center gap-2 text-slate-700 font-semibold text-[13px]">
                                 <MapPin className="w-[18px] h-[18px] text-slate-400" /> Location
                             </div>
                             <span className="text-[11px] text-slate-400 pl-7">Add preferred locations</span>
                         </div>
-                        <div className="flex flex-col gap-1.5 w-1/5">
+                        <div className="flex flex-col gap-1.5 w-full md:w-1/5">
                             <div className="flex items-center gap-2 text-slate-700 font-semibold text-[13px]">
                                 <Star className="w-[18px] h-[18px] text-slate-400" /> Experience Level
                             </div>
                             <span className="text-[11px] text-slate-400 pl-7">Select trainer experience</span>
                         </div>
-                        <div className="flex flex-col gap-1.5 w-1/5">
+                        <div className="flex flex-col gap-1.5 w-full md:w-1/5">
                             <div className="flex items-center gap-2 text-slate-700 font-semibold text-[13px]">
                                 <IndianRupee className="w-[18px] h-[18px] text-slate-400" /> Budget Range
                             </div>
@@ -138,8 +137,8 @@ export default function UserDashboard() {
                 </div>
 
                 {/* Your Requirement Profile */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex gap-8 flex-1">
-                    <div className="w-[200px] flex-shrink-0 flex flex-col justify-center border-r border-slate-100 pr-6">
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-8 flex-1">
+                    <div className="w-full md:w-[200px] flex-shrink-0 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-100 pb-6 md:pb-0 md:pr-6">
                         <div className="bg-indigo-50 w-12 h-12 rounded-full flex items-center justify-center mb-4">
                             <FileText className="w-5 h-5 text-indigo-600" />
                         </div>
@@ -152,7 +151,7 @@ export default function UserDashboard() {
                         </Link>
                     </div>
                     
-                    <div className="flex-1 grid grid-cols-[1fr_1.2fr] gap-x-6 gap-y-5 content-center py-2">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-[1fr_1.2fr] gap-x-6 gap-y-5 content-center py-2">
                         {/* Col 1 */}
                         <div className="flex items-start gap-3">
                             <Users className="w-4 h-4 text-slate-400 mt-0.5" />
@@ -260,7 +259,7 @@ export default function UserDashboard() {
                     View all <ChevronRight className="w-4 h-4" />
                 </Link>
             </div>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[
                     { title: '5 Leadership Lessons Every Manager Should Know', author: 'Rohit Mehta', date: 'May 12, 2024', img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop' },
                     { title: 'How to Improve Your Communication Skills', author: 'Neha Kapoor', date: 'May 10, 2024', img: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=300&h=200&fit=crop' },

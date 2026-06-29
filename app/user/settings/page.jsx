@@ -9,20 +9,20 @@ export default function SettingsPage() {
     <div className="pb-10">
       
       {/* Tabs */}
-      <div className="flex items-center gap-8 border-b border-slate-200 mb-8 px-1">
-        <button className="flex items-center gap-2 pb-4 border-b-2 border-blue-600 text-blue-600 font-semibold text-[15px]">
+      <div className="flex items-center gap-8 border-b border-slate-200 mb-8 px-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+        <button className="flex items-center gap-2 pb-4 border-b-2 border-blue-600 text-blue-600 font-semibold text-[15px] flex-shrink-0">
             <User className="w-4 h-4" /> General
         </button>
-        <button className="flex items-center gap-2 pb-4 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium text-[15px] transition-colors">
+        <button className="flex items-center gap-2 pb-4 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium text-[15px] transition-colors flex-shrink-0">
             <ShieldCheck className="w-4 h-4" /> Security
         </button>
-        <button className="flex items-center gap-2 pb-4 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium text-[15px] transition-colors">
+        <button className="flex items-center gap-2 pb-4 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium text-[15px] transition-colors flex-shrink-0">
             <Bell className="w-4 h-4" /> Notifications
         </button>
-        <button className="flex items-center gap-2 pb-4 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium text-[15px] transition-colors">
+        <button className="flex items-center gap-2 pb-4 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium text-[15px] transition-colors flex-shrink-0">
             <CreditCard className="w-4 h-4" /> Billing
         </button>
-        <button className="flex items-center gap-2 pb-4 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium text-[15px] transition-colors">
+        <button className="flex items-center gap-2 pb-4 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium text-[15px] transition-colors flex-shrink-0">
             <SlidersHorizontal className="w-4 h-4" /> Preferences
         </button>
       </div>
@@ -41,7 +41,7 @@ export default function SettingsPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                     <label className="block text-[13px] font-medium text-slate-600 mb-2">Full Name</label>
                     <input 
@@ -91,7 +91,7 @@ export default function SettingsPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div>
                     <label className="block text-[13px] font-medium text-slate-600 mb-2">Timezone</label>
                     <div className="relative">
