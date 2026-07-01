@@ -114,6 +114,21 @@ export default function UserLayout({ children }) {
                             User Profile
                         </h1>
                     </div>
+                ) : pathname.startsWith('/user/help') ? (
+                    <div>
+                        <h1 className="text-2xl sm:text-[28px] font-bold text-slate-900">
+                            Help & Support
+                        </h1>
+                    </div>
+                ) : pathname.startsWith('/user/my-requirements') ? (
+                    <div>
+                        <h1 className="text-2xl sm:text-[28px] font-bold text-slate-900">
+                            My Requirements
+                        </h1>
+                        <p className="text-xs sm:text-[13px] text-slate-500 mt-1 sm:mt-1.5">
+                            Manage your training needs and track recommendations.
+                        </p>
+                    </div>
                 ) : (
                     <div>
                         <h1 className="text-2xl sm:text-[28px] font-bold text-slate-900 flex items-center gap-2">
