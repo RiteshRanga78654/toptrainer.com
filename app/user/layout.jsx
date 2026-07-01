@@ -5,11 +5,12 @@ import {
     GraduationCap, ChevronDown, Bookmark, Menu, X
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function UserLayout({ children }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router  = useRouter();
 
   const navItems = [
     { name: 'Dashboard', href: '/user/dashboard', icon: LayoutGrid },
@@ -70,7 +71,9 @@ export default function UserLayout({ children }) {
         
         {/* User Profile */}
         <div className="p-3 m-4 border border-slate-100 rounded-2xl flex items-center justify-between bg-white shadow-sm cursor-pointer hover:border-slate-200 transition-colors">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3"
+                onClick={()=>router.push("/user/profile")}
+            >
                 <img src="https://i.pravatar.cc/150?u=aris" alt="User" className="w-10 h-10 rounded-full object-cover" />
                 <div className="flex flex-col">
                     <span className="text-sm font-semibold text-slate-900">Aris Lee</span>

@@ -11,7 +11,7 @@ export default function UserDashboard() {
     <>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {/* New Trainers */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between h-[280px]">
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                 <div>
                     <div className="flex justify-between items-center mb-10">
                         <h2 className="font-bold text-slate-900">New Trainers Added</h2>
@@ -32,7 +32,7 @@ export default function UserDashboard() {
             </div>
 
             {/* New Articles */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between h-[280px]">
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                 <div>
                     <div className="flex justify-between items-center mb-5">
                         <h2 className="font-bold text-slate-900">New Articles Published</h2>
@@ -59,7 +59,7 @@ export default function UserDashboard() {
             </div>
 
             {/* Upcoming Workshops */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between h-[280px]">
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                 <div>
                     <h2 className="font-bold text-slate-900 mb-6">Upcoming Workshops</h2>
                     <div className="space-y-5 mb-4">
