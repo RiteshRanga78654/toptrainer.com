@@ -1,8 +1,8 @@
 import express from "express";
 
-import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle } from "../controllers/articleContoller";
+import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle } from "../controllers/articleContoller.js";
 
-import { protectAdmin } from "../middleware/adminAuthMiddleware";
+import { protectAdmin } from "../middleware/adminAuthMiddleware.js";
 import { protectTrainer } from "../middleware/trainerAuthMiddleware.js";
 
 const router = express.Router();

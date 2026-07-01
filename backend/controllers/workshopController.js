@@ -1,4 +1,4 @@
-import Workshop from "../models/Workshop.js";
+import Workshop from "../models/workshops.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
 export const createWorkshop = asyncHandler(
   async (req, res) => {
@@ -6,7 +6,7 @@ export const createWorkshop = asyncHandler(
     const creatorId = req.admin?._id || req.trainer?._id;
 
     const creatorType = req.admin
-      ? "User"
+      ? "Admin"
       : "TrainerProfile";
 
     const workshop = await Workshop.create({

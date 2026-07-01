@@ -81,14 +81,14 @@ const ratingsSchema = new mongoose.Schema({
     },
 }, { _id: false });
 
-const reviewSchema = newmongoosse.Schema({
+const reviewSchema = new mongoose.Schema({
     trainer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "TrainerProfile",
         required: true,
     },
     workshop: {
-        type: mongoose.Schema.types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Workshop",
         default: null,
     },

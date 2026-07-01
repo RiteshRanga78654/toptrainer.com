@@ -10,7 +10,7 @@ const generateToken = (res, id) => {
         }
     );
 
-    res.cookie("trainerToken", token, {
+    res.cookie("trainerToken","adminToken","userToken", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",

@@ -1,15 +1,15 @@
-import Article from "../models/Article";
+import Article from "../models/Article.js";
 
 export const createArticle = async (req,res) => {
 try{
 
 const creatorID = req.admin?._id || req.trainer?._id;
 
-const creatorType = req.admin ?"User" : "TrainerProfile";
+const creatorType = req.admin ?"Admin" : "TrainerProfile";
 
 const article = await Article.create({
 ...req.body,
-createyBy: creatorID,
+createdBy: creatorID,
 creatorType,
 
 });
@@ -40,7 +40,7 @@ export const getDraftArticles = async (req,res) => {
 const creatorID = req.admin?._id || req.trainer?._id;
 
 const drafts = await Article.find({
-    createBy: creatorID,
+    createdBy: creatorID,
     status:"draft",
 }).sort({createdAt: -1});
 

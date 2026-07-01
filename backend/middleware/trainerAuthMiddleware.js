@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import TrainerProfile from '../models/trainerProfile';
+import TrainerProfile from '../models/trainerProfile.js';
 
 export const protectTrainer = async (req,res, next) => {
     try{
@@ -13,7 +13,7 @@ export const protectTrainer = async (req,res, next) => {
 
         const decoded = jwt.verify(
             token,
-            process.env.JWT.SECRET
+            process.env.JWT_SECRET
         );
 
        const trainer = await TrainerProfile.findById(decoded.id);

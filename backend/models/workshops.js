@@ -28,13 +28,27 @@ const basicInformationSchema = new mongoose.Schema({
         default: "",
     },
     coverImage: {
+  url: {
         type: String,
-        default: "",
+        required: true,
+    },
+
+    publicId: {
+         type: String, 
+         required: true, 
+        }, 
     },
 
     thumbnail: {
+      url: {
         type: String,
-        default: "",
+        required: true,
+    },
+
+    publicId: {
+         type: String, 
+         required: true, 
+        }, 
     },
 }, {_id: false});
 
@@ -180,7 +194,15 @@ const mediaGallerySchema = new mongoose.Schema(
   {
     snapshots: [
       {
+       url: {
         type: String,
+        required: true,
+    },
+
+    publicId: {
+         type: String, 
+         required: true, 
+        }, 
       },
     ],
   },
@@ -211,7 +233,6 @@ const analyticsSchema = new mongoose.Schema(
 
 const workshopSchema = new mongoose.Schema(
   {
-    /* Creator Details */
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

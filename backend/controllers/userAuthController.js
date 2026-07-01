@@ -1,7 +1,6 @@
-import User from "../models/user";
-import generateToken from "../utils/generationToken";
-import asyncHandler from "../middleware/asyncMiddlewire";
-import { toggleFeaturedReview } from "./reviewController";
+import User from "../models/user.js";
+import generateToken from "../utils/generationToken.js";
+import asyncHandler from "../middleware/asyncMiddlewire.js";
 
 export const registerUser = asyncHandler(
     async (req,res) => {
@@ -39,7 +38,7 @@ export const registerUser = asyncHandler(
             password,
         });
 
-        const token = generateToken(res, user._id);
+        const token = generateToken(res, user._id, "userToken");
 
         user.password = undefined;
 
@@ -80,8 +79,8 @@ export const registerUser = asyncHandler(
             message: "invalid email and password",
         });
     }
-    const token = generateToken(res, user._id);
-    user.password = und;
+    const token = generateToken(res, user._id, "userToken");
+    user.password = undefined;
 
     res.status(200).json({
         success: true,
@@ -93,7 +92,7 @@ export const registerUser = asyncHandler(
 
     export const logoutUser = asyncHandler(
         async (req, res) => {
-          res.cookie("token", "", { 
+          res.cookie("userToken", "", { 
             httpOnly: true, 
             expires: new Date(0), }); 
             
@@ -129,7 +128,7 @@ export const registerUser = asyncHandler(
                 req.user._id,
                 req.body,
                 {
-                    new: toggleFeaturedReview,
+                    new: user,
                     runValidators: true,
                 }
             );

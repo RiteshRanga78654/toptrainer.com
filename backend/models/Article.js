@@ -20,8 +20,15 @@ const articleSchema = new mongoose.Schema({
         required: true,
     },
     coverImage: {
+      url: {
         type: String,
-        default: "",
+        required: true,
+    },
+
+    publicId: {
+         type: String, 
+         required: true, 
+        }, 
     },
 
     author:{
