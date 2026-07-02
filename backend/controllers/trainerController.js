@@ -197,42 +197,42 @@ export const updateMyProfile = asyncHandler(
           trainer.profilePhoto.publicId
         );
       }
+
+      const profileResult = await cloudinary.uploader.upload(
+        req.files.profilePhoto[0].path,
+        {
+          folder: "toptrainer/trainer/profile",
+        }
+      );
+
+      req.body.profilePhoto = {
+        url: profileResult.secure_url,
+        publicId: profileResult.public_id,
+      };
     }
 
-    const profileResult = await cloudinary.uploader.upload(
-      req.files.profilePhoto[0].path,
-      {
-        folder: "toptrainer/trainer/profile",
-      }
-    );
-
-    req.body.profilePhoto = {
-      url: profileResult.secure_url,
-      publicId: profileResult.public_id,
-    }
     if (req.files?.bannerPhoto) {
       if (trainer.bannerPhoto?.publicId) {
         await cloudinary.uploader.destroy(
           trainer.bannerPhoto.publicId
         );
       }
+
+      const bannerResult = await cloudinary.uploader.upload(
+        req.files.bannerPhoto[0].path,
+        {
+          folder: "toptrainer/trainers/banner",
+        }
+      );
+
+      req.body.bannerPhoto = {
+        url: bannerResult.secure_url,
+        publicId: bannerResult.public_id,
+      };
     }
 
-    const bannerResult = await cloudinary.uploader.upload(
-      req.files.bannerPhoto[0].path,
-      {
-        folder: "toptrainer/trainers/banner",
-      }
-    );
-
-    req.body.bannerPhoto = {
-      url: bannerResult.secure_url,
-      publicId: bannerResult.public_id,
-    };
-
-
-    if (req.files?.profiilePdf) {
-      if (trainer.profileSmmary?.profilepdf?.publicId) {
+    if (req.files?.profilepdf) {
+      if (trainer.profileSummary?.profilepdf?.publicId) {
         await cloudinary.uploader.destroy(
           trainer.profileSummary.profilepdf.publicId,
           {
@@ -244,7 +244,7 @@ export const updateMyProfile = asyncHandler(
         req.files.profilepdf[0].path,
         {
           folder: "toptrainer/trainers/profilepdf",
-          type: "raw",
+          resource_type: "raw",
         }
       )
 
@@ -384,7 +384,7 @@ export const getAllTrainer = asyncHandler(
       query["expertiseDomain.industry"] = req.query.industry;
     }
 if(req.query.competency){
-  query["expertiseDomain.cpmpetenc"] =req.query.competency;
+  query["expertiseDomain.competencies"] =req.query.competency;
 }
 
 if(req.query.city){
@@ -402,7 +402,7 @@ const trainers = await TrainerProfile.find(query)
   createdAt: -1,
 });
 
-const total =await TrainerProfile.countDocument(query);
+const total =await TrainerProfile.countDocuments(query);
 
 res.status(200).json({
   success: true,
@@ -431,4 +431,3 @@ export const getTrainerById = asyncHandler(
       trainer,
     })
   })
-
