@@ -1,9 +1,24 @@
 "use client"
 import { useState } from "react"
 import { articles as initialArticles } from "../data/mockData"
-import { Card, Badge, Button, Modal, Input, Select, Toast } from "../../components/ui"
+import { Card, Badge, Button, Input, Select, Toast } from "../../components/ui"
 import { Plus, Search, Edit2, Trash2, Eye } from "lucide-react"
-import { formatDate } from "../../lib/api"
+import { formatDate, trainersAPI } from "../../lib/api"
+import ArticleFormModal from "../../trainer/articles/ArticleFormModal"
+import { useEffect } from "react"
+
+const CSS = `
+.btn-create {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 24px; border-radius: 13px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  font-size: .9rem; font-weight: 700;
+  border: none; cursor: pointer;
+  box-shadow: 0 6px 22px rgba(37,99,235,.35);
+  transition: all .2s cubic-bezier(.22,1,.36,1);
+}
+.btn-create:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,99,235,.4); }
+`
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState(initialArticles)
@@ -11,21 +26,31 @@ export default function ArticlesPage() {
   const [modal, setModal] = useState(false)
   const [editing, setEditing] = useState(null)
   const [toast, setToast] = useState(null)
-  const [form, setForm] = useState({ title: "", author: "", category: "Leadership", status: "draft" })
+  
+  const [trainers, setTrainers] = useState([])
+  const [loadingTrainers, setLoadingTrainers] = useState(true)
+
+  useEffect(() => {
+    trainersAPI
+      .getAll({ limit: 200, status: 'active' })
+      .then((res) => setTrainers(res.data?.data || res.data?.trainers || []))
+      .catch(() => {})
+      .finally(() => setLoadingTrainers(false))
+  }, [])
 
   const filtered = articles.filter(a =>
     a.title.toLowerCase().includes(search.toLowerCase()) || a.author.toLowerCase().includes(search.toLowerCase())
   )
 
-  const openAdd = () => { setEditing(null); setForm({ title: "", author: "", category: "Leadership", status: "draft" }); setModal(true) }
-  const openEdit = (a) => { setEditing(a); setForm({ title: a.title, author: a.author, category: a.category, status: a.status }); setModal(true) }
+  const openAdd = () => { setEditing(null); setModal(true) }
+  const openEdit = (a) => { setEditing(a); setModal(true) }
 
-  const handleSave = () => {
-    if (editing) {
-      setArticles(prev => prev.map(a => a.id === editing.id ? { ...a, ...form } : a))
+  const handleSave = async (payload, id) => {
+    if (id) {
+      setArticles(prev => prev.map(a => a.id === id ? { ...a, ...payload } : a))
       setToast("Article updated!")
     } else {
-      setArticles(prev => [...prev, { ...form, id: `a${Date.now()}`, publishedAt: form.status === "published" ? new Date().toISOString().split("T")[0] : null, views: 0, image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=80" }])
+      setArticles(prev => [{ ...payload, id: payload.id || `a${Date.now()}`, publishedAt: payload.status === "published" ? new Date().toISOString().split("T")[0] : null, views: 0, image: payload.image || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=80" }, ...prev])
       setToast("Article created!")
     }
     setModal(false)
@@ -39,8 +64,12 @@ export default function ArticlesPage() {
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search articles..."
             className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-white" />
         </div>
-        <Button onClick={openAdd}><Plus size={14} /> New Article</Button>
+        <button className="btn-create" onClick={openAdd}>
+          <Plus size={16} /> New Article
+        </button>
       </div>
+
+      <style>{CSS}</style>
 
       <Card>
         <div className="overflow-x-auto">
@@ -86,20 +115,14 @@ export default function ArticlesPage() {
         </div>
       </Card>
 
-      <Modal open={modal} onClose={() => setModal(false)} title={editing ? "Edit Article" : "New Article"}>
-        <div className="space-y-4">
-          <Input label="Title" value={form.title} onChange={v => setForm(p => ({ ...p, title: v }))} />
-          <Input label="Author" value={form.author} onChange={v => setForm(p => ({ ...p, author: v }))} />
-          <Select label="Category" value={form.category} onChange={v => setForm(p => ({ ...p, category: v }))}
-            options={[{ value: "Leadership", label: "Leadership" }, { value: "Finance", label: "Finance" }, { value: "HR", label: "HR" }, { value: "Operations", label: "Operations" }]} />
-          <Select label="Status" value={form.status} onChange={v => setForm(p => ({ ...p, status: v }))}
-            options={[{ value: "draft", label: "Draft" }, { value: "published", label: "Published" }]} />
-          <div className="flex gap-3 pt-2">
-            <Button variant="secondary" onClick={() => setModal(false)} className="flex-1">Cancel</Button>
-            <Button onClick={handleSave} className="flex-1">{editing ? "Update" : "Create"}</Button>
-          </div>
-        </div>
-      </Modal>
+      {modal && (
+        <ArticleFormModal
+          article={editing}
+          onSave={handleSave}
+          onClose={() => setModal(false)}
+          trainers={trainers}
+        />
+      )}
 
       {toast && <Toast message={toast} type="success" onClose={() => setToast(null)} />}
     </div>
