@@ -1,5 +1,20 @@
 import Workshop from "../models/workshops.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
+import cloudinary from "../config/cloudinary.js";
+
+// basicInformation / mediaGallery aate hain form-data me JSON string ki tarah,
+// isliye safely parse karte hain (agar already object hai to waisa hi return hoga)
+const parseIfString = (value) => {
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return {};
+    }
+  }
+  return value || {};
+};
+
 export const createWorkshop = asyncHandler(
   async (req, res) => {
 
@@ -9,8 +24,53 @@ export const createWorkshop = asyncHandler(
       ? "Admin"
       : "TrainerProfile";
 
+    const basicInformation = parseIfString(req.body.basicInformation);
+    const mediaGallery = parseIfString(req.body.mediaGallery);
+
+    if (req.files?.coverImage) {
+      const result = await cloudinary.uploader.upload(
+        req.files.coverImage[0].path,
+        {
+          folder: "toptrainer/workshops/cover",
+        }
+      );
+      basicInformation.coverImage = {
+        url: result.secure_url,
+        publicId: result.public_id,
+      };
+    }
+
+    if (req.files?.thumbnail) {
+      const result = await cloudinary.uploader.upload(
+        req.files.thumbnail[0].path,
+        {
+          folder: "toptrainer/workshops/thumbnail",
+        }
+      );
+      basicInformation.thumbnail = {
+        url: result.secure_url,
+        publicId: result.public_id,
+      };
+    }
+
+    if (req.files?.snapshots) {
+      const snapshots = [];
+      for (const file of req.files.snapshots) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: "toptrainer/workshops/gallery",
+        });
+        snapshots.push({
+          url: result.secure_url,
+          publicId: result.public_id,
+        });
+      }
+      mediaGallery.snapshots = snapshots;
+    }
+
     const workshop = await Workshop.create({
       ...req.body,
+      basicInformation,
+      mediaGallery,
       createdBy: creatorId,
       creatorType,
     });
@@ -113,6 +173,89 @@ export const publishWorkshop = asyncHandler(async (req,res) => {
 
 export const updateWorkshop = asyncHandler(async (req,res) => {
 
+    const existingWorkshop = await Workshop.findById(req.params.id);
+
+    if (!existingWorkshop) {
+      return res.status(404).json({
+        success: false,
+        message: "Workshop not found",
+      });
+    }
+
+    const basicInformation = parseIfString(req.body.basicInformation);
+    const mediaGallery = parseIfString(req.body.mediaGallery);
+
+    if (req.files?.coverImage) {
+      if (existingWorkshop.basicInformation?.coverImage?.publicId) {
+        await cloudinary.uploader.destroy(
+          existingWorkshop.basicInformation.coverImage.publicId
+        );
+      }
+      const result = await cloudinary.uploader.upload(
+        req.files.coverImage[0].path,
+        {
+          folder: "toptrainer/workshops/cover",
+        }
+      );
+      basicInformation.coverImage = {
+        url: result.secure_url,
+        publicId: result.public_id,
+      };
+    }
+
+    if (req.files?.thumbnail) {
+      if (existingWorkshop.basicInformation?.thumbnail?.publicId) {
+        await cloudinary.uploader.destroy(
+          existingWorkshop.basicInformation.thumbnail.publicId
+        );
+      }
+      const result = await cloudinary.uploader.upload(
+        req.files.thumbnail[0].path,
+        {
+          folder: "toptrainer/workshops/thumbnail",
+        }
+      );
+      basicInformation.thumbnail = {
+        url: result.secure_url,
+        publicId: result.public_id,
+      };
+    }
+
+    if (req.files?.snapshots) {
+      if (existingWorkshop.mediaGallery?.snapshots?.length) {
+        for (const snapshot of existingWorkshop.mediaGallery.snapshots) {
+          if (snapshot.publicId) {
+            await cloudinary.uploader.destroy(snapshot.publicId);
+          }
+        }
+      }
+      const snapshots = [];
+      for (const file of req.files.snapshots) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: "toptrainer/workshops/gallery",
+        });
+        snapshots.push({
+          url: result.secure_url,
+          publicId: result.public_id,
+        });
+      }
+      mediaGallery.snapshots = snapshots;
+    }
+
+    if (Object.keys(basicInformation).length) {
+      req.body.basicInformation = {
+        ...existingWorkshop.basicInformation.toObject(),
+        ...basicInformation,
+      };
+    }
+
+    if (Object.keys(mediaGallery).length) {
+      req.body.mediaGallery = {
+        ...existingWorkshop.mediaGallery?.toObject(),
+        ...mediaGallery,
+      };
+    }
+
     const workshop =
       await Workshop.findByIdAndUpdate(
         req.params.id,
@@ -122,13 +265,6 @@ export const updateWorkshop = asyncHandler(async (req,res) => {
           runValidators: true,
         }
       );
-
-    if (!workshop) {
-      return res.status(404).json({
-        success: false,
-        message: "Workshop not found",
-      });
-    }
 
     res.status(200).json({
       success: true,
@@ -150,6 +286,26 @@ export const deleteWorkshop = asyncHandler(async (req,res) => {
         success: false,
         message: "Workshop not found",
       });
+    }
+
+    if (workshop.basicInformation?.coverImage?.publicId) {
+      await cloudinary.uploader.destroy(
+        workshop.basicInformation.coverImage.publicId
+      );
+    }
+
+    if (workshop.basicInformation?.thumbnail?.publicId) {
+      await cloudinary.uploader.destroy(
+        workshop.basicInformation.thumbnail.publicId
+      );
+    }
+
+    if (workshop.mediaGallery?.snapshots?.length) {
+      for (const snapshot of workshop.mediaGallery.snapshots) {
+        if (snapshot.publicId) {
+          await cloudinary.uploader.destroy(snapshot.publicId);
+        }
+      }
     }
 
     await workshop.deleteOne();

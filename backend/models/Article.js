@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const sectionSchema = new mongoose.Schema({
     type: {
         type: String,
-        enm: ["heading","paragraph", "callout", "quote"],
+        enum: ["heading","paragraph", "callout", "quote"],
         required: true,
     },
     content: {
@@ -14,10 +14,22 @@ const sectionSchema = new mongoose.Schema({
 },{_id: false});
 
 const articleSchema = new mongoose.Schema({
+   createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        refPath: "creatorType",
+    },
+
+    creatorType: {
+        type: String,
+        required: true,
+        enum: ["Admin", "TrainerProfile"],
+    },
+
+  
     trainer: {
         type: String,
         ref: "TrainerProfile",
-        required: true,
     },
     coverImage: {
       url: {

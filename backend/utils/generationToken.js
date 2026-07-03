@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const generateToken = (res, id) => {
+const generateToken = (res, id, cookiesName) => {
 
     const token = jwt.sign(
         { id },
@@ -10,7 +10,7 @@ const generateToken = (res, id) => {
         }
     );
 
-    res.cookie("trainerToken","adminToken","userToken", token, {
+    res.cookie(cookiesName, token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",

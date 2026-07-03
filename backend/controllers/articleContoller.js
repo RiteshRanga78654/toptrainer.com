@@ -1,16 +1,47 @@
 import Article from "../models/Article.js";
+import cloudinary from "../config/cloudinary.js";
+import asyncHandler from "../middleware/asyncMiddlewire.js";
 
-export const createArticle = async (req,res) => {
-try{
+
+const parseIfString = (value) => {
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return {};
+    }
+  }
+  return value || {};
+};
+
+export const createArticle = asyncHandler(async (req,res) => {
 
 const creatorID = req.admin?._id || req.trainer?._id;
 
 const creatorType = req.admin ?"Admin" : "TrainerProfile";
 
+if (!req.file) {
+    return res.status(400).json({
+        success: false,
+        message: "Please upload a cover image",
+    });
+}
+
+const result = await cloudinary.uploader.upload(req.file.path, {
+    folder: "toptrainer/articles/cover",
+});
+
+const coverImage = {
+    url: result.secure_url,
+    publicId: result.public_id,
+};
+
 const article = await Article.create({
 ...req.body,
+coverImage,
 createdBy: creatorID,
 creatorType,
+trainer: req.trainer?._id,
 
 });
 res.status(201).json({
@@ -23,20 +54,8 @@ res.status(201).json({
     article,
 });
 
-
-
-
-
-
-} catch (error){
-    res.status(500).json({
-        success: false,
-        message: error.message,
-    });
-}
-};
-export const getDraftArticles = async (req,res) => {
-    try{
+});
+export const getDraftArticles = asyncHandler(async (req,res) => {
 const creatorID = req.admin?._id || req.trainer?._id;
 
 const drafts = await Article.find({
@@ -49,15 +68,9 @@ res.status(200).json({
     count: drafts.length,
     drafts,
 });
-    } catch(error){
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        })
-    }
-};
-export const getMyPublishedArticles = async (req,res) => {
-    try{
+});
+
+export const getMyPublishedArticles = asyncHandler(async (req,res) => {
 const creatorID = req.admin?._id || req.trainer?._id;
 
 const articles = await Article.find({
@@ -70,15 +83,9 @@ res.status(200).json({
     count: articles.length,
     articles,
 });
-    } catch(error) {
-        res.status(500).json({
-            success:false,
-            message:error.message,
-        });
-    }
-};
-export const publishArticle= async(req, res) => {
-try{
+});
+
+export const publishArticle= asyncHandler(async(req, res) => {
 
     const article = await Article.findById(
         req.params.id
@@ -90,6 +97,7 @@ try{
         });
     }
     article.status="published";
+    article.publishedAt = new Date();
 
     await article.save();
 
@@ -98,36 +106,78 @@ try{
         message: "Article published successfully",
         article,
     });
-}catch (error) {
-    res.status(500).json({
-        success:false,
-        message: error.message,
-    })
-}
-}; 
-export const deleteArticle = async (req,res ) => {
+});
 
-    try{
-        const article = await Article.findById(
-            req.params.id
-        );
-if(!article){
-     return res.status(400).json({
+export const deleteArticle = asyncHandler(async (req,res ) => {
+
+    const article = await Article.findById(
+        req.params.id
+    );
+    if(!article){
+     return res.status(404).json({
         success: false,
         message: "Article not found",
      })
-}
+    }
 
-await article.deleteOne();
+    if (article.coverImage?.publicId) {
+        await cloudinary.uploader.destroy(article.coverImage.publicId);
+    }
 
-res.status(200).json({
-    success: true,
-    message: "Article deleted successfully",
-});
-} catch (error){
-    res.status(500).json({
-        success: false,
-        message: error.message,
+    await article.deleteOne();
+
+    res.status(200).json({
+        success: true,
+        message: "Article deleted successfully",
     });
-}
-};
+});
+
+export const updateArticle = asyncHandler(async (req, res) => {
+ 
+    const article = await Article.findById(req.params.id);
+ 
+    if (!article) {
+        return res.status(404).json({
+            success: false,
+            message: "Article not found",
+        });
+    }
+ 
+    if (req.file) {
+        if (article.coverImage?.publicId) {
+            await cloudinary.uploader.destroy(article.coverImage.publicId);
+        }
+ 
+        const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: "toptrainer/articles/cover",
+        });
+ 
+        req.body.coverImage = {
+            url: result.secure_url,
+            publicId: result.public_id,
+        };
+    }
+ 
+    if (req.body.sections !== undefined) {
+        req.body.sections = parseIfString(req.body.sections);
+    }
+ 
+    if (req.body.tags !== undefined) {
+        req.body.tags = parseIfString(req.body.tags);
+    }
+ 
+    const updatedArticle = await Article.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+ 
+    res.status(200).json({
+        success: true,
+        message: "Article updated successfully",
+        article: updatedArticle,
+    });
+});

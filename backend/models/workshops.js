@@ -243,7 +243,7 @@ const workshopSchema = new mongoose.Schema(
     creatorType: {
       type: String,
       required: true,
-      enum: ["User", "TrainerProfile"], // Admin or Trainer
+      enum: ["Admin", "TrainerProfile"],
     },
 
     assignedTrainer: {
@@ -277,6 +277,7 @@ const workshopSchema = new mongoose.Schema(
     visibility: {
       type: Boolean,
       default: true,
+
     },
   },
   {

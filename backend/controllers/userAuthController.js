@@ -128,16 +128,20 @@ export const registerUser = asyncHandler(
                 req.user._id,
                 req.body,
                 {
-                    new: user,
+                    new: true,
                     runValidators: true,
                 }
             );
+            res.status(200).json({
+                success: true,
+                user,
+            });
         });
 
 
     export const updatePassword = asyncHandler(
         async (req, res) => {
-            const {oldPassword, newPassword} = req.bpdy;
+            const {oldPassword, newPassword} = req.body;
 
             const user = await User.findById(
                 req.user._id,
