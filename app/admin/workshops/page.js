@@ -15,6 +15,21 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 
+import WorkshopFormModal from '../../trainer/workshops/WorkshopFormModal'
+
+const CSS = `
+.btn-create {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 24px; border-radius: 13px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  font-size: .9rem; font-weight: 700;
+  border: none; cursor: pointer;
+  box-shadow: 0 6px 22px rgba(37,99,235,.35);
+  transition: all .2s cubic-bezier(.22,1,.36,1);
+}
+.btn-create:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,99,235,.4); }
+`
+
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function toDatetimeLocal(isoStr) {
   if (!isoStr) return ''
@@ -25,195 +40,7 @@ function toDatetimeLocal(isoStr) {
   }
 }
 
-// ─── Workshop Form ─────────────────────────────────────────────────────────
-function WorkshopForm({ initial, onSubmit, onCancel, loading }) {
-  const [trainers, setTrainers] = useState([])
-  const [loadingTrainers, setLoadingTrainers] = useState(true)
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset
-  } = useForm({
-    defaultValues: initial
-      ? {
-          ...initial,
-          trainer: initial.trainer?._id || initial.trainer || '',
-          startDate: toDatetimeLocal(initial.startDate),
-          endDate: toDatetimeLocal(initial.endDate)
-        }
-      : {
-          mode: 'offline',
-          price: 0,
-          maxCapacity: 30
-        }
-  })
-
-  useEffect(() => {
-    trainersAPI
-      .getAll({ limit: 200, status: 'active' })
-      .then((res) => {
-        setTrainers(res.data?.data || res.data?.trainers || [])
-      })
-      .catch(() => {})
-      .finally(() => setLoadingTrainers(false))
-  }, [])
-
-  useEffect(() => {
-    reset(
-      initial
-        ? {
-            ...initial,
-            trainer: initial.trainer?._id || initial.trainer || '',
-            startDate: toDatetimeLocal(initial.startDate),
-            endDate: toDatetimeLocal(initial.endDate)
-          }
-        : { mode: 'offline', price: 0, maxCapacity: 30 }
-    )
-  }, [initial?._id])
-
-  const onFormSubmit = handleSubmit((data) => {
-    const payload = {
-      ...data,
-      price: Number(data.price) || 0,
-      maxCapacity: Number(data.maxCapacity) || 0
-    }
-    onSubmit(payload)
-  })
-
-  return (
-    <form onSubmit={onFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      {/* Title */}
-      <Input
-        label="Workshop Title *"
-        error={errors.title?.message}
-        placeholder="e.g. Advanced Leadership Masterclass"
-        {...register('title', { required: 'Title is required' })}
-      />
-
-      {/* Description */}
-      <Textarea
-        label="Description"
-        rows={3}
-        placeholder="What participants will learn, agenda, outcomes…"
-        {...register('description')}
-      />
-
-      {/* Dates */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-        <Input
-          label="Start Date & Time *"
-          type="datetime-local"
-          error={errors.startDate?.message}
-          {...register('startDate', { required: 'Start date is required' })}
-        />
-        <Input
-          label="End Date & Time *"
-          type="datetime-local"
-          error={errors.endDate?.message}
-          {...register('endDate', { required: 'End date is required' })}
-        />
-      </div>
-
-      {/* Location & Mode */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-        <Input
-          label="Location / Venue"
-          placeholder="City, Venue Name or Online"
-          {...register('location')}
-        />
-        <Select label="Delivery Mode" {...register('mode')}>
-          <option value="offline">In-Person</option>
-          <option value="online">Online</option>
-          <option value="hybrid">Hybrid</option>
-        </Select>
-      </div>
-
-      {/* Capacity & Price */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-        <Input
-          label="Max Capacity"
-          type="number"
-          min={1}
-          placeholder="50"
-          {...register('maxCapacity', { valueAsNumber: true, min: { value: 1, message: 'Min 1' } })}
-        />
-        <Input
-          label="Price ($)"
-          type="number"
-          min={0}
-          step="0.01"
-          placeholder="0 for free"
-          {...register('price', { valueAsNumber: true, min: { value: 0, message: 'Cannot be negative' } })}
-        />
-      </div>
-
-      {/* Trainer */}
-      <Select label="Assigned Trainer" {...register('trainer')}>
-        <option value="">
-          {loadingTrainers ? 'Loading trainers…' : '— Select Trainer (optional) —'}
-        </option>
-        {trainers.map((t) => (
-          <option key={t._id} value={t._id}>
-            {t.name} {t.email ? `(${t.email})` : ''}
-          </option>
-        ))}
-      </Select>
-
-      {/* Tags */}
-      <Input
-        label="Tags (comma separated)"
-        placeholder="leadership, communication, team-building"
-        {...register('tags')}
-      />
-
-      {/* Thumbnail */}
-      <Input
-        label="Thumbnail / Cover Image URL"
-        placeholder="https://example.com/image.jpg"
-        {...register('thumbnail')}
-      />
-
-      {/* Online Link */}
-      <Input
-        label="Online Meeting Link (if applicable)"
-        placeholder="https://zoom.us/j/…"
-        {...register('onlineLink')}
-      />
-
-      {/* Status (edit only) */}
-      {initial && (
-        <Select label="Status" {...register('status')}>
-          <option value="upcoming">Upcoming</option>
-          <option value="ongoing">Ongoing</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </Select>
-      )}
-
-      {/* Actions */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 10,
-          justifyContent: 'flex-end',
-          paddingTop: 12,
-          borderTop: '1px solid var(--border)',
-          marginTop: 4
-        }}
-      >
-        <Button variant="secondary" type="button" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" loading={loading}>
-          {initial ? 'Save Changes' : 'Create Workshop'}
-        </Button>
-      </div>
-    </form>
-  )
-}
-
+// ─── Main Page ─────────────────────────────────────────────────────────────
 // ─── Status filter pill row ────────────────────────────────────────────────
 function StatusPills({ value, onChange }) {
   const opts = [
@@ -238,10 +65,22 @@ function StatusPills({ value, onChange }) {
   )
 }
 
-// ─── Main Page ─────────────────────────────────────────────────────────────
 export default function AdminWorkshopsPage() {
   const [statusFilter, setStatusFilter] = useState('')
   const [modeFilter, setModeFilter]     = useState('')
+  
+  const [trainers, setTrainers] = useState([])
+  const [loadingTrainers, setLoadingTrainers] = useState(true)
+
+  useEffect(() => {
+    trainersAPI
+      .getAll({ limit: 200, status: 'active' })
+      .then((res) => {
+        setTrainers(res.data?.data || res.data?.trainers || [])
+      })
+      .catch(() => {})
+      .finally(() => setLoadingTrainers(false))
+  }, [])
 
   const pagination = usePagination()
   const editModal   = useModal()
@@ -438,14 +277,13 @@ export default function AdminWorkshopsPage() {
           title="Workshops"
           subtitle="Create and manage all training workshops"
           actions={
-            <Button
-              icon={<Plus size={16} />}
-              onClick={() => editModal.open(null)}
-            >
-              New Workshop
-            </Button>
+            <button className="btn-create" onClick={() => editModal.open(null)}>
+              <Plus size={16} /> Create Workshop
+            </button>
           }
         />
+
+        <style>{CSS}</style>
 
         {/* Stat mini cards */}
         <div
@@ -545,19 +383,14 @@ export default function AdminWorkshopsPage() {
         </Card>
 
         {/* Create / Edit Modal */}
-        <Modal
-          isOpen={editModal.isOpen}
-          onClose={editModal.close}
-          title={editModal.data ? 'Edit Workshop' : 'Create New Workshop'}
-          size="lg"
-        >
-          <WorkshopForm
-            initial={editModal.data}
-            onSubmit={handleSubmit}
-            onCancel={editModal.close}
-            loading={crud.submitting}
+        {editModal.isOpen && (
+          <WorkshopFormModal
+            workshop={editModal.data}
+            onSave={handleSubmit}
+            onClose={editModal.close}
+            trainers={trainers}
           />
-        </Modal>
+        )}
 
         {/* Delete Confirm */}
         <ConfirmDialog
