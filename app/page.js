@@ -1,4 +1,3 @@
-"use client";
 // code of main "/" page.js
 //  "use client";
 
@@ -283,6 +282,7 @@ import Category from "./components/category";
 import Articles from "./components/article";
 // import Trainer from "./components/trainer";
 import Image from "next/image";
+import PopularTrainers from "./components/course";
 
 /* ━━━ GLOBAL STYLES ━━━ */
 const GlobalStyles = () => (
@@ -1176,7 +1176,7 @@ const Page = () => {
         </div>
       </section>
 
-      <PopularCourses />
+      <PopularTrainers />
       <Category />
       <YoutubeSection />
       <Articles />

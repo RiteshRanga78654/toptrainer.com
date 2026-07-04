@@ -9,7 +9,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 /* ─── Filters ─── */
 const filters = [
-  { id: "All",                  label: "All Trainers" },
+  { id: "All",                  label: "All Workshops" },
   { id: "Tech",                 label: "Tech" },
   { id: "Business",             label: "Business" },
   { id: "Health",               label: "Health" },
@@ -20,116 +20,7 @@ const filters = [
 ];
 
 /* ─── Trainers Data ─── */
-const trainers = [
-  {
-    id: 1, title: "Full Stack Web Development",
-    category: "Tech", rating: "4.9", views: "2.5k", duration: "12 weeks",
-    author: "Alex Johnson", initials: "AJ",
-    desc: "Master React, Node.js, and cloud deployment with real-world industry projects.",
-    price: 1999, oldPrice: 4999, students: "3.2k", featured: true,
-    tags: ["React", "Node.js", "AWS"],
-    img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&q=80",
-  },
-  {
-    id: 2, title: "Stock Market for Beginners",
-    category: "Finance", rating: "4.7", views: "1.8k", duration: "8 weeks",
-    author: "Rakesh Sharma", initials: "RS",
-    desc: "Build wealth with proven investment strategies and deep market insights.",
-    price: 1499, oldPrice: 3499, students: "2.1k", featured: false,
-    tags: ["Investing", "Trading", "Wealth"],
-    img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80",
-  },
-  {
-    id: 3, title: "Personal Fitness & Workout",
-    category: "Health", rating: "4.8", views: "2.1k", duration: "6 weeks",
-    author: "Chris Evans", initials: "CE",
-    desc: "Transform your body with science-backed training plans and nutrition guides.",
-    price: 999, oldPrice: 2499, students: "4.7k", featured: true,
-    tags: ["Fitness", "Nutrition", "Strength"],
-    img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80",
-  },
-  {
-    id: 4, title: "Digital Marketing Mastery",
-    category: "Marketing", rating: "4.6", views: "1.3k", duration: "10 weeks",
-    author: "Neha Verma", initials: "NV",
-    desc: "Drive traffic, leads and sales through modern digital channels and strategies.",
-    price: 1799, oldPrice: 3999, students: "1.9k", featured: false,
-    tags: ["SEO", "Social Media", "Ads"],
-    img: "https://images.unsplash.com/photo-1557838923-2985c318be48?w=600&q=80",
-  },
-  {
-    id: 5, title: "Photography Fundamentals",
-    category: "Creative", rating: "4.9", views: "1.9k", duration: "5 weeks",
-    author: "Rahul Kapoor", initials: "RK",
-    desc: "Capture stunning images with composition, lighting and professional editing.",
-    price: 1299, oldPrice: 2999, students: "2.8k", featured: false,
-    tags: ["DSLR", "Lightroom", "Composition"],
-    img: "https://images.unsplash.com/photo-1452780212461-51a80f3a1c3e?w=600&q=80",
-  },
-  {
-    id: 6, title: "Public Speaking & Confidence",
-    category: "Personal Development", rating: "4.8", views: "1.6k", duration: "4 weeks",
-    author: "Anita Singh", initials: "AS",
-    desc: "Command any room with powerful communication skills and unshakeable presence.",
-    price: 1199, oldPrice: 2799, students: "3.4k", featured: true,
-    tags: ["Speaking", "Leadership", "Presence"],
-    img: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&q=80",
-  },
-  {
-    id: 7, title: "Yoga & Mental Wellness",
-    category: "Health", rating: "4.7", views: "1.4k", duration: "8 weeks",
-    author: "Sanya Mehta", initials: "SM",
-    desc: "Reduce stress, improve flexibility and find balance with daily mindfulness.",
-    price: 899, oldPrice: 1999, students: "5.1k", featured: false,
-    tags: ["Yoga", "Meditation", "Mindfulness"],
-    img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80",
-  },
-  {
-    id: 8, title: "Startup & Entrepreneurship",
-    category: "Business", rating: "4.6", views: "1.2k", duration: "12 weeks",
-    author: "Vikram Malhotra", initials: "VM",
-    desc: "Go from idea to funded startup with proven frameworks and real founder stories.",
-    price: 2199, oldPrice: 4999, students: "1.5k", featured: true,
-    tags: ["Startup", "Funding", "Growth"],
-    img: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&q=80",
-  },
-  {
-    id: 9, title: "Advanced Video Editing",
-    category: "Creative", rating: "4.8", views: "1.7k", duration: "7 weeks",
-    author: "Priya Nair", initials: "PN",
-    desc: "Edit cinematic videos using Premiere Pro, After Effects and DaVinci Resolve.",
-    price: 1599, oldPrice: 3499, students: "2.2k", featured: false,
-    tags: ["Premiere", "After Effects", "Color"],
-    img: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=600&q=80",
-  },
-  {
-    id: 10, title: "Leadership & Team Building",
-    category: "Personal Development", rating: "4.9", views: "2k", duration: "6 weeks",
-    author: "Amit Joshi", initials: "AJ",
-    desc: "Lead high-performing teams with empathy, vision and clear strategic thinking.",
-    price: 1899, oldPrice: 4299, students: "2.9k", featured: true,
-    tags: ["Leadership", "Culture", "Strategy"],
-    img: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=80",
-  },
-  {
-    id: 11, title: "Nutrition & Healthy Living",
-    category: "Health", rating: "4.7", views: "1.3k", duration: "6 weeks",
-    author: "Dr. Ritu Sharma", initials: "RS",
-    desc: "Science-based nutrition plans for lasting energy, immunity and longevity.",
-    price: 999, oldPrice: 2199, students: "3.6k", featured: false,
-    tags: ["Diet", "Immunity", "Wellness"],
-    img: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80",
-  },
-  {
-    id: 12, title: "Business Finance & Accounting",
-    category: "Business", rating: "4.6", views: "1.1k", duration: "10 weeks",
-    author: "Suresh Kapoor", initials: "SK",
-    desc: "Read balance sheets, manage cash flow and make sharper financial decisions.",
-    price: 1699, oldPrice: 3799, students: "1.4k", featured: false,
-    tags: ["Finance", "Accounting", "Cash Flow"],
-    img: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80",
-  },
-];
+import { workshops as allWorkshops } from "../admin/data/mockData";
 
 /* ─── Helpers ─── */
 const formatINR = (n) => "₹" + n.toLocaleString("en-IN");
@@ -352,11 +243,23 @@ const Category = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [visibleCount, setVisibleCount] = useState(4);
   const INITIAL_COUNT = 4;
+  
+  const [featuredTrainers, setFeaturedTrainers] = useState(
+    allWorkshops.filter(w => w.featured)
+  );
+
+  useEffect(() => {
+    const saved = localStorage.getItem("toptrainer_featured_workshops");
+    if (saved) {
+      const savedIds = new Set(JSON.parse(saved));
+      setFeaturedTrainers(allWorkshops.filter(w => savedIds.has(w.id)));
+    }
+  }, []);
 
   const filteredTrainers =
     activeFilter === "All"
-      ? trainers
-      : trainers.filter((t) => t.category === activeFilter);
+      ? featuredTrainers
+      : featuredTrainers.filter((t) => t.category === activeFilter);
 
   const visibleTrainers = filteredTrainers.slice(0, visibleCount);
   const hasMore = visibleCount < filteredTrainers.length;
@@ -391,7 +294,7 @@ const Category = () => {
         }
       `}</style>
 
-      <div className="min-h-screen bg-black font-sans">
+      <div className="min-h-screen bg-gray-50 font-sans">
 
         {/* ── Hero Banner ── */}
         <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 py-16 px-6 overflow-hidden">
@@ -450,7 +353,7 @@ const Category = () => {
                 <span className="font-bold text-gray-800">{Math.min(visibleCount, filteredTrainers.length)}</span>
                 {" "}of{" "}
                 <span className="font-bold text-gray-800">{filteredTrainers.length}</span>
-                {" "}trainers
+                {" "}workshops
               </p>
             </div>
             <div className="flex items-center gap-3 min-w-[200px]">
@@ -504,7 +407,7 @@ const Category = () => {
                 className="flex items-center gap-2 px-8 py-3 bg-white text-blue-700 border-2 border-blue-600 rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 {hasMore ? (
-                  <><span>Load More Trainers</span><ChevronDown size={16} /></>
+                  <><span>Load More Workshops</span><ChevronDown size={16} /></>
                 ) : (
                   <><span>Show Less</span><ChevronUp size={16} /></>
                 )}

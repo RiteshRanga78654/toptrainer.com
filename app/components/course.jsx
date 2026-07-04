@@ -816,7 +816,7 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
 }
 
 /* ── Main Component ── */
-export default function PopularCourses() {
+export default function PopularTrainers() {
   const [activeTab, setActiveTab] = useState(null);
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -865,7 +865,7 @@ export default function PopularCourses() {
               </p>
             </div>
             <button className="pc-see-all self-start sm:self-auto">
-              <span>See All Workshops</span>
+              <span>See All Trainers</span>
               <ArrowRight size={14} style={{ position: "relative", zIndex: 1 }} />
             </button>
           </div>
