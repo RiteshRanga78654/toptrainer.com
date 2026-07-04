@@ -391,7 +391,7 @@ const Category = () => {
         }
       `}</style>
 
-      <div className="min-h-screen bg-gray-50 font-sans">
+      <div className="min-h-screen bg-black font-sans">
 
         {/* ── Hero Banner ── */}
         <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 py-16 px-6 overflow-hidden">

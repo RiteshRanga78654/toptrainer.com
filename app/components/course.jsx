@@ -1,3 +1,4 @@
+
 // import Image from "next/image";
 
 // export default function PopularCourses() {
@@ -864,7 +865,7 @@ export default function PopularCourses() {
               </p>
             </div>
             <button className="pc-see-all self-start sm:self-auto">
-              <span>See All Trainers</span>
+              <span>See All Workshops</span>
               <ArrowRight size={14} style={{ position: "relative", zIndex: 1 }} />
             </button>
           </div>

@@ -305,65 +305,8 @@ export default function HomepagePage() {
         </div>
       </Card>
 
-      {/* ── 4. General Settings ────────────────────────────────────────────── */}
-      <Card>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
-              <Settings size={14} className="text-slate-600" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-900">General Settings</p>
-              <p className="text-xs text-slate-500">Site identity, social links &amp; slider behaviour</p>
-            </div>
-          </div>
-          <Button onClick={() => { setSettingsSaved(true); setTimeout(() => setSettingsSaved(false), 3000) }} size="sm">
-            Save Settings
-          </Button>
-        </div>
 
-        <div className="p-5 space-y-6">
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Site Identity */}
-            <div className="space-y-3">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Site Identity</p>
-              <Input label="Site Name"     value={settings.siteName}     onChange={v => updateSetting("siteName", v)} />
-              <Input label="Tagline"       value={settings.tagline}      onChange={v => updateSetting("tagline", v)} />
-              <Input label="Contact Email" value={settings.contactEmail} onChange={v => updateSetting("contactEmail", v)} type="email" />
-              <Input label="Support Phone" value={settings.supportPhone} onChange={v => updateSetting("supportPhone", v)} />
-            </div>
-
-            {/* Social Links */}
-            <div className="space-y-3">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Social Links</p>
-              {Object.entries(settings.socialLinks).map(([platform, url]) => (
-                <Input
-                  key={platform}
-                  label={platform.charAt(0).toUpperCase() + platform.slice(1)}
-                  value={url}
-                  onChange={v => updateSetting("socialLinks", { ...settings.socialLinks, [platform]: v })}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Slider interval */}
-          <div className="border-t border-slate-100 pt-5">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Slider Settings</p>
-            <div className="flex items-center gap-4 max-w-lg">
-              <label className="text-sm font-medium text-slate-700 w-44 shrink-0">Slide interval</label>
-              <input
-                type="range" min={5} max={60} step={5}
-                value={settings.heroSliderInterval}
-                onChange={e => updateSetting("heroSliderInterval", Number(e.target.value))}
-                className="flex-1 accent-blue-600"
-              />
-              <span className="text-sm font-bold text-slate-900 w-10 text-right">{settings.heroSliderInterval}s</span>
-            </div>
-          </div>
-        </div>
-      </Card>
-
+      
       {/* Toasts */}
       {heroSaved     && <Toast message="Hero section saved!"      type="success" onClose={() => setHeroSaved(false)} />}
       {expertSaved   && <Toast message="Expert selections saved!" type="success" onClose={() => setExpertSaved(false)} />}
