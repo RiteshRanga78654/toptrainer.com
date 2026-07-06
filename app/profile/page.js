@@ -402,7 +402,7 @@ export default function Profile() {
 
                 <FadeIn delay={80}>
                   <Card>
-                    <SectionHeader icon={MessageSquare} title="What People Say" linkText="View All" />
+                    <SectionHeader icon={MessageSquare} title="Reviews" linkText="View All" />
                     <div className="grid sm:grid-cols-2 gap-4">
                       <Testimonial quote="Karan's session on Agile Leadership was transformative. Very engaging and practical!" name="Priya Sharma" role="Delivery Head, Infosys" delay={0} />
                       <Testimonial quote="One of the best trainers I have attended. Real-world examples and case studies made it so impactful." name="Rahul Mehta" role="Project Manager, TCS" delay={120} />
