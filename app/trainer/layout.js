@@ -212,47 +212,7 @@ function Sidebar({ open, onClose }) {
           </div>
         </div>
 
-        {/* User pill */}
-        <div style={{ padding: '14px 16px 8px' }}>
-          <Link href="/trainer/profile" onClick={onClose} style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            background: 'linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.05))',
-            border: '1px solid rgba(37,99,235,0.12)',
-            borderRadius: 12, padding: '10px 12px', textDecoration: 'none',
-            transition: 'all 0.2s',
-          }}
-            onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg,rgba(37,99,235,0.1),rgba(124,58,237,0.08))'}
-            onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.05))'}
-          >
-            <div style={{
-              width: 36, height: 36, borderRadius: 10, flexShrink: 0, overflow: 'hidden',
-              background: `linear-gradient(135deg,${T.blue},${T.violet})`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: "'Plus Jakarta Sans',sans-serif",
-              fontWeight: 700, fontSize: '0.95rem', color: 'white',
-            }}>
-              {user?.avatar
-                ? <img src={user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />
-                : initials
-              }
-            </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{
-                fontWeight: 700, fontSize: '0.82rem', color: T.slate,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>
-                {user?.name || 'Trainer'}
-              </div>
-              <div style={{
-                fontSize: '0.67rem', color: T.muted,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>
-                {user?.email || ''}
-              </div>
-            </div>
-            <ChevronRight size={13} color={T.light} />
-          </Link>
-        </div>
+        
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: '4px 10px', overflowY: 'auto' }}>

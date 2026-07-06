@@ -21,6 +21,8 @@ const filters = [
 
 /* ─── Trainers Data ─── */
 import { workshops as allWorkshops } from "../admin/data/mockData";
+import Link from "next/link";
+
 
 /* ─── Helpers ─── */
 const formatINR = (n) => "₹" + n.toLocaleString("en-IN");
@@ -417,17 +419,19 @@ const Category = () => {
         </div>
 
         {/* ── Bottom CTA ── */}
-        {/* <div className="bg-gradient-to-r from-blue-700 to-indigo-800 mt-4 py-14 px-6 text-center">
+        <div className="bg-gradient-to-r from-blue-700 to-indigo-800 mt-4 py-14 px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3">
             Are you an expert? Become a Trainer.
           </h2>
           <p className="text-blue-200 mb-6 max-w-md mx-auto text-sm">
             Join 480+ top trainers on TopTrainer and start earning by sharing your knowledge.
           </p>
-          <button className="bg-amber-400 text-amber-900 font-bold px-8 py-3 rounded-xl hover:bg-amber-300 transition-all duration-200 text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
+          <Link 
+            href="/join-as-trainer" 
+            className="bg-amber-400 text-amber-900 font-bold px-8 py-3 rounded-xl hover:bg-amber-300 transition-all duration-200 text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
             Apply as a Trainer →
-          </button>
-        </div> */}
+          </Link>
+        </div>
 
       </div>
     </>

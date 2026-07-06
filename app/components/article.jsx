@@ -170,6 +170,7 @@ function ArticleCard({ article, index }) {
 function MobileCarousel({ articles }) {
   const scrollRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAtEnd, setIsAtEnd] = useState(false);
 
   const MAX_DOTS = 8;
 
@@ -208,13 +209,14 @@ function MobileCarousel({ articles }) {
     const el = scrollRef.current;
     if (!el) return;
 
-    const cardWidth = el.offsetWidth;
+    const slide = el.firstElementChild;
+    if (!slide) return;
 
-    const index = Math.round(
-      el.scrollLeft / cardWidth
-    );
-
+    const cardWidth = slide.offsetWidth + 16;
+    const index = Math.round(el.scrollLeft / cardWidth);
     setCurrentIndex(index);
+    
+    setIsAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 1);
   }, []);
 
   useEffect(() => {
@@ -247,6 +249,7 @@ function MobileCarousel({ articles }) {
     });
 
     setCurrentIndex(0);
+    setIsAtEnd(false);
   }, [articles]);
 
   // ─── Scroll To ───
@@ -261,8 +264,11 @@ function MobileCarousel({ articles }) {
         Math.min(index, articles.length - 1)
       );
 
+      const slide = el.firstElementChild;
+      const cardWidth = slide ? slide.offsetWidth + 16 : el.offsetWidth;
+
       el.scrollTo({
-        left: clamped * el.offsetWidth,
+        left: clamped * cardWidth,
         behavior: "smooth",
       });
 
@@ -281,12 +287,12 @@ function MobileCarousel({ articles }) {
       {/* Scroll Track */}
       <div
         ref={scrollRef}
-        className="mobile-scroll-track"
+        className="flex overflow-x-auto snap-x snap-mandatory gap-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {articles.map((article, i) => (
           <div
             key={article.id}
-            className="mobile-scroll-slide"
+            className="flex-none snap-start snap-always pt-1 px-0.5 pb-2 w-full sm:w-[calc(50%-8px)] lg:w-[calc(25%-12px)]"
           >
             <ArticleCard
               article={article}
@@ -367,7 +373,7 @@ function MobileCarousel({ articles }) {
         <button
           onClick={next}
           disabled={
-            currentIndex === articles.length - 1
+            isAtEnd || currentIndex === articles.length - 1
           }
           className="
             flex-1
@@ -409,22 +415,14 @@ function MobileCarousel({ articles }) {
 /* ━━━ MAIN COMPONENT ━━━ */
 export default function Articles() {
   const [activeFilter, setActiveFilter] = useState("All Topics");
-  const [visibleCount, setVisibleCount] = useState(6);
-  const INITIAL_COUNT = 6;
 
   const filtered =
     activeFilter === "All Topics"
       ? articles
       : articles.filter((a) => a.category === activeFilter);
 
-  const visibleArticles = filtered.slice(0, visibleCount);
-  const progress = Math.round(
-    (Math.min(visibleCount, filtered.length) / filtered.length) * 100
-  );
-
   const handleFilter = (cat) => {
     setActiveFilter(cat);
-    setVisibleCount(4);
   };
 
   return (
@@ -598,7 +596,6 @@ export default function Articles() {
                     </p>
                     <p className="text-gray-500 text-sm">
                       Showing{" "}
-                      <span className="font-semibold text-gray-700">{Math.min(visibleCount, filtered.length)}</span> of{" "}
                       <span className="font-semibold text-gray-700">{filtered.length}</span> articles
                     </p>
                   </div>
@@ -606,61 +603,25 @@ export default function Articles() {
                     <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-500"
-                        style={{ width: `${progress}%` }}
+                        style={{ width: `100%` }}
                       />
                     </div>
-                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap">{progress}%</span>
+                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap">100%</span>
                   </div>
                 </div>
 
-                {/* ── MOBILE: horizontal scroll carousel ── */}
-                <div className="block sm:hidden">
+                {/* ── RESPONSIVE CAROUSEL ── */}
+                <div className="w-full">
                   {filtered.length > 0 ? (
                     <MobileCarousel articles={filtered} />
                   ) : (
                     <div className="text-center py-20 text-gray-400">
                       <BookOpen size={40} className="mx-auto mb-4 opacity-40" />
                       <p className="text-lg font-medium">No articles found</p>
+                      <p className="text-sm mt-1">Try selecting a different category.</p>
                     </div>
                   )}
                 </div>
-
-                {/* ── DESKTOP: grid ── */}
-                <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                  {visibleArticles.map((article, i) => (
-                    <ArticleCard key={article.id} article={article} index={i} />
-                  ))}
-                </div>
-
-                {filtered.length === 0 && (
-                  <div className="hidden sm:block text-center py-20 text-gray-400">
-                    <BookOpen size={40} className="mx-auto mb-4 opacity-40" />
-                    <p className="text-lg font-medium">No articles found</p>
-                    <p className="text-sm mt-1">Try selecting a different category.</p>
-                  </div>
-                )}
-
-                {/* Load more — desktop only */}
-                {filtered.length > INITIAL_COUNT && (
-                  <div className="hidden sm:flex justify-center gap-4 mt-12 flex-wrap">
-                    {visibleCount < filtered.length && (
-                      <button
-                        onClick={() => setVisibleCount((prev) => Math.min(prev + 3, filtered.length))}
-                        className="art-load-btn px-8 py-3.5 text-white rounded-xl font-semibold text-sm shadow-lg"
-                      >
-                        <span>Load More Articles</span>
-                      </button>
-                    )}
-                    {visibleCount > INITIAL_COUNT && (
-                      <button
-                        onClick={() => setVisibleCount(INITIAL_COUNT)}
-                        className="px-8 py-3.5 bg-white border border-gray-200 text-gray-600 rounded-xl font-semibold text-sm hover:border-blue-800 hover:text-blue-700 hover:bg-blue-100 transition-all duration-200"
-                      >
-                        Show Less Articles
-                      </button>
-                    )}
-                  </div>
-                )}
 
               </div>
             </section>

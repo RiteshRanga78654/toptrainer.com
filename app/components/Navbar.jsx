@@ -77,23 +77,21 @@ const Navbar = () => {
 
             {/* Right Side */}
             <div className="hidden md:flex items-center gap-3">
-              {/* User */}
-              <Link href="/join-as-trainer">
-                <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full pl-3 pr-3 py-2 cursor-pointer hover:bg-blue-100 transition">
-                  <div>
-                    <p className="text-[13.5px] font-semibold text-slate-800">
-                      Join as Trainer
-                    </p>
-                  </div>
-                </div>
-              </Link>
-
+              
               {/* Login */}
               <Link
                 href="/auth/login"
                 className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition inline-block text-center"
               >
                 Login
+              </Link>
+
+              {/* register */}
+              <Link
+                href="/auth/register"
+                className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition inline-block text-center"
+              >
+                Register
               </Link>
             </div>
 
