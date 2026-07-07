@@ -285,7 +285,7 @@ export default function Profile() {
 
       <div className="w-full min-h-screen relative" style={{ position: "relative", zIndex: 1, fontFamily: "var(--font-geist-sans, 'Geist Sans', sans-serif)", background: "transparent" }}>
         {/* ── Shared container: all sections same width ── */}
-        <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
+        <div className="w-full max-w-330 mx-auto px-4 py-6 space-y-6">
 
           {/* ── Hero Banner ── */}
           {/* ── Hero Banner ── */}

@@ -78,20 +78,12 @@ const Navbar = () => {
             {/* Right Side */}
             <div className="hidden md:flex items-center gap-3">
               
-              {/* Login */}
+              {/* Login / Register */}
               <Link
                 href="/auth/login"
                 className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition inline-block text-center"
               >
-                Login
-              </Link>
-
-              {/* register */}
-              <Link
-                href="/auth/register"
-                className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition inline-block text-center"
-              >
-                Register
+                Register / Login
               </Link>
             </div>
 
@@ -151,11 +143,11 @@ const Navbar = () => {
           {/* Buttons */}
           <div className="flex gap-3">
             <Link
-              href="/login"
+              href="/auth/login"
               className="flex-1 block py-2 border border-blue-300 rounded-lg text-blue-600 bg-blue-50 text-center"
               onClick={() => setOpen(false)}
             >
-              Login
+              Register / Login
             </Link>
             <Link
               href="/join-as-trainer"
