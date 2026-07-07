@@ -112,7 +112,7 @@ function ArticleCard({ article, index }) {
   const styles = categoryStyles[article.category];
   return (
     <div
-      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
+      className="h-full flex flex-col group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
       style={{ animationDelay: `${index * 0.08}s` }}
     >
       <div className="relative h-52 overflow-hidden">
@@ -136,14 +136,14 @@ function ArticleCard({ article, index }) {
           {article.read}
         </div>
       </div>
-      <div className="p-5">
+      <div className="p-5 flex flex-col flex-grow">
         <h3 className="font-semibold text-gray-900 text-[15px] leading-snug mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
           {article.title}
         </h3>
-        <p className="text-[13px] text-gray-500 leading-relaxed mb-4 line-clamp-2">
+        <p className="text-[13px] text-gray-500 leading-relaxed mb-4 line-clamp-2 flex-grow">
           {article.desc}
         </p>
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4 mt-auto">
           <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${styles.avatar}`}>
             {article.initials}
           </div>
@@ -303,28 +303,24 @@ function MobileCarousel({ articles }) {
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between mt-5 gap-3">
+      <div className="flex items-center justify-center mt-5 gap-3">
 
         {/* Prev */}
         <button
           onClick={prev}
           disabled={currentIndex === 0}
           className="
-            flex-1
+            w-10
+            h-10
+            flex-shrink-0
             flex
             items-center
             justify-center
-            gap-2
-            py-3
-            rounded-xl
+            rounded-full
             border
             border-gray-200
             bg-white
             text-gray-600
-            font-semibold
-            text-sm
-            disabled:opacity-40
-            disabled:cursor-not-allowed
             hover:border-blue-300
             hover:text-blue-600
             hover:bg-blue-50
@@ -335,7 +331,7 @@ function MobileCarousel({ articles }) {
           "
         >
           <ChevronLeft size={18} />
-          Previous
+          
         </button>
 
         {/* Dots */}
@@ -376,19 +372,17 @@ function MobileCarousel({ articles }) {
             isAtEnd || currentIndex === articles.length - 1
           }
           className="
-            flex-1
+            w-10
+            h-10
+            flex-shrink-0
             flex
             items-center
             justify-center
-            gap-2
-            py-3
-            rounded-xl
+            rounded-full
             bg-gradient-to-r
             from-blue-600
             to-blue-700
             text-white
-            font-semibold
-            text-sm
             disabled:opacity-40
             disabled:cursor-not-allowed
             active:scale-95
@@ -399,7 +393,7 @@ function MobileCarousel({ articles }) {
             hover:shadow-blue-300
           "
         >
-          Next
+          
           <ChevronRight size={18} />
         </button>
       </div>

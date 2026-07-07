@@ -106,6 +106,18 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+            <div className="mt-4 p-6 rounded-xl bg-white/10 border border-white/20 shadow-sm backdrop-blur-sm">
+              <h4 className="text-white text-sm font-semibold mb-1">Are you an expert?</h4>
+              <p className="text-[13px] text-gray-200 mb-3">
+                Share your knowledge and grow.
+              </p>
+              <Link
+                href="/join-as-trainer"
+                className="block text-center w-full bg-white text-[#114FA3] px-3 py-2 rounded-lg text-sm font-bold hover:bg-gray-100 hover:shadow-md transition-all duration-200"
+              >
+                Join as a Trainer
+              </Link>
+            </div>
           </div>
         </div>
 
