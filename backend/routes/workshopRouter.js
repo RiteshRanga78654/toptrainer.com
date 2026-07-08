@@ -17,7 +17,7 @@ router.get("/trainer/drafts", protectTrainer, getDraftWorkshops);
 router.get("/trainer/published", protectTrainer, getPublishedWorkshops)
 router.put("/trainer/publish/:id", protectTrainer, publishWorkshop);
 router.put("/trainer/:id", protectTrainer, workshopUploadFields, updateWorkshop );
-router.get("/trainer/One-workshop", protectTrainer, getSingleWorkshop);
+router.get("/trainer/One-workshop/:id", protectTrainer, getSingleWorkshop);
 router.delete("/trainer/:id", protectTrainer, deleteWorkshop);
 
 

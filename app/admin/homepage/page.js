@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { heroImages as initialHero, allExperts, generalSettings as gs } from "../data/mockData"
 import { Card, Button, Toggle, Toast, Badge, Input } from "../../components/ui"
-import { Trash2, Upload, Plus, ChevronRight, ExternalLink, Check, Image, Users, LayoutGrid, Settings } from "lucide-react"
+import { Trash2, Upload, Plus, ChevronRight, ExternalLink, Check, Image, Users, LayoutGrid, Settings, Search } from "lucide-react"
 import { cn, wordCount } from "../../lib/api"
 
 export default function HomepagePage() {
@@ -18,6 +18,7 @@ export default function HomepagePage() {
 
   // ── Expert state ────────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState("industry")
+  const [searchQuery, setSearchQuery] = useState("")
   const [selected, setSelected]   = useState({
     industry:   new Set(allExperts.filter(e => e.category === "industry"   && e.featured).map(e => e.id)),
     department: new Set(allExperts.filter(e => e.category === "department" && e.featured).map(e => e.id)),
@@ -39,6 +40,11 @@ export default function HomepagePage() {
     { key: "competency", label: "Competency", color: "text-amber-600",   ring: "ring-amber-400",   dot: "bg-amber-500"   },
   ]
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab)
+    setSearchQuery("") // Clear search when switching tabs
+  }
+
   // ── Settings state ──────────────────────────────────────────────────────────
   const [settings, setSettings]       = useState(gs)
   const [settingsSaved, setSettingsSaved] = useState(false)
@@ -52,7 +58,13 @@ export default function HomepagePage() {
     { label: "Competency", icon: "🎯", desc: "Manage competencies",        href: "/admin/competency", color: "bg-violet-50"  },
   ]
 
-  const filtered    = allExperts.filter(e => e.category === activeTab)
+  const filtered = searchQuery.trim() !== ""
+    ? allExperts.filter(e => 
+        e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        e.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allExperts.filter(e => e.category === activeTab).slice(0, 10)
+
   const selectedSet = selected[activeTab]
   const activeCat   = expertCategories.find(c => c.key === activeTab)
 
@@ -193,7 +205,7 @@ export default function HomepagePage() {
               const count   = selected[cat.key].size
               const experts = allExperts.filter(e => e.category === cat.key && selected[cat.key].has(e.id))
               return (
-                <button key={cat.key} onClick={() => setActiveTab(cat.key)}
+                <button key={cat.key} onClick={() => handleTabChange(cat.key)}
                   className={cn(
                     "text-left bg-white border rounded-xl p-3.5 transition-all hover:shadow-sm",
                     activeTab === cat.key ? `ring-2 ${cat.ring} border-transparent` : "border-slate-200"
@@ -226,7 +238,19 @@ export default function HomepagePage() {
                 <span className={cn("w-2 h-2 rounded-full", activeCat?.dot)} />
                 <p className="text-xs font-semibold text-slate-700 capitalize">{activeTab} Experts</p>
               </div>
-              <span className="text-xs text-slate-500">{selectedSet.size}/6 selected</span>
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search all experts..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-48 text-xs pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-white"
+                  />
+                </div>
+                <span className="text-xs text-slate-500">{selectedSet.size}/6 selected</span>
+              </div>
             </div>
             <div className="p-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {filtered.map(expert => {

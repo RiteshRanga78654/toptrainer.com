@@ -24,12 +24,12 @@ router.post("/register", upload.fields([
 ]), registerTrainer);
 router.post("/login", loginTrainer);
 router.get("/", getAllTrainer);
-
-router.get("/:id", getTrainerById);
+router.get("/me", protectTrainer, getMyProfile);
+router.get("/:trainerId", getTrainerById);
 
 router.post("/logout", protectTrainer, logoutTrainer);
 
-router.get("/me", protectTrainer, getMyProfile);
+
 
 router.put("/update-profile", protectTrainer, upload.fields([
     {name: "profilePhoto", maxCount:10},

@@ -11,9 +11,10 @@ import {
   updateReview,
   deleteReview,
 } from "../controllers/reviewController.js";
-
+import { protectUser } from "../middleware/userMiddleware.js";
 const router = express.Router();
 
+router.use(protectUser);
 
 router.post(
   "/create",

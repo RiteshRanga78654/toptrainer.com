@@ -35,6 +35,13 @@ const coverImage = {
     url: result.secure_url,
     publicId: result.public_id,
 };
+if (req.body.sections) {
+    req.body.sections = parseIfString(req.body.sections);
+}
+
+if (req.body.tags) {
+    req.body.tags = parseIfString(req.body.tags);
+}
 
 const article = await Article.create({
 ...req.body,

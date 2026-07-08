@@ -48,12 +48,12 @@ export const globalSearch = asyncHandler(
             status: "active",
             visibility: true,
             $or: [
-                { "basicInformation.title": regex },
-                { "basicInformation.shortDescription": regex },
-                { "basicInformation.fullDescription": regex },
-                { "classification.industry": regex },
-                { "classification.competency": regex },
-                { "classification.tags": regex },
+                { "basicInformation.title": searchRegex },
+                { "basicInformation.shortDescription": searchRegex },
+                { "basicInformation.fullDescription": searchRegex },
+                { "classification.industry": searchRegex },
+                { "classification.competency": searchRegex },
+                { "classification.tags": searchRegex },
             ],
         }).select("basicInformation classification pricing analytics schedule assignedTrainer").limit(5);
 
@@ -70,7 +70,7 @@ export const globalSearch = asyncHandler(
             .limit(5);
 
 
-        cosnt[trainers, workshops, articles] = await Promise.all([trainerPromise, workshopPromise, articlePromise]);
+        const [trainers, workshops, articles] = await Promise.all([trainerPromise, workshopPromise, articlePromise]);
 
         res.status(200).json({
             success: true,
@@ -94,54 +94,58 @@ export const searchTrainers = asyncHandler(
         }
         if (keyword) {
             const searchRegex = buildSearchRegex(keyword);
-            filter.$or = [
-                { fullName: regex },
-                { companyName: regex },
-                { subjectLine: regex },
-                { tagsLine: regex },
-                { "profileSummary.profileSummary": regex },
-                { "expertiseDomain.industry": regex },
-                { "expertiseDomain.domain": regex },
-                { "expertiseDomain.competencies": regex },
-            ];
+            if (keyword.toUpperCase().startsWith("TR")) {
+                filter.trainerId = keyword.toUpperCase();
+            } else {
+                filter.$or = [
+                    { fullName: searchRegex },
+                    { companyName: searchRegex },
+                    { subjectLine: searchRegex },
+                    { tagsLine: searchRegex },
+                    { "profileSummary.profileSummary": searchRegex },
+                    { "expertiseDomain.industry": searchRegex },
+                    { "expertiseDomain.domain": searchRegex },
+                    { "expertiseDomain.competencies": searchRegex },
+                ];
+            }
         }
-        if (industry) {
-            filter["expertiseDomain.industry"] = industry;
-        }
-        if (competency) {
-            filter["expertiseDomain.competency"] = competency;
-        }
-        if (trainerType) {
-            filter["expertiseDomain.trainerType"] = trainerType;
-        }
-        if (city) {
-            filter["contactInfo.location.city"] = buildSearchRegex(city);
-        }
+            if (industry) {
+                filter["expertiseDomain.industry"] = industry;
+            }
+            if (competency) {
+                filter["expertiseDomain.competency"] = competency;
+            }
+            if (trainerType) {
+                filter["expertiseDomain.trainerType"] = trainerType;
+            }
+            if (city) {
+                filter["contactInfo.location.city"] = buildSearchRegex(city);
+            }
 
-        if (isFeatured !== undefined) {
-            filter.isFeatured = isFeatured === "true";
-        }
+            if (isFeatured !== undefined) {
+                filter.isFeatured = isFeatured === "true";
+            }
 
-        const totalCount = await Trainer.countDocuments(filter);
-        const trainers = await Trainer.find(filter)
-            .select("-password")
-            .sort({
-                isFeatured: -1,
-                createdAt: -1,
+            const totalCount = await TrainerProfile.countDocuments(filter);
+            const trainers = await TrainerProfile.find(filter)
+                .select("-password")
+                .sort({
+                    isFeatured: -1,
+                    createdAt: -1,
+                })
+                .skip(skip)
+                .limit(limit);
+            return res.status(200).json({
+                success: true,
+                total: totalCount,
+                currentPage: page,
+                totalPages: Math.ceil(totalCount / limit),
+                trainers,
+
             })
-            .skip(skip)
-            .limit(limit);
-        return res.status(200).json({
-            success: true,
-            total: totalCount,
-            currentPage: page,
-            totalPages: Math.ceil(totalCount / limit),
-            trainers,
+        });
 
-        })
-    });
-
-const searchWorkshops = asyncHandler(
+export const searchWorkshops = asyncHandler(
     async (req, res) => {
         const { keyword, industry, competency, deliveryMode, minPrice, maxPrice } = req.query;
 

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from "bcryptjs";
+import generateId from '../utils/generateId.js';
 
 const contactInfoSchema = new mongoose.Schema({
 
@@ -224,9 +225,14 @@ const trainerProfileSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
-    unique: true,
+     default: null,
   },
+  trainerId: {
+  type: String,
+  unique: true,
+  index: true,
+  sparse: true,
+},
   email: {
     type: String,
     required: true,
@@ -329,6 +335,15 @@ const trainerProfileSchema = new mongoose.Schema({
   {
     timestamps: true,
   });
+
+
+  trainerProfileSchema.pre("validate", async function (next) {   // pehle: "save"
+  if (!this.isNew || this.trainerId) {
+    return next();
+  }
+  this.trainerId = await generateId("TR", "trainer");
+  next();
+});
 
 trainerProfileSchema.pre("save", async function (next) {
   if (!this.isModified("password"))

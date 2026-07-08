@@ -6,6 +6,11 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Name is required']
     },
+    role: {
+  type: String,
+  default: "admin",
+  enum: ["admin"]
+},
 
     email: {
          type: String,
@@ -16,6 +21,7 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Password is required'],   
     }
+
 },
 {
         timestamps: true     
@@ -29,6 +35,7 @@ adminSchema.pre("save", async function(next) {
 
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+      next();
 });
 
 adminSchema.methods.matchPassword = async function(enteredPassword) {

@@ -207,7 +207,7 @@ const csv = str => (str || "").split(",").map(s => s.trim()).filter(Boolean);
 
 function emptyForm() {
   return {
-    title:"", category:"", mode:"online",
+    title:"", category:"", mode:"online", trainer:"",
     shortDesc:"", fullDesc:"", targetAudience:"",
     coverImg:"",
     photos: [],                   // [{ src, label }]  — matches schema photoSchema
@@ -236,6 +236,7 @@ function workshopToForm(w) {
     title:          w.title          || "",
     category:       w.category       || "",
     mode:           w.mode           || "online",
+    trainer:        w.trainer?._id   || w.trainer || "",
     shortDesc:      w.shortDesc      || "",
     fullDesc:       w.fullDesc       || "",
     targetAudience: w.targetAudience || "",
@@ -283,6 +284,7 @@ function formToPayload(f, status) {
     title:          f.title.trim(),
     category:       f.category,
     mode:           f.mode,
+    trainer:        f.trainer || undefined,
     shortDesc:      f.shortDesc.trim(),
     fullDesc:       f.fullDesc.trim(),
     targetAudience: f.targetAudience.trim(),
@@ -365,7 +367,7 @@ function Field({ label, required, hint, children }) {
 }
 
 // ─── Main Modal ───────────────────────────────────────────────────────────────
-export default function WorkshopFormModal({ workshop, onSave, onClose }) {
+export default function WorkshopFormModal({ workshop, onSave, onClose, trainers }) {
   const isEdit = Boolean(workshop?._id);
 
   const [form,           setForm]           = useState(() => workshop ? workshopToForm(workshop) : emptyForm());
@@ -525,6 +527,19 @@ export default function WorkshopFormModal({ workshop, onSave, onClose }) {
                 placeholder="e.g. Mid-level managers, aspiring entrepreneurs"
                 value={form.targetAudience} onChange={e => set("targetAudience", e.target.value)} />
             </Field>
+
+            {trainers && trainers.length > 0 && (
+              <Field label="Assigned Trainer">
+                <select className="fsel" value={form.trainer} onChange={e => set("trainer", e.target.value)}>
+                  <option value="">— Select Trainer (optional) —</option>
+                  {trainers.map((t) => (
+                    <option key={t._id} value={t._id}>
+                      {t.name} {t.email ? `(${t.email})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
 
             {/* ── Schedule & Venue ── */}
             <div className="msec">Schedule &amp; Venue</div>

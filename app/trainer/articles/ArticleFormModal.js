@@ -224,6 +224,7 @@ function emptyForm() {
     trending: false,
     content: [],         // [{ type, text, author }]
     status: "draft",
+    trainerId: "",
   };
 }
 
@@ -241,6 +242,7 @@ function articleToForm(a) {
     trending: a.trending || false,
     content: (a.content || []).map(b => ({ ...b })),
     status: a.status || "published",
+    trainerId: a.trainerId || a.trainer?._id || a.trainer || "",
   };
 }
 
@@ -270,6 +272,7 @@ function formToPayload(f, status, existing) {
     tags:       f.tags,
     trending:   f.trending,
     status,
+    trainerId:  f.trainerId || undefined,
   };
 }
 
@@ -368,7 +371,7 @@ function BlockEditor({ blocks, onChange }) {
 }
 
 // ─── Main Modal ───────────────────────────────────────────────────────────────
-export default function ArticleFormModal({ article, onSave, onClose }) {
+export default function ArticleFormModal({ article, onSave, onClose, trainers }) {
   const isEdit = Boolean(article?.id);
 
   const [form,   setForm]   = useState(() => (article ? articleToForm(article) : emptyForm()));
@@ -493,6 +496,29 @@ export default function ArticleFormModal({ article, onSave, onClose }) {
                 </select>
               </Field>
             </div>
+
+            {trainers && trainers.length > 0 && (
+              <Field label="Assigned Author">
+                <select className="fsel" value={form.trainerId} onChange={e => {
+                  const tId = e.target.value;
+                  const t = trainers.find(x => x._id === tId);
+                  setForm(p => ({
+                    ...p,
+                    trainerId: tId,
+                    author: t ? t.name : p.author,
+                    authorRole: t ? (t.title || t.industry || "") : p.authorRole,
+                    initials: t ? mkInit(t.name) : p.initials,
+                  }));
+                }}>
+                  <option value="">— Select Author (optional) —</option>
+                  {trainers.map((t) => (
+                    <option key={t._id} value={t._id}>
+                      {t.name} {t.email ? `(${t.email})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
 
             <Field label="Short Description" required hint="Shown on the card and as the hero subtitle.">
               <div className="char-row">

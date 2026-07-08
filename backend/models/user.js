@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import generateId from "../utils/generateId.js";
 
 
 const userSchema = new mongoose.Schema({
@@ -15,6 +16,12 @@ lastName:{
     default: "",
     trim: true,
     required: [true, "please enter a last name"],
+},
+
+userId: {
+  type: String,
+  unique: true,
+  index: true,
 },
 
 email: {
@@ -37,13 +44,55 @@ phoneNumber: {
     "Password must contain uppercase, lowercase, number and special character"
   ]
 },
+lastSeen: {
+  type: Date,
+  default: Date.now,
+},
+isOnline: {
+  type: Boolean,
+  default: false,
+},
  isFeatured: {
     type: Boolean,
     default: false,
   },
+
+ shortlistedTrainers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "TrainerProfile",
+      },
+    ],
+
+      savedWorkshops: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Workshop",
+      },
+    ],
+
+    savedArticles: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Article",
+      }
+    ]
 },
 {
     timestamps: true,
+});
+
+
+userSchema.pre("save", async function (next) {
+
+  if (!this.isNew || this.userId) {
+    return next();
+  }
+
+  this.userId = await generateId("UR", "user");
+
+  next();
+
 });
 
 userSchema.pre("save", async function(next) {
