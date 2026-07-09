@@ -44,7 +44,7 @@ export default function UserLayout({ children }) {
 
       {/* Sidebar */}
       <aside
-        className={`w-[260px] bg-white border-r border-slate-100 flex flex-col justify-between fixed h-full z-30 transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`w-65 bg-white border-r border-slate-100 flex flex-col justify-between fixed h-full z-30 transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div>
           <div className="p-6 flex items-center justify-between mb-2">
