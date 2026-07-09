@@ -197,7 +197,7 @@ export default function UserTrainerLoginPage() {
           {/* Logo */}
           <div className="left-anim-1 flex items-center gap-2 mb-16">
             <Image
-              src="/icon.png"
+              src="/logo.png"
               alt="toptrainer Logo"
               width={28}
               height={28}
@@ -358,7 +358,7 @@ export default function UserTrainerLoginPage() {
           {/* Mobile Logo (visible only on small screens) */}
           <div className="lg:hidden flex items-center justify-center gap-2 mb-8 w-full anim-1">
             <Image
-              src="/icon.png"
+              src="/logo.png"
               alt="TopTrainer Logo"
               width={32}
               height={32}

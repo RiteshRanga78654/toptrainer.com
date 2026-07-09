@@ -40,7 +40,7 @@ const Navbar = () => {
             <h1 className="flex items-center gap-2 text-lg sm:text-xl font-bold leading-none -ml-2">
               {/* Logo Image */}
               <Image
-                src="/icon.png"
+                src="/logo.png"
                 alt="TopTrainer Logo"
                 width={32}
                 height={32}

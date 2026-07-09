@@ -116,7 +116,7 @@ export default function UserRegistrationPage() {
       <header className="w-full flex justify-between items-center py-5 px-8 sm:px-14 lg:px-16 border-b border-gray-100 bg-white z-20">
         <div className="flex items-center gap-2">
           <Image
-            src="/icon.png"
+            src="/logo.png"
             alt="toptrainer Logo"
             width={28}
             height={28}
