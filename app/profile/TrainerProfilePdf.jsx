@@ -150,7 +150,7 @@ export function TrainerPDFDocument() {
               <Text style={styles.contactItem}>  |  Email: {t.email}</Text>
             </View>
           </View>
-          <Image style={styles.logo} src="/icon.png" />
+          <Image style={styles.logo} src="/logo.png" />
         </View>
 
         {/* STATS */}
