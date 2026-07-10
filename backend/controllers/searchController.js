@@ -141,7 +141,7 @@ export const searchTrainers = asyncHandler(
         })
     });
 
-const searchWorkshops = asyncHandler(
+export const searchWorkshops = asyncHandler(
     async (req, res) => {
         const { keyword, industry, competency, deliveryMode, minPrice, maxPrice } = req.query;
 
