@@ -17,6 +17,7 @@ const seedWorkshops = async () => {
 
     // Create a dummy admin ID to act as the creator
     const dummyAdminId = new mongoose.Types.ObjectId();
+    
     console.log("Inserting dummy workshops...");
     await Workshop.insertMany(dummyWorkshops);
 
