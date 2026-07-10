@@ -187,9 +187,9 @@ const searchWorkshops = asyncHandler(
             }
         }
 
-        const totalCount = await Workshop.countDocuments(filter);
+        const totalCount = await workshops.countDocuments(filter);
 
-        const workshops = await Workshop.find(filter)
+        const workshopsList = await workshops.find(filter)
             .populate("assignedTrainer", "fullName profilePhoto companyName")
             .sort({
                 createdAt: -1,
@@ -202,7 +202,7 @@ const searchWorkshops = asyncHandler(
             total: totalCount,
             currentPage: page,
             totalPages: Math.ceil(totalCount / limit),
-            workshops,
+            workshops: workshopsList,
         });
     });
 
@@ -325,7 +325,7 @@ export const searchSuggestions = asyncHandler(
             }).select("fullName profilePhoto")
                 .limit(5),
 
-            Workshop.find({
+            workshops.find({
                 status: "published",
                 visibility: true,
                 "basicInformation.title": searchRegex,

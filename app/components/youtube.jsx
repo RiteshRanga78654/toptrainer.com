@@ -156,26 +156,41 @@ const styles = `
   }
 `;
 
-const videos = [
-  { id: "bAulddz4q94", title: "How I leveled up as a Full Stack Developer | Paras Kumar | IREED India", views: "9.8K views" },
-  { id: "xA7AWhLQXKQ", title: "From Beginner to Developer | Web Development Journey | IREED India",    views: "7.6K views" },
-  { id: "SHmN2dyX7u4", title: "How to Stay Motivated While Learning New Skills",                       views: "6.4K views" },
-  { id: "-l7OA49TzDQ", title: "Top Productivity Tips to Boost Your Daily Performance",                 views: "12K views"  },
-  { id: "M7FIvfx5J10", title: "The Power of Consistency in Coding",                                    views: "5.2K views" },
-  { id: "t_ispmW01lY", title: "Understanding React Hooks Deep Dive",                                   views: "14K views"  },
-  { id: "8pDqJVdNa44", title: "System Design for Beginners",                                           views: "8.1K views" },
-  { id: "PkZNo7MFNFg", title: "Mastering JavaScript ES6+ Features",                                    views: "11K views"  },
+const fallbackVideos = [
+  { videoId: "bAulddz4q94", title: "How I leveled up as a Full Stack Developer | Paras Kumar | IREED India", views: "9.8K views" },
+  { videoId: "xA7AWhLQXKQ", title: "From Beginner to Developer | Web Development Journey | IREED India",    views: "7.6K views" },
+  { videoId: "SHmN2dyX7u4", title: "How to Stay Motivated While Learning New Skills",                       views: "6.4K views" },
+  { videoId: "-l7OA49TzDQ", title: "Top Productivity Tips to Boost Your Daily Performance",                 views: "12K views"  },
+  { videoId: "M7FIvfx5J10", title: "The Power of Consistency in Coding",                                    views: "5.2K views" },
+  { videoId: "t_ispmW01lY", title: "Understanding React Hooks Deep Dive",                                   views: "14K views"  },
+  { videoId: "8pDqJVdNa44", title: "System Design for Beginners",                                           views: "8.1K views" },
+  { videoId: "PkZNo7MFNFg", title: "Mastering JavaScript ES6+ Features",                                    views: "11K views"  },
 ];
 
 export default function YoutubeSection() {
+  const [videos, setVideos] = useState(fallbackVideos);
   const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
+    fetch("http://localhost:5001/api/youtube-videos")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data && data.data.length > 0) {
+          // Add default views string to fetched data for UI consistency
+          const formatted = data.data.map(v => ({ ...v, views: "New" }));
+          setVideos(formatted);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch YouTube videos:", err));
+  }, []);
+
+  useEffect(() => {
+    if (videos.length === 0) return;
     const timer = setInterval(() => {
       setActiveIdx((prev) => (prev + 1) % videos.length);
     }, 20000); // Auto slide every 20 seconds
     return () => clearInterval(timer);
-  }, []);
+  }, [videos.length]);
 
   const handlePrev = () => {
     setActiveIdx((prev) => (prev - 1 + videos.length) % videos.length);
@@ -245,7 +260,7 @@ export default function YoutubeSection() {
 
               return (
                 <div 
-                  key={video.id} 
+                  key={video._id || video.videoId} 
                   className={`coverflow-item ${statusClass}`}
                   onClick={() => {
                     if (!isActive) setActiveIdx(idx);
@@ -254,7 +269,7 @@ export default function YoutubeSection() {
                   <div className="relative w-full bg-slate-900" style={{ aspectRatio: "16/9" }}>
                     <iframe
                       className="w-full h-full"
-                      src={`https://www.youtube.com/embed/${video.id}?autoplay=0`}
+                      src={`https://www.youtube.com/embed/${video.videoId}?autoplay=0`}
                       title={video.title}
                       allowFullScreen
                       tabIndex={isActive ? 0 : -1}
