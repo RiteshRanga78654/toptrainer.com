@@ -252,6 +252,11 @@ const workshopSchema = new mongoose.Schema(
       default: null,
     },
 
+    isFeatured: {
+      type: Boolean,
+      default: false
+    },
+
     basicInformation: basicInformationSchema,
 
     schedule: scheduleSchema,

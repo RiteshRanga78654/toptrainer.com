@@ -18,11 +18,67 @@ import {
   LayoutGrid,
   Settings,
   Search,
+  Youtube,
 } from "lucide-react";
 import { cn, wordCount } from "../../lib/api";
 import { workshops as allWorkshops } from "../data/mockData";
 
 export default function HomepagePage() {
+  // ── Youtube Videos state ──────────────────────────────────────────────────
+  const [youtubeVideos, setYoutubeVideos] = useState([]);
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [isAddingYoutube, setIsAddingYoutube] = useState(false);
+  const [youtubeSaved, setYoutubeSaved] = useState(false);
+
+  useEffect(() => {
+    fetch("http://localhost:5001/api/youtube-videos")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setYoutubeVideos(data.data);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  const addYoutubeVideo = async () => {
+    if (!youtubeUrl) return;
+    setIsAddingYoutube(true);
+    try {
+      const res = await fetch("http://localhost:5001/api/youtube-videos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: youtubeUrl })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setYoutubeVideos([data.data, ...youtubeVideos]);
+        setYoutubeUrl("");
+        setYoutubeSaved(true);
+        setTimeout(() => setYoutubeSaved(false), 3000);
+      } else {
+        alert(data.message || "Failed to add video");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error adding video");
+    } finally {
+      setIsAddingYoutube(false);
+    }
+  };
+
+  const deleteYoutubeVideo = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:5001/api/youtube-videos/${id}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        setYoutubeVideos(youtubeVideos.filter((v) => v._id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   // ── Hero state ──────────────────────────────────────────────────────────────
   const [images, setImages] = useState(initialHero);
   const [heroSaved, setHeroSaved] = useState(false);
@@ -587,6 +643,68 @@ export default function HomepagePage() {
         </div>
       </Card>
 
+      {/* ── YouTube Videos Section ──────────────────────────────────────────────── */}
+      <Card>
+        <div className="flex items-center justify-between px-5 py-4 border-b">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
+              <Youtube size={14} className="text-red-600" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold">YouTube Videos</p>
+              <p className="text-xs text-slate-500">
+                Manage the latest 8 videos displayed on the homepage carousel
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <div className="flex gap-2 mb-6">
+            <Input 
+              placeholder="Paste YouTube URL here..." 
+              value={youtubeUrl}
+              onChange={(val) => setYoutubeUrl(val)}
+              className="flex-1"
+            />
+            <Button onClick={addYoutubeVideo} disabled={isAddingYoutube || !youtubeUrl}>
+              {isAddingYoutube ? "Adding..." : "Add Video"}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {youtubeVideos.map((video) => (
+              <div key={video._id} className="relative group rounded-xl border border-slate-200 overflow-hidden bg-white">
+                <button 
+                  onClick={() => deleteYoutubeVideo(video._id)}
+                  className="absolute top-2 right-2 w-7 h-7 bg-white/90 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-50"
+                  title="Delete Video"
+                >
+                  <Trash2 size={14} />
+                </button>
+                <div className="relative aspect-video bg-slate-100">
+                  <img 
+                    src={`https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`} 
+                    alt={video.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <p className="text-xs font-semibold text-slate-900 line-clamp-2" title={video.title}>
+                    {video.title}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {youtubeVideos.length === 0 && (
+              <p className="text-sm text-slate-500 col-span-full py-4 text-center border border-dashed rounded-xl">
+                No YouTube videos added yet.
+              </p>
+            )}
+          </div>
+        </div>
+      </Card>
+
       {/* ── 3. Other Sections ──────────────────────────────────────────────── */}
       <Card>
         <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100">
@@ -645,6 +763,13 @@ export default function HomepagePage() {
           message="Expert selections saved!"
           type="success"
           onClose={() => setExpertSaved(false)}
+        />
+      )}
+      {youtubeSaved && (
+        <Toast
+          message="YouTube video added!"
+          type="success"
+          onClose={() => setYoutubeSaved(false)}
         />
       )}
       {settingsSaved && (

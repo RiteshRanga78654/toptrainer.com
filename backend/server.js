@@ -1,5 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
@@ -13,8 +15,12 @@ import reviewRouter from "./routes/reviewRouter.js";
 import industryRouter from "./routes/industryRouter.js";
 import competencyRouter from "./routes/competencyRouter.js";
 import mediaRouter from "./routes/mediaRouter.js";
+import youtubeVideoRouter from "./routes/youtubeVideoRouter.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '../.env') });
+console.log("SERVER ENV:", process.env.CLOUDINARY_CLOUD_NAME);
 
 
 const app = express();
@@ -31,6 +37,7 @@ app.use("/api/reviews", reviewRouter);
 app.use("/api/industries", industryRouter);
 app.use("/api/competencies", competencyRouter);
 app.use("/api/media", mediaRouter);
+app.use("/api/youtube-videos", youtubeVideoRouter);
 
 
 connectDB();
