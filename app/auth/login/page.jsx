@@ -272,7 +272,6 @@ export default function UserTrainerLoginPage() {
 
             {/* Illustration recreating the exact reference design */}
             <div className="left-anim-5 mt-16 relative w-full h-[320px] flex justify-center items-end">
-              
               {/* Background Shapes */}
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F2F4FF] rounded-full blur-3xl opacity-80 z-0"></div>
               <div className="absolute bottom-10 left-1/4 w-48 h-48 bg-[#E6E8FF] rounded-full blur-3xl opacity-80 z-0"></div>
@@ -290,30 +289,47 @@ export default function UserTrainerLoginPage() {
               {/* Plant Decoration */}
               <div className="absolute bottom-4 left-4 z-10 hidden xl:block">
                 <div className="w-12 h-14 bg-blue-600 rounded-t-lg rounded-b-md relative">
-                   <div className="w-14 h-3 bg-blue-700 absolute top-0 left-[-4px] rounded-sm"></div>
-                   {/* Leaves */}
-                   <div className="absolute -top-12 left-1 w-4 h-12 bg-[#67B59F] rounded-t-full rounded-br-full rotate-[-20deg]"></div>
-                   <div className="absolute -top-14 left-4 w-5 h-14 bg-[#4A9D88] rounded-t-full rounded-b-sm"></div>
-                   <div className="absolute -top-10 left-7 w-4 h-10 bg-[#74C5AF] rounded-t-full rounded-bl-full rotate-[30deg]"></div>
+                  <div className="w-14 h-3 bg-blue-700 absolute top-0 left-[-4px] rounded-sm"></div>
+                  {/* Leaves */}
+                  <div className="absolute -top-12 left-1 w-4 h-12 bg-[#67B59F] rounded-t-full rounded-br-full rotate-[-20deg]"></div>
+                  <div className="absolute -top-14 left-4 w-5 h-14 bg-[#4A9D88] rounded-t-full rounded-b-sm"></div>
+                  <div className="absolute -top-10 left-7 w-4 h-10 bg-[#74C5AF] rounded-t-full rounded-bl-full rotate-[30deg]"></div>
                 </div>
               </div>
 
               {/* Floating Card 1: Leadership Coach */}
               <div className="absolute top-[5%] right-[-10px] xl:right-4 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-3 flex items-center gap-3 z-20 w-[180px] border border-gray-50 transform hover:-translate-y-1 transition-transform">
                 <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-blue-100">
-                  <Image src="/Images/trainee1.png" alt="Coach" width={40} height={40} className="w-full h-full object-cover" />
+                  <Image
+                    src="/Images/trainee1.png"
+                    alt="Coach"
+                    width={40}
+                    height={40}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
-                  <h4 className="text-[12px] font-bold text-gray-900 leading-tight">Leadership Coach</h4>
+                  <h4 className="text-[12px] font-bold text-gray-900 leading-tight">
+                    Leadership Coach
+                  </h4>
                   <div className="flex items-center gap-1 mt-0.5">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <svg key={i} width="10" height="10" viewBox="0 0 24 24" fill="#FBBF24" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        <svg
+                          key={i}
+                          width="10"
+                          height="10"
+                          viewBox="0 0 24 24"
+                          fill="#FBBF24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
                       ))}
                     </div>
-                    <span className="text-[10px] text-gray-500 font-medium">4.8 (120)</span>
+                    <span className="text-[10px] text-gray-500 font-medium">
+                      4.8 (120)
+                    </span>
                   </div>
                 </div>
               </div>
@@ -321,19 +337,36 @@ export default function UserTrainerLoginPage() {
               {/* Floating Card 2: Communication Expert */}
               <div className="absolute top-[45%] right-[-30px] xl:right-[-10px] bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-3 flex items-center gap-3 z-20 w-[190px] border border-gray-50 transform hover:-translate-y-1 transition-transform">
                 <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-pink-100">
-                  <Image src="/Images/trainee3.png" alt="Expert" width={40} height={40} className="w-full h-full object-cover" />
+                  <Image
+                    src="/Images/trainee3.png"
+                    alt="Expert"
+                    width={40}
+                    height={40}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
-                  <h4 className="text-[12px] font-bold text-gray-900 leading-tight">Communication Expert</h4>
+                  <h4 className="text-[12px] font-bold text-gray-900 leading-tight">
+                    Communication Expert
+                  </h4>
                   <div className="flex items-center gap-1 mt-0.5">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <svg key={i} width="10" height="10" viewBox="0 0 24 24" fill="#FBBF24" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        <svg
+                          key={i}
+                          width="10"
+                          height="10"
+                          viewBox="0 0 24 24"
+                          fill="#FBBF24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
                       ))}
                     </div>
-                    <span className="text-[10px] text-gray-500 font-medium">4.7 (98)</span>
+                    <span className="text-[10px] text-gray-500 font-medium">
+                      4.7 (98)
+                    </span>
                   </div>
                 </div>
               </div>
@@ -341,20 +374,26 @@ export default function UserTrainerLoginPage() {
               {/* Floating Card 3: Watch Video */}
               <div className="absolute bottom-[10%] right-[10%] bg-white rounded-full shadow-[0_8px_20px_rgb(0,0,0,0.06)] pr-4 pl-1.5 py-1.5 flex items-center gap-2 z-20 border border-gray-50 transform hover:-translate-y-1 transition-transform cursor-pointer">
                 <div className="w-7 h-7 rounded-full bg-[#5A5FE0] flex items-center justify-center">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 3l14 9-14 9V3z"/>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M5 3l14 9-14 9V3z" />
                   </svg>
                 </div>
-                <span className="text-[12px] font-bold text-gray-900">Watch Video</span>
+                <span className="text-[12px] font-bold text-gray-900">
+                  Watch Video
+                </span>
               </div>
-
             </div>
           </div>
         </div>
 
         {/* RIGHT COLUMN: Registration Form Card */}
         <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 lg:p-12 relative z-10 min-h-screen lg:min-h-0">
-          
           {/* Mobile Logo (visible only on small screens) */}
           <div className="lg:hidden flex items-center justify-center gap-2 mb-8 w-full anim-1">
             <Image
@@ -372,12 +411,20 @@ export default function UserTrainerLoginPage() {
           <div className="anim-2 w-full max-w-[480px] bg-white rounded-3xl shadow-[0_12px_40px_rgb(0,0,0,0.06)] p-8 sm:p-12">
             {/* Header */}
             <div className="text-center mb-8">
-              <h2 className="text-[28px] font-bold text-gray-900 mb-2 tracking-tight">
-                Welcome back!
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2 tracking-tight">
+                Welcome
               </h2>
-              <p className="text-gray-500 text-[15px]">
-                Login to explore trainers and resources
-              </p>
+              <div className="anim-7 text-center">
+                <p className="text-[14px] text-gray-500 font-medium ">
+                  New here?{" "}
+                  <Link
+                    href="/auth/register"
+                    className="text-[#5A5FE0] font-semibold hover:underline"
+                  >
+                    Join us
+                  </Link>
+                </p>
+              </div>
             </div>
 
             {/* Tabs */}
@@ -528,22 +575,10 @@ export default function UserTrainerLoginPage() {
               </div>
 
               <div className="flex flex-col items-center justify-center gap-3 mt-6">
-                <div className="anim-7 text-center">
-                  <p className="text-[14px] text-gray-500 font-medium">
-                    New here?{" "}
-                    <Link
-                      href="/auth/register"
-                      className="text-[#5A5FE0] font-semibold hover:underline"
-                    >
-                      Join us
-                    </Link>
-                  </p>
-                </div>
-
                 <div className="flex items-center gap-3 w-3/4">
-                    <div className="flex-1 h-[1px] bg-gray-100" />
-                    <p className="text-[12px] text-gray-400 font-medium">or</p>
-                    <div className="flex-1 h-[1px] bg-gray-100" />
+                  <div className="flex-1 h-[1px] bg-gray-100" />
+                  <p className="text-[12px] text-gray-400 font-medium">or</p>
+                  <div className="flex-1 h-[1px] bg-gray-100" />
                 </div>
 
                 <div className="anim-7 text-center">

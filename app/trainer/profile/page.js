@@ -654,6 +654,7 @@ function AwardEntry({ num, data, onChange, onRemove, editing }) {
         <div className="tpd-field"><label className="tpd-label"><span className="tpd-label-ico"><Building2 size={11}/></span>Awarded By (Organisation)</label><div className="tpd-inp-wrap"><div className="tpd-inp-ico"><Building2 size={13}/></div><input type="text" className="tpd-inp" value={data.org || ''} onChange={e => upd('org', e.target.value)} placeholder="e.g. Elevate Learning, NASSCOM"/></div></div>
         <div className="tpd-field"><label className="tpd-label"><span className="tpd-label-ico"><Star size={11}/></span>Year</label><div className="tpd-inp-wrap"><div className="tpd-inp-ico"><Star size={13}/></div><input type="text" className="tpd-inp" value={data.year || ''} onChange={e => upd('year', e.target.value)} placeholder="e.g. 2023"/></div></div>
         <div className="tpd-field"><label className="tpd-label"><span className="tpd-label-ico"><Award size={11}/></span>Award Category</label><div className="tpd-inp-wrap"><div className="tpd-inp-ico"><Award size={13}/></div><select className="tpd-inp" value={data.category || ''} onChange={e => upd('category', e.target.value)}><option value="">Select</option>{OPTS.awardCategory.map((o, i) => <option key={i}>{o}</option>)}</select></div></div>
+        <div className="tpd-field"><label className="tpd-label"><span className="tpd-label-ico"><Trophy size={11}/></span>Type</label><div className="tpd-inp-wrap"><div className="tpd-inp-ico"><Trophy size={13}/></div><select className="tpd-inp" value={data.awardType || 'Award'} onChange={e => upd('awardType', e.target.value)}><option value="Award">Award (Trophy Icon)</option><option value="Certificate">Certificate (Ribbon Icon)</option></select></div></div>
         <div className="tpd-field sp2"><label className="tpd-label"><span className="tpd-label-ico"><FileText size={11}/></span>Brief Description <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span></label><textarea className="tpd-inp no-ico" style={{ height: 68 }} value={data.desc || ''} onChange={e => upd('desc', e.target.value)} placeholder="Short note about this award…"/></div>
       </div>
     </div>
@@ -1181,7 +1182,7 @@ export default function TrainerProfileDashboard() {
                     <AwardEntry key={idx} num={idx + 1} data={data} onChange={val => updEntry(setAwards, idx, val)} onRemove={() => removeEntry(setAwards, idx)} editing={editing}/>
                   ))}
                   {editing && awards.length < 10 && (
-                    <button type="button" className="add-entry-btn" onClick={() => addEntry(setAwards, { title: '', org: '', year: '', category: '', desc: '' })}>
+                    <button type="button" className="add-entry-btn" onClick={() => addEntry(setAwards, { title: '', org: '', year: '', category: '', awardType: 'Award', desc: '' })}>
                       <Plus size={14}/> Add Another Award ({awards.length}/10)
                     </button>
                   )}
