@@ -243,13 +243,18 @@ const workshopSchema = new mongoose.Schema(
     creatorType: {
       type: String,
       required: true,
-      enum: ["Admin", "TrainerProfile"],
+      enum: ["User", "TrainerProfile"], // Admin or Trainer
     },
 
     assignedTrainer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TrainerProfile",
       default: null,
+    },
+
+    isFeatured: {
+      type: Boolean,
+      default: false
     },
 
     basicInformation: basicInformationSchema,

@@ -1,3 +1,4 @@
+
 // import Image from "next/image";
 
 // export default function PopularCourses() {
@@ -815,7 +816,7 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
 }
 
 /* ── Main Component ── */
-export default function PopularCourses() {
+export default function PopularTrainers() {
   const [activeTab, setActiveTab] = useState(null);
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);

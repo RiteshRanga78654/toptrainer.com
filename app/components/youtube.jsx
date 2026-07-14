@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Play, Eye } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Play, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 
 const styles = `
   .yt-section {
@@ -73,122 +73,6 @@ const styles = `
   }
   @keyframes ytUnderline { to { width: 100%; } }
 
-  /* Featured */
-  .yt-featured {
-    position: relative; border-radius: 20px; overflow: hidden;
-    background: rgba(255,255,255,0.75); backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.9);
-    box-shadow: 0 8px 40px rgba(37,99,235,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
-    transition: box-shadow 0.4s ease, transform 0.4s ease;
-    animation: ytFadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.2s both;
-  }
-  .yt-featured:hover { box-shadow: 0 20px 60px rgba(37,99,235,0.18); transform: translateY(-4px); }
-  .yt-featured-label {
-    position: absolute; top: 14px; left: 14px; z-index: 10;
-    display: flex; align-items: center; gap: 6px;
-    background: rgba(37,99,235,0.9); backdrop-filter: blur(8px);
-    color: white; font-size: 11px; font-weight: 700;
-    letter-spacing: 0.05em; text-transform: uppercase;
-    padding: 5px 12px; border-radius: 100px;
-    box-shadow: 0 4px 12px rgba(37,99,235,0.4);
-  }
-  @keyframes ytFadeIn {
-    from { opacity: 0; transform: scale(0.98); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-  .yt-featured-iframe { animation: ytFadeIn 0.35s ease both; }
-
-  /* ── Carousel track ──
-     3 cards fill 100% of track width exactly.
-     The 4th card sits just offscreen → revealed on scroll.
-  */
-  .yt-track {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
-  }
-  .yt-track::-webkit-scrollbar { display: none; }
-  .yt-track { scrollbar-width: none; }
-
-  /* Each card = exactly 1/3 of the track (minus the 2 gaps between 3 cards) */
-  .yt-card {
-    flex: 0 0 calc((100% - 24px) / 3);
-    scroll-snap-align: start;
-    background: rgba(255,255,255,0.8); backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.9);
-    border-radius: 16px; overflow: hidden;
-    box-shadow: 0 4px 20px rgba(37,99,235,0.07);
-    cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
-    position: relative;
-  }
-  .yt-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 16px 40px rgba(37,99,235,0.15);
-    border-color: rgba(37,99,235,0.2);
-  }
-  .yt-card.active {
-    border: 2px solid #2563eb;
-    box-shadow: 0 0 0 4px rgba(37,99,235,0.12), 0 8px 32px rgba(37,99,235,0.2);
-  }
-  .yt-card.active::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, #2563eb, #7c3aed);
-    z-index: 10;
-  }
-
-  /* iframe wrapper inside each small card */
-  .yt-iframe-wrap {
-    width: 100%;
-    height: 140px;       /* fixed height so all cards match */
-    position: relative;
-    overflow: hidden;
-    background: #0f172a;
-  }
-  .yt-iframe-wrap iframe {
-    width: 100%; height: 100%;
-    border: none;
-    pointer-events: none; /* clicks pass through to the card overlay */
-  }
-
-  /* Overlay so click registers on the card, not the iframe */
-  .yt-card-overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0);
-    transition: background 0.3s ease;
-    z-index: 5;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .yt-card:not(.active):hover .yt-card-overlay { background: rgba(37,99,235,0.15); }
-  .yt-play-icon {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: rgba(37,99,235,0.9);
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; transform: scale(0.8);
-    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
-    backdrop-filter: blur(4px);
-  }
-  .yt-card:not(.active):hover .yt-play-icon { opacity: 1; transform: scale(1); }
-
-  /* Nav buttons */
-  .yt-nav-btn {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: white; border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: #64748b;
-    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
-  }
-  .yt-nav-btn:hover {
-    background: #2563eb; color: white; border-color: #2563eb;
-    box-shadow: 0 8px 24px rgba(37,99,235,0.3); transform: scale(1.1);
-  }
-  .yt-nav-btn:active { transform: scale(0.95); }
-
   .yt-stat {
     display: inline-flex; align-items: center; gap: 6px;
     background: rgba(255,255,255,0.7); backdrop-filter: blur(12px);
@@ -197,13 +81,6 @@ const styles = `
     box-shadow: 0 2px 10px rgba(37,99,235,0.06); transition: all 0.3s ease;
   }
   .yt-stat:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.1); }
-  .yt-views {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: rgba(37,99,235,0.07); color: #2563eb;
-    font-size: 10px; font-weight: 600;
-    padding: 2px 8px; border-radius: 100px;
-    border: 1px solid rgba(37,99,235,0.12);
-  }
   @keyframes ytFadeUp {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -213,56 +90,125 @@ const styles = `
     0%,100% { opacity: 0.4; transform: scale(1); }
     50%      { opacity: 1; transform: scale(1.4); }
   }
+
+  /* Coverflow specific styles */
+  .coverflow-item {
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    position: absolute;
+    left: 0; right: 0; margin: 0 auto;
+    width: 90%;
+    max-width: 640px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: 0 8px 32px rgba(37,99,235,0.1);
+    overflow: hidden;
+  }
+  .coverflow-center {
+    z-index: 20;
+    transform: translateX(0) scale(1);
+    opacity: 1;
+    box-shadow: 0 16px 48px rgba(37,99,235,0.15);
+  }
+  .coverflow-left {
+    z-index: 10;
+    transform: translateX(-40%) scale(0.8);
+    opacity: 0.6;
+    cursor: pointer;
+  }
+  .coverflow-left:hover, .coverflow-right:hover {
+    opacity: 1;
+  }
+  .coverflow-right {
+    z-index: 10;
+    transform: translateX(40%) scale(0.8);
+    opacity: 0.6;
+    cursor: pointer;
+  }
+  .coverflow-hidden {
+    z-index: 0;
+    transform: translateX(0) scale(0.6);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Overlay so side items can be clicked without triggering iframe */
+  .coverflow-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0);
+    z-index: 5;
+    cursor: pointer;
+  }
+  
+  .yt-nav-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: white; border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #64748b;
+    transition: all 0.3s ease;
+    z-index: 30;
+  }
+  .yt-nav-btn:hover {
+    background: #2563eb; color: white; border-color: #2563eb;
+    box-shadow: 0 8px 24px rgba(37,99,235,0.3); transform: scale(1.1);
+  }
 `;
 
-const videos = [
-  { id: "bAulddz4q94", title: "How I leveled up as a Full Stack Developer | Paras Kumar | IREED India", views: "9.8K views" },
-  { id: "xA7AWhLQXKQ", title: "From Beginner to Developer | Web Development Journey | IREED India",    views: "7.6K views" },
-  { id: "SHmN2dyX7u4", title: "How to Stay Motivated While Learning New Skills",                       views: "6.4K views" },
-  { id: "-l7OA49TzDQ", title: "Top Productivity Tips to Boost Your Daily Performance",                 views: "12K views"  },
+const fallbackVideos = [
+  { videoId: "bAulddz4q94", title: "How I leveled up as a Full Stack Developer | Paras Kumar | IREED India", views: "9.8K views" },
+  { videoId: "xA7AWhLQXKQ", title: "From Beginner to Developer | Web Development Journey | IREED India",    views: "7.6K views" },
+  { videoId: "SHmN2dyX7u4", title: "How to Stay Motivated While Learning New Skills",                       views: "6.4K views" },
+  { videoId: "-l7OA49TzDQ", title: "Top Productivity Tips to Boost Your Daily Performance",                 views: "12K views"  },
+  { videoId: "M7FIvfx5J10", title: "The Power of Consistency in Coding",                                    views: "5.2K views" },
+  { videoId: "t_ispmW01lY", title: "Understanding React Hooks Deep Dive",                                   views: "14K views"  },
+  { videoId: "8pDqJVdNa44", title: "System Design for Beginners",                                           views: "8.1K views" },
+  { videoId: "PkZNo7MFNFg", title: "Mastering JavaScript ES6+ Features",                                    views: "11K views"  },
 ];
 
 export default function YoutubeSection() {
-  const trackRef  = useRef(null);
-  const cardRefs  = useRef([]);
+  const [videos, setVideos] = useState(fallbackVideos);
   const [activeIdx, setActiveIdx] = useState(0);
 
-  // ── Detect which card is most centered while scrolling ──────────────────
-  const handleScroll = useCallback(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    const trackCenter = track.getBoundingClientRect().left + track.clientWidth / 2;
-    let closestIdx = 0, closestDist = Infinity;
-    cardRefs.current.forEach((card, i) => {
-      if (!card) return;
-      const r = card.getBoundingClientRect();
-      const dist = Math.abs(r.left + r.width / 2 - trackCenter);
-      if (dist < closestDist) { closestDist = dist; closestIdx = i; }
-    });
-    setActiveIdx(closestIdx);
+  useEffect(() => {
+    fetch("http://localhost:5001/api/youtube-videos")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data && data.data.length > 0) {
+          // Add default views string to fetched data for UI consistency
+          const formatted = data.data.map(v => ({ ...v, views: "New" }));
+          setVideos(formatted);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch YouTube videos:", err));
   }, []);
 
   useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    track.addEventListener("scroll", handleScroll, { passive: true });
-    return () => track.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+    if (videos.length === 0) return;
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % videos.length);
+    }, 20000); // Auto slide every 20 seconds
+    return () => clearInterval(timer);
+  }, [videos.length]);
 
-  // ── Click card → scroll it into view + update big video ─────────────────
-  const scrollToCard = (idx) => {
-    cardRefs.current[idx]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-    setActiveIdx(idx);
+  const handlePrev = () => {
+    setActiveIdx((prev) => (prev - 1 + videos.length) % videos.length);
   };
 
-  const scrollTrack = (dir) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const cardW = (track.clientWidth - 24) / 3 + 12;
-    track.scrollBy({ left: dir === "left" ? -cardW : cardW, behavior: "smooth" });
+  const handleNext = () => {
+    setActiveIdx((prev) => (prev + 1) % videos.length);
   };
 
-  const featured = videos[activeIdx];
+  const getCardClass = (index) => {
+    const prevIdx = (activeIdx - 1 + videos.length) % videos.length;
+    const nextIdx = (activeIdx + 1) % videos.length;
+
+    if (index === activeIdx) return "coverflow-center";
+    if (index === prevIdx) return "coverflow-left";
+    if (index === nextIdx) return "coverflow-right";
+    return "coverflow-hidden";
+  };
 
   return (
     <>
@@ -296,112 +242,88 @@ export default function YoutubeSection() {
             </div>
           </div>
 
-          {/* ── Main Layout ── */}
-          <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+          {/* ── Center Coverflow Layout ── */}
+          <div className="relative w-full h-[320px] sm:h-[400px] md:h-[450px] lg:h-[500px] flex items-center justify-center mt-10">
+            
+            {/* Nav Left */}
+            <button 
+              className="yt-nav-btn absolute left-0 md:left-4" 
+              onClick={handlePrev} 
+              aria-label="Previous Video"
+            >
+              <ChevronLeft size={24} />
+            </button>
 
-            {/* ── Big Featured Video ── */}
-            <div className="yt-featured w-full lg:w-[55%]">
-              <div className="yt-featured-label">
-                <Play size={10} fill="white" />
-                Featured
-              </div>
-              <div style={{ aspectRatio: "16/9" }}>
-                {/* key forces iframe remount so video actually switches */}
-                <iframe
-                  key={featured.id}
-                  className="yt-featured-iframe"
-                  width="100%"
-                  height="100%"
-                  src={`https://www.youtube.com/embed/${featured.id}?autoplay=0`}
-                  title={featured.title}
-                  allowFullScreen
-                  style={{ display: "block" }}
-                />
-              </div>
-              <div className="p-4">
-                <p className="font-semibold text-gray-800 text-sm md:text-base leading-snug line-clamp-2">
-                  {featured.title}
-                </p>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="yt-views"><Eye size={10} />{featured.views}</span>
-                  <span className="text-xs text-gray-400">IREED India</span>
-                </div>
-              </div>
-            </div>
+            {videos.map((video, idx) => {
+              const statusClass = getCardClass(idx);
+              const isActive = statusClass === "coverflow-center";
 
-            {/* ── Right: 3 equal iframe cards, 4th hidden until scroll ── */}
-            <div className="w-full lg:w-[45%] flex flex-col justify-center gap-4">
-
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-gray-600">
-                  More Videos <span className="text-gray-400 font-normal">({videos.length})</span>
-                </p>
-                <div className="flex gap-2">
-                  <button className="yt-nav-btn" onClick={() => scrollTrack("left")} aria-label="Scroll left">
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button className="yt-nav-btn" onClick={() => scrollTrack("right")} aria-label="Scroll right">
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Cards track */}
-              <div ref={trackRef} className="yt-track">
-                {videos.map((video, i) => (
-                  <div
-                    key={video.id}
-                    ref={(el) => (cardRefs.current[i] = el)}
-                    className={`yt-card ${activeIdx === i ? "active" : ""}`}
-                    onClick={() => scrollToCard(i)}
-                  >
-                    {/* iframe preview (pointer-events: none so clicks reach overlay) */}
-                    <div className="yt-iframe-wrap">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${video.id}`}
-                        title={video.title}
-                        allowFullScreen
-                        tabIndex={-1}
-                      />
-                      {/* Click overlay */}
-                      <div className="yt-card-overlay">
-                        <div className="yt-play-icon">
-                          <Play size={14} fill="white" color="white" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Info */}
-                    <div className="p-3">
-                      <p className="text-xs font-semibold text-gray-800 leading-tight line-clamp-2 mb-2">
-                        {video.title}
-                      </p>
-                      <span className="yt-views"><Eye size={9} />{video.views}</span>
+              return (
+                <div 
+                  key={video._id || video.videoId} 
+                  className={`coverflow-item ${statusClass}`}
+                  onClick={() => {
+                    if (!isActive) setActiveIdx(idx);
+                  }}
+                >
+                  <div className="relative w-full bg-slate-900" style={{ aspectRatio: "16/9" }}>
+                    <iframe
+                      className="w-full h-full"
+                      src={`https://www.youtube.com/embed/${video.videoId}?autoplay=0`}
+                      title={video.title}
+                      allowFullScreen
+                      tabIndex={isActive ? 0 : -1}
+                      style={{ pointerEvents: isActive ? "auto" : "none" }}
+                    />
+                    {/* Overlay to catch clicks on non-active videos */}
+                    {!isActive && <div className="coverflow-overlay" />}
+                  </div>
+                  
+                  <div className="p-3 md:p-4 bg-white/95">
+                    <p className="font-semibold text-gray-800 text-sm md:text-base leading-snug line-clamp-1 sm:line-clamp-2">
+                      {video.title}
+                    </p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-1 rounded-md text-xs font-semibold">
+                        <Eye size={12} />{video.views}
+                      </span>
+                      <span className="text-xs text-gray-400 font-medium">IREED India</span>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              );
+            })}
 
-              {/* Dot indicators */}
-              <div className="flex justify-center gap-2 mt-1">
-                {videos.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => scrollToCard(i)}
-                    aria-label={`Select video ${i + 1}`}
-                    style={{
-                      height: 6,
-                      width: activeIdx === i ? 22 : 6,
-                      borderRadius: 100,
-                      background: activeIdx === i ? "#2563eb" : "#cbd5e1",
-                      border: "none", padding: 0, cursor: "pointer",
-                      transition: "all 0.4s cubic-bezier(0.22,1,0.36,1)",
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Nav Right */}
+            <button 
+              className="yt-nav-btn absolute right-0 md:right-4" 
+              onClick={handleNext} 
+              aria-label="Next Video"
+            >
+              <ChevronRight size={24} />
+            </button>
+
           </div>
+
+          {/* Indicators */}
+          <div className="flex justify-center gap-2 mt-8 md:mt-12">
+            {videos.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveIdx(i)}
+                aria-label={`Go to video ${i + 1}`}
+                style={{
+                  height: 6,
+                  width: activeIdx === i ? 24 : 6,
+                  borderRadius: 100,
+                  background: activeIdx === i ? "#2563eb" : "#cbd5e1",
+                  border: "none", padding: 0, cursor: "pointer",
+                  transition: "all 0.4s cubic-bezier(0.22,1,0.36,1)",
+                }}
+              />
+            ))}
+          </div>
+
         </div>
       </section>
     </>

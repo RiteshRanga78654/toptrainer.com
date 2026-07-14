@@ -118,13 +118,13 @@ function ArticleCard({ title, date, delay }) {
 
 function Milestone({ icon: Icon, label, org, year, delay }) {
   return (
-    <FadeIn delay={delay} className="flex flex-col items-center text-center w-full">
-      <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center mb-2 ring-2 ring-blue-200">
+    <FadeIn delay={delay} className="flex flex-col items-center text-center w-full h-full">
+      <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center mb-2 ring-2 ring-blue-200 shrink-0">
         <Icon size={20} className="text-blue-700" />
       </div>
       <p className="text-xs font-semibold text-blue-900">{label}</p>
-      <p className="text-xs text-blue-500">{org}</p>
-      <p className="text-xs font-bold text-blue-700 mt-0.5">{year}</p>
+      <p className="text-xs text-blue-500 mb-2">{org}</p>
+      <p className="text-xs font-bold text-blue-700 mt-auto">{year}</p>
     </FadeIn>
   );
 }
@@ -285,7 +285,7 @@ export default function Profile() {
 
       <div className="w-full min-h-screen relative" style={{ position: "relative", zIndex: 1, fontFamily: "var(--font-geist-sans, 'Geist Sans', sans-serif)", background: "transparent" }}>
         {/* ── Shared container: all sections same width ── */}
-        <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
+        <div className="w-full max-w-330 mx-auto px-4 py-6 space-y-6">
 
           {/* ── Hero Banner ── */}
           {/* ── Hero Banner ── */}
@@ -402,7 +402,7 @@ export default function Profile() {
 
                 <FadeIn delay={80}>
                   <Card>
-                    <SectionHeader icon={MessageSquare} title="What People Say" linkText="View All" />
+                    <SectionHeader icon={MessageSquare} title="Reviews" linkText="View All" />
                     <div className="grid sm:grid-cols-2 gap-4">
                       <Testimonial quote="Karan's session on Agile Leadership was transformative. Very engaging and practical!" name="Priya Sharma" role="Delivery Head, Infosys" delay={0} />
                       <Testimonial quote="One of the best trainers I have attended. Real-world examples and case studies made it so impactful." name="Rahul Mehta" role="Project Manager, TCS" delay={120} />
@@ -469,10 +469,10 @@ export default function Profile() {
                         <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-blue-100 hidden sm:block" />
                         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 relative">
                           <Milestone icon={Trophy} label="Leadership Excellence Award" org="Elevate Learning" year="2021" delay={0} />
-                          <Milestone icon={Star} label="Top Trainer of the Year" org="ABP Awards" year="2022" delay={80} />
-                          <Milestone icon={Award} label="Best Agile Coach" org="Agile India" year="2020" delay={160} />
-                          <Milestone icon={CheckCircle2} label="Excellence in L&D" org="NASSCOM" year="2023" delay={240} />
-                          <Milestone icon={TrendingUp} label="Most Impactful Trainer" org="LinkedIn Learning" year="2023" delay={320} />
+                          <Milestone icon={Trophy} label="Top Trainer of the Year" org="ABP Awards" year="2022" delay={80} />
+                          <Milestone icon={Award} label="Best Agile Coach Certificate" org="Agile India" year="2020" delay={160} />
+                          <Milestone icon={Trophy} label="Excellence in L&D" org="NASSCOM" year="2023" delay={240} />
+                          <Milestone icon={Trophy} label="Most Impactful Trainer" org="LinkedIn Learning" year="2023" delay={320} />
                         </div>
                       </div>
                     </div>
@@ -499,11 +499,11 @@ export default function Profile() {
                       <div className="relative">
                         <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-blue-100 hidden sm:block" />
                         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 relative">
-                          <Milestone icon={ShieldCheck} label="Certified Scrum Master (CSM)" org="Scrum Alliance" year="2014" delay={0} />
-                          <Milestone icon={Award} label="Professional Scrum Trainer (PST)" org="Scrum.org" year="2016" delay={80} />
-                          <Milestone icon={CheckCircle2} label="Certified Agile Coach (ICP-ACC)" org="ICAgile" year="2018" delay={160} />
-                          <Milestone icon={ShieldCheck} label="DISC Certified Trainer" org="John Maxwell Team" year="2019" delay={240} />
-                          <Milestone icon={Star} label="Certified Design Thinking Facilitator" org="IDEO" year="2021" delay={320} />
+                          <Milestone icon={GraduationCap} label="MBA - HR" org="Symbiosis Institute" year="2008" delay={0} />
+                          <Milestone icon={Award} label="Certified Scrum Master (CSM)" org="Scrum Alliance" year="2014" delay={80} />
+                          <Milestone icon={Award} label="Professional Scrum Trainer (PST)" org="Scrum.org" year="2016" delay={160} />
+                          <Milestone icon={Award} label="Certified Agile Coach (ICP-ACC)" org="ICAgile" year="2018" delay={240} />
+                          <Milestone icon={Award} label="DISC Certified Trainer" org="John Maxwell Team" year="2019" delay={320} />
                         </div>
                       </div>
                     </div>

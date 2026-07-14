@@ -8,7 +8,6 @@ export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
   const hideNavbar =
-    pathname.startsWith("/profile") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/auth") ||

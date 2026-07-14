@@ -407,6 +407,7 @@ export default function FindTrainersPage() {
   return (
     <>
       <AnimatedBackground />
+
       <div className="min-h-screen font-sans" style={{ background: "transparent" }}>
         <style>{`
           body { background: #f8faff; min-height: 100vh; }

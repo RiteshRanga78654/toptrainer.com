@@ -17,7 +17,7 @@ export const metadata = {
   title: "Top Trainer",
   description: "Find the best trainers for your growth",
   icons: {
-    icon: "/icon.png",
+    icon: "/logo.png",
   },
 };
 

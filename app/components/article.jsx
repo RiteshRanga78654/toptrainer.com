@@ -112,7 +112,7 @@ function ArticleCard({ article, index }) {
   const styles = categoryStyles[article.category];
   return (
     <div
-      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
+      className="h-full flex flex-col group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
       style={{ animationDelay: `${index * 0.08}s` }}
     >
       <div className="relative h-52 overflow-hidden">
@@ -136,14 +136,14 @@ function ArticleCard({ article, index }) {
           {article.read}
         </div>
       </div>
-      <div className="p-5">
+      <div className="p-5 flex flex-col flex-grow">
         <h3 className="font-semibold text-gray-900 text-[15px] leading-snug mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
           {article.title}
         </h3>
-        <p className="text-[13px] text-gray-500 leading-relaxed mb-4 line-clamp-2">
+        <p className="text-[13px] text-gray-500 leading-relaxed mb-4 line-clamp-2 flex-grow">
           {article.desc}
         </p>
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4 mt-auto">
           <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${styles.avatar}`}>
             {article.initials}
           </div>
@@ -170,6 +170,7 @@ function ArticleCard({ article, index }) {
 function MobileCarousel({ articles }) {
   const scrollRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAtEnd, setIsAtEnd] = useState(false);
 
   const MAX_DOTS = 8;
 
@@ -208,13 +209,14 @@ function MobileCarousel({ articles }) {
     const el = scrollRef.current;
     if (!el) return;
 
-    const cardWidth = el.offsetWidth;
+    const slide = el.firstElementChild;
+    if (!slide) return;
 
-    const index = Math.round(
-      el.scrollLeft / cardWidth
-    );
-
+    const cardWidth = slide.offsetWidth + 16;
+    const index = Math.round(el.scrollLeft / cardWidth);
     setCurrentIndex(index);
+    
+    setIsAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 1);
   }, []);
 
   useEffect(() => {
@@ -247,6 +249,7 @@ function MobileCarousel({ articles }) {
     });
 
     setCurrentIndex(0);
+    setIsAtEnd(false);
   }, [articles]);
 
   // ─── Scroll To ───
@@ -261,8 +264,11 @@ function MobileCarousel({ articles }) {
         Math.min(index, articles.length - 1)
       );
 
+      const slide = el.firstElementChild;
+      const cardWidth = slide ? slide.offsetWidth + 16 : el.offsetWidth;
+
       el.scrollTo({
-        left: clamped * el.offsetWidth,
+        left: clamped * cardWidth,
         behavior: "smooth",
       });
 
@@ -281,12 +287,12 @@ function MobileCarousel({ articles }) {
       {/* Scroll Track */}
       <div
         ref={scrollRef}
-        className="mobile-scroll-track"
+        className="flex overflow-x-auto snap-x snap-mandatory gap-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {articles.map((article, i) => (
           <div
             key={article.id}
-            className="mobile-scroll-slide"
+            className="flex-none snap-start snap-always pt-1 px-0.5 pb-2 w-full sm:w-[calc(50%-8px)] lg:w-[calc(25%-12px)]"
           >
             <ArticleCard
               article={article}
@@ -297,28 +303,24 @@ function MobileCarousel({ articles }) {
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between mt-5 gap-3">
+      <div className="flex items-center justify-center mt-5 gap-3">
 
         {/* Prev */}
         <button
           onClick={prev}
           disabled={currentIndex === 0}
           className="
-            flex-1
+            w-10
+            h-10
+            flex-shrink-0
             flex
             items-center
             justify-center
-            gap-2
-            py-3
-            rounded-xl
+            rounded-full
             border
             border-gray-200
             bg-white
             text-gray-600
-            font-semibold
-            text-sm
-            disabled:opacity-40
-            disabled:cursor-not-allowed
             hover:border-blue-300
             hover:text-blue-600
             hover:bg-blue-50
@@ -329,7 +331,7 @@ function MobileCarousel({ articles }) {
           "
         >
           <ChevronLeft size={18} />
-          Previous
+          
         </button>
 
         {/* Dots */}
@@ -367,22 +369,20 @@ function MobileCarousel({ articles }) {
         <button
           onClick={next}
           disabled={
-            currentIndex === articles.length - 1
+            isAtEnd || currentIndex === articles.length - 1
           }
           className="
-            flex-1
+            w-10
+            h-10
+            flex-shrink-0
             flex
             items-center
             justify-center
-            gap-2
-            py-3
-            rounded-xl
+            rounded-full
             bg-gradient-to-r
             from-blue-600
             to-blue-700
             text-white
-            font-semibold
-            text-sm
             disabled:opacity-40
             disabled:cursor-not-allowed
             active:scale-95
@@ -393,7 +393,7 @@ function MobileCarousel({ articles }) {
             hover:shadow-blue-300
           "
         >
-          Next
+          
           <ChevronRight size={18} />
         </button>
       </div>
@@ -409,22 +409,14 @@ function MobileCarousel({ articles }) {
 /* ━━━ MAIN COMPONENT ━━━ */
 export default function Articles() {
   const [activeFilter, setActiveFilter] = useState("All Topics");
-  const [visibleCount, setVisibleCount] = useState(6);
-  const INITIAL_COUNT = 6;
 
   const filtered =
     activeFilter === "All Topics"
       ? articles
       : articles.filter((a) => a.category === activeFilter);
 
-  const visibleArticles = filtered.slice(0, visibleCount);
-  const progress = Math.round(
-    (Math.min(visibleCount, filtered.length) / filtered.length) * 100
-  );
-
   const handleFilter = (cat) => {
     setActiveFilter(cat);
-    setVisibleCount(4);
   };
 
   return (
@@ -598,7 +590,6 @@ export default function Articles() {
                     </p>
                     <p className="text-gray-500 text-sm">
                       Showing{" "}
-                      <span className="font-semibold text-gray-700">{Math.min(visibleCount, filtered.length)}</span> of{" "}
                       <span className="font-semibold text-gray-700">{filtered.length}</span> articles
                     </p>
                   </div>
@@ -606,61 +597,25 @@ export default function Articles() {
                     <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-500"
-                        style={{ width: `${progress}%` }}
+                        style={{ width: `100%` }}
                       />
                     </div>
-                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap">{progress}%</span>
+                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap">100%</span>
                   </div>
                 </div>
 
-                {/* ── MOBILE: horizontal scroll carousel ── */}
-                <div className="block sm:hidden">
+                {/* ── RESPONSIVE CAROUSEL ── */}
+                <div className="w-full">
                   {filtered.length > 0 ? (
                     <MobileCarousel articles={filtered} />
                   ) : (
                     <div className="text-center py-20 text-gray-400">
                       <BookOpen size={40} className="mx-auto mb-4 opacity-40" />
                       <p className="text-lg font-medium">No articles found</p>
+                      <p className="text-sm mt-1">Try selecting a different category.</p>
                     </div>
                   )}
                 </div>
-
-                {/* ── DESKTOP: grid ── */}
-                <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                  {visibleArticles.map((article, i) => (
-                    <ArticleCard key={article.id} article={article} index={i} />
-                  ))}
-                </div>
-
-                {filtered.length === 0 && (
-                  <div className="hidden sm:block text-center py-20 text-gray-400">
-                    <BookOpen size={40} className="mx-auto mb-4 opacity-40" />
-                    <p className="text-lg font-medium">No articles found</p>
-                    <p className="text-sm mt-1">Try selecting a different category.</p>
-                  </div>
-                )}
-
-                {/* Load more — desktop only */}
-                {filtered.length > INITIAL_COUNT && (
-                  <div className="hidden sm:flex justify-center gap-4 mt-12 flex-wrap">
-                    {visibleCount < filtered.length && (
-                      <button
-                        onClick={() => setVisibleCount((prev) => Math.min(prev + 3, filtered.length))}
-                        className="art-load-btn px-8 py-3.5 text-white rounded-xl font-semibold text-sm shadow-lg"
-                      >
-                        <span>Load More Articles</span>
-                      </button>
-                    )}
-                    {visibleCount > INITIAL_COUNT && (
-                      <button
-                        onClick={() => setVisibleCount(INITIAL_COUNT)}
-                        className="px-8 py-3.5 bg-white border border-gray-200 text-gray-600 rounded-xl font-semibold text-sm hover:border-blue-800 hover:text-blue-700 hover:bg-blue-100 transition-all duration-200"
-                      >
-                        Show Less Articles
-                      </button>
-                    )}
-                  </div>
-                )}
 
               </div>
             </section>

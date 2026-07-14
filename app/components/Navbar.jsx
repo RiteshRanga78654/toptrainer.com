@@ -40,7 +40,7 @@ const Navbar = () => {
             <h1 className="flex items-center gap-2 text-lg sm:text-xl font-bold leading-none -ml-2">
               {/* Logo Image */}
               <Image
-                src="/icon.png"
+                src="/logo.png"
                 alt="TopTrainer Logo"
                 width={32}
                 height={32}
@@ -77,23 +77,13 @@ const Navbar = () => {
 
             {/* Right Side */}
             <div className="hidden md:flex items-center gap-3">
-              {/* User */}
-              <Link href="/join-as-trainer">
-                <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full pl-3 pr-3 py-2 cursor-pointer hover:bg-blue-100 transition">
-                  <div>
-                    <p className="text-[13.5px] font-semibold text-slate-800">
-                      Join as Trainer
-                    </p>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Login */}
+              
+              {/* Login / Register */}
               <Link
                 href="/auth/login"
                 className="px-4 py-1.5 text-[13.5px] font-medium border border-blue-300 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition inline-block text-center"
               >
-                Login
+                Register / Login
               </Link>
             </div>
 
@@ -153,11 +143,11 @@ const Navbar = () => {
           {/* Buttons */}
           <div className="flex gap-3">
             <Link
-              href="/login"
+              href="/auth/login"
               className="flex-1 block py-2 border border-blue-300 rounded-lg text-blue-600 bg-blue-50 text-center"
               onClick={() => setOpen(false)}
             >
-              Login
+              Register / Login
             </Link>
             <Link
               href="/join-as-trainer"

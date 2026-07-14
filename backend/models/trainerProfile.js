@@ -136,6 +136,12 @@ const awardSchema = new mongoose.Schema({
   year: String,
 
   category: String,
+  
+  awardType: {
+    type: String,
+    enum: ["Award", "Certificate"],
+    default: "Award"
+  },
 
   description: String,
 

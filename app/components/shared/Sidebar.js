@@ -20,13 +20,12 @@ const adminNav = [
     label: 'MAIN', items: [
       { label: 'Dashboard',  href: '/admin',                icon: LayoutDashboard, exact: true },
       { label: 'Trainers',   href: '/admin/trainers',       icon: GraduationCap },
+      { label: 'Users',        href: '/admin/users',          icon: Settings },
       { label: 'Homepage',   href: '/admin/homepage',       icon: Home },
       { label: 'Workshops',  href: '/admin/workshops',    icon: BookOpen },
-      { label: 'Articles',   href: '/admin/articles',     icon: FileText },
       { label: 'Industry',   href: '/admin/industries',   icon: Building2 },
       { label: 'Competency', href: '/admin/competencies', icon: Award },
-      { label: 'Media',      href: '/admin/media',      icon: ImageIcon },
-      { label: 'Users',        href: '/admin/users',          icon: Settings },
+      { label: 'Articles',   href: '/admin/articles',     icon: FileText },
       { label: 'Reports',    href: '/admin/reports',    icon: BarChart3 },
     ]
   },
