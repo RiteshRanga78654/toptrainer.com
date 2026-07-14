@@ -1,74 +1,90 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useSelector } from 'react-redux'
 import ArticleFormModal from './ArticleFormModal'
+import { articlesAPI } from '../../lib/api'
 
 // ─────────────────────────────────────────────────────────
-// SEED DATA
-// ─────────────────────────────────────────────────────────
-const SEED_ARTICLES = [
-  {
-    id: 1,
-    title: 'How Prompt Engineering Is Becoming the Most Valuable Skill of the Decade',
-    brief: "The people who know how to talk to AI systems effectively will have an outsized advantage in every profession. Here's how to build that skill.",
-    content: [
-      { type: 'p', text: "The people who understand how to communicate with AI systems effectively will have a compounding advantage over those who don't. Prompt engineering is not a passing trend — it is the new literacy." },
-      { type: 'h2', text: 'Why Prompting Is Harder Than It Looks' },
-      { type: 'p', text: "Large language models are trained on vast corpora of human text and are exquisitely sensitive to phrasing, context, and framing. The same question asked in two different ways can produce radically different outputs. Understanding this sensitivity — and using it deliberately — is the core of prompt engineering." },
-      { type: 'callout', text: "🤖 Key Insight: Studies show that adding the phrase 'think step by step' to a prompt improves accuracy on complex reasoning tasks by up to 40%. The model doesn't change — only the instruction does." },
-      { type: 'h2', text: 'The Five Principles of Effective Prompting' },
-      { type: 'p', text: "1. Be specific about format — tell the model exactly what structure you want.\n2. Provide context and role — 'You are a senior data analyst reviewing...' dramatically changes output quality.\n3. Use examples — show the model what good output looks like.\n4. Break complex tasks into steps.\n5. Iterate — treat the first output as a draft, not a deliverable." },
-      { type: 'h2', text: 'Advanced Techniques: Chain-of-Thought and Self-Critique' },
-      { type: 'p', text: "Chain-of-thought prompting asks the model to reason through a problem before answering. Self-critique prompting asks it to evaluate and improve its own output. Combined, these techniques produce outputs that rival expert human work on many structured tasks." },
-      { type: 'quote', text: "The best prompt engineers I've worked with don't think of themselves as coders. They think of themselves as communicators who happen to be talking to a very unusual kind of mind.", author: 'Arjun Mehta, DeepMind India' },
-      { type: 'h2', text: 'Where to Start' },
-      { type: 'p', text: "Pick one task you do repeatedly — summarising reports, writing emails, analysing data. Spend one hour this week writing and refining a prompt for that task. Document what works. Within two weeks, you will have a personal prompt library that saves hours monthly and produces better output than generic queries ever could." },
-    ],
-    image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80',
-    date: 'May 4', fullDate: 'May 4, 2026', readTime: '6 min', views: '21.4k',
-    author: 'Arjun Mehta', authorRole: 'AI Research Lead, DeepMind India',
-    authorBio: "Arjun leads applied AI research at DeepMind's India operations. He has published 14 papers on language model alignment and teaches prompt design workshops to enterprise teams across Asia.",
-    initials: 'AM', category: 'AI', tags: ['Prompt Engineering', 'AI Skills', 'Future of Work'], trending: true, status: 'published',
-  },
-  {
-    id: 2,
-    title: 'The Science of Progressive Overload: Why Most People Train Wrong',
-    brief: "Progressive overload is the single most important principle in strength training. Without it, your gains flatline. Here's how to apply it correctly.",
-    content: [
-      { type: 'p', text: "Progressive overload is the gradual increase of stress placed on the body during exercise. Without it, muscles adapt and growth plateaus. Most gym-goers unknowingly violate this principle by doing the same weights and reps every session." },
-      { type: 'h2', text: 'The Three Dimensions of Overload' },
-      { type: 'p', text: "You can progressively overload by increasing weight, increasing volume (sets × reps), or increasing frequency. Most beginners should focus on weight; intermediate lifters benefit from cycling all three." },
-      { type: 'callout', text: '💪 Rule of Thumb: Aim to add 2.5–5 kg to compound lifts every 1–2 weeks as a beginner. When that stalls, switch to adding reps before increasing weight again.' },
-      { type: 'h2', text: 'Tracking Is Non-Negotiable' },
-      { type: 'p', text: "You cannot manage what you don't measure. Keep a training log — even a simple spreadsheet — recording every set, rep, and weight. This data reveals patterns invisible to memory and makes progressive overload systematic rather than accidental." },
-      { type: 'quote', text: "The training journal is the most underused tool in the gym. Athletes who track make 47% more strength gains in the first year than those who don't.", author: 'Dr. Mike Israetel, Renaissance Periodization' },
-    ],
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
-    date: 'May 20', fullDate: 'May 20, 2026', readTime: '5 min', views: '18.2k',
-    author: 'Priya Sharma', authorRole: 'Strength & Conditioning Coach',
-    authorBio: 'Priya has coached over 300 athletes from recreational to national level. She specialises in evidence-based strength programming and periodisation.',
-    initials: 'PS', category: 'Fitness', tags: ['Strength Training', 'Progressive Overload', 'Gym'], trending: false, status: 'published',
-  },
-  {
-    id: 3,
-    title: 'Nutrition Timing: The Exact Windows That Matter for Performance',
-    brief: 'Meal timing around workouts can meaningfully affect performance and recovery. This guide breaks down the pre, intra, and post-workout windows backed by current research.',
-    content: [
-      { type: 'p', text: "Nutrient timing is a strategy of consuming foods and supplements at specific times around exercise to improve performance, recovery, and body composition. While total daily intake matters most, timing provides the edge at higher levels of performance." },
-      { type: 'h2', text: 'The Pre-Workout Window (60–90 min before)' },
-      { type: 'p', text: "A meal rich in complex carbohydrates and moderate protein 60–90 minutes before training tops up muscle glycogen and primes protein synthesis. Avoid high fat or high fibre immediately pre-workout — both slow gastric emptying and can cause discomfort during training." },
-      { type: 'callout', text: '🍌 Quick Tip: A banana + 20g whey protein is one of the most practical and evidence-backed pre-workout meals for strength and endurance athletes alike.' },
-      { type: 'h2', text: 'Post-Workout: The Anabolic Window' },
-      { type: 'p', text: "The 'anabolic window' is real but wider than gym folklore suggests. You have approximately 2 hours post-training to consume protein and carbohydrates for optimal recovery — not 30 minutes. Prioritise 25–40g of high-quality protein within this window." },
-      { type: 'quote', text: 'Obsessing over the exact minute you eat post-workout is far less important than consistently eating enough total protein across the day.', author: 'Dr. Alan Aragon, Nutrition Researcher' },
-    ],
-    image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&q=80',
-    date: 'May 15', fullDate: 'May 15, 2026', readTime: '7 min', views: '14.8k',
-    author: 'Rahul Verma', authorRole: 'Sports Nutritionist',
-    authorBio: 'Rahul is a registered sports dietitian working with professional cricket and football teams. He translates complex nutritional science into practical game-day strategies.',
-    initials: 'RV', category: 'Nutrition', tags: ['Nutrition', 'Recovery', 'Performance'], trending: false, status: 'published',
-  },
-]
+// BACKEND MAPPING HELPERS
+// Backend Article doc: _id, title, category, shortDescription, tags[],
+// sections[{type: heading|paragraph|callout|quote, content}], status,
+// coverImage.url, views, likes, featured, author, createdAt, publishedAt.
+// This page displays a richer shape (brief, content[{type:h2|p|callout|quote,
+// text, author}], date, fullDate, readTime, initials, trending) so we map
+// both ways at the API boundary instead of touching the UI below.
+// ──────────────────────────────
+const fmtShort = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''
+const fmtFull  = d => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''
+const mkInit   = name => (name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+const calcRead = sections => `${Math.max(1, Math.round((sections || []).reduce((a, s) => a + (s.content || '').split(/\s+/).length, 0) / 200))} min`
+
+const SECTION_TYPE_TO_BLOCK = { heading: 'h2', paragraph: 'p', callout: 'callout', quote: 'quote' }
+const BLOCK_TYPE_TO_SECTION = { h2: 'heading', p: 'paragraph', callout: 'callout', quote: 'quote' }
+
+// Backend sections only have a single `content` string (no separate quote
+// author field), so a quote's attribution is stored appended as "\n\n— Name"
+// and split back out here for display/editing.
+function splitQuote(content) {
+  const m = (content || '').match(/^([\s\S]*?)\n\n— (.+)$/)
+  return m ? { text: m[1], author: m[2] } : { text: content || '', author: '' }
+}
+
+function mapArticleFromBackend(a) {
+  const content = (a.sections || []).map(s => {
+    const type = SECTION_TYPE_TO_BLOCK[s.type] || 'p'
+    if (type === 'quote') {
+      const { text, author } = splitQuote(s.content)
+      return { type, text, author }
+    }
+    return { type, text: s.content || '' }
+  })
+  return {
+    id: a._id,
+    title: a.title || '',
+    brief: a.shortDescription || '',
+    content,
+    image: a.coverImage?.url || null,
+    date: fmtShort(a.createdAt),
+    fullDate: fmtFull(a.createdAt),
+    readTime: calcRead(a.sections),
+    views: String(a.views || 0),
+    author: a.author || '',
+    authorRole: '',
+    authorBio: '',
+    initials: mkInit(a.author || ''),
+    category: a.category || 'Fitness',
+    tags: a.tags || [],
+    trending: !!a.featured,
+    status: a.status || 'draft',
+  }
+}
+
+// Builds the multipart/form-data body the backend's create/update routes
+// expect (coverImage upload + JSON-stringified sections/tags).
+function articleToFormData(payload) {
+  const fd = new FormData()
+  fd.append('title', payload.title)
+  fd.append('category', payload.category)
+  fd.append('shortDescription', payload.brief)
+  fd.append('status', payload.status)
+  fd.append('author', payload.author)
+  fd.append('featured', payload.trending ? 'true' : 'false')
+  fd.append('tags', JSON.stringify(payload.tags || []))
+
+  const sections = (payload.content || []).map(b => {
+    const type = BLOCK_TYPE_TO_SECTION[b.type] || 'paragraph'
+    const content = b.type === 'quote' && b.author
+      ? `${b.text}\n\n— ${b.author}`
+      : (b.text || '')
+    return { type, content }
+  })
+  fd.append('sections', JSON.stringify(sections))
+
+  if (payload.imageFile) fd.append('coverImage', payload.imageFile)
+
+  return fd
+}
 
 // ─────────────────────────────────────────────────────────
 // CATEGORY COLOURS
@@ -326,10 +342,15 @@ function ArticleCard({ a, delay, onView, onEdit, onDel }) {
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────
 export default function ArticlesPage() {
+  const user = useSelector((s) => s.auth?.user)
+
   const [view,     setView]     = useState('list') // 'list' | 'detail'
-  const [articles, setArticles] = useState(SEED_ARTICLES)
+  const [articles, setArticles] = useState([])
+  const [loading,  setLoading]  = useState(true)
+  const [error,    setError]    = useState(null)
   const [sel,      setSel]      = useState(null)
   const [delTgt,   setDelTgt]   = useState(null)
+  const [deleting, setDeleting] = useState(false)
   const [toast,    setToast]    = useState(null)
   const [liked,    setLiked]    = useState(false)
   const [saved,    setSaved]    = useState(false)
@@ -340,6 +361,22 @@ export default function ArticlesPage() {
 
   function showToast(msg) { setToast(msg); setTimeout(() => setToast(null), 2800) }
 
+  const fetchArticles = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await articlesAPI.getAll()
+      const raw = res?.data?.articles || res?.data?.data?.articles || []
+      setArticles(raw.map(mapArticleFromBackend))
+    } catch (e) {
+      setError(e?.response?.data?.message || e?.message || 'Failed to load articles')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchArticles() }, [fetchArticles])
+
   function goList()    { setView('list'); setSel(null) }
   function goDetail(a) { setSel(a); setLiked(false); setSaved(false); setView('detail') }
 
@@ -347,24 +384,37 @@ export default function ArticlesPage() {
   function openEdit(a)  { setEditing(a);    setShowModal(true) }
   function closeModal() { setEditing(null); setShowModal(false) }
 
-  function handleSave(art, id) {
+  async function handleSave(art, id) {
+    const formData = articleToFormData(art)
     if (id) {
-      setArticles(p => p.map(a => a.id === id ? art : a))
-      if (sel?.id === id) setSel(art)
+      const res = await articlesAPI.update(id, formData)
+      const updated = mapArticleFromBackend(res.data.article)
+      setArticles(p => p.map(a => a.id === id ? updated : a))
+      if (sel?.id === id) setSel(updated)
       showToast('✅ Article updated!')
     } else {
-      setArticles(p => [art, ...p])
-      showToast('🎉 Article published!')
+      const res = await articlesAPI.create(formData)
+      const created = mapArticleFromBackend(res.data.article)
+      setArticles(p => [created, ...p])
+      showToast(created.status === 'draft' ? '📝 Saved as draft!' : '🎉 Article published!')
     }
     closeModal()
   }
 
-  function confirmDel() {
+  async function confirmDel() {
     if (!delTgt) return
-    setArticles(p => p.filter(a => a.id !== delTgt.id))
-    if (sel?.id === delTgt.id) goList()
-    setDelTgt(null)
-    showToast('🗑️ Article deleted.')
+    setDeleting(true)
+    try {
+      await articlesAPI.delete(delTgt.id)
+      setArticles(p => p.filter(a => a.id !== delTgt.id))
+      if (sel?.id === delTgt.id) goList()
+      showToast('🗑️ Article deleted.')
+    } catch (e) {
+      showToast('⚠️ ' + (e?.response?.data?.message || 'Delete failed'))
+    } finally {
+      setDeleting(false)
+      setDelTgt(null)
+    }
   }
 
   const dc  = gc(sel?.category)
@@ -383,8 +433,8 @@ export default function ArticlesPage() {
               <h3>Delete Article?</h3>
               <p>"<strong>{delTgt.title?.slice(0,60)}{delTgt.title?.length>60?'…':''}</strong>" will be permanently deleted. This cannot be undone.</p>
               <div className="modal-btns">
-                <button className="m-cancel" onClick={() => setDelTgt(null)}>Cancel</button>
-                <button className="m-del"    onClick={confirmDel}>Delete</button>
+                <button className="m-cancel" onClick={() => setDelTgt(null)} disabled={deleting}>Cancel</button>
+                <button className="m-del"    onClick={confirmDel} disabled={deleting}>{deleting ? 'Deleting…' : 'Delete'}</button>
               </div>
             </div>
           </div>
@@ -404,7 +454,19 @@ export default function ArticlesPage() {
               <button className="btn btn-blue" onClick={openCreate}><Ic.Plus /> New Article</button>
             </div>
             <div className="art-grid">
-              {articles.length === 0 ? (
+              {loading ? (
+                <div className="empty">
+                  <div className="empty-icon">⏳</div>
+                  <h3>Loading articles…</h3>
+                </div>
+              ) : error ? (
+                <div className="empty">
+                  <div className="empty-icon">⚠️</div>
+                  <h3>Couldn't load articles</h3>
+                  <p>{error}</p>
+                  <button className="btn btn-ghost" style={{ marginTop: 12 }} onClick={fetchArticles}>Retry</button>
+                </div>
+              ) : articles.length === 0 ? (
                 <div className="empty">
                   <div className="empty-icon">✍️</div>
                   <h3>No articles yet</h3>

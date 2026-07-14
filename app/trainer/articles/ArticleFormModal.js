@@ -1,13 +1,20 @@
 "use client";
 // PLACE AT: app/trainer/articles/ArticleFormModal.js
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
-  X, Loader2, ImageIcon, Trash2,
-  Heading2, AlignLeft, Lightbulb, Quote as QuoteIcon,
+  X,
+  Loader2,
+  ImageIcon,
+  Trash2,
+  Heading2,
+  AlignLeft,
+  Lightbulb,
+  Quote as QuoteIcon,
 } from "lucide-react";
+import { articlesAPI } from "../../lib/api"; // apne actual path ke hisaab se adjust karo
 
-// ─── CSS ──────────────────────────────────────────────────────────────────────
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap');
 :root{
@@ -91,7 +98,6 @@ const CSS = `
 .ch{font-size:.7rem;color:var(--light);font-weight:600;}
 .ch.w{color:#f59e0b;}.ch.o{color:var(--red);}
 
-/* Cover image */
 .cov-wrap{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;}
 .cov-zone{
   width:180px;height:108px;border-radius:14px;border:2px dashed;
@@ -121,7 +127,6 @@ const CSS = `
 }
 .cov-rm:hover{background:rgba(220,38,38,.15);}
 
-/* Tags editor */
 .tags-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;background:var(--surf);border:1.5px solid var(--border);border-radius:11px;min-height:44px;cursor:text;}
 .tags-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);background:white;}
 .tpill{background:rgba(37,99,235,.1);color:var(--blue);font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:99px;display:flex;align-items:center;gap:5px;}
@@ -129,15 +134,6 @@ const CSS = `
 .tpill-rm:hover{color:var(--blue);}
 .tag-inp{border:none;outline:none;background:none;font-family:var(--ffb);font-size:.86rem;color:var(--ink);min-width:80px;flex:1;}
 
-/* Trending toggle */
-.chk-row{display:flex;gap:24px;flex-wrap:wrap;}
-.chk-label{
-  display:flex;align-items:center;gap:8px;cursor:pointer;
-  font-size:.85rem;font-weight:600;color:var(--ink2);user-select:none;
-}
-.chk-label input[type=checkbox]{width:16px;height:16px;accent-color:var(--blue);cursor:pointer;}
-
-/* ARTICLE CONTENT BLOCK EDITOR */
 .ab-list{display:flex;flex-direction:column;gap:12px;}
 .ab-card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;transition:border-color .18s;}
 .ab-card:hover{border-color:rgba(37,99,235,.25);}
@@ -160,7 +156,6 @@ const CSS = `
 .ab-add-lbl{font-size:.74rem;font-weight:700;color:var(--ink2);}
 .ab-empty{text-align:center;padding:26px 10px;color:var(--light);font-size:.84rem;font-weight:500;border:2px dashed var(--border);border-radius:14px;background:var(--surf);}
 
-/* Footer */
 .mftr{
   padding:16px 26px;border-top:1px solid var(--border);
   background:var(--surf);border-radius:0 0 26px 26px;
@@ -193,22 +188,37 @@ const CSS = `
 .spin{animation:spin .8s linear infinite;}
 `;
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 const CATEGORIES = ["AI", "Fitness", "Nutrition", "Sleep", "Mindset", "Strength", "Cardio"];
 
 const BLOCK_DEFS = {
-  h2:      { label: "Heading",   Icon: Heading2,  bg: "rgba(124,58,237,.1)", color: "#7c3aed", fieldLbl: "Heading Text",   placeholder: "e.g. Why Prompting Is Harder Than It Looks" },
-  p:       { label: "Paragraph", Icon: AlignLeft, bg: "rgba(37,99,235,.1)",  color: "#2563eb", fieldLbl: "Paragraph Text", placeholder: "Write the paragraph content here…" },
-  callout: { label: "Callout",   Icon: Lightbulb, bg: "rgba(217,119,6,.1)",  color: "#d97706", fieldLbl: "Callout Text",   placeholder: "💡 Key insight, tip, or quick takeaway…" },
-  quote:   { label: "Quote",     Icon: QuoteIcon, bg: "rgba(219,39,119,.1)", color: "#db2777", fieldLbl: "Quote Text",     placeholder: "Enter the quotation…" },
+  h2: { label: "Heading", Icon: Heading2, bg: "rgba(124,58,237,.1)", color: "#7c3aed", fieldLbl: "Heading Text", placeholder: "e.g. Why Prompting Is Harder Than It Looks" },
+  p: { label: "Paragraph", Icon: AlignLeft, bg: "rgba(37,99,235,.1)", color: "#2563eb", fieldLbl: "Paragraph Text", placeholder: "Write the paragraph content here…" },
+  callout: { label: "Callout", Icon: Lightbulb, bg: "rgba(217,119,6,.1)", color: "#d97706", fieldLbl: "Callout Text", placeholder: "💡 Key insight, tip, or quick takeaway…" },
+  quote: { label: "Quote", Icon: QuoteIcon, bg: "rgba(219,39,119,.1)", color: "#db2777", fieldLbl: "Quote Text", placeholder: "Enter the quotation…" },
 };
+
 const BTYPES = Object.keys(BLOCK_DEFS);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-const fmtFull  = d => new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-const fmtShort = d => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-const calcRead = blocks => `${Math.max(1, Math.round((blocks || []).reduce((a, x) => a + (x.text || "").split(/\s+/).length, 0) / 200))} min`;
-const mkInit   = name => (name || "").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+const fmtFull = (d) => new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+const fmtShort = (d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const calcRead = (blocks) => `${Math.max(1, Math.round((blocks || []).reduce((a, x) => a + (x.text || "").split(/\s+/).filter(Boolean).length, 0) / 200))} min`;
+const mkInit = (name) => (name || "").split(" ").filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+
+// ── Backend <-> Form block-type mapping ──────────────────────────────────
+// Backend sectionSchema enum is ["heading","paragraph","callout","quote"]
+// and its text field is called `content` (not `text`). The editor UI here
+// uses the shorter h2/p labels and a `text` field, so we translate both
+// ways at the API boundary instead of touching the UI.
+const SECTION_TYPE_TO_BLOCK = { heading: "h2", paragraph: "p", callout: "callout", quote: "quote" };
+const BLOCK_TYPE_TO_SECTION = { h2: "heading", p: "paragraph", callout: "callout", quote: "quote" };
+
+// Backend's sectionSchema only has {type, content} — no separate quote-author
+// field — so a quote's attribution is appended into content as
+// "text\n\n— Author" and split back out when reading it in articleToForm().
+function splitQuoteContent(content) {
+  const m = (content || "").match(/^([\s\S]*?)\n\n— (.+)$/);
+  return m ? { text: m[1], author: m[2] } : { text: content || "", author: "" };
+}
 
 function emptyForm() {
   return {
@@ -220,63 +230,92 @@ function emptyForm() {
     initials: "",
     category: "Fitness",
     tags: [],
-    image: null,        // { url, file? }
+    image: null,
     trending: false,
-    content: [],         // [{ type, text, author }]
+    content: [],
     status: "draft",
     trainerId: "",
   };
 }
 
 function articleToForm(a) {
+  const rawSections = a.sections || a.content || [];
+  const content = rawSections.map((b) => {
+    // Supports both a raw backend doc (b.content, b.type = heading/paragraph/…)
+    // and an already-mapped local shape (b.text, b.type = h2/p/…).
+    const type = SECTION_TYPE_TO_BLOCK[b.type] || b.type || "p";
+    if (type === "quote") {
+      const { text, author } = "content" in b
+        ? splitQuoteContent(b.content)
+        : { text: b.text || "", author: b.author || "" };
+      return { type, text, author };
+    }
+    return { type, text: "content" in b ? (b.content || "") : (b.text || "") };
+  });
+
   return {
     title: a.title || "",
-    brief: a.brief || "",
+    brief: a.brief || a.shortDescription || "",
     author: a.author || "",
     authorRole: a.authorRole || "",
     authorBio: a.authorBio || "",
     initials: a.initials || "",
     category: a.category || "Fitness",
     tags: a.tags || [],
-    image: a.image ? { url: a.image, ext: true } : null,
-    trending: a.trending || false,
-    content: (a.content || []).map(b => ({ ...b })),
+    image: a.coverImage?.url ? { url: a.coverImage.url, ext: true } : null,
+    trending: Boolean(a.trending ?? a.featured),
+    content,
     status: a.status || "published",
     trainerId: a.trainerId || a.trainer?._id || a.trainer || "",
   };
 }
 
-/**
- * formToPayload — converts form state into the article object shape
- * used by the ArticlesPage (id, title, brief, content[], image, date,
- * fullDate, readTime, views, author, authorRole, authorBio, initials,
- * category, tags, trending, status).
- */
-function formToPayload(f, status, existing) {
-  const content = f.content.filter(b => b.text.trim());
-  return {
-    id:         existing?.id || Date.now(),
-    title:      f.title.trim(),
-    brief:      f.brief.trim(),
-    content,
-    image:      f.image?.url || null,
-    date:       existing?.date     || fmtShort(new Date()),
-    fullDate:   existing?.fullDate || fmtFull(new Date()),
-    readTime:   calcRead(content),
-    views:      existing?.views || "0",
-    author:     f.author.trim(),
-    authorRole: f.authorRole.trim(),
-    authorBio:  f.authorBio.trim(),
-    initials:   f.initials.trim() || mkInit(f.author.trim()),
-    category:   f.category,
-    tags:       f.tags,
-    trending:   f.trending,
-    status,
-    trainerId:  f.trainerId || undefined,
-  };
+function buildFormData(f, status, existing, user) {
+  const content = (f.content || [])
+    .filter((b) => (b.text || "").trim())
+    .map((b) => {
+      const type = BLOCK_TYPE_TO_SECTION[b.type] || "paragraph"; // h2/p -> heading/paragraph
+      const text = b.text.trim();
+      const content = type === "quote" && (b.author || "").trim()
+        ? `${text}\n\n— ${b.author.trim()}`
+        : text;
+      return { type, content }; // backend expects `content`, not `text`
+    });
+
+  const authorName = (user?.fullName || user?.name || f.author || "").trim();
+  const authorRole = (
+    f.authorRole ||
+    user?.subjectLine ||
+    user?.title ||
+    user?.roleName ||
+    user?.industry ||
+    "Trainer"
+  ).trim();
+
+  const fd = new FormData();
+  fd.append("title", f.title.trim());
+  fd.append("shortDescription", f.brief.trim());
+  fd.append("author", authorName);
+  fd.append("authorRole", authorRole);
+  fd.append("authorBio", (f.authorBio || "").trim());
+  fd.append("initials", (f.initials || mkInit(authorName)).trim());
+  fd.append("category", f.category);
+  fd.append("tags", JSON.stringify(f.tags || []));
+  fd.append("sections", JSON.stringify(content)); // only field the backend actually reads for body copy
+  fd.append("status", status);
+  fd.append("featured", String(Boolean(f.trending))); // backend field is "featured", not "trending"
+
+  if (existing?._id || existing?.id) fd.append("id", existing?._id || existing?.id);
+  fd.append("date", existing?.date || fmtShort(new Date()));
+  fd.append("fullDate", existing?.fullDate || fmtFull(new Date()));
+  fd.append("readTime", calcRead(content.map((s) => ({ text: s.content }))));
+  fd.append("views", String(existing?.views || "0"));
+
+  if (f.image?.file) fd.append("coverImage", f.image.file);
+
+  return fd;
 }
 
-// ─── Small field wrapper ──────────────────────────────────────────────────────
 function Field({ label, required, hint, children }) {
   return (
     <div className="fgroup">
@@ -289,25 +328,33 @@ function Field({ label, required, hint, children }) {
   );
 }
 
-// ─── Content Block Editor ──────────────────────────────────────────────────────
 function BlockEditor({ blocks, onChange }) {
-  function add(type)       { onChange([...blocks, { type, text: "", author: "" }]); }
-  function upd(i, k, v)    { onChange(blocks.map((b, j) => (j === i ? { ...b, [k]: v } : b))); }
-  function rm(i)           { onChange(blocks.filter((_, j) => j !== i)); }
-  function chtype(i, type) { onChange(blocks.map((b, j) => (j === i ? { ...b, type } : b))); }
+  function add(type) {
+    onChange([...(blocks || []), { type, text: "", author: "" }]);
+  }
+  function upd(i, k, v) {
+    onChange((blocks || []).map((b, j) => (j === i ? { ...b, [k]: v } : b)));
+  }
+  function rm(i) {
+    onChange((blocks || []).filter((_, j) => j !== i));
+  }
+  function chtype(i, type) {
+    onChange((blocks || []).map((b, j) => (j === i ? { ...b, type } : b)));
+  }
 
   return (
     <div>
-      {blocks.length === 0 && (
+      {(!blocks || blocks.length === 0) && (
         <div className="ab-empty">
           No content sections yet — add a heading or paragraph below to start building your article.
         </div>
       )}
 
       <div className="ab-list">
-        {blocks.map((b, i) => {
+        {(blocks || []).map((b, i) => {
           const def = BLOCK_DEFS[b.type] || BLOCK_DEFS.p;
           const { Icon } = def;
+
           return (
             <div key={i} className="ab-card">
               <div className="ab-card-hdr">
@@ -315,11 +362,13 @@ function BlockEditor({ blocks, onChange }) {
                   <span className="ab-type-ico" style={{ background: def.bg, color: def.color }}>
                     <Icon size={15} />
                   </span>
-                  <select className="ab-type-sel" value={b.type} onChange={e => chtype(i, e.target.value)}>
-                    {BTYPES.map(t => <option key={t} value={t}>{BLOCK_DEFS[t].label}</option>)}
+                  <select className="ab-type-sel" value={b.type} onChange={(e) => chtype(i, e.target.value)}>
+                    {BTYPES.map((t) => (
+                      <option key={t} value={t}>{BLOCK_DEFS[t].label}</option>
+                    ))}
                   </select>
                 </div>
-                <button className="ab-rm" onClick={() => rm(i)} title="Remove section">
+                <button type="button" className="ab-rm" onClick={() => rm(i)} title="Remove section">
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -331,7 +380,7 @@ function BlockEditor({ blocks, onChange }) {
                   rows={b.type === "h2" ? 1 : 3}
                   placeholder={def.placeholder}
                   value={b.text}
-                  onChange={e => upd(i, "text", e.target.value)}
+                  onChange={(e) => upd(i, "text", e.target.value)}
                 />
               </div>
 
@@ -345,7 +394,7 @@ function BlockEditor({ blocks, onChange }) {
                     className="ab-author-inp"
                     placeholder="e.g. Arjun Mehta, DeepMind India"
                     value={b.author || ""}
-                    onChange={e => upd(i, "author", e.target.value)}
+                    onChange={(e) => upd(i, "author", e.target.value)}
                   />
                 </div>
               )}
@@ -355,7 +404,7 @@ function BlockEditor({ blocks, onChange }) {
       </div>
 
       <div className="ab-add-grid">
-        {BTYPES.map(t => {
+        {BTYPES.map((t) => {
           const def = BLOCK_DEFS[t];
           const { Icon } = def;
           return (
@@ -370,33 +419,47 @@ function BlockEditor({ blocks, onChange }) {
   );
 }
 
-// ─── Main Modal ───────────────────────────────────────────────────────────────
-export default function ArticleFormModal({ article, onSave, onClose, trainers }) {
-  const isEdit = Boolean(article?.id);
+export default function ArticleFormModal({ article, onClose, onSaved, trainers }) {
+  const articleId = article?._id || article?.id || null;
+  const isEdit = Boolean(articleId);
+  const user = useSelector((s) => s.auth?.user);
 
-  const [form,   setForm]   = useState(() => (article ? articleToForm(article) : emptyForm()));
-  const [tagIn,  setTagIn]  = useState("");
+  const [form, setForm] = useState(() => (article ? articleToForm(article) : emptyForm()));
+  const [tagIn, setTagIn] = useState("");
   const [saving, setSaving] = useState(false);
-  const [error,  setError]  = useState("");
+  const [error, setError] = useState("");
   const fileRef = useRef(null);
 
-  const set = useCallback((k, v) => setForm(p => ({ ...p, [k]: v })), []);
+  const set = useCallback((k, v) => setForm((p) => ({ ...p, [k]: v })), []);
 
-  // ── cover image ─────────────────────────────────────────
+  useEffect(() => {
+    if (!user || isEdit) return;
+    setForm((prev) => ({
+      ...prev,
+      trainerId: prev.trainerId || user?._id || user?.id || "",
+      author: prev.author || user?.fullName || user?.name || "",
+      authorRole: prev.authorRole || user?.subjectLine || user?.title || user?.roleName || user?.industry || "Trainer",
+      initials: prev.initials || mkInit(user?.fullName || user?.name || ""),
+    }));
+  }, [user, isEdit]);
+
   function handleImg(e) {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (!f.type.startsWith("image/")) { setError("Please select a valid image file."); return; }
-    setForm(p => ({ ...p, image: { url: URL.createObjectURL(f), file: f } }));
+    if (!f.type.startsWith("image/")) {
+      setError("Please select a valid image file.");
+      return;
+    }
+    setForm((p) => ({ ...p, image: { url: URL.createObjectURL(f), file: f } }));
     setError("");
   }
+
   function rmImg() {
     if (form.image?.url && !form.image.ext) URL.revokeObjectURL(form.image.url);
     set("image", null);
     if (fileRef.current) fileRef.current.value = "";
   }
 
-  // ── tags ─────────────────────────────────────────────────
   function tagKey(e) {
     if ((e.key === "Enter" || e.key === ",") && tagIn.trim()) {
       e.preventDefault();
@@ -408,21 +471,52 @@ export default function ArticleFormModal({ article, onSave, onClose, trainers })
       set("tags", form.tags.slice(0, -1));
     }
   }
-  function removeTag(t) { set("tags", form.tags.filter(x => x !== t)); }
 
-  // ── submit ───────────────────────────────────────────────
+  function removeTag(t) {
+    set("tags", form.tags.filter((x) => x !== t));
+  }
+
   async function handleSubmit(status) {
     setError("");
-    if (!form.title.trim())  { setError("Title is required.");                return; }
-    if (!form.brief.trim())  { setError("Short description is required.");    return; }
-    if (!form.author.trim()) { setError("Author name is required.");          return; }
+
+    const authorName = (user?.fullName || user?.name || form.author || "").trim();
+
+    if (!form.title.trim()) {
+      setError("Title is required.");
+      return;
+    }
+    if (!form.brief.trim()) {
+      setError("Short description is required.");
+      return;
+    }
+    if (!isEdit && !form.image?.file) {
+      setError("Cover image is required.");
+      return;
+    }
 
     setSaving(true);
     try {
-      const payload = formToPayload(form, status, article);
-      await onSave(payload, article?.id);
+      const payload = buildFormData(
+        {
+          ...form,
+          author: authorName,
+          trainerId: form.trainerId || user?._id || user?.id || "",
+          authorRole: form.authorRole || user?.subjectLine || user?.title || user?.roleName || user?.industry || "Trainer",
+          initials: form.initials || mkInit(authorName),
+        },
+        status,
+        article,
+        user
+      );
+
+      const res = isEdit
+        ? await articlesAPI.update(articleId, payload)
+        : await articlesAPI.create(payload);
+
+      if (onSaved) onSaved(res?.data || res);
+      onClose?.();
     } catch (err) {
-      setError(err?.message || "Save failed.");
+      setError(err?.response?.data?.message || err?.message || "Save failed.");
     } finally {
       setSaving(false);
     }
@@ -430,34 +524,29 @@ export default function ArticleFormModal({ article, onSave, onClose, trainers })
 
   const briefLen = form.brief.length;
   const briefCls = briefLen > 280 ? "ch o" : briefLen > 220 ? "ch w" : "ch";
+  const authorName = form.author || user?.fullName || user?.name || "";
 
   return (
     <>
       <style>{CSS}</style>
-      <div className="moverlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="moverlay" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
         <div className="mbox">
-
-          {/* Header */}
           <div className="mhdr">
             <div>
               <div className="mhdr-title">{isEdit ? "Edit Article" : "Create New Article"}</div>
               <div className="mhdr-sub">Fill in the details and publish to your blog</div>
             </div>
-            <button className="mclose" onClick={onClose}><X size={18} /></button>
+            <button type="button" className="mclose" onClick={onClose}>
+              <X size={18} />
+            </button>
           </div>
 
-          {/* Body */}
           <div className="mbody">
-
             {error && <div className="merr"><span>⚠</span> {error}</div>}
 
-            {/* ── Cover Image ── */}
-            <div className="msec">Cover Image <span className="opt">(optional)</span></div>
+            <div className="msec">Cover Image <span className="opt">(required for create)</span></div>
             <div className="cov-wrap">
-              <div
-                className={`cov-zone${form.image ? " has-img" : ""}`}
-                onClick={() => fileRef.current?.click()}
-              >
+              <div className={`cov-zone${form.image ? " has-img" : ""}`} onClick={() => fileRef.current?.click()}>
                 {form.image ? (
                   <>
                     <img src={form.image.url} alt="cover" className="cov-img" />
@@ -467,6 +556,7 @@ export default function ArticleFormModal({ article, onSave, onClose, trainers })
                   <div className="cov-ph"><ImageIcon size={24} /><span>Upload Cover</span></div>
                 )}
               </div>
+
               <div className="cov-info">
                 <p className="cov-title">Article cover image</p>
                 <p>Recommended: 1280×720 px (16:9)</p>
@@ -477,48 +567,66 @@ export default function ArticleFormModal({ article, onSave, onClose, trainers })
                   </button>
                 )}
               </div>
-              <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImg} />
+
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleImg}
+              />
             </div>
 
-            {/* ── Basic Info ── */}
             <div className="msec">Basic Information</div>
             <div className="fcols">
               <Field label="Title" required>
                 <input
-                  className="finp" type="text" maxLength={140}
+                  className="finp"
+                  type="text"
+                  maxLength={140}
                   placeholder="e.g. How Prompt Engineering Is Changing…"
-                  value={form.title} onChange={e => set("title", e.target.value)}
+                  value={form.title}
+                  onChange={(e) => set("title", e.target.value)}
                 />
               </Field>
+
               <Field label="Category">
-                <select className="fsel" value={form.category} onChange={e => set("category", e.target.value)}>
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <select className="fsel" value={form.category} onChange={(e) => set("category", e.target.value)}>
+                  {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </Field>
             </div>
 
-            {trainers && trainers.length > 0 && (
+            {trainers && trainers.length > 0 && false && (
               <Field label="Assigned Author">
-                <select className="fsel" value={form.trainerId} onChange={e => {
-                  const tId = e.target.value;
-                  const t = trainers.find(x => x._id === tId);
-                  setForm(p => ({
-                    ...p,
-                    trainerId: tId,
-                    author: t ? t.name : p.author,
-                    authorRole: t ? (t.title || t.industry || "") : p.authorRole,
-                    initials: t ? mkInit(t.name) : p.initials,
-                  }));
-                }}>
+                <select
+                  className="fsel"
+                  value={form.trainerId}
+                  onChange={(e) => {
+                    const tId = e.target.value;
+                    const t = trainers.find((x) => x._id === tId);
+                    setForm((p) => ({
+                      ...p,
+                      trainerId: tId,
+                      author: t ? t.name : p.author,
+                      authorRole: t ? (t.title || t.industry || "") : p.authorRole,
+                      initials: t ? mkInit(t.name) : p.initials,
+                    }));
+                  }}
+                >
                   <option value="">— Select Author (optional) —</option>
                   {trainers.map((t) => (
                     <option key={t._id} value={t._id}>
-                      {t.name} {t.email ? `(${t.email})` : ''}
+                      {t.name} {t.email ? `(${t.email})` : ""}
                     </option>
                   ))}
                 </select>
               </Field>
             )}
+
+            <Field label="Author Name" hint="Auto-filled from your logged-in profile.">
+              <input className="finp" type="text" value={authorName} readOnly />
+            </Field>
 
             <Field label="Short Description" required hint="Shown on the card and as the hero subtitle.">
               <div className="char-row">
@@ -526,102 +634,54 @@ export default function ArticleFormModal({ article, onSave, onClose, trainers })
                 <span className={briefCls}>{briefLen}/280</span>
               </div>
               <textarea
-                className="fta" rows={2} maxLength={300}
+                className="fta"
+                rows={2}
+                maxLength={300}
                 placeholder="A concise hook shown on the article card and hero subtitle."
-                value={form.brief} onChange={e => set("brief", e.target.value)}
+                value={form.brief}
+                onChange={(e) => set("brief", e.target.value)}
                 style={{ minHeight: 70 }}
               />
             </Field>
 
-            {/* ── Author ── */}
-            {/* <div className="msec">Author</div>
-            <div className="fcols">
-              <Field label="Author Name" required>
-                <input
-                  className="finp" type="text"
-                  placeholder="e.g. Arjun Mehta"
-                  value={form.author} onChange={e => set("author", e.target.value)}
-                />
-              </Field>
-              <Field label="Author Role" hint="Optional">
-                <input
-                  className="finp" type="text"
-                  placeholder="e.g. AI Research Lead, DeepMind"
-                  value={form.authorRole} onChange={e => set("authorRole", e.target.value)}
-                />
-              </Field>
-            </div>
-
-            <div className="fcols">
-              <Field label="Author Bio" hint="Shown on the article detail page.">
-                <textarea
-                  className="fta" rows={3}
-                  placeholder="Short bio shown on the article detail page."
-                  value={form.authorBio} onChange={e => set("authorBio", e.target.value)}
-                  style={{ minHeight: 80 }}
-                />
-              </Field>
-              <Field label="Initials" hint="Auto-generated if left blank">
-                <input
-                  className="finp" type="text" maxLength={3}
-                  placeholder="e.g. AM"
-                  value={form.initials} onChange={e => set("initials", e.target.value.toUpperCase())}
-                />
-              </Field>
-            </div> */}
-
-            {/* ── Tags ── */}
-            <div className="msec">Tags &amp; Visibility</div>
+            <div className="msec">Tags & Visibility</div>
             <Field label="Tags" hint="Press Enter or comma to add a tag.">
               <div className="tags-wrap">
-                {form.tags.map(t => (
+                {form.tags.map((t) => (
                   <span key={t} className="tpill">
                     {t}
-                    <button className="tpill-rm" onClick={() => removeTag(t)}>×</button>
+                    <button type="button" className="tpill-rm" onClick={() => removeTag(t)}>×</button>
                   </span>
                 ))}
                 <input
-                  type="text" className="tag-inp"
+                  type="text"
+                  className="tag-inp"
                   placeholder={form.tags.length ? "" : "e.g. AI, Fitness…"}
                   value={tagIn}
-                  onChange={e => setTagIn(e.target.value)}
+                  onChange={(e) => setTagIn(e.target.value)}
                   onKeyDown={tagKey}
                 />
               </div>
             </Field>
 
-            {/* <div className="chk-row">
-              <label className="chk-label">
-                <input
-                  type="checkbox" checked={form.trending}
-                  onChange={e => set("trending", e.target.checked)}
-                />
-                Mark as Trending 🔥
-              </label>
-            </div> */}
-
-            {/* ── Content ── */}
             <div className="msec">Article Content</div>
             <Field label="Sections" hint="Add headings, paragraphs, callouts, and quotes that make up the article body.">
-              <BlockEditor blocks={form.content} onChange={c => set("content", c)} />
+              <BlockEditor blocks={form.content} onChange={(c) => set("content", c)} />
             </Field>
+          </div>
 
-          </div>{/* end mbody */}
-
-          {/* Footer */}
           <div className="mftr">
-            <button className="btn-cancel" onClick={onClose}>Cancel</button>
+            <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
             <div className="ftr-right">
-              <button className="btn-draft" onClick={() => handleSubmit("draft")} disabled={saving}>
+              <button type="button" className="btn-draft" onClick={() => handleSubmit("draft")} disabled={saving}>
                 {saving && <Loader2 size={13} className="spin" />} Save as Draft
               </button>
-              <button className="btn-publish" onClick={() => handleSubmit("published")} disabled={saving}>
+              <button type="button" className="btn-publish" onClick={() => handleSubmit("published")} disabled={saving}>
                 {saving && <Loader2 size={13} className="spin" />}
                 {isEdit ? "Update & Publish" : "Publish Article"}
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </>

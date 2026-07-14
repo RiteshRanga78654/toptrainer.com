@@ -19,22 +19,23 @@ import industryRouter from "./routes/industryRouter.js";
 import competencyRouter from "./routes/competencyRouter.js";
 import mediaRouter from "./routes/mediaRouter.js";
 import youtubeVideoRouter from "./routes/youtubeVideoRouter.js";
+import authRouter from "./routes/authRouter.js"
 
-<<<<<<< HEAD
+
 dotenv.config();
-=======
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
->>>>>>> c7e88fc1355087f72e8b3972b238ad4ac743d6b7
 console.log("SERVER ENV:", process.env.CLOUDINARY_CLOUD_NAME);
 
 
 const app = express();
-app.use(cors(
-
-    
-));
+app.use(
+  cors({
+    origin: "https://toptrainer-com.vercel.app/",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -50,6 +51,7 @@ app.use("/api/reviews", reviewRouter);
 app.use("/api/industries", industryRouter);
 app.use("/api/competencies", competencyRouter);
 app.use("/api/media", mediaRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/youtube-videos", youtubeVideoRouter);
 
 
