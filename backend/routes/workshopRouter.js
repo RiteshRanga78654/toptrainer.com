@@ -1,6 +1,6 @@
 import express from 'express' 
 
-import { createWorkshop,getDraftWorkshops, getPublishedWorkshops, getSingleWorkshop, publishWorkshop, updateWorkshop, deleteWorkshop} from '../controllers/workshopController.js';
+import { createWorkshop,getDraftWorkshops, getPublishedWorkshops, getSingleWorkshop, publishWorkshop, updateWorkshop, deleteWorkshop, getAllPublicWorkshops, getPublicSingleWorkshop} from '../controllers/workshopController.js';
 import { protectTrainer } from '../middleware/trainerAuthMiddleware.js';
 import { protectAdmin } from '../middleware/adminAuthMiddleware.js';
 import upload from '../middleware/uploadMiddleware.js';                                     
@@ -11,6 +11,8 @@ const workshopUploadFields = upload.fields([
     { name: "snapshots", maxCount: 10 },
 ]);
 
+router.get("/published", getAllPublicWorkshops);
+router.get("/published/:id", getPublicSingleWorkshop);
 
 router.post("/trainer/create", protectTrainer, workshopUploadFields, createWorkshop );
 router.get("/trainer/drafts", protectTrainer, getDraftWorkshops);
@@ -22,7 +24,7 @@ router.delete("/trainer/:id", protectTrainer, deleteWorkshop);
 
 
 //admin
-router.post("/admin/create", protectAdmin, createWorkshop );
+router.post("/admin/create", protectAdmin,workshopUploadFields, createWorkshop );
 router.get("/admin/drafts", protectAdmin, getDraftWorkshops);
 router.get("/admin/published", protectAdmin, getPublishedWorkshops)
 router.put("/admin/publish/:id", protectAdmin, publishWorkshop);

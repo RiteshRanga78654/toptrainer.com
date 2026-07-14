@@ -50,7 +50,7 @@ const ratingsSchema = new mongoose.Schema({
         max: 5,
         required: true,
     },
-    engagment: {
+    engagement: {
         type: String,
         min: 1,
         max: 5,
@@ -82,37 +82,43 @@ const ratingsSchema = new mongoose.Schema({
 }, { _id: false });
 
 const reviewSchema = new mongoose.Schema({
-    trainer: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "TrainerProfile",
+        ref: "User",
         required: true,
     },
+
+    trainer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "TrainerProfile",
+    required: true,
+},
     workshop: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Workshop",
-        default: null,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Workshop",
+    default: null,
+},
     sessionInfo: sessionInfoSchema,
     ratings: ratingsSchema,
 
     averageRating: {
-        type: Number,
-        default: 0,
-    },
+    type: Number,
+    default: 0,
+},
 
     isApproved: {
-        type: Boolean,
-        default: false,
-    },
+    type: Boolean,
+    default: false,
+},
     isFeatured: {
-        type: Boolean,
-        default: false,
-    },
+    type: Boolean,
+    default: false,
+},
     status: {
-        type: String,
-        enum: ["pending", "approved", "rejected"],
-        default: "pending",
-    },
+    type: String,
+    enum: ["pending", "approved", "rejected"],
+    default: "pending",
+},
 }, {
     timeStamps: true,
 });
@@ -121,7 +127,7 @@ const reviewSchema = new mongoose.Schema({
 reviewSchema.pre("save", function (next) {
     this.averageRating =
         (
-            this.ratings.overall +
+            this.ratings.overAll +
             this.ratings.delivery +
             this.ratings.contentQuality +
             this.ratings.engagement
@@ -129,6 +135,15 @@ reviewSchema.pre("save", function (next) {
 
     next();
 });
+reviewSchema.index(
+  {
+    user: 1,
+    trainer: 1,
+  },
+  {
+    unique: true,
+  }
+);
 
 reviewSchema.index({
     "sessionInfo.reviewerName": "text",

@@ -382,9 +382,7 @@ export const getTrainerAnalytics = asyncHandler(async (req, res) => {
                 (a.analytics?.enrolledCount || 0)
         )[0];
 
-    // -----------------------------
-    // Top Article
-    // -----------------------------
+
     const topArticle = articles
         .sort(
             (a, b) =>
