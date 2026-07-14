@@ -1,5 +1,6 @@
 import Industry from "../models/industry.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
+import workshops from "../models/workshops.js";
 
 export const createIndustry = asyncHandler(async (req, res) => {
   const { name, icon } = req.body;
@@ -88,8 +89,3 @@ export const toggleIndustryStatus = asyncHandler(async (req, res) => {
   });
 });
 
-export const getWorkshopByIndustry = asyncHandler(async (req, res) => {
-
-    
-
-});

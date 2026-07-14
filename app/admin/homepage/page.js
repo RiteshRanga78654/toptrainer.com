@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   heroImages as initialHero,
   allExperts,
@@ -48,7 +49,7 @@ export default function HomepagePage() {
       const res = await fetch("http://localhost:5001/api/youtube-videos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: youtubeUrl })
+        body: JSON.stringify({ url: youtubeUrl }),
       });
       const data = await res.json();
       if (data.success) {
@@ -69,9 +70,12 @@ export default function HomepagePage() {
 
   const deleteYoutubeVideo = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/youtube-videos/${id}`, {
-        method: "DELETE"
-      });
+      const res = await fetch(
+        `http://localhost:5001/api/youtube-videos/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (res.ok) {
         setYoutubeVideos(youtubeVideos.filter((v) => v._id !== id));
       }
@@ -136,52 +140,77 @@ export default function HomepagePage() {
   };
 
   // workshops previewer
-  const [selectedWorkshops, setSelectedWorkshops] = useState(new Set());
-  const [isWorkshopLoaded, setIsWorkshopLoaded] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("toptrainer_featured_workshops");
-    if (saved) {
-      setSelectedWorkshops(new Set(JSON.parse(saved)));
-    } else {
-      setSelectedWorkshops(new Set(allWorkshops.filter((w) => w.featured).map((w) => w.id)));
-    }
-    setIsWorkshopLoaded(true);
-  }, []);
-
-  const [workshopSaved, setWorkshopSaved] = useState(false)
+  const [featuredWorkshops, setFeaturedWorkshops] = useState([]);
+  const [searchWorkshopQuery, setSearchWorkshopQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [activeWorkshopTab, setActiveWorkshopTab] = useState("All");
 
-  const workshopCategories = [
-    { key: "All", label: "All Workshops" },
-    { key: "Tech", label: "Tech" },
-    { key: "Business", label: "Business" },
-    { key: "Health", label: "Health" },
+  const workshopTabs = [
+    { key: "All", label: "All" },
+    { key: "Technology", label: "Tech" },
+    { key: "Corporate", label: "Business" },
+    { key: "Healthcare", label: "Health" },
     { key: "Finance", label: "Finance" },
     { key: "Marketing", label: "Marketing" },
-    { key: "Creative", label: "Creative" },
-    { key: "Personal Development", label: "Growth" },
+    { key: "Design", label: "Creative" },
+    { key: "Growth", label: "Growth" },
   ];
 
-  const toggleWorkshop = (id) => {
-    setSelectedWorkshops((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        if (next.size >= 8) return prev; // Limit to 8 featured workshops
-        next.add(id);
+  const fetchFeaturedWorkshops = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5001/api/workshops/admin/homepage/featworkshops",
+      );
+      if (res.data.success) {
+        setFeaturedWorkshops(res.data.data);
       }
-      return next;
-    });
+    } catch (err) {
+      console.error("Failed to fetch featured workshops", err);
+    }
   };
-  
-  const saveWorkshops = () => {
-    localStorage.setItem("toptrainer_featured_workshops", JSON.stringify(Array.from(selectedWorkshops)));
-    setWorkshopSaved(true);
-    setTimeout(() => setWorkshopSaved(false), 3000);
+
+  useEffect(() => {
+    fetchFeaturedWorkshops();
+  }, []);
+
+  const handleWorkshopSearch = async () => {
+    if (!searchWorkshopQuery.trim()) return;
+    setIsSearching(true);
+    try {
+      let url = `http://localhost:5001/api/workshops/admin/homepage/search?keyword=${encodeURIComponent(searchWorkshopQuery)}`;
+      if (activeWorkshopTab !== "All") {
+        url += `&industry=${encodeURIComponent(activeWorkshopTab)}`;
+      }
+      const res = await axios.get(url);
+      if (res.data.success) {
+        setSearchResults(res.data.workshops || []);
+      }
+    } catch (err) {
+      console.error("Failed to search", err);
+    } finally {
+      setIsSearching(false);
+    }
   };
-  
+
+  const toggleFeaturedWorkshop = async (id) => {
+    try {
+      const res = await axios.patch(
+        `http://localhost:5001/api/workshops/admin/homepage/${id}`,
+      );
+      if (res.data.success) {
+        fetchFeaturedWorkshops();
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to toggle workshop");
+    }
+  };
+
+  // Derived: filter featured workshops for the active tab
+  const filteredFeatured = activeWorkshopTab === "All"
+    ? featuredWorkshops
+    : featuredWorkshops.filter(w => w.classification?.industry === activeWorkshopTab);
+
   const expertCategories = [
     {
       key: "industry",
@@ -569,75 +598,174 @@ export default function HomepagePage() {
         </div>
       </Card>
 
+      {/* Featured Workshops Section */}
+
       <Card>
         <div className="flex items-center justify-between px-5 py-4 border-b">
           <div>
             <p className="text-sm font-semibold">Featured Workshops</p>
             <p className="text-xs text-slate-500">
-              Select up to 8 to display on the homepage
+              Select workshops to feature under each category tab
             </p>
           </div>
-          <Button onClick={saveWorkshops}>Save</Button>
+          <span className="text-xs text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full font-medium">
+            {featuredWorkshops.length} total featured
+          </span>
         </div>
 
         <div className="p-5">
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 mb-4 border-b border-slate-100 pb-4">
-            {workshopCategories.map((cat) => (
+          {/* Industry Tabs */}
+          <div className="flex flex-wrap gap-2 mb-5 border-b border-slate-100 pb-4">
+            {workshopTabs.map((tab) => (
               <button
-                key={cat.key}
-                onClick={() => setActiveWorkshopTab(cat.key)}
+                key={tab.key}
+                onClick={() => {
+                  setActiveWorkshopTab(tab.key);
+                  setSearchResults([]);
+                  setSearchWorkshopQuery("");
+                }}
                 className={cn(
                   "px-3 py-1.5 text-xs font-semibold rounded-lg transition-all border",
-                  activeWorkshopTab === cat.key
+                  activeWorkshopTab === tab.key
                     ? "bg-blue-50 text-blue-700 border-blue-200"
-                    : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                    : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50",
                 )}
               >
-                {cat.label}
+                {tab.label}
+                {tab.key !== "All" && (
+                  <span className="ml-1.5 text-[10px] opacity-60">
+                    ({featuredWorkshops.filter(w => w.classification?.industry === tab.key).length})
+                  </span>
+                )}
               </button>
             ))}
           </div>
 
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-slate-700">{activeWorkshopTab} Workshops</p>
-            <span className="text-xs text-slate-500">
-              {selectedWorkshops.size}/8 selected
-            </span>
+          {/* Currently Featured Table */}
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-slate-600 mb-2">
+              Featured in "{activeWorkshopTab === "All" ? "All Categories" : workshopTabs.find(t => t.key === activeWorkshopTab)?.label}" ({filteredFeatured.length})
+            </p>
+            {filteredFeatured.length > 0 ? (
+              <div className="border border-slate-200 rounded-xl overflow-hidden">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-blue-50/60 border-b border-blue-100">
+                      <th className="px-4 py-2.5 text-[11px] font-semibold text-blue-600 uppercase tracking-wider">Title</th>
+                      <th className="px-4 py-2.5 text-[11px] font-semibold text-blue-600 uppercase tracking-wider">Trainer</th>
+                      <th className="px-4 py-2.5 text-[11px] font-semibold text-blue-600 uppercase tracking-wider">Industry</th>
+                      <th className="px-4 py-2.5 text-[11px] font-semibold text-blue-600 uppercase tracking-wider text-center w-24">Featured</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredFeatured.map((workshop) => (
+                      <tr key={workshop._id} className="border-b border-slate-100 last:border-b-0 hover:bg-blue-50/30 transition-colors">
+                        <td className="px-4 py-3">
+                          <p className="text-xs font-semibold text-slate-900 line-clamp-1">{workshop.basicInformation?.title}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs text-slate-700">{workshop.assignedTrainer?.fullName || "—"}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-[11px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">{workshop.classification?.industry || "—"}</span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={true}
+                            onChange={() => toggleFeaturedWorkshop(workshop._id)}
+                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 py-6 text-center border border-dashed border-slate-200 rounded-xl">
+                No workshops featured{activeWorkshopTab !== "All" ? ` in ${workshopTabs.find(t => t.key === activeWorkshopTab)?.label}` : ""}. Search below to add some.
+              </p>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {isWorkshopLoaded && allWorkshops
-              .filter((w) => activeWorkshopTab === "All" || w.category === activeWorkshopTab)
-              .map((workshop) => {
-              const isSelected = selectedWorkshops.has(workshop.id);
-              return (
-                <button
-                  key={workshop.id}
-                  onClick={() => toggleWorkshop(workshop.id)}
-                  className={cn(
-                    "relative flex flex-col gap-2 p-3 rounded-xl border text-left transition-all",
-                    isSelected ? "border-blue-400 bg-blue-50" : "border-slate-200 bg-white hover:bg-slate-50"
-                  )}
-                >
-                  {isSelected && (
-                    <div className="absolute top-3 right-3 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center z-10">
-                      <Check size={9} className="text-white" />
-                    </div>
-                  )}
-                  <div className="relative h-24 w-full rounded-lg overflow-hidden bg-slate-100">
-                    <img src={workshop.img} alt={workshop.title} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="min-w-0 mt-1">
-                    <p className="text-xs font-semibold text-slate-900 line-clamp-1" title={workshop.title}>{workshop.title}</p>
-                    <p className="text-[11px] text-slate-500 truncate">{workshop.author}</p>
-                  </div>
-                </button>
-              );
-            })}
-            
-            {allWorkshops.filter((w) => activeWorkshopTab === "All" || w.category === activeWorkshopTab).length === 0 && (
-              <p className="text-xs text-slate-400 col-span-full py-4 text-center">No workshops found.</p>
+          {/* Search Bar */}
+          <div className="pt-4 border-t border-slate-100">
+            <p className="text-xs font-semibold text-slate-600 mb-2">
+              Search Workshops {activeWorkshopTab !== "All" ? `(${workshopTabs.find(t => t.key === activeWorkshopTab)?.label} only)` : ""}
+            </p>
+            <div className="flex gap-2 mb-4">
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder={activeWorkshopTab === "All" ? "Search by title, industry, competency, tag..." : `Search ${workshopTabs.find(t => t.key === activeWorkshopTab)?.label} workshops by title...`}
+                  value={searchWorkshopQuery}
+                  onChange={(e) => setSearchWorkshopQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleWorkshopSearch()}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-white"
+                />
+              </div>
+              <button
+                onClick={handleWorkshopSearch}
+                disabled={isSearching || !searchWorkshopQuery.trim()}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
+                  isSearching || !searchWorkshopQuery.trim()
+                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                )}
+              >
+                <Search size={14} className="inline-block mr-1.5 -mt-0.5" />
+                {isSearching ? "Searching..." : "Search"}
+              </button>
+            </div>
+
+            {/* Search Results Table */}
+            {searchResults.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-slate-600 mb-2">
+                  Search Results ({searchResults.length})
+                </p>
+                <div className="border border-slate-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Title</th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Trainer</th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Industry</th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center w-24">Featured</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {searchResults.map((workshop) => {
+                        const isFeatured = featuredWorkshops.some(fw => fw._id === workshop._id);
+                        return (
+                          <tr key={workshop._id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors">
+                            <td className="px-4 py-3">
+                              <p className="text-xs font-semibold text-slate-900 line-clamp-1">{workshop.basicInformation?.title}</p>
+                              <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">{workshop.basicInformation?.shortDescription}</p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="text-xs text-slate-700">{workshop.assignedTrainer?.fullName || "—"}</p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">{workshop.classification?.industry || "—"}</span>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <input
+                                type="checkbox"
+                                checked={isFeatured}
+                                onChange={() => toggleFeaturedWorkshop(workshop._id)}
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -661,21 +789,27 @@ export default function HomepagePage() {
 
         <div className="p-5">
           <div className="flex gap-2 mb-6">
-            <Input 
-              placeholder="Paste YouTube URL here..." 
+            <Input
+              placeholder="Paste YouTube URL here..."
               value={youtubeUrl}
               onChange={(val) => setYoutubeUrl(val)}
               className="flex-1"
             />
-            <Button onClick={addYoutubeVideo} disabled={isAddingYoutube || !youtubeUrl}>
+            <Button
+              onClick={addYoutubeVideo}
+              disabled={isAddingYoutube || !youtubeUrl}
+            >
               {isAddingYoutube ? "Adding..." : "Add Video"}
             </Button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {youtubeVideos.map((video) => (
-              <div key={video._id} className="relative group rounded-xl border border-slate-200 overflow-hidden bg-white">
-                <button 
+              <div
+                key={video._id}
+                className="relative group rounded-xl border border-slate-200 overflow-hidden bg-white"
+              >
+                <button
                   onClick={() => deleteYoutubeVideo(video._id)}
                   className="absolute top-2 right-2 w-7 h-7 bg-white/90 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-50"
                   title="Delete Video"
@@ -683,14 +817,17 @@ export default function HomepagePage() {
                   <Trash2 size={14} />
                 </button>
                 <div className="relative aspect-video bg-slate-100">
-                  <img 
-                    src={`https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`} 
+                  <img
+                    src={`https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`}
                     alt={video.title}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-3">
-                  <p className="text-xs font-semibold text-slate-900 line-clamp-2" title={video.title}>
+                  <p
+                    className="text-xs font-semibold text-slate-900 line-clamp-2"
+                    title={video.title}
+                  >
                     {video.title}
                   </p>
                 </div>

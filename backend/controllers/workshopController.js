@@ -340,16 +340,16 @@ export const isToggle = asyncHandler(async (req, res) => {
     });
   }
 
+  //max limit of 8 overall
   if (!workshop.isFeatured) {
     const featureCount = await Workshop.countDocuments({
       isFeatured: true,
     });
 
     if (featureCount >= 8) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
-        message:
-          "Maximum limit of 8 workshops reached. Please delete a workshop before adding more",
+        message: "Maximum limit of 8 featured workshops reached across all categories. Please remove a workshop before adding more.",
       });
     }
   }

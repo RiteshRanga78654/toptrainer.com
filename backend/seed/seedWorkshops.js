@@ -18,8 +18,26 @@ const seedWorkshops = async () => {
     // Create a dummy admin ID to act as the creator
     const dummyAdminId = new mongoose.Types.ObjectId();
     
+    console.log("Processing dummy workshops...");
+    
+    // Fetch all trainers to map them to workshops
+    const TrainerProfile = (await import("./models/trainerProfile.js")).default;
+    const trainers = await TrainerProfile.find({});
+    
+    const workshopsToInsert = dummyWorkshops.map(workshop => {
+      // Find a trainer matching the competency
+      const matchingTrainer = trainers.find(t => 
+        t.expertiseDomain?.competencies?.includes(workshop.classification.competency)
+      );
+      
+      return {
+        ...workshop,
+        assignedTrainer: matchingTrainer ? matchingTrainer._id : null
+      };
+    });
+
     console.log("Inserting dummy workshops...");
-    await Workshop.insertMany(dummyWorkshops);
+    await Workshop.insertMany(workshopsToInsert);
 
     console.log("Workshops seeded successfully!");
     process.exit();

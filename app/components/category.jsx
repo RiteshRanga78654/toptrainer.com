@@ -7,21 +7,25 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 
+
 /* ─── Filters ─── */
 const filters = [
   { id: "All",                  label: "All Workshops" },
-  { id: "Tech",                 label: "Tech" },
+  { id: "Technology",           label: "Tech" },
   { id: "Business",             label: "Business" },
-  { id: "Health",               label: "Health" },
+  { id: "Health & Wellness",    label: "Health" },
   { id: "Finance",              label: "Finance" },
   { id: "Marketing",            label: "Marketing" },
-  { id: "Creative",             label: "Creative" },
+  { id: "Creative Arts",        label: "Creative" },
   { id: "Personal Development", label: "Growth" },
 ];
 
 /* ─── Trainers Data ─── */
 import { workshops as allWorkshops } from "../admin/data/mockData";
 import Link from "next/link";
+import axios from "axios";
+
+
 
 
 /* ─── Helpers ─── */
@@ -38,27 +42,27 @@ const HeroStat = ({ value, label }) => (
 );
 
 /* ─── Trainer Card ─── */
-const TrainerCard = ({ trainer }) => {
-  const discount = calcDiscount(trainer.price, trainer.oldPrice);
+const WorkshopCard = ({ workshops }) => {
+   const discount = calcDiscount(workshops.pricing.price, workshops.pricing.originalPrice);
   return (
     <div className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col h-full">
       {/* Thumbnail */}
       <div className="relative h-44 overflow-hidden flex-shrink-0">
         <img
-          src={trainer.img}
-          alt={trainer.title}
+          src={workshops.basicInformation.thumbnail?.url || "/logo.png"} 
+          alt={workshops.basicInformation.title || "Workshop Title"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           onError={(e) => {
-            e.target.style.display = "none";
-            e.target.parentElement.classList.add("bg-gray-100");
+            e.currentTarget.onerror = null; // Prevent infinite loop if logo also fails
+            e.currentTarget.src = "/logo.png";
           }}
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
         <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
           <span className="bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full">
-            {trainer.category}
+            {workshops.basicInformation.category}
           </span>
-          {trainer.featured && (
+          {workshops.isFeatured && (
             <span className="bg-amber-400 text-amber-900 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
               <Zap size={10} fill="currentColor" /> Top Trainer
             </span>
@@ -72,20 +76,17 @@ const TrainerCard = ({ trainer }) => {
       {/* Body */}
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-            {trainer.initials}
-          </div>
-          <span className="text-xs text-gray-500 font-medium">{trainer.author}</span>
+          <span className="text-xs text-gray-500 font-medium">{workshops.assignedTrainer.fullName}</span>
           <span className="flex items-center gap-0.5 text-xs text-green-600 ml-auto">
             <CheckCircle size={11} /> Verified
           </span>
         </div>
         <h3 className="font-bold text-gray-900 text-sm leading-snug mb-1.5 group-hover:text-blue-700 transition-colors line-clamp-2">
-          {trainer.title}
+          {workshops.basicInformation.title}
         </h3>
-        <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">{trainer.desc}</p>
+        <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">{workshops.basicInformation.shortDescription}</p>
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {trainer.tags.map((tag) => (
+          {workshops.classification.tags.map((tag) => (
             <span key={tag} className="text-xs px-2.5 py-0.5 rounded-full border border-gray-200 text-gray-500 bg-gray-50 font-medium">
               {tag}
             </span>
@@ -93,16 +94,22 @@ const TrainerCard = ({ trainer }) => {
         </div>
         <div className="flex items-center gap-3 text-xs text-gray-400 pb-4 border-b border-gray-100 mb-4">
           <span className="flex items-center gap-1 text-amber-500 font-semibold">
-            <Star size={11} fill="currentColor" /> {trainer.rating}
+            <Star size={11} fill="currentColor" /> {workshops.analytics?.rating || "4.8"}
           </span>
-          <span className="flex items-center gap-1"><Eye size={11} /> {trainer.views}</span>
-          <span className="flex items-center gap-1"><Clock size={11} /> {trainer.duration}</span>
-          <span className="flex items-center gap-1"><User size={11} /> {trainer.students}</span>
+          <span className="flex items-center gap-1">
+            <Eye size={11} /> {workshops.analytics?.views ? (workshops.analytics.views / 1000).toFixed(1) + "k" : "25.6k"} views
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock size={11} /> {workshops.schedule?.duration || 6} weeks
+          </span>
+          <span className="flex items-center gap-1">
+            <User size={11} /> {workshops.analytics?.enrolledCount ? (workshops.analytics.enrolledCount / 1000).toFixed(1) + "k" : "1.5k"}
+          </span>
         </div>
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-lg font-bold text-gray-900">{formatINR(trainer.price)}</span>
-            <span className="text-xs text-gray-400 line-through">{formatINR(trainer.oldPrice)}</span>
+            <span className="text-lg font-bold text-gray-900">{formatINR(workshops.pricing.price)}</span>
+            <span className="text-xs text-gray-400 line-through">{formatINR(workshops.pricing.originalPrice)}</span>
           </div>
           <button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 shadow-md shadow-blue-200">
             Enroll Now →
@@ -113,9 +120,9 @@ const TrainerCard = ({ trainer }) => {
   );
 };
 
+
 /* ─── Mobile Carousel ─── */
-/* ─── Mobile Carousel ─── */
-function MobileCarousel({ trainers }) {
+function MobileCarousel({ workshops }) {
   const scrollRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -123,7 +130,7 @@ function MobileCarousel({ trainers }) {
 
   // Calculate which dots to show (sliding window of MAX_DOTS)
   const getDotIndices = () => {
-    const total = trainers.length;
+    const total = workshops.length;
     if (total <= MAX_DOTS) {
       return Array.from({ length: total }, (_, i) => i);
     }
@@ -139,7 +146,7 @@ function MobileCarousel({ trainers }) {
 
   const dotIndices = getDotIndices();
   const showLeftEllipsis = dotIndices[0] > 0;
-  const showRightEllipsis = dotIndices[dotIndices.length - 1] < trainers.length - 1;
+  const showRightEllipsis = dotIndices[dotIndices.length - 1] < workshops.length - 1;
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -160,15 +167,15 @@ function MobileCarousel({ trainers }) {
     if (!el) return;
     el.scrollTo({ left: 0, behavior: "instant" });
     setCurrentIndex(0);
-  }, [trainers]);
+  }, [workshops]);
 
   const scrollTo = useCallback((index) => {
     const el = scrollRef.current;
     if (!el) return;
-    const clamped = Math.max(0, Math.min(index, trainers.length - 1));
+    const clamped = Math.max(0, Math.min(index, workshops.length - 1));
     el.scrollTo({ left: clamped * el.offsetWidth, behavior: "smooth" });
     setCurrentIndex(clamped);
-  }, [trainers.length]);
+  }, [workshops.length]);
 
   const prev = () => scrollTo(currentIndex - 1);
   const next = () => scrollTo(currentIndex + 1);
@@ -176,10 +183,10 @@ function MobileCarousel({ trainers }) {
   return (
     <div className="w-full">
       {/* Scrollable track */}
-      <div ref={scrollRef} className="cat-mobile-track">
-        {trainers.map((trainer) => (
-          <div key={trainer.id} className="cat-mobile-slide">
-            <TrainerCard trainer={trainer} />
+      <div ref={scrollRef}  className="cat-mobile-track">
+        {workshops.map((w) => (
+          <div key={w._id} className="cat-mobile-slide">
+            <WorkshopCard workshops={w} />
           </div>
         ))}
       </div>
@@ -224,7 +231,7 @@ function MobileCarousel({ trainers }) {
         {/* Next */}
         <button
           onClick={next}
-          disabled={currentIndex === trainers.length - 1}
+          disabled={currentIndex === workshops.length - 1}
           className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all duration-200 shadow-md shadow-blue-200"
         >
           Next
@@ -234,7 +241,7 @@ function MobileCarousel({ trainers }) {
 
       {/* Counter */}
       <p className="text-center text-xs text-gray-400 mt-3 font-medium">
-        {currentIndex + 1} / {trainers.length} trainers
+        {currentIndex + 1} / {workshops.length} trainers
       </p>
     </div>
   );
@@ -244,29 +251,31 @@ function MobileCarousel({ trainers }) {
 const Category = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [visibleCount, setVisibleCount] = useState(4);
+  const [featWorkshops, setFeatWorkshops] = useState([]);
   const INITIAL_COUNT = 4;
-  
-  const [featuredTrainers, setFeaturedTrainers] = useState(
-    allWorkshops.filter(w => w.featured)
-  );
 
-  useEffect(() => {
-    const saved = localStorage.getItem("toptrainer_featured_workshops");
-    if (saved) {
-      const savedIds = new Set(JSON.parse(saved));
-      setFeaturedTrainers(allWorkshops.filter(w => savedIds.has(w.id)));
-    }
-  }, []);
+  useEffect(()=>{
+    const fetchFeaturedWorkshops  = async ()=>{
+      try{
+        const featWorkshopsData = await axios.get("http://localhost:5001/api/workshops/admin/homepage/featworkshops")
+        setFeatWorkshops(featWorkshopsData.data.data)
+      }
+      catch (error) {
+        console.error("error fetching the data: ", error);
+      }
+    };
+    fetchFeaturedWorkshops();
+  },[])
 
-  const filteredTrainers =
+  const filteredWorkshops =
     activeFilter === "All"
-      ? featuredTrainers
-      : featuredTrainers.filter((t) => t.category === activeFilter);
+      ? featWorkshops
+      : featWorkshops.filter((w) => w.classification?.industry === activeFilter);
 
-  const visibleTrainers = filteredTrainers.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredTrainers.length;
-  const progress = Math.round(
-    (Math.min(visibleCount, filteredTrainers.length) / filteredTrainers.length) * 100
+  const visibleWorkshops = filteredWorkshops.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredWorkshops.length;
+  const progress = filteredWorkshops.length === 0 ? 0 : Math.round(
+    (Math.min(visibleCount, filteredWorkshops.length) / filteredWorkshops.length) * 100
   );
 
   const handleFilterChange = (id) => {
@@ -352,9 +361,9 @@ const Category = () => {
             <div>
               <p className="text-sm text-gray-500">
                 Showing{" "}
-                <span className="font-bold text-gray-800">{Math.min(visibleCount, filteredTrainers.length)}</span>
+                <span className="font-bold text-gray-800">{Math.min(visibleCount, filteredWorkshops.length)}</span>
                 {" "}of{" "}
-                <span className="font-bold text-gray-800">{filteredTrainers.length}</span>
+                <span className="font-bold text-gray-800">{filteredWorkshops.length}</span>
                 {" "}workshops
               </p>
             </div>
@@ -371,8 +380,8 @@ const Category = () => {
 
           {/* ── MOBILE: Carousel ── */}
           <div className="block sm:hidden">
-            {filteredTrainers.length > 0 ? (
-              <MobileCarousel trainers={filteredTrainers} />
+            {featWorkshops && featWorkshops.length > 0 ? (
+              <MobileCarousel workshops={featWorkshops}/>
             ) : (
               <div className="text-center py-20 text-gray-400">
                 <Shield className="w-10 h-10 mx-auto mb-3 opacity-30" />
@@ -384,22 +393,26 @@ const Category = () => {
 
           {/* ── DESKTOP: Grid ── */}
           <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {visibleTrainers.map((trainer) => (
-              <TrainerCard key={trainer.id} trainer={trainer} />
-            ))}
+            {featWorkshops.length > 0 ? (
+              visibleWorkshops.map((w) => (
+                <WorkshopCard key={w._id} workshops={w} />
+              ))
+            ) : (
+              <p className="text-gray-500 col-span-full text-center">Loading Workshops....</p>
+            )}
           </div>
 
           {/* Empty state — desktop */}
-          {filteredTrainers.length === 0 && (
+          {filteredWorkshops.length === 0 && featWorkshops.length > 0 && (
             <div className="hidden sm:block text-center py-24 text-gray-400">
               <Shield className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="text-lg font-semibold text-gray-500">No trainers found</p>
+              <p className="text-lg font-semibold text-gray-500">No workshops found</p>
               <p className="text-sm mt-1">Try a different category</p>
             </div>
           )}
 
           {/* Load more / Show less — desktop only */}
-          {filteredTrainers.length > INITIAL_COUNT && (
+          {filteredWorkshops.length > INITIAL_COUNT && (
             <div className="hidden sm:flex justify-center mt-12">
               <button
                 onClick={() => {
