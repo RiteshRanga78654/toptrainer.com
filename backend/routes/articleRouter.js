@@ -15,7 +15,7 @@ router.put("/trainer/:id", protectTrainer, upload.single("coverImage"), updateAr
 router.delete("/trainer/:id", protectTrainer, deleteArticle);
 
 //Admin
-router.post("/admin/create", protectAdmin,upload.single("coverImage"), createArticle);
+router.post("/admin/create", protectAdmin, createArticle);
 router.get("/admin/drafts", protectAdmin, getDraftArticles);
 router.get("/admin/published", protectAdmin, getMyPublishedArticles);
 router.put("/admin/publish/:id", protectAdmin, publishArticle);
