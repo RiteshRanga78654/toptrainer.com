@@ -62,7 +62,6 @@ export default function HomepagePage() {
     workshopTabs,
     handleWorkshopSearch,
     toggleFeaturedWorkshop,
-    filteredFeatured,
   } = workshopState;
 
   const [settings, setSettings] = useState(gs);
@@ -232,7 +231,6 @@ export default function HomepagePage() {
           <FeaturedWorkshopsTable
             activeWorkshopTab={activeWorkshopTab}
             workshopTabs={workshopTabs}
-            filteredFeatured={filteredFeatured}
             toggleFeaturedWorkshop={toggleFeaturedWorkshop}
             featuredWorkshops={featuredWorkshops}
           />

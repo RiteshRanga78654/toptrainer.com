@@ -7,13 +7,13 @@ const featuredItemsSchema = new mongoose.Schema({
     itemRef:{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        refpath: 'itemType'
+        refPath: 'itemType'
     },
 
     itemType: {
         type: String,
         required: true,
-        enum: ["Workshops", "TrainerProfile", "Article"]
+        enum: ["Workshop", "TrainerProfile", "Article"]
     },
 
     category: {

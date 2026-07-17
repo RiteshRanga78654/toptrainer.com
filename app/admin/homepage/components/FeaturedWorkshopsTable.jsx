@@ -3,7 +3,6 @@ import React from "react";
 export default function FeaturedWorkshopsTable({
   activeWorkshopTab,
   workshopTabs,
-  filteredFeatured,
   toggleFeaturedWorkshop,
   featuredWorkshops,
 }) {
@@ -14,9 +13,9 @@ export default function FeaturedWorkshopsTable({
         {activeWorkshopTab === "All"
           ? "All Categories"
           : workshopTabs.find((t) => t.key === activeWorkshopTab)?.label}
-        " ({filteredFeatured.length})
+        " ({featuredWorkshops.length})
       </p>
-      {filteredFeatured.length > 0 ? (
+      {featuredWorkshops.length > 0 ? (
         <div className="border border-slate-200 rounded-xl overflow-hidden">
           <table className="w-full text-left">
             <thead>
@@ -36,7 +35,7 @@ export default function FeaturedWorkshopsTable({
               </tr>
             </thead>
             <tbody>
-              {filteredFeatured.map((workshop) => {
+              {featuredWorkshops.map((workshop) => {
                 const isFeatured = featuredWorkshops.some(
                   (fw) => fw._id === workshop._id,
                 );

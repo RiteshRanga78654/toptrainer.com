@@ -148,7 +148,7 @@ export default function useHomepageState() {
   const fetchFeaturedWorkshops = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5001/api/workshops/admin/homepage/featworkshops",
+        `http://localhost:5001/api/featured-lists?itemType=Workshop&category=${activeWorkshopTab}`,
       );
       if (res.data.success) {
         setFeaturedWorkshops(res.data.data);
@@ -159,7 +159,6 @@ export default function useHomepageState() {
   };
 
  
-
   useEffect(() => {
     fetchFeaturedWorkshops();
   }, []);
@@ -186,10 +185,13 @@ export default function useHomepageState() {
   };
 
   const toggleFeaturedWorkshop = async (id) => {
+    let url ="http://localhost:5001/api/featured-lists/toggle";
+    let body = {
+      itemType:"Workshop",
+      category:`${activeWorkshopTab}`
+    }
     try {
-      const res = await axios.patch(
-        `http://localhost:5001/api/workshops/admin/homepage/${id}`,
-      );
+      const res = await axios.post(url,body);
       if (res.data.success) {
         fetchFeaturedWorkshops();
       }
@@ -197,11 +199,6 @@ export default function useHomepageState() {
       alert(err.response?.data?.message || "Failed to toggle workshop");
     }
   };
-
-  const filteredFeatured =
-    activeWorkshopTab === "All"
-      ? featuredWorkshops
-      : topWorkshopsByIndustry[activeWorkshopTab] || [];
 
   return {
     youtubeState: {
@@ -246,7 +243,6 @@ export default function useHomepageState() {
       workshopTabs,
       handleWorkshopSearch,
       toggleFeaturedWorkshop,
-      filteredFeatured,
     },
   };
 }
