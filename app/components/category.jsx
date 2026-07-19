@@ -13,11 +13,11 @@ const filters = [
   { id: "All",                  label: "All Workshops" },
   { id: "Technology",           label: "Tech" },
   { id: "Business",             label: "Business" },
-  { id: "Health & Wellness",    label: "Health" },
+  { id: "Health",    label: "Health" },
   { id: "Finance",              label: "Finance" },
   { id: "Marketing",            label: "Marketing" },
   { id: "Creative Arts",        label: "Creative" },
-  { id: "Personal Development", label: "Growth" },
+  { id: "Growth", label: "Growth" },
 ];
 
 /* ─── Trainers Data ─── */
@@ -76,7 +76,7 @@ const WorkshopCard = ({ workshops }) => {
       {/* Body */}
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs text-gray-500 font-medium">{workshops.assignedTrainer.fullName}</span>
+          <span className="text-xs text-gray-500 font-medium">{workshops.assignedTrainer?.fullName}</span>
           <span className="flex items-center gap-0.5 text-xs text-green-600 ml-auto">
             <CheckCircle size={11} /> Verified
           </span>
@@ -257,25 +257,25 @@ const Category = () => {
   useEffect(()=>{
     const fetchFeaturedWorkshops  = async ()=>{
       try{
-        const featWorkshopsData = await axios.get("http://localhost:5001/api/workshops/admin/homepage/featworkshops")
-        setFeatWorkshops(featWorkshopsData.data.data)
+        const res = await axios.get(`http://localhost:5001/api/featured-lists?itemType=Workshop&category=${activeFilter}`)
+        if(res.data.success){
+
+          const workshopsOnly = res.data.data.map(item=> item.itemRef)
+          setFeatWorkshops(workshopsOnly)
+        }
+
       }
       catch (error) {
         console.error("error fetching the data: ", error);
       }
     };
     fetchFeaturedWorkshops();
-  },[])
+  },[activeFilter])
 
-  const filteredWorkshops =
-    activeFilter === "All"
-      ? featWorkshops
-      : featWorkshops.filter((w) => w.classification?.industry === activeFilter);
-
-  const visibleWorkshops = filteredWorkshops.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredWorkshops.length;
-  const progress = filteredWorkshops.length === 0 ? 0 : Math.round(
-    (Math.min(visibleCount, filteredWorkshops.length) / filteredWorkshops.length) * 100
+  const visibleWorkshops = featWorkshops.slice(0, visibleCount);
+  const hasMore = visibleCount < featWorkshops.length;
+  const progress = featWorkshops.length === 0 ? 0 : Math.round(
+    (Math.min(visibleCount, featWorkshops.length) / featWorkshops.length) * 100
   );
 
   const handleFilterChange = (id) => {
@@ -361,9 +361,9 @@ const Category = () => {
             <div>
               <p className="text-sm text-gray-500">
                 Showing{" "}
-                <span className="font-bold text-gray-800">{Math.min(visibleCount, filteredWorkshops.length)}</span>
+                <span className="font-bold text-gray-800">{Math.min(visibleCount, featWorkshops.length)}</span>
                 {" "}of{" "}
-                <span className="font-bold text-gray-800">{filteredWorkshops.length}</span>
+                <span className="font-bold text-gray-800">{featWorkshops.length}</span>
                 {" "}workshops
               </p>
             </div>
@@ -403,7 +403,7 @@ const Category = () => {
           </div>
 
           {/* Empty state — desktop */}
-          {filteredWorkshops.length === 0 && featWorkshops.length > 0 && (
+          {featWorkshops.length === 0 && featWorkshops.length > 0 && (
             <div className="hidden sm:block text-center py-24 text-gray-400">
               <Shield className="w-10 h-10 mx-auto mb-3 opacity-30" />
               <p className="text-lg font-semibold text-gray-500">No workshops found</p>
@@ -412,7 +412,7 @@ const Category = () => {
           )}
 
           {/* Load more / Show less — desktop only */}
-          {filteredWorkshops.length > INITIAL_COUNT && (
+          {featWorkshops.length > INITIAL_COUNT && (
             <div className="hidden sm:flex justify-center mt-12">
               <button
                 onClick={() => {

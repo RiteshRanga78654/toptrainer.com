@@ -18,17 +18,27 @@ export const isToggle = asyncHandler(async (req, res) => {
 
   // before adding to db check the count < 8
   const count = await featuredItems.countDocuments({
+    itemType,
     category,
   });
 
-  if (count >= 8) {
+  if (itemType==="Workshop" && count >= 8 ) {
     return res
       .status(400)
       .json({
         message:
-          "the limit of 8 featured items reached, please delete a item before adding one",
+          "Limit of 8 Workshops reached, Please delete a workshop before adding one",
       });
   }
+  if (itemType==="TrainerProfile" && count >= 6 ) {
+    return res
+      .status(400)
+      .json({
+        message:
+          "Limit of 6 Trainers reached, Please delete a trainer before adding one",
+      });
+  }
+  
 
   const addedItem = await featuredItems.create({
     itemRef,
@@ -49,20 +59,63 @@ export const getFeaturedList = asyncHandler(async (req, res) => {
 
     const {itemType, category} = req.query;
 
-    if(!itemType || !category){
-        return res.status(400).json({
-            success: false,
-            message: "both itemType and Category are required to fetch the featured list"
-        })
+
+    let populateFilter = {}
+    let filter = {}
+    
+    if (itemType==="Workshop"){
+
+        if(!itemType || !category){
+          return res.status(400).json({
+              success: false,
+              message: "both itemType and Category are required to fetch the featured workshop list"
+          })
+        }
+
+      populateFilter = {
+        path:"itemRef",
+        match: {status: "published", visibility: true},
+        populate: {path: "assignedTrainer", select: "fullName"}
+      }
+      filter = {
+          itemType,
+          category
+      }
+
     }
 
-    const featured = await featuredItems.find({
-        itemType,
-        category
-    }).populate({
+    else if(itemType==="TrainerProfile" && category){
+      populateFilter = {
         path:"itemRef",
-        match: {status: "published", visibility: true}
-    }).sort({createdAt: -1})
+        match: {status: "approved"}
+      }
+      filter = {
+          itemType,
+          category
+      }
+    }
+
+    else if(itemType==="TrainerProfile"){
+      populateFilter = {
+        path:"itemRef",
+        match: {status: "approved"}
+      }
+      filter = {
+          itemType,
+      }
+    }
+
+    else{
+      return res.status(400).json({
+              success: false,
+              message: "please enter a valid itemType"
+          })
+    }
+
+
+
+    const featured = await featuredItems.find(filter).populate(populateFilter).sort({createdAt: -1})
+    
 
     const cleanData  = featured.filter(item => item.itemRef != null);
 

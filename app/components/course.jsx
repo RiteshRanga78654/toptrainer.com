@@ -1,198 +1,9 @@
-
-// import Image from "next/image";
-
-// export default function PopularCourses() {
-//     const data = [
-//         {
-//             title: "Popular in Sales",
-//             items: [
-//                 {
-//                     name: "Rahul Sharma",
-//                     skill: "Digital Marketing & Sales",
-//                     rating: "4.9",
-//                     image: "/Images/trainee1.png",
-//                 },
-//                 {
-//                     name: "Anjali Verma",
-//                     skill: "B2B Sales Masterclass",
-//                     rating: "4.8",
-//                     image: "/Images/trainee2.png",
-//                 },
-//                 {
-//                     name: "Aman Gupta",
-//                     skill: "Cold Calling & Lead Generation",
-//                     rating: "4.7",
-//                     image: "/Images/trainee3.png",
-//                 },
-//                 {
-//                     name: "Arjun Malhotra",
-//                     skill: "Sales Strategist & Negotiation Expert",
-//                     rating: "4.8",
-//                     image: "/Images/trainee3.png",
-//                 },
-//                 {
-//                     name: "Simran Kaur",
-//                     skill: "Inside Sales Specialist",
-//                     rating: "4.7",
-//                     image: "/Images/trainee2.png",
-//                 },
-//                 {
-//                     name: "Rajat Khanna",
-//                     skill: "Lead Generation & CRM Expert",
-//                     rating: "4.6",
-//                     image: "/Images/trainee3.png",
-//                 }
-//             ],
-//         },
-//         {
-//             title: "Popular in Tech",
-//             items: [
-//                 {
-//                     name: "Rohit Mehta",
-//                     skill: "Full Stack Developer",
-//                     rating: "4.8",
-//                     image: "/Images/trainee3.png",
-//                 },
-//                 {
-//                     name: "Sneha Kapoor",
-//                     skill: "Data Scientist",
-//                     rating: "4.9",
-//                     image: "/Images/trainee2.png",
-//                 },
-//                 {
-//                     name: "Karan Singh",
-//                     skill: "AI/ML Trainer",
-//                     rating: "4.7",
-//                     image: "/Images/trainee1.png",
-//                 },
-//                 {
-//                     name: "Aditya Verma",
-//                     skill: "Frontend Developer (React.js)",
-//                     rating: "4.8",
-//                     image: "/Images/trainee3.png",
-//                 },
-//                 {
-//                     name: "Priya Nair",
-//                     skill: "Cloud Computing Engineer (AWS)",
-//                     rating: "4.7",
-//                     image: "/Images/trainee2.png",
-//                 },
-//                 {
-//                     name: "Nikhil Joshi",
-//                     skill: "Cybersecurity Specialist",
-//                     rating: "4.6",
-//                     image: "/Images/trainee3.png",
-//                 }
-//             ],
-//         },
-//         {
-//             title: "Popular in Business",
-//             items: [
-//                 {
-//                     name: "Neha Arora",
-//                     skill: "Business Coach",
-//                     rating: "4.8",
-//                     image: "/Images/trainee2.png",
-//                 },
-//                 {
-//                     name: "Vikas Jain",
-//                     skill: "Marketing Expert",
-//                     rating: "4.7",
-//                     image: "/Images/trainee1.png",
-//                 },
-//                 {
-//                     name: "Pooja Bansal",
-//                     skill: "Communication Trainer",
-//                     rating: "4.9",
-//                     image: "/Images/trainee3.png",
-//                 },
-//                 {
-//                     name: "Ritika Sinha",
-//                     skill: "Startup & Growth Consultant",
-//                     rating: "4.9",
-//                     image: "/Images/trainee2.png",
-//                 },
-//                 {
-//                     name: "Manish Agarwal",
-//                     skill: "Financial Planning Expert",
-//                     rating: "4.7",
-//                     image: "/Images/trainee3.png",
-//                 },
-//                 {
-//                     name: "Kavita Mehra",
-//                     skill: "HR & Leadership Coach",
-//                     rating: "4.8",
-//                     image: "/Images/trainee2.png",
-//                 }
-//             ],
-//         },
-        
-//     ];
-
-//     return (
-//         <section className="bg-gray-100 py-10 px-20">
-//             <h2 className="text-3xl font-semibold mb-6">
-//                 Explore <span className="text-blue-600">Trainers <span className="text-black">by Expertise</span></span> 
-//             </h2>
-
-//             <div className="grid md:grid-cols-3 gap-6">
-//                 {data.map((category, idx) => (
-//                     <div
-//                         key={idx}
-//                         className="bg-blue-50 rounded-xl p-4 shadow-sm hover:shadow-md transition"
-//                     >
-//                         <h3 className="font-semibold text-xl mb-4 flex justify-between">
-//                             {category.title} 
-//                         </h3>
-
-//                         <div className="space-y-3 max-h-[260px] overflow-y-auto pr-2 no-scrollbar">
-//                             {category.items.map((item, i) => (
-//                                 <div
-//                                     key={i}
-//                                     className="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm hover:shadow-md transition"
-//                                 >
-//                                     <div className="relative w-12 h-12">
-//                                         <Image
-//                                             src={item.image}
-//                                             alt={item.name}
-//                                             fill
-//                                             className="rounded-full object-cover"
-//                                         />
-//                                     </div>
-
-
-//                                     {/* Content */}
-//                                     <div className="flex-1">
-//                                         <p className="font-medium text-sm">
-//                                             {item.name}
-//                                         </p>
-//                                         <p className="text-xs text-gray-500">
-//                                             {item.skill}
-//                                         </p>
-//                                         <p className="text-xs text-blue-600">
-//                                             ⭐ {item.rating}
-//                                         </p>
-//                                     </div>
-
-//                                     {/* Button */}
-//                                     <button className="text-xs text-blue-600 font-semibold hover:underline">
-//                                         View
-//                                     </button>
-//                                 </div>
-//                             ))}
-//                         </div>
-//                     </div>
-//                 ))}
-//             </div>
-//         </section>
-//     );
-// }
-
 "use client";
 
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Star, ArrowRight, TrendingUp, Code2, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
+import axios from "axios";
 
 /* ── Inject styles ── */
 const styles = `
@@ -585,6 +396,7 @@ const categoryMeta = [
     iconColor: "#ea580c",
     badge: "Hot",
     badgeColor: "bg-orange-50 text-orange-600 border-orange-200",
+   
   },
   {
     key: "tech",
@@ -593,6 +405,7 @@ const categoryMeta = [
     iconColor: "#2563eb",
     badge: "Trending",
     badgeColor: "bg-blue-50 text-blue-600 border-blue-200",
+    title: "Popular in Tech",
   },
   {
     key: "business",
@@ -601,42 +414,7 @@ const categoryMeta = [
     iconColor: "#059669",
     badge: "New",
     badgeColor: "bg-emerald-50 text-emerald-600 border-emerald-200",
-  },
-];
-
-const data = [
-  {
-    title: "Popular in Sales",
-    items: [
-      { name: "Rahul Sharma",   skill: "Digital Marketing & Sales",      rating: "4.9", image: "/Images/trainee1.png" },
-      { name: "Anjali Verma",   skill: "B2B Sales Masterclass",          rating: "4.8", image: "/Images/trainee2.png" },
-      { name: "Aman Gupta",     skill: "Cold Calling & Lead Generation", rating: "4.7", image: "/Images/trainee3.png" },
-      { name: "Arjun Malhotra", skill: "Sales Strategist & Negotiation", rating: "4.8", image: "/Images/trainee3.png" },
-      { name: "Simran Kaur",    skill: "Inside Sales Specialist",        rating: "4.7", image: "/Images/trainee2.png" },
-      { name: "Rajat Khanna",   skill: "Lead Generation & CRM Expert",   rating: "4.6", image: "/Images/trainee3.png" },
-    ],
-  },
-  {
-    title: "Popular in Tech",
-    items: [
-      { name: "Rohit Mehta",  skill: "Full Stack Developer",           rating: "4.8", image: "/Images/trainee3.png" },
-      { name: "Sneha Kapoor", skill: "Data Scientist",                 rating: "4.9", image: "/Images/trainee2.png" },
-      { name: "Karan Singh",  skill: "AI/ML Trainer",                  rating: "4.7", image: "/Images/trainee1.png" },
-      { name: "Aditya Verma", skill: "Frontend Developer (React.js)",  rating: "4.8", image: "/Images/trainee3.png" },
-      { name: "Priya Nair",   skill: "Cloud Computing Engineer (AWS)", rating: "4.7", image: "/Images/trainee2.png" },
-      { name: "Nikhil Joshi", skill: "Cybersecurity Specialist",       rating: "4.6", image: "/Images/trainee3.png" },
-    ],
-  },
-  {
     title: "Popular in Business",
-    items: [
-      { name: "Neha Arora",     skill: "Business Coach",               rating: "4.8", image: "/Images/trainee2.png" },
-      { name: "Vikas Jain",     skill: "Marketing Expert",             rating: "4.7", image: "/Images/trainee1.png" },
-      { name: "Pooja Bansal",   skill: "Communication Trainer",        rating: "4.9", image: "/Images/trainee3.png" },
-      { name: "Ritika Sinha",   skill: "Startup & Growth Consultant",  rating: "4.9", image: "/Images/trainee2.png" },
-      { name: "Manish Agarwal", skill: "Financial Planning Expert",    rating: "4.7", image: "/Images/trainee3.png" },
-      { name: "Kavita Mehra",   skill: "HR & Leadership Coach",        rating: "4.8", image: "/Images/trainee2.png" },
-    ],
   },
 ];
 
@@ -732,15 +510,15 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
                     >
                       <div className="pc-avatar-ring">
                         <div className="pc-avatar-inner">
-                          <Image src={item.image} alt={item.name} fill className="object-cover" />
+                          <Image src={"/logo.png"} alt={item.fullName} fill className="object-cover" />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-800 text-sm truncate">{item.name}</p>
-                        <p className="text-xs text-gray-400 truncate">{item.skill}</p>
+                        <p className="font-semibold text-gray-800 text-sm truncate">{item.fullName}</p>
+                        <p className="text-xs text-gray-400 truncate">{item.expertiseDomain?.competencies[0]}</p>
                         <div className="flex items-center gap-1 mt-0.5">
                           <span className="pc-star text-yellow-400" style={{ fontSize: 10 }}>★</span>
-                          <span className="text-xs font-semibold text-blue-600">{item.rating}</span>
+                          <span className="text-xs font-semibold text-blue-600">{/*item.rating*/}4/5</span>
                         </div>
                       </div>
                       <button className="pc-view-btn">
@@ -820,6 +598,7 @@ export default function PopularTrainers() {
   const [activeTab, setActiveTab] = useState(null);
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
+  const [trainerData, setTrainerData] = useState([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -830,8 +609,45 @@ export default function PopularTrainers() {
     return () => observer.disconnect();
   }, []);
 
-  const displayData = activeTab !== null ? [data[activeTab]] : data;
   const tabLabels = ["Sales", "Tech", "Business"];
+  
+  
+  const fetchFeaturedTrainers = async ()=>{
+    try{
+      const res = await axios.get(`http://localhost:5001/api/featured-lists?itemType=TrainerProfile`)
+      if(res.data.success){
+        const trainerProfiles = res.data.data.map(item => item.itemRef)
+        setTrainerData(trainerProfiles);
+      }
+    }
+    catch(error){
+      console.error("error fetching the data: ", error);
+    }
+    
+  }
+  
+  useEffect(()=>{
+    fetchFeaturedTrainers()
+  },[activeTab])
+  
+  const groupedData = [
+    {
+      title:  "Popular in Sales",
+      items: trainerData.filter(t => t.expertiseDomain?.industry?.includes("Marketing")),
+    },
+    {
+      title:  "Popular in Tech",
+      items: trainerData.filter(t => t.expertiseDomain?.industry?.includes("Technology")),
+    },
+    {
+      title:  "Popular in Business",
+      items: trainerData.filter(t => t.expertiseDomain?.industry?.includes("Business")),
+    }
+  ];
+  
+  const displayData = activeTab !== null ? [groupedData[activeTab]] : groupedData;
+
+
 
   return (
     <>
@@ -943,15 +759,15 @@ export default function PopularTrainers() {
                       >
                         <div className="pc-avatar-ring">
                           <div className="pc-avatar-inner">
-                            <Image src={item.image} alt={item.name} fill className="object-cover" />
+                            <Image src={"/logo.png"} alt={item.fullName} fill className="object-cover" />
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-gray-800 text-sm truncate">{item.name}</p>
-                          <p className="text-xs text-gray-400 truncate">{item.skill}</p>
+                          <p className="font-semibold text-gray-800 text-sm truncate">{item.fullName}</p>
+                          <p className="text-xs text-gray-400 truncate">{item.expertiseDomain?.competencies[0]}</p>
                           <div className="flex items-center gap-1 mt-0.5">
                             <span className="pc-star text-yellow-400" style={{ fontSize: 10 }}>★</span>
-                            <span className="text-xs font-semibold text-blue-600">{item.rating}</span>
+                            <span className="text-xs font-semibold text-blue-600">{/*item.rating*/}4/5</span>
                           </div>
                         </div>
                         <button className="pc-view-btn">

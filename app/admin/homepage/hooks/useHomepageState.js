@@ -86,50 +86,87 @@ export default function useHomepageState() {
     setTimeout(() => setHeroSaved(false), 3000);
   };
 
-  // ── Expert state ────────────────────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState("industry");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selected, setSelected] = useState({
-    industry: new Set(
-      allExperts
-        .filter((e) => e.category === "industry" && e.featured)
-        .map((e) => e.id),
-    ),
-    department: new Set(
-      allExperts
-        .filter((e) => e.category === "department" && e.featured)
-        .map((e) => e.id),
-    ),
-    competency: new Set(
-      allExperts
-        .filter((e) => e.category === "competency" && e.featured)
-        .map((e) => e.id),
-    ),
-  });
-  const [expertSaved, setExpertSaved] = useState(false);
+  // ── Expert state (Trainers) ────────────────────────────────────────────────
+  const [featuredTrainers, setFeaturedTrainers] = useState([]);
+  const [searchTrainerQuery, setSearchTrainerQuery] = useState("");
+  const [searchTrainerResults, setSearchTrainerResults] = useState([]);
+  const [searchTrainerCurrentPage, setSearchTrainerCurrentPage] = useState(1);
+  const [searchTrainerTotalPages, setSearchTrainerTotalPages] = useState(1);
+  const [isSearchingTrainer, setIsSearchingTrainer] = useState(false);
+  const [activeTrainerTab, setActiveTrainerTab] = useState("Sales");
 
-  const toggleExpert = (id) => {
-    setSelected((prev) => {
-      const next = new Set(prev[activeTab]);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        if (next.size >= 6) return prev;
-        next.add(id);
+  const trainerTabs = [
+    { key: "Marketing", label: "Sales" },
+    { key: "Technology", label: "Tech" },
+    { key: "Business", label: "Business" },
+  ];
+
+  const fetchFeaturedTrainers = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5001/api/featured-lists?itemType=TrainerProfile&category=${activeTrainerTab}`,
+      );
+      if (res.data.success) {
+        const trainersOnly = res.data.data.map(item => item.itemRef);
+        setFeaturedTrainers(trainersOnly);
       }
-      return { ...prev, [activeTab]: next };
-    });
+    } catch (err) {
+      console.error("Failed to fetch featured trainers", err);
+    }
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setSearchQuery("");
+  useEffect(() => {
+    fetchFeaturedTrainers();
+  }, [activeTrainerTab]);
+
+  const handleTrainerSearch = async (page = 1) => {
+    setIsSearchingTrainer(true);
+    try {
+      let url = `http://localhost:5001/api/search/trainers?keyword=${encodeURIComponent(
+        searchTrainerQuery,
+      )}&page=${page}`;
+      
+      if (activeTrainerTab !== "All") {
+        url += `&industry=${encodeURIComponent(activeTrainerTab)}`;
+      }
+      const res = await axios.get(url);
+      if (res.data.success) {
+        setSearchTrainerResults(res.data.trainers || []);
+        setSearchTrainerCurrentPage(res.data.currentPage || 1);
+        setSearchTrainerTotalPages(res.data.totalPages || 1);
+      }
+    } catch (err) {
+      console.error("Failed to search trainers", err);
+    } finally {
+      setIsSearchingTrainer(false);
+    }
   };
+
+  const toggleFeaturedTrainer = async (id) => {
+    let url = "http://localhost:5001/api/featured-lists/toggle";
+    let body = {
+      itemRef: id,
+      itemType: "TrainerProfile",
+      category: activeTrainerTab
+    }
+    try {
+      const res = await axios.post(url, body);
+      if (res.data.success) {
+        fetchFeaturedTrainers();
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to toggle trainer");
+    }
+  };
+
+
 
   // ── Workshops previewer state ────────────────────────────────────────────────
   const [featuredWorkshops, setFeaturedWorkshops] = useState([]);
   const [searchWorkshopQuery, setSearchWorkshopQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [searchCurrentPage, setSearchCurrentPage] = useState(1);
+  const [searchTotalPages, setSearchTotalPages] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
   const [activeWorkshopTab, setActiveWorkshopTab] = useState("All");
   const [topWorkshopsByIndustry, setTopWorkshopsByIndustry] = useState([]);
@@ -164,19 +201,21 @@ export default function useHomepageState() {
     fetchFeaturedWorkshops();
   }, [activeWorkshopTab]);
 
-  const handleWorkshopSearch = async () => {
-    if (!searchWorkshopQuery.trim()) return;
+  const handleWorkshopSearch = async (page = 1) => {
+
     setIsSearching(true);
     try {
-      let url = `http://localhost:5001/api/workshops/admin/homepage/search?keyword=${encodeURIComponent(
+      let url = `http://localhost:5001/api/search/workshops?keyword=${encodeURIComponent(
         searchWorkshopQuery,
-      )}`;
+      )}&page=${page}`;
       if (activeWorkshopTab !== "All") {
         url += `&industry=${encodeURIComponent(activeWorkshopTab)}`;
       }
       const res = await axios.get(url);
       if (res.data.success) {
         setSearchResults(res.data.workshops || []);
+        setSearchCurrentPage(res.data.currentPage || 1);
+        setSearchTotalPages(res.data.totalPages || 1);
       }
     } catch (err) {
       console.error("Failed to search", err);
@@ -225,14 +264,19 @@ export default function useHomepageState() {
       saveHero,
     },
     expertState: {
-      activeTab,
-      searchQuery,
-      setSearchQuery,
-      selected,
-      expertSaved,
-      setExpertSaved,
-      toggleExpert,
-      handleTabChange,
+      featuredTrainers,
+      searchTrainerQuery,
+      setSearchTrainerQuery,
+      searchTrainerResults,
+      setSearchTrainerResults,
+      searchTrainerCurrentPage,
+      searchTrainerTotalPages,
+      isSearchingTrainer,
+      activeTrainerTab,
+      setActiveTrainerTab,
+      trainerTabs,
+      handleTrainerSearch,
+      toggleFeaturedTrainer,
     },
     workshopState: {
       featuredWorkshops,
@@ -240,6 +284,8 @@ export default function useHomepageState() {
       setSearchWorkshopQuery,
       searchResults,
       setSearchResults,
+      searchCurrentPage,
+      searchTotalPages,
       isSearching,
       activeWorkshopTab,
       setActiveWorkshopTab,
