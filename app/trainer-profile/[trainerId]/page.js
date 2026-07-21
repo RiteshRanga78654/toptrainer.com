@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 import {
   Phone, MapPin, Mail, Linkedin, Twitter, Youtube, Globe,
   Star, ChevronRight, Users, Award, BookOpen, Briefcase,
   Languages, MessageSquare, Download, ExternalLink,
   CheckCircle2, TrendingUp, Lightbulb, Target, Building2,
   GraduationCap, Trophy, Camera, Zap, Play, ShieldCheck,
-  Facebook, Instagram, Share2,
+  Facebook, Instagram, Share2, PenSquare,
 } from "lucide-react";
 import Footer from "../../components/footer";
 import DownloadButton from "../../profile/DownloadButton";
@@ -316,11 +317,31 @@ function ShareButton({ title }) {
   );
 }
 
+function getClientToken() {
+  if (typeof window === "undefined") return null;
+  return (
+    localStorage.getItem("tt_token") ||
+    document.cookie.match(/(?:^|;\s*)token=([^;]+)/)?.[1] ||
+    null
+  );
+}
+
 export default function Profile() {
   const { trainerId } = useParams();
+  const router = useRouter();
+  const { user, token } = useSelector((state) => state.auth);
   const [trainer, setTrainer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const handleWriteReview = () => {
+    const loggedIn = !!user || !!token || !!getClientToken();
+    if (!loggedIn) {
+      router.push(`/auth/login?redirect=/review/${trainerId}`);
+      return;
+    }
+    router.push(`/review/${trainerId}`);
+  };
 
   useEffect(() => {
     if (!trainerId) return;
@@ -519,6 +540,13 @@ export default function Profile() {
                       </div>
                     </div>
                   )}
+                   <button
+                    onClick={handleWriteReview}
+                    className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-blue-800 hover:bg-blue-50 transition-all duration-200 shadow-md active:scale-95"
+                  >
+                    <PenSquare size={15} />
+                    Write a Review
+                  </button>
                 </div>
 
                 <div className="flex-1 min-w-0 mt-2 md:mt-0">
@@ -602,6 +630,8 @@ export default function Profile() {
                       ))}
                     </div>
                   )}
+
+                 
                 </div>
               </div>
             </div>

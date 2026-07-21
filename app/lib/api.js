@@ -62,19 +62,28 @@ export const authAPI = {
   register: (data) => API.post("/auth/register", data),
 };
 
-export const usersAPI = {
-  ...makeCRUD("users"),
-  getMe: () => API.get("/users/me"),
-  updateMe: (data) => API.put("/users/me", data),
+export const userAPI = {
+  register: (data) => API.post("/users/register", data),
+  login: (data) => API.post("/users/login", data),
+  logout: () => API.get("/users/logout"),
+  getProfile: () => API.get("/users/me"),
+  updateProfile: (data) => API.put("/users/update-profile", data),
+  changePassword: (data) => API.put("/users/update-password", data),
 };
 
 export const trainersAPI = {
   ...makeCRUD("trainers"),
   getAll: (params = {}) => API.get("/search/trainers", { params }),
   getById: (id) => API.get(`/trainers/${id}`),
-  getProfile: () => API.get("/trainers/profile"),
-  updateProfile: (data) => API.put("/trainers/profile", data),
+  getProfile: () => API.get("/trainers/me"),
+  updateProfile: (data) => API.put("/trainers/update-profile", data, { headers: { "Content-Type": "multipart/form-data" } }),
+  changePassword: (data) => API.put("/trainers/change-password", data),
   getStats: (id) => API.get(`/trainers/stats/${id}`),
+   register: (data) =>
+    API.post("/trainers/register", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+
 };
 
 
@@ -366,5 +375,29 @@ export const trainerDashboardAPI = {
   getMyWorkshops: (params = {}) => API.get("/trainer/workshops", { params }),
   getMyArticles: (params = {}) => API.get("/trainer/articles", { params }),
   getAnalytics: () => API.get("/trainer/analytics"),
+};
+
+export const userDashboardAPI = {
+  getDashboard: () => API.get("/user/dashboard"),
+  getShortlistedProfiles: () => API.get("/user/shortlisted"),
+  toggleShortlist: (trainerId) => API.post(`/user/shortlist/${trainerId}`),
+  getWorkshops: (params = {}) => API.get("/user/workshops", { params }),
+  toggleSaveWorkshop: (workshopId) => API.post(`/user/save-workshop/${workshopId}`),
+  getArticles: (params = {}) => API.get("/user/articles", { params }),
+  toggleSaveArticle: (articleId) => API.post(`/user/save-article/${articleId}`),
+  getArticleById: (articleId) => API.get(`/user/articles/${articleId}`),
+ getMyReviews: () => API.get("reviews/my-review"),
+};
+
+// ── Reviews ──────────────────────────────────────────────────
+export const reviewsAPI = {
+  submit: (data) => API.post("/reviews/submit-review", data),
+  getMine: () => API.get("/reviews/my-review"),
+  getOne: (id) => API.get(`/reviews/${id}`),
+  getByTrainer: (trainerId) => API.get(`/reviews/trainer/${trainerId}`),
+  getByWorkshop: (workshopId) => API.get(`/reviews/workshop/${workshopId}`),
+  getFeatured: () => API.get("/reviews/featured"),
+  update: (id, data) => API.put(`/reviews/${id}`, data),
+  delete: (id) => API.delete(`/reviews/${id}`),
 };
 export default API;

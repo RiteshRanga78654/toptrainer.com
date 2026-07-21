@@ -1,11 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
 import {
   User, MapPin, Calendar, BookOpen,
   Star, MessageSquare, ChevronRight, ChevronLeft,
   CheckCircle, Send, Edit2, Headphones, BarChart2,
-  Users, Shield, Clock, TrendingUp, Phone,
+  Users, Shield, Clock, TrendingUp, Phone, Loader2,
 } from "lucide-react";
+import { trainersAPI, reviewsAPI } from "../../lib/api";
 
 const STEPS = [
   { id: 1, label: "Session details", shortLabel: "Session" },
@@ -215,7 +218,24 @@ function ReviewRow({ num, label, rating, delay }) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
+function getClientToken() {
+  if (typeof window === "undefined") return null;
+  return (
+    localStorage.getItem("tt_token") ||
+    document.cookie.match(/(?:^|;\s*)token=([^;]+)/)?.[1] ||
+    null
+  );
+}
+
 export default function FeedbackForm() {
+  const router = useRouter();
+  const { trainerId } = useParams();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("editId");   // presence of this = edit mode
+  const isEditMode = !!editId;
+
+  const { user, token, initialized } = useSelector((state) => state.auth);
+
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [animDir, setAnimDir] = useState("forward");
@@ -228,6 +248,19 @@ export default function FeedbackForm() {
   const [otpLoading, setOtpLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [otpShake, setOtpShake] = useState(false);
+
+  // Trainer (fetched from backend using the trainerId in the URL)
+  const [trainerDoc, setTrainerDoc] = useState(null);
+  const [trainerLoading, setTrainerLoading] = useState(true);
+  const [trainerError, setTrainerError] = useState("");
+
+  // Real submission state
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  // Existing review state — only relevant in edit mode
+  const [existingLoading, setExistingLoading] = useState(isEditMode);
+  const [existingError, setExistingError] = useState("");
 
   const [data, setData] = useState({
     reviewer: "",
@@ -251,6 +284,134 @@ export default function FeedbackForm() {
 
   const setSection = (section, field, value) =>
     setData((d) => ({ ...d, [section]: { ...d[section], [field]: value } }));
+
+  // ── Auth guard: bounce to login if not logged in, then come straight back here ──
+  useEffect(() => {
+    if (!initialized) return;
+    const loggedIn = !!user || !!token || !!getClientToken();
+    if (!loggedIn) {
+      const redirectTo = isEditMode
+        ? `/review/${trainerId}?editId=${editId}`
+        : `/review/${trainerId}`;
+      router.replace(`/auth/login?redirect=${redirectTo}`);
+    }
+  }, [initialized, user, token, trainerId, editId, isEditMode, router]);
+
+  // ── Fetch the trainer being reviewed from the backend and lock the name in ──
+  useEffect(() => {
+    if (!trainerId) return;
+    const fetchTrainer = async () => {
+      try {
+        setTrainerLoading(true);
+        setTrainerError("");
+        const { data: res } = await trainersAPI.getById(trainerId);
+        const t = res.trainer || res.data || null;
+        if (!t) throw new Error("Trainer not found");
+        setTrainerDoc(t);
+        setData((d) => ({ ...d, trainer: t.fullName || "" }));
+      } catch (err) {
+        setTrainerError(err.response?.data?.message || err.message || "Failed to load trainer");
+      } finally {
+        setTrainerLoading(false);
+      }
+    };
+    fetchTrainer();
+  }, [trainerId]);
+
+  // ── EDIT MODE: fetch the existing review and pre-fill the form ──
+  // GET /api/reviews/:id is a public route, so we double-check ownership
+  // ourselves before letting someone edit a review that isn't theirs.
+  useEffect(() => {
+    if (!editId) return;
+
+    const fetchExistingReview = async () => {
+      try {
+        setExistingLoading(true);
+        setExistingError("");
+
+        const { data: res } = await reviewsAPI.getOne(editId);
+        const r = res.review;
+        if (!r) throw new Error("Review not found");
+
+        const ownerId = r.user?._id || r.user;
+        if (user && ownerId && ownerId.toString() !== user._id?.toString()) {
+          setExistingError("You can only edit your own reviews.");
+          setExistingLoading(false);
+          return;
+        }
+
+        setData((d) => ({
+          ...d,
+          reviewer: r.sessionInfo?.reviewerName || "",
+          sessionDate: r.sessionInfo?.sessionDate
+            ? new Date(r.sessionInfo.sessionDate).toISOString().slice(0, 10)
+            : "",
+          city: r.sessionInfo?.city || "",
+          whatsapp: r.sessionInfo?.whatsappNumber || "",
+          overall:    { rating: r.ratings?.overAll ?? null,        comment: r.ratings?.overAllComment || "" },
+          delivery:   { rating: r.ratings?.delivery ?? null,       comment: r.ratings?.deliveryComment || "" },
+          content:    { rating: r.ratings?.contentQuality ?? null, comment: r.ratings?.contentQualityComment || "" },
+          engagement: { rating: r.ratings?.engagement ?? null,     comment: r.ratings?.engagmentComment || "" },
+        }));
+      } catch (err) {
+        setExistingError(err.response?.data?.message || err.message || "Failed to load your review");
+      } finally {
+        setExistingLoading(false);
+      }
+    };
+
+    fetchExistingReview();
+  }, [editId, user]);
+
+  // ── Submit the review to the backend — create new or update existing ──
+  const handleSubmitReview = async () => {
+    if (!trainerDoc?._id) {
+      setSubmitError("Trainer details are still loading. Please wait a moment.");
+      return;
+    }
+    try {
+      setSubmitLoading(true);
+      setSubmitError("");
+
+      const sessionInfo = {
+        reviewerName: data.reviewer,
+        trainerName: trainerDoc.fullName,
+        sessionDate: data.sessionDate,
+        city: data.city,
+        whatsappNumber: data.whatsapp,
+      };
+      const ratingsPayload = {
+        overAll: data.overall.rating,
+        delivery: data.delivery.rating,
+        contentQuality: data.content.rating,
+        engagement: data.engagement.rating,
+        overAllComment: data.overall.comment,
+        deliveryComment: data.delivery.comment,
+        contentQualityComment: data.content.comment,
+        engagmentComment: data.engagement.comment,
+      };
+
+      if (isEditMode) {
+        // PUT /api/reviews/:id — backend replaces sessionInfo + ratings
+        // wholesale, so both are sent fully populated from the form
+        await reviewsAPI.update(editId, { sessionInfo, ratings: ratingsPayload });
+      } else {
+        await reviewsAPI.submit({ trainer: trainerDoc._id, sessionInfo, ratings: ratingsPayload });
+      }
+
+      setSubmitted(true);
+      setOtpVerified(true); // no OTP step on the backend — submission itself is the confirmation
+    } catch (err) {
+      setSubmitError(
+        err.response?.data?.message ||
+          (isEditMode
+            ? "Failed to update your review. Please try again."
+            : "Failed to submit your review. Please try again.")
+      );
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
 
   // Resend countdown timer
   useEffect(() => {
@@ -398,9 +559,13 @@ export default function FeedbackForm() {
           <div className="anim-fade-up" style={{ animationDelay: "100ms" }}>
             {otpVerified ? (
               <>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Thank you!</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+                  {isEditMode ? "Review updated!" : "Thank you!"}
+                </h2>
                 <p className="text-gray-500 text-sm mt-1">
-                  Your feedback has been submitted. It helps trainers improve every session.
+                  {isEditMode
+                    ? "Your review has been updated successfully."
+                    : "Your feedback has been submitted. It helps trainers improve every session."}
                 </p>
               </>
             ) : (
@@ -536,31 +701,80 @@ export default function FeedbackForm() {
                 <span className="text-xs font-semibold" style={{ color: "#15803d" }}>WhatsApp number verified</span>
               </div>
 
-              <button
-                onClick={() => {
-                  setSubmitted(false);
-                  setStep(1);
-                  setOtpSent(false);
-                  setOtpVerified(false);
-                  setOtpInput("");
-                  setOtpError("");
-                  setResendTimer(0);
-                  setData((d) => ({
-                    ...d,
-                    overall:    { rating: null, comment: "" },
-                    delivery:   { rating: null, comment: "" },
-                    content:    { rating: null, comment: "" },
-                    engagement: { rating: null, comment: "" },
-                    extra: "",
-                  }));
-                }}
-                className="w-full px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95"
-                style={{ background: "linear-gradient(135deg,#3b82f6,#1d4ed8)" }}
-              >
-                Submit another
-              </button>
+              {isEditMode ? (
+                <button
+                  onClick={() => router.push("/user/my-reviews")}
+                  className="w-full px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95"
+                  style={{ background: "linear-gradient(135deg,#3b82f6,#1d4ed8)" }}
+                >
+                  Back to My Reviews
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setSubmitted(false);
+                    setStep(1);
+                    setOtpSent(false);
+                    setOtpVerified(false);
+                    setOtpInput("");
+                    setOtpError("");
+                    setResendTimer(0);
+                    setData((d) => ({
+                      ...d,
+                      overall:    { rating: null, comment: "" },
+                      delivery:   { rating: null, comment: "" },
+                      content:    { rating: null, comment: "" },
+                      engagement: { rating: null, comment: "" },
+                      extra: "",
+                    }));
+                  }}
+                  className="w-full px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95"
+                  style={{ background: "linear-gradient(135deg,#3b82f6,#1d4ed8)" }}
+                >
+                  Submit another
+                </button>
+              )}
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Loading state while fetching the existing review to edit ──
+  if (isEditMode && existingLoading) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center px-4"
+        style={{ background: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 40%, #bfdbfe 100%)" }}
+      >
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 size={32} className="animate-spin" style={{ color: "#1d4ed8" }} />
+          <p className="text-sm text-gray-600">Loading your review…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Error state — e.g. review not found, or belongs to someone else ──
+  if (isEditMode && existingError) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center px-4"
+        style={{ background: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 40%, #bfdbfe 100%)" }}
+      >
+        <div
+          className="bg-white/85 backdrop-blur-xl rounded-3xl shadow-2xl p-8 max-w-md w-full text-center"
+          style={{ border: "1px solid rgba(147,197,253,0.6)" }}
+        >
+          <p className="text-red-600 font-semibold mb-5">{existingError}</p>
+          <button
+            onClick={() => router.push("/user/my-reviews")}
+            className="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm inline-flex items-center gap-2"
+            style={{ background: "linear-gradient(135deg, #3b82f6, #1d4ed8)", color: "white", border: "none" }}
+          >
+            Back to My Reviews
+          </button>
         </div>
       </div>
     );
@@ -652,7 +866,7 @@ export default function FeedbackForm() {
               style={{ border: "1px solid #bfdbfe", color: "#1d4ed8" }}
             >
               <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-              Live feedback collection
+              {isEditMode ? "Updating your feedback" : "Live feedback collection"}
             </div>
             <h2 className="text-2xl xl:text-3xl font-black text-gray-800 leading-tight mb-3">
               Your feedback<br />
@@ -709,7 +923,7 @@ export default function FeedbackForm() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight leading-snug">
-                Training Feedback
+                {isEditMode ? "Edit Your Feedback" : "Training Feedback"}
               </h1>
             </div>
           </div>
@@ -732,9 +946,31 @@ export default function FeedbackForm() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                    {/* Trainer name — locked, fetched from the backend for this profile */}
+                    <div className="animate-slideUp">
+                      <label className="text-xs font-bold tracking-widest uppercase flex items-center gap-1.5 mb-1.5" style={{ color: "#64748b" }}>
+                        <User size={12} style={{ color: "#3b82f6" }} />
+                        Training By
+                      </label>
+                      <div
+                        className="field-input flex items-center gap-2"
+                        style={{ background: "#eff6ff", color: "#0f172a", cursor: "not-allowed" }}
+                      >
+                        {trainerLoading ? (
+                          <>
+                            <Loader2 size={14} className="animate-spin" style={{ color: "#60a5fa" }} />
+                            <span className="text-gray-400">Loading trainer…</span>
+                          </>
+                        ) : trainerError ? (
+                          <span className="text-red-500 text-xs">{trainerError}</span>
+                        ) : (
+                          <span className="font-semibold">{data.trainer || "—"}</span>
+                        )}
+                      </div>
+                    </div>
+
                     {[
                       { icon: User,           label: "Reviewer Name",        key: "reviewer",    type: "text", placeholder: "Your name" },
-                      { icon: User,           label: "Training By",          key: "trainer",     type: "text", placeholder: "Trainer name" },
                       { icon: Calendar,       label: "Session Date",         key: "sessionDate", type: "date", placeholder: "" },
                       { icon: MapPin,         label: "Your City",            key: "city",        type: "text", placeholder: "Your City" },
                       { icon: MessageSquare,  label: "Your WhatsApp Number", key: "whatsapp",    type: "text", placeholder: "e.g. +91 9876543210" },
@@ -878,21 +1114,27 @@ export default function FeedbackForm() {
                 </button>
               ) : (
                 <button
-                  onClick={() => {
-                    setSubmitted(true);
-                    setOtpSent(false);
-                    setOtpVerified(false);
-                    setOtpInput("");
-                    setOtpError("");
-                    setResendTimer(0);
-                  }}
-                  className="btn-primary flex items-center gap-1.5 px-5 sm:px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md"
+                  onClick={handleSubmitReview}
+                  disabled={submitLoading}
+                  className="btn-primary flex items-center gap-1.5 px-5 sm:px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md disabled:opacity-60"
                   style={{ boxShadow: "0 4px 14px rgba(29,78,216,0.35)" }}
                 >
-                  <Send size={15} /> Submit feedback
+                  {submitLoading ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      {isEditMode ? "Updating..." : "Submitting..."}
+                    </>
+                  ) : (
+                    <>
+                      <Send size={15} /> {isEditMode ? "Update Feedback" : "Submit feedback"}
+                    </>
+                  )}
                 </button>
               )}
             </div>
+            {submitError && (
+              <p className="text-xs font-medium text-red-500 text-center mt-3">{submitError}</p>
+            )}
           </div>
         </div>
       </div>

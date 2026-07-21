@@ -2,8 +2,10 @@
 
 import { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
-import { trainersAPI } from "../lib/api";
+import { trainersAPI, userDashboardAPI } from "../lib/api";
 
 const allSkills = ["Sales", "Marketing", "Finance", "Tech", "Leadership", "Python", "Data Science", "Machine Learning"];
 const INITIAL_COUNT = 6;
@@ -58,8 +60,18 @@ function AnimatedBackground() {
    below (id, name, image, title, company, rating, reviews, skills[],
    location, experience, price, verified, topRated) — not the raw backend
    TrainerProfile document. Keep this in sync with fetchTrainers(). */
-const TrainerCard = ({ trainer, index }) => {
-  const [liked, setLiked] = useState(false);
+const TrainerCard = ({ trainer, index, isShortlisted, onToggleShortlist }) => {
+  const [busy, setBusy] = useState(false);
+
+  const handleHeartClick = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (busy) return;
+    setBusy(true);
+    await onToggleShortlist(trainer.id);
+    setBusy(false);
+  };
+
   return (
     <div
       className="bg-white rounded-2xl border border-blue-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
@@ -70,10 +82,12 @@ const TrainerCard = ({ trainer, index }) => {
         <img src={trainer.image} alt={trainer.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 via-transparent to-transparent pointer-events-none" />
         <button
-          onClick={() => setLiked(!liked)}
-          className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform"
+          onClick={handleHeartClick}
+          disabled={busy}
+          className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform disabled:opacity-60"
+          title={isShortlisted ? "Remove from shortlist" : "Add to shortlist"}
         >
-          <svg className={`w-4 h-4 ${liked ? "text-red-500" : "text-blue-300"}`} fill={liked ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className={`w-4 h-4 ${isShortlisted ? "text-red-500" : "text-blue-300"}`} fill={isShortlisted ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
         </button>
@@ -96,7 +110,6 @@ const TrainerCard = ({ trainer, index }) => {
               </svg>
             )}
           </div>
-          {/* Rating RIGHT side */}
           <div className="flex items-center gap-1 flex-shrink-0">
             <svg className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -106,24 +119,17 @@ const TrainerCard = ({ trainer, index }) => {
           </div>
         </div>
 
-        {/* Title + Company */}
         <p className="text-xs mt-0.5" style={{ color: "#475569" }}>
           {trainer.title}{" "}
           {trainer.company && <span className="font-semibold" style={{ color: "#1d4ed8" }}>@ {trainer.company}</span>}
         </p>
 
-        {/* Skills */}
         <div className="flex flex-wrap gap-1.5 mt-3">
           {(trainer.skills || []).slice(0, 3).map((skill, i) => (
-            <span
-              key={`${trainer.id}-${skill}-${i}`}
-              className="text-xs px-2 py-0.5 rounded-full font-medium"
-              style={{ background: "#dbeafe", color: "#1e3a8a" }}
-            >
+            <span key={`${trainer.id}-${skill}-${i}`} className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#dbeafe", color: "#1e3a8a" }}>
               {skill}
             </span>
           ))}
-
           {(trainer.skills || []).length > 3 && (
             <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "#eff6ff", color: "#60a5fa" }}>
               +{(trainer.skills || []).length - 3}
@@ -131,7 +137,6 @@ const TrainerCard = ({ trainer, index }) => {
           )}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: "#dbeafe" }}>
           <Link href={`/trainer-profile/${trainer.id}`}>
             <button
@@ -179,7 +184,6 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
         </button>
       </div>
 
-      {/* Rating */}
       <div className="mb-5">
         <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Rating</h3>
         {[4.5, 4.0, 3.5, 3.0].map((r) => (
@@ -204,7 +208,6 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
         ))}
       </div>
 
-      {/* Price */}
       <div className="mb-5">
         <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Price / Hour</h3>
         <div className="flex justify-between text-xs mb-2" style={{ color: "#64748b" }}>
@@ -213,7 +216,6 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
         <input type="range" min={10} max={200} value={priceRange[1]} onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])} className="w-full" style={{ accentColor: "#5376d4" }} />
       </div>
 
-      {/* Experience */}
       <div className="mb-5">
         <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Experience</h3>
         {experienceOptions.map((exp) => (
@@ -224,7 +226,6 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
         ))}
       </div>
 
-      {/* Skills */}
       <div className="mb-5">
         <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Skills</h3>
         <div className="relative mb-2">
@@ -241,7 +242,6 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
         ))}
       </div>
 
-      {/* Toggles */}
       <div className="space-y-3 mb-5">
         {[
           { label: "Verified Trainers", value: verifiedOnly, setter: setVerifiedOnly },
@@ -271,6 +271,9 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
 
 /* ── Main Page ── */
 export default function FindTrainersPage() {
+  const router = useRouter();
+  const user = useSelector((s) => s.auth?.user);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [mode, setMode] = useState("Online");
@@ -288,6 +291,10 @@ export default function FindTrainersPage() {
   const [trainers, setTrainers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // ── Shortlist state — Set of trainer ids the logged-in user has shortlisted ──
+  const [shortlistedIds, setShortlistedIds] = useState(new Set());
+
   const popularTags = ["Sales", "Marketing", "Finance", "Tech", "Leadership", "Machine Learning"];
 
   const toggleExperience = (exp) => setExperienceFilter((prev) => prev.includes(exp) ? prev.filter((e) => e !== exp) : [...prev, exp]);
@@ -354,8 +361,6 @@ export default function FindTrainersPage() {
   // expertiseDomain.competencies / contactInfo.location.{city,state} /
   // additionalDetails.{trainingExperience,feesPerDay} / status / isFeatured.
   // We map them here into the simplified shape TrainerCard + filters use.
-  // NOTE: the backend TrainerProfile model has no rating/review fields yet,
-  // so rating/reviews default to 0 until reviewsAPI is wired in per-trainer.
   const fetchTrainers = async () => {
     try {
       setLoading(true);
@@ -364,7 +369,7 @@ export default function FindTrainersPage() {
       const raw = data.trainers || data.data || [];
 
       const trainerList = raw.map((trainer) => ({
-        id: trainer.trainerId,
+        id: trainer.trainerId, // FIX: was trainer.trainerId (didn't exist on the doc)
         name: trainer.fullName,
         image: trainer.profilePhoto?.url || "/Images/default-trainer.png",
         title: trainer.subjectLine,
@@ -391,9 +396,65 @@ export default function FindTrainersPage() {
     }
   };
 
+  // ── Load the logged-in user's shortlist so hearts render red on page load ──
+  const fetchShortlist = async () => {
+    if (!user) { setShortlistedIds(new Set()); return; }
+    try {
+      const { data } = await userDashboardAPI.getShortlisted();
+      const list = data?.trainers || [];
+      setShortlistedIds(new Set(list.map((t) => t._id)));
+    } catch (err) {
+      // Silently ignore — shortlist just won't be pre-marked
+      console.error("Failed to load shortlist", err);
+    }
+  };
+
   useEffect(() => {
     fetchTrainers();
   }, []);
+
+  useEffect(() => {
+    fetchShortlist();
+  }, [user]);
+
+  // ── Toggle shortlist — redirect to login if not authenticated ──
+  const handleToggleShortlist = async (trainerId) => {
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    // Optimistic UI update
+    setShortlistedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(trainerId)) next.delete(trainerId);
+      else next.add(trainerId);
+      return next;
+    });
+
+    try {
+      const { data } = await userDashboardAPI.toggleShortlist(trainerId);
+      // Sync with backend's authoritative isShortlisted value
+      setShortlistedIds((prev) => {
+        const next = new Set(prev);
+        if (data.isShortlisted) next.add(trainerId);
+        else next.delete(trainerId);
+        return next;
+      });
+    } catch (err) {
+      // Revert optimistic update on failure
+      setShortlistedIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(trainerId)) next.delete(trainerId);
+        else next.add(trainerId);
+        return next;
+      });
+      if (err?.response?.status === 401) {
+        router.push("/auth/login");
+      }
+      console.error("Failed to toggle shortlist", err);
+    }
+  };
 
   return (
     <>
@@ -546,7 +607,13 @@ export default function FindTrainersPage() {
                     <>
                       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
                         {visibleTrainers.map((trainer, i) => (
-                          <TrainerCard key={trainer.id} trainer={trainer} index={i} />
+                          <TrainerCard
+                            key={trainer.id}
+                            trainer={trainer}
+                            index={i}
+                            isShortlisted={shortlistedIds.has(trainer.id)}
+                            onToggleShortlist={handleToggleShortlist}
+                          />
                         ))}
                       </div>
 
