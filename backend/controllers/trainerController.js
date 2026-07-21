@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import TrainerProfile from '../models/trainerProfile.js';
 import generateToken from '../utils/generationToken.js';
 import cloudinary from '../config/cloudinary.js';
@@ -560,9 +561,17 @@ res.status(200).json({
 )
 
 export const getTrainerById = asyncHandler(async (req, res) => {
-  const trainer = await TrainerProfile.findOne({
-    trainerId: req.params.trainerId.toUpperCase(),
+  const { trainerId } = req.params;
+
+  let trainer = await TrainerProfile.findOne({
+    trainerId: trainerId.toUpperCase(),
   });
+
+  // Fallback: allow lookup by Mongo _id too, in case a stale/legacy
+  // link or client sends the ObjectId instead of the custom trainerId.
+  if (!trainer && mongoose.Types.ObjectId.isValid(trainerId)) {
+    trainer = await TrainerProfile.findById(trainerId);
+  }
 
   if (!trainer) {
     return res.status(404).json({
@@ -575,4 +584,24 @@ export const getTrainerById = asyncHandler(async (req, res) => {
     success: true,
     trainer,
   });
+});
+
+
+export const changeTrainerPassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ success: false, message: "Please provide current and new password" });
+  }
+  if (newPassword.length < 8) {
+    return res.status(400).json({ success: false, message: "New password must be at least 8 characters" });
+  }
+  const trainer = await TrainerProfile.findById(req.trainer._id).select("+password");
+  if (!trainer) return res.status(404).json({ success: false, message: "Trainer not found" });
+
+  const isMatch = await trainer.comparePassword(currentPassword);
+  if (!isMatch) return res.status(401).json({ success: false, message: "Current password is incorrect" });
+
+  trainer.password = newPassword; // pre-save hook hashes this automatically
+  await trainer.save();
+  res.status(200).json({ success: true, message: "Password updated successfully" });
 });

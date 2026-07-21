@@ -1,34 +1,25 @@
 import express from "express";
-import {createReview, getMyReviews, getAllReviews, getSingleReview, getTrainerReviews, getWorkshopReviews, getFeaturedReviews, approveReview, toggleFeaturedReview, updateReview, deleteReview} from "../controllers/reviewController.js"
+
+import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle, updateArticle } from "../controllers/articleContoller.js";
+
 import { protectAdmin } from "../middleware/adminAuthMiddleware.js";
 import { protectTrainer } from "../middleware/trainerAuthMiddleware.js";
-import { protectUser } from "../middleware/userMiddleware.js";
-import { fail } from "node:assert";
+import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
+router.post("/trainer/create", protectTrainer, upload.single("coverImage"), createArticle);
+router.get("/trainer/drafts", protectTrainer, getDraftArticles);
+router.get("/trainer/published", protectTrainer, getMyPublishedArticles);
+router.put("/trainer/publish/:id", protectTrainer, publishArticle);
+router.put("/trainer/:id", protectTrainer, upload.single("coverImage"), updateArticle);
+router.delete("/trainer/:id", protectTrainer, deleteArticle);
 
-//user
-router.post("/submit-review", protectUser, createReview);
-router.get("/my-review", protectUser, getMyReviews);
-router.put("/:id", protectUser, updateReview);
-router.delete("/:id", protectUser, deleteReview);
-
-
-//public
-router.get("/:id", getSingleReview);
-router.get("/trainer/:trainerId", getTrainerReviews);
-router.get("/workshop/:workshopId", getWorkshopReviews);
-router.get("/featured", getFeaturedReviews);
-
-//trainer-dashboard
-router.get("/trainer-dashboard/my-reviews",protectTrainer,getTrainerReviews);
-
-//admin
-router.get("/admin/all", protectAdmin, getAllReviews);
-router.put("/admin/approve/:id",protectAdmin,approveReview);
-router.put("/admin/featured/:id",protectAdmin,toggleFeaturedReview);
-router.delete("/admin/:id",protectAdmin,deleteReview);
-
+//Admin
+router.post("/admin/create", protectAdmin,upload.single("coverImage"), createArticle);
+router.get("/admin/drafts", protectAdmin, getDraftArticles);
+router.get("/admin/published", protectAdmin, getMyPublishedArticles);
+router.put("/admin/publish/:id", protectAdmin, publishArticle);
+router.put("/admin/:id", protectAdmin, upload.single("coverImage"), updateArticle);          
+router.delete("/admin/:id", protectAdmin, deleteArticle);
+ 
 export default router;
-
-  

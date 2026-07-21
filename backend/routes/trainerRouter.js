@@ -6,6 +6,7 @@ import {
     getMyProfile,
     updateMyProfile,
     getAllTrainer,
+    changeTrainerPassword,
     getTrainerById,
 } from "../controllers/trainerController.js";
 import upload from '../middleware/uploadMiddleware.js';
@@ -40,6 +41,7 @@ router.put("/update-profile", protectTrainer, upload.fields([
     {name: "certificationFiles", maxCount:10},
     {name: "workshopPhotos", maxCount:10},
 ]), updateMyProfile);
+router.put("/change-password", protectTrainer, changeTrainerPassword);
 
 export default router;
 

@@ -107,70 +107,78 @@ export const getUserDashboard = asyncHandler(
 );
 
 
-export const toggleShortlistTrainer = asyncHandler(
-    async (req, res) => {
-        const userId = req.user._id;
-        const trainerId = req.params.trainerId; 
-console.log("Param:", req.params.trainerId);
-        const trainer = await TrainerProfile.findById(trainerId);
-        if (!trainer) {
-            return res.status(404).json({
-                success: false,
-                message: "Trainer not found",
-            });
+export const toggleShortlistTrainer = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const trainerId = req.params.trainerId;
 
-        }
+  const trainer = await TrainerProfile.findById(trainerId);
+  if (!trainer) {
+    return res.status(404).json({
+      success: false,
+      message: "Trainer not found",
+    });
+  }
 
-        const user = await User.findById(userId);
-        const alreadyShortlisted = user.shortlistedTrainers.some((id) => id.toString() !== trainerId.toString());
-        if (alreadyShortlisted) {
-            user.shortlistedTrainers = user.shortlistedTrainers.filter(
-                (id) => id.toString() !== trainerId.toString()
-            );
-            await user.save();
-            return res.status(404).json({
-                success: true,
-                message: "Trainer removed from shortlisted",
-                isShortlisted: false,
-            });
-        } else {
-            user.shortlistedTrainers.push(trainerId);
-            await user.save();
-            return res.status(200).json({
-                success: true,
-                message: "Trainer added to shortlist",
-                isShortlisted: true,
-            });
-        }
-    }
-);
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  const alreadyShortlisted = user.shortlistedTrainers.some(
+    (id) => id.toString() === trainerId.toString()
+  );
+
+  if (alreadyShortlisted) {
+    user.shortlistedTrainers = user.shortlistedTrainers.filter(
+      (id) => id.toString() !== trainerId.toString()
+    );
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Trainer removed from shortlisted",
+      isShortlisted: false,
+    });
+  }
+
+  user.shortlistedTrainers.push(trainerId);
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Trainer added to shortlist",
+    isShortlisted: true,
+  });
+});
 
 
-export const getShortlistedTrainers = asyncHandler(
-    async (req, res) => {
-        const userId = req.user._id;
+export const getShortlistedTrainers = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
 
-        const user = await User.findById(userId).populate({
-            path: "shortlistedTrainers",
-            match: { status: "approved" },
-            select: "fullName profilePhoto subjectLine expertiseDomain contactInfo.location additionalDetails.trainingExperience additionalDetails.feesPerDay isFeatured status",
-        })
+  const user = await User.findById(userId).populate({
+    path: "shortlistedTrainers",
+    match: { status: "approved" },
+    select:
+      " trainerId fullName profilePhoto subjectLine expertiseDomain contactInfo.location additionalDetails.trainingExperience additionalDetails.feesPerDay isFeatured status",
+  });
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
 
-            })
-        }
-
-        res.status(200).json({
-            success: true,
-            count: user.shortlistedTrainers.length,
-            trainers: user.shortlistedTrainers,
-        })
-    }
-);
+  res.status(200).json({
+    success: true,
+    count: user.shortlistedTrainers.length,
+    trainers: user.shortlistedTrainers,
+  });
+});
 
 export const toggleSaveWorkshop = asyncHandler(async (req, res) => {
 

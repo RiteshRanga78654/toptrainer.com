@@ -7,7 +7,6 @@ import asyncHandler from "../middleware/asyncMiddlewire.js";
 
 
 
-
 export const getTrainerDashboardData = asyncHandler(                    
 async (req, res) => {   
 const trainerId = req.trainer._id;
@@ -76,25 +75,31 @@ const draftArticles = myArticles.filter(article => article.status === "draft").l
     );
 const profileView = totalViews + articleViews;
 
+    // ✅ FIX: Review is the Mongoose MODEL, not an array — Review.length /
+    // Review.reduce() were crashing this whole endpoint with a TypeError.
+    // Fetch this trainer's actual review documents first.
+    const myReviews = await Review.find({ trainer: trainerId });
+
     const averageReviewRating =
-      Review.length > 0
+      myReviews.length > 0
         ? Number(
             (
-              Review.reduce(
+              myReviews.reduce(
                 (sum, review) => sum + review.rating,
                 0
-              ) / Review.length
+              ) / myReviews.length
             ).toFixed(1)
           )
         : 0;
 
-    const totalReviews = Review.length;
+    const totalReviews = myReviews.length;
 
     const recentArticles = myArticles.slice(0, 5).map(articles => ({
         _id:             articles._id,
         title:           articles.title,
         status:          articles.status,
         views:           articles.views || 0,
+        coverImage:      articles.coverImage?.url || "", // ✅ added, frontend expects this
         publishedAt:     articles.publishedAt,
         createdAt:       articles.createdAt,
     }));
@@ -107,6 +112,7 @@ const profileView = totalViews + articleViews;
         endDate: workshop.schedule?.endDate,
         location: workshop.schedule?.location,
         deliveryMode: workshop.schedule?.deliveryMode,
+        maxCapacity: workshop.schedule?.maxCapacity || 0, // ✅ added, frontend expects this
         enrolledCount: workshop.analytics?.enrolledCount || 0,
         views: workshop.analytics?.views || 0,
         rating: workshop.analytics?.rating || 0,
@@ -128,6 +134,9 @@ const profileView = totalViews + articleViews;
                 publishedWorkshops,
                 upcomingSessions,
                 fillRate,
+                totalReviews,          // ✅ added
+                averageReviewRating,   // ✅ added
+                averageWorkshopRating, // ✅ added (was computed but never returned before)
             },
             recentArticles,
             recentWorkshops,
@@ -195,11 +204,11 @@ export const getMyWorkshops = asyncHandler(
 
     const total = await Workshop.countDocuments(query);
 
-    res.status(200).json({
+   res.status(200).json({
         success: true,
-        totals,
+        total,          // ✅ pehle "totals" tha (undefined) — crash ho raha tha
         page,
-        pages: Math.ceil(total/ limit),
+        pages: Math.ceil(total / limit),
         count: workshops.length,
         workshops,
     })

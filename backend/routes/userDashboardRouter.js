@@ -8,7 +8,7 @@ router.use(protectUser);
 
 router.get("/dashboard", getUserDashboard);
 router.get("/shortlisted", getShortlistedTrainers);
-router.post("/shortlist/:trainerId", toggleShortlistTrainer);
+router.post("/shortlist/:trainerId",protectUser, toggleShortlistTrainer);
 router.get("/workshops", getUserWorkshops);
 router.post("/save-workshop/:workshopId", toggleSaveWorkshop);
 router.get("/articles", getUserArticles);
