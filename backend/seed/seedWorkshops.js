@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import connectDB from "./config/db.js";
-import Workshop from "./models/workshops.js";
-import { dummyWorkshops } from "./data/workshopData.js";
+import connectDB from "../config/db.js";
+import Workshop from "../models/workshops.js";
+import { dummyWorkshops } from "../data/workshopData.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const seedWorkshops = async () => {
   try {
@@ -21,7 +21,7 @@ const seedWorkshops = async () => {
     console.log("Processing dummy workshops...");
     
     // Fetch all trainers to map them to workshops
-    const TrainerProfile = (await import("./models/trainerProfile.js")).default;
+    const TrainerProfile = (await import("../models/trainerProfile.js")).default;
     const trainers = await TrainerProfile.find({});
     
     const workshopsToInsert = dummyWorkshops.map(workshop => {

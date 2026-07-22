@@ -328,42 +328,6 @@ export const deleteWorkshop = asyncHandler(async (req, res) => {
   });
 });
 
-// controllers for ADMIN PANEL
-
-export const isToggle = asyncHandler(async (req, res) => {
-  const workshop = await Workshop.findById(req.params.id);
-
-  if (!workshop) {
-    return res.status(404).json({
-      success: false,
-      message: "workshop not found",
-    });
-  }
-
-  //max limit of 8 overall
-  if (!workshop.isFeatured) {
-    const featureCount = await Workshop.countDocuments({
-      isFeatured: true,
-    });
-
-    if (featureCount >= 8) {
-      return res.status(400).json({
-        success: false,
-        message: "Maximum limit of 8 featured workshops reached across all categories. Please remove a workshop before adding more.",
-      });
-    }
-  }
-
-  workshop.isFeatured = !workshop.isFeatured;
-  await workshop.save();
-
-  return res.status(200).json({
-    success: true,
-    message: workshop.isFeatured ? "Workshop Added" : "Workshop Removed",
-    data: workshop,
-  });
-});
-
 export const getAllPublicWorkshops = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 20;
@@ -418,17 +382,53 @@ export const getPublicSingleWorkshop = asyncHandler(async (req, res) => {
   });
 });
 
+export const isToggle = asyncHandler(async (req, res) => {
+  const workshop = await Workshop.findById(req.params.id);
+
+  if (!workshop) {
+    return res.status(404).json({
+      success: false,
+      message: "workshop not found",
+    });
+  }
+
+  //max limit of 8 overall
+  if (!workshop.isFeatured) {
+    const featureCount = await Workshop.countDocuments({
+      isFeatured: true,
+    });
+
+    if (featureCount >= 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Maximum limit of 8 featured workshops reached across all categories. Please remove a workshop before adding more.",
+      });
+    }
+  }
+
+  workshop.isFeatured = !workshop.isFeatured;
+  await workshop.save();
+
+  res.status(200).json({
+    success: true,
+    data: workshop,
+  });
+});
+
 export const getFeaturedWorkshops = asyncHandler(async (req, res) => {
   const featuredWorkshops = await Workshop.find({
     isFeatured: true,
     status: "published",
     visibility: true,
   })
-    .populate("assignedTrainer", "fullName profilePhoto")
+    .populate("assignedTrainer", "fullName profilePhoto") 
     .sort({ updatedAt: -1 });
 
   res.status(200).json({
     success: true,
-    workshop,
+    count: featuredWorkshops.length,
+    data: featuredWorkshops,
   });
 });
+
+

@@ -1,252 +1,528 @@
 export const dummyTrainers = [
+
   {
     userData: {
-      firstName: "Alice",
-      lastName: "Smith",
-      email: "alice.smith@example.com",
-      phoneNumber: 1234567890,
+      firstName: "Trainer01",
+      lastName: "Technology",
+      email: "trainer01.technology@example.com",
+      phoneNumber: 1000000000,
       password: "Password@123",
     },
     profileData: {
-      fullName: "Alice Smith",
-      companyName: "Tech Forward",
-      subjectLine: "Expert Frontend Developer & React Enthusiast",
-      tagsLine: ["React", "Next.js", "JavaScript"],
+      fullName: "Trainer01 Technology",
+      companyName: "Technology Experts LLC",
+      subjectLine: "Expert Technology Professional",
+      tagsLine: ["Technology", "Expert", "Mentor"],
       contactInfo: {
-        email: "alice.smith@example.com",
-        phone: "1234567890",
-        location: { city: "San Francisco", state: "CA", country: "USA" },
-      },
-      expertiseDomain: {
-        industry: ["Technology"],
-        competencies: ["Frontend Development"],
-      },
-      isFeatured: true,
-    }
-  },
-  {
-    userData: {
-      firstName: "Bob",
-      lastName: "Johnson",
-      email: "bob.johnson@example.com",
-      phoneNumber: 1234567891,
-      password: "Password@123",
-    },
-    profileData: {
-      fullName: "Bob Johnson",
-      companyName: "Data Insights",
-      subjectLine: "Data Scientist & AI Researcher",
-      tagsLine: ["Python", "AI", "Data Science"],
-      contactInfo: {
-        email: "bob.johnson@example.com",
-        phone: "1234567891",
+        email: "trainer01.technology@example.com",
+        phone: "1000000001",
         location: { city: "New York", state: "NY", country: "USA" },
       },
       expertiseDomain: {
         industry: ["Technology"],
-        competencies: ["Machine Learning"],
+        competencies: ["Technology Basics", "Technology Advanced"],
       },
       isFeatured: true,
     }
   },
   {
     userData: {
-      firstName: "Carol",
-      lastName: "Williams",
-      email: "carol.williams@example.com",
-      phoneNumber: 1234567892,
+      firstName: "Trainer02",
+      lastName: "Technology",
+      email: "trainer02.technology@example.com",
+      phoneNumber: 1000000001,
       password: "Password@123",
     },
     profileData: {
-      fullName: "Carol Williams",
-      companyName: "Growth Hackers",
-      subjectLine: "Digital Marketing Strategist",
-      tagsLine: ["SEO", "Marketing", "Social Media"],
+      fullName: "Trainer02 Technology",
+      companyName: "Technology Experts LLC",
+      subjectLine: "Expert Technology Professional",
+      tagsLine: ["Technology", "Expert", "Mentor"],
       contactInfo: {
-        email: "carol.williams@example.com",
-        phone: "1234567892",
-        location: { city: "London", state: "UK", country: "UK" },
-      },
-      expertiseDomain: {
-        industry: ["Marketing"],
-        competencies: ["Digital Strategy"],
-      },
-      isFeatured: true,
-    }
-  },
-  {
-    userData: {
-      firstName: "David",
-      lastName: "Brown",
-      email: "david.brown@example.com",
-      phoneNumber: 1234567893,
-      password: "Password@123",
-    },
-    profileData: {
-      fullName: "David Brown",
-      companyName: "Creative Designs",
-      subjectLine: "Lead UI/UX Designer",
-      tagsLine: ["Figma", "Design", "Wireframing"],
-      contactInfo: {
-        email: "david.brown@example.com",
-        phone: "1234567893",
-        location: { city: "Berlin", state: "Berlin", country: "Germany" },
-      },
-      expertiseDomain: {
-        industry: ["Design"],
-        competencies: ["UI/UX"],
-      },
-      isFeatured: true,
-    }
-  },
-  {
-    userData: {
-      firstName: "Eve",
-      lastName: "Davis",
-      email: "eve.davis@example.com",
-      phoneNumber: 1234567894,
-      password: "Password@123",
-    },
-    profileData: {
-      fullName: "Eve Davis",
-      companyName: "Agile Masters",
-      subjectLine: "Certified Scrum Master & Agile Coach",
-      tagsLine: ["Agile", "Scrum", "Management"],
-      contactInfo: {
-        email: "eve.davis@example.com",
-        phone: "1234567894",
-        location: { city: "Austin", state: "TX", country: "USA" },
+        email: "trainer02.technology@example.com",
+        phone: "1000000002",
+        location: { city: "New York", state: "NY", country: "USA" },
       },
       expertiseDomain: {
         industry: ["Technology"],
-        competencies: ["Agile"],
+        competencies: ["Technology Basics", "Technology Advanced"],
       },
-      isFeatured: true,
+      isFeatured: false,
     }
   },
   {
     userData: {
-      firstName: "Frank",
-      lastName: "Miller",
-      email: "frank.miller@example.com",
-      phoneNumber: 1234567895,
+      firstName: "Trainer03",
+      lastName: "Technology",
+      email: "trainer03.technology@example.com",
+      phoneNumber: 1000000002,
       password: "Password@123",
     },
     profileData: {
-      fullName: "Frank Miller",
-      companyName: "SecureNet",
-      subjectLine: "Cybersecurity Expert & Ethical Hacker",
-      tagsLine: ["Security", "IT", "Network"],
+      fullName: "Trainer03 Technology",
+      companyName: "Technology Experts LLC",
+      subjectLine: "Expert Technology Professional",
+      tagsLine: ["Technology", "Expert", "Mentor"],
       contactInfo: {
-        email: "frank.miller@example.com",
-        phone: "1234567895",
-        location: { city: "Seattle", state: "WA", country: "USA" },
+        email: "trainer03.technology@example.com",
+        phone: "1000000003",
+        location: { city: "New York", state: "NY", country: "USA" },
       },
       expertiseDomain: {
         industry: ["Technology"],
-        competencies: ["Cybersecurity"],
+        competencies: ["Technology Basics", "Technology Advanced"],
       },
-      isFeatured: true,
+      isFeatured: false,
     }
   },
   {
     userData: {
-      firstName: "Grace",
-      lastName: "Wilson",
-      email: "grace.wilson@example.com",
-      phoneNumber: 1234567896,
+      firstName: "Trainer11",
+      lastName: "Business",
+      email: "trainer11.business@example.com",
+      phoneNumber: 1000000003,
       password: "Password@123",
     },
     profileData: {
-      fullName: "Grace Wilson",
-      companyName: "Speak Up",
-      subjectLine: "Public Speaking & Communication Coach",
-      tagsLine: ["Leadership", "Speaking", "Soft Skills"],
+      fullName: "Trainer11 Business",
+      companyName: "Business Experts LLC",
+      subjectLine: "Expert Business Professional",
+      tagsLine: ["Business", "Expert", "Mentor"],
       contactInfo: {
-        email: "grace.wilson@example.com",
-        phone: "1234567896",
-        location: { city: "Sydney", state: "NSW", country: "Australia" },
+        email: "trainer11.business@example.com",
+        phone: "1000000004",
+        location: { city: "New York", state: "NY", country: "USA" },
       },
       expertiseDomain: {
-        industry: ["Corporate"],
-        competencies: ["Communication"],
+        industry: ["Business"],
+        competencies: ["Business Basics", "Business Advanced"],
       },
       isFeatured: true,
     }
   },
   {
     userData: {
-      firstName: "Harry",
-      lastName: "Moore",
-      email: "harry.moore@example.com",
-      phoneNumber: 1234567897,
+      firstName: "Trainer12",
+      lastName: "Business",
+      email: "trainer12.business@example.com",
+      phoneNumber: 1000000004,
       password: "Password@123",
     },
     profileData: {
-      fullName: "Harry Moore",
-      companyName: "FinTech Pros",
-      subjectLine: "Financial Analyst & Excel Wizard",
-      tagsLine: ["Excel", "Finance", "Valuation"],
+      fullName: "Trainer12 Business",
+      companyName: "Business Experts LLC",
+      subjectLine: "Expert Business Professional",
+      tagsLine: ["Business", "Expert", "Mentor"],
       contactInfo: {
-        email: "harry.moore@example.com",
-        phone: "1234567897",
-        location: { city: "Toronto", state: "ON", country: "Canada" },
+        email: "trainer12.business@example.com",
+        phone: "1000000005",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Business"],
+        competencies: ["Business Basics", "Business Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer13",
+      lastName: "Business",
+      email: "trainer13.business@example.com",
+      phoneNumber: 1000000005,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer13 Business",
+      companyName: "Business Experts LLC",
+      subjectLine: "Expert Business Professional",
+      tagsLine: ["Business", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer13.business@example.com",
+        phone: "1000000006",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Business"],
+        competencies: ["Business Basics", "Business Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer21",
+      lastName: "HealthWellness",
+      email: "trainer21.healthwellness@example.com",
+      phoneNumber: 1000000006,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer21 HealthWellness",
+      companyName: "Health & Wellness Experts LLC",
+      subjectLine: "Expert Health & Wellness Professional",
+      tagsLine: ["Health & Wellness", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer21.healthwellness@example.com",
+        phone: "1000000007",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Health & Wellness"],
+        competencies: ["Health & Wellness Basics", "Health & Wellness Advanced"],
+      },
+      isFeatured: true,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer22",
+      lastName: "HealthWellness",
+      email: "trainer22.healthwellness@example.com",
+      phoneNumber: 1000000007,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer22 HealthWellness",
+      companyName: "Health & Wellness Experts LLC",
+      subjectLine: "Expert Health & Wellness Professional",
+      tagsLine: ["Health & Wellness", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer22.healthwellness@example.com",
+        phone: "1000000008",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Health & Wellness"],
+        competencies: ["Health & Wellness Basics", "Health & Wellness Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer23",
+      lastName: "HealthWellness",
+      email: "trainer23.healthwellness@example.com",
+      phoneNumber: 1000000008,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer23 HealthWellness",
+      companyName: "Health & Wellness Experts LLC",
+      subjectLine: "Expert Health & Wellness Professional",
+      tagsLine: ["Health & Wellness", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer23.healthwellness@example.com",
+        phone: "1000000009",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Health & Wellness"],
+        competencies: ["Health & Wellness Basics", "Health & Wellness Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer31",
+      lastName: "Finance",
+      email: "trainer31.finance@example.com",
+      phoneNumber: 1000000009,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer31 Finance",
+      companyName: "Finance Experts LLC",
+      subjectLine: "Expert Finance Professional",
+      tagsLine: ["Finance", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer31.finance@example.com",
+        phone: "1000000010",
+        location: { city: "New York", state: "NY", country: "USA" },
       },
       expertiseDomain: {
         industry: ["Finance"],
-        competencies: ["Financial Modeling"],
+        competencies: ["Finance Basics", "Finance Advanced"],
       },
       isFeatured: true,
     }
   },
   {
     userData: {
-      firstName: "Ivy",
-      lastName: "Taylor",
-      email: "ivy.taylor@example.com",
-      phoneNumber: 1234567898,
+      firstName: "Trainer32",
+      lastName: "Finance",
+      email: "trainer32.finance@example.com",
+      phoneNumber: 1000000010,
       password: "Password@123",
     },
     profileData: {
-      fullName: "Ivy Taylor",
-      companyName: "Crypto Pioneers",
-      subjectLine: "Blockchain Developer & Web3 Evangelist",
-      tagsLine: ["Web3", "Crypto", "Ethereum"],
+      fullName: "Trainer32 Finance",
+      companyName: "Finance Experts LLC",
+      subjectLine: "Expert Finance Professional",
+      tagsLine: ["Finance", "Expert", "Mentor"],
       contactInfo: {
-        email: "ivy.taylor@example.com",
-        phone: "1234567898",
-        location: { city: "Miami", state: "FL", country: "USA" },
+        email: "trainer32.finance@example.com",
+        phone: "1000000011",
+        location: { city: "New York", state: "NY", country: "USA" },
       },
       expertiseDomain: {
-        industry: ["Technology"],
-        competencies: ["Blockchain"],
+        industry: ["Finance"],
+        competencies: ["Finance Basics", "Finance Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer33",
+      lastName: "Finance",
+      email: "trainer33.finance@example.com",
+      phoneNumber: 1000000011,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer33 Finance",
+      companyName: "Finance Experts LLC",
+      subjectLine: "Expert Finance Professional",
+      tagsLine: ["Finance", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer33.finance@example.com",
+        phone: "1000000012",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Finance"],
+        competencies: ["Finance Basics", "Finance Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer41",
+      lastName: "Marketing",
+      email: "trainer41.marketing@example.com",
+      phoneNumber: 1000000012,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer41 Marketing",
+      companyName: "Marketing Experts LLC",
+      subjectLine: "Expert Marketing Professional",
+      tagsLine: ["Marketing", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer41.marketing@example.com",
+        phone: "1000000013",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Marketing"],
+        competencies: ["Marketing Basics", "Marketing Advanced"],
       },
       isFeatured: true,
     }
   },
   {
     userData: {
-      firstName: "Jack",
-      lastName: "Anderson",
-      email: "jack.anderson@example.com",
-      phoneNumber: 1234567899,
+      firstName: "Trainer42",
+      lastName: "Marketing",
+      email: "trainer42.marketing@example.com",
+      phoneNumber: 1000000013,
       password: "Password@123",
     },
     profileData: {
-      fullName: "Jack Anderson",
-      companyName: "Wellness Co",
-      subjectLine: "Corporate Wellness Consultant",
-      tagsLine: ["Mental Health", "Productivity", "HR"],
+      fullName: "Trainer42 Marketing",
+      companyName: "Marketing Experts LLC",
+      subjectLine: "Expert Marketing Professional",
+      tagsLine: ["Marketing", "Expert", "Mentor"],
       contactInfo: {
-        email: "jack.anderson@example.com",
-        phone: "1234567899",
-        location: { city: "Denver", state: "CO", country: "USA" },
+        email: "trainer42.marketing@example.com",
+        phone: "1000000014",
+        location: { city: "New York", state: "NY", country: "USA" },
       },
       expertiseDomain: {
-        industry: ["Corporate", "Healthcare"], // Mapped Corporate to match Health & Wellness workshop
-        competencies: ["Wellness"],
+        industry: ["Marketing"],
+        competencies: ["Marketing Basics", "Marketing Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer43",
+      lastName: "Marketing",
+      email: "trainer43.marketing@example.com",
+      phoneNumber: 1000000014,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer43 Marketing",
+      companyName: "Marketing Experts LLC",
+      subjectLine: "Expert Marketing Professional",
+      tagsLine: ["Marketing", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer43.marketing@example.com",
+        phone: "1000000015",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Marketing"],
+        competencies: ["Marketing Basics", "Marketing Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer51",
+      lastName: "CreativeArts",
+      email: "trainer51.creativearts@example.com",
+      phoneNumber: 1000000015,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer51 CreativeArts",
+      companyName: "Creative Arts Experts LLC",
+      subjectLine: "Expert Creative Arts Professional",
+      tagsLine: ["Creative Arts", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer51.creativearts@example.com",
+        phone: "1000000016",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Creative Arts"],
+        competencies: ["Creative Arts Basics", "Creative Arts Advanced"],
       },
       isFeatured: true,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer52",
+      lastName: "CreativeArts",
+      email: "trainer52.creativearts@example.com",
+      phoneNumber: 1000000016,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer52 CreativeArts",
+      companyName: "Creative Arts Experts LLC",
+      subjectLine: "Expert Creative Arts Professional",
+      tagsLine: ["Creative Arts", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer52.creativearts@example.com",
+        phone: "1000000017",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Creative Arts"],
+        competencies: ["Creative Arts Basics", "Creative Arts Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer53",
+      lastName: "CreativeArts",
+      email: "trainer53.creativearts@example.com",
+      phoneNumber: 1000000017,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer53 CreativeArts",
+      companyName: "Creative Arts Experts LLC",
+      subjectLine: "Expert Creative Arts Professional",
+      tagsLine: ["Creative Arts", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer53.creativearts@example.com",
+        phone: "1000000018",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Creative Arts"],
+        competencies: ["Creative Arts Basics", "Creative Arts Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer61",
+      lastName: "Growth",
+      email: "trainer61.growth@example.com",
+      phoneNumber: 1000000018,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer61 Growth",
+      companyName: "Growth Experts LLC",
+      subjectLine: "Expert Growth Professional",
+      tagsLine: ["Growth", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer61.growth@example.com",
+        phone: "1000000019",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Growth"],
+        competencies: ["Growth Basics", "Growth Advanced"],
+      },
+      isFeatured: true,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer62",
+      lastName: "Growth",
+      email: "trainer62.growth@example.com",
+      phoneNumber: 1000000019,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer62 Growth",
+      companyName: "Growth Experts LLC",
+      subjectLine: "Expert Growth Professional",
+      tagsLine: ["Growth", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer62.growth@example.com",
+        phone: "1000000020",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Growth"],
+        competencies: ["Growth Basics", "Growth Advanced"],
+      },
+      isFeatured: false,
+    }
+  },
+  {
+    userData: {
+      firstName: "Trainer63",
+      lastName: "Growth",
+      email: "trainer63.growth@example.com",
+      phoneNumber: 1000000020,
+      password: "Password@123",
+    },
+    profileData: {
+      fullName: "Trainer63 Growth",
+      companyName: "Growth Experts LLC",
+      subjectLine: "Expert Growth Professional",
+      tagsLine: ["Growth", "Expert", "Mentor"],
+      contactInfo: {
+        email: "trainer63.growth@example.com",
+        phone: "1000000021",
+        location: { city: "New York", state: "NY", country: "USA" },
+      },
+      expertiseDomain: {
+        industry: ["Growth"],
+        competencies: ["Growth Basics", "Growth Advanced"],
+      },
+      isFeatured: false,
     }
   }
 ];

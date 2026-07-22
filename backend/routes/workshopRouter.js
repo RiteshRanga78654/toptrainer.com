@@ -1,5 +1,6 @@
 import express from 'express' 
-import { createWorkshop,getDraftWorkshops, getPublishedWorkshops, getSingleWorkshop, publishWorkshop, updateWorkshop, deleteWorkshop, getAllPublicWorkshops, getPublicSingleWorkshop} from '../controllers/workshopController.js';
+
+import { createWorkshop,getDraftWorkshops, getPublishedWorkshops, getSingleWorkshop, publishWorkshop, updateWorkshop, deleteWorkshop, getAllPublicWorkshops, getPublicSingleWorkshop, isToggle, getFeaturedWorkshops } from '../controllers/workshopController.js';
 import { protectTrainer } from '../middleware/trainerAuthMiddleware.js';
 import { protectAdmin } from '../middleware/adminAuthMiddleware.js';
 import upload from '../middleware/uploadMiddleware.js';  
@@ -33,7 +34,6 @@ router.put("/admin/publish/:id", protectAdmin, publishWorkshop);
 router.put("/admin/:id", protectAdmin, workshopUploadFields, updateWorkshop );
 router.get("/admin/One-workshop", protectAdmin, getSingleWorkshop)
 router.delete("/admin/:id", protectAdmin, deleteWorkshop);
-
 
 
 export default router;

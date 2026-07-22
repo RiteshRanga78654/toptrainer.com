@@ -1,215 +1,72 @@
 "use client";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import {
-  heroImages as initialHero,
-  allExperts,
   generalSettings as gs,
+  allExperts
 } from "../data/mockData";
-import { Card, Button, Toggle, Toast, Badge, Input } from "../../components/ui";
-import {
-  Trash2,
-  Upload,
-  Plus,
-  ChevronRight,
-  ExternalLink,
-  Check,
-  Image,
-  Users,
-  LayoutGrid,
-  Settings,
-  Search,
-  Youtube,
-} from "lucide-react";
-import { cn, wordCount } from "../../lib/api";
-import { workshops as allWorkshops } from "../data/mockData";
+import { Card, Toast, Input, Button } from "../../components/ui";
+import { LayoutGrid, ChevronRight, ExternalLink, Search } from "lucide-react";
+import { cn } from "../../lib/api";
+import FeaturedWorkshopsTable from "./components/FeaturedWorkshopsTable";
+import HeroSliderSection from "./components/HeroSliderSection";
+import FeaturedExpertsSection from "./components/FeaturedExpertsSection";
+import YoutubeSection from "./components/YoutubeSection";
+import useHomepageState from "./hooks/useHomepageState";
+
 
 export default function HomepagePage() {
-  // ── Youtube Videos state ──────────────────────────────────────────────────
-  const [youtubeVideos, setYoutubeVideos] = useState([]);
-  const [youtubeUrl, setYoutubeUrl] = useState("");
-  const [isAddingYoutube, setIsAddingYoutube] = useState(false);
-  const [youtubeSaved, setYoutubeSaved] = useState(false);
+  const { youtubeState, heroState, expertState, workshopState } = useHomepageState();
 
-  useEffect(() => {
-    fetch("http://localhost:5001/api/youtube-videos")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setYoutubeVideos(data.data);
-        }
-      })
-      .catch((err) => console.error(err));
-  }, []);
+  const {
+    youtubeVideos,
+    youtubeUrl,
+    setYoutubeUrl,
+    isAddingYoutube,
+    youtubeSaved,
+    setYoutubeSaved,
+    addYoutubeVideo,
+    deleteYoutubeVideo,
+  } = youtubeState;
 
-  const addYoutubeVideo = async () => {
-    if (!youtubeUrl) return;
-    setIsAddingYoutube(true);
-    try {
-      const res = await fetch("http://localhost:5001/api/youtube-videos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: youtubeUrl }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setYoutubeVideos([data.data, ...youtubeVideos]);
-        setYoutubeUrl("");
-        setYoutubeSaved(true);
-        setTimeout(() => setYoutubeSaved(false), 3000);
-      } else {
-        alert(data.message || "Failed to add video");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error adding video");
-    } finally {
-      setIsAddingYoutube(false);
-    }
-  };
+  const {
+    images,
+    heroSaved,
+    setHeroSaved,
+    updateCaption,
+    toggleActive,
+    removeImage,
+    saveHero,
+  } = heroState;
 
-  const deleteYoutubeVideo = async (id) => {
-    try {
-      const res = await fetch(
-        `http://localhost:5001/api/youtube-videos/${id}`,
-        {
-          method: "DELETE",
-        },
-      );
-      if (res.ok) {
-        setYoutubeVideos(youtubeVideos.filter((v) => v._id !== id));
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  // ── Hero state ──────────────────────────────────────────────────────────────
-  const [images, setImages] = useState(initialHero);
-  const [heroSaved, setHeroSaved] = useState(false);
+  const {
+    activeTab,
+    searchQuery,
+    setSearchQuery,
+    selected,
+    expertSaved,
+    setExpertSaved,
+    toggleExpert,
+    handleTabChange,
+  } = expertState;
 
-  const updateCaption = (id, caption) =>
-    setImages((prev) =>
-      prev.map((img) => (img.id === id ? { ...img, caption } : img)),
-    );
-  const toggleActive = (id) =>
-    setImages((prev) =>
-      prev.map((img) =>
-        img.id === id ? { ...img, active: !img.active } : img,
-      ),
-    );
-  const removeImage = (id) =>
-    setImages((prev) => prev.filter((img) => img.id !== id));
-  const saveHero = () => {
-    setHeroSaved(true);
-    setTimeout(() => setHeroSaved(false), 3000);
-  };
+  const {
+    featuredWorkshops,
+    searchWorkshopQuery,
+    setSearchWorkshopQuery,
+    searchResults,
+    setSearchResults,
+    isSearching,
+    activeWorkshopTab,
+    setActiveWorkshopTab,
+    topWorkshopsByIndustry,
+    workshopTabs,
+    handleWorkshopSearch,
+    toggleFeaturedWorkshop,
+    filteredFeatured,
+  } = workshopState;
 
-  // ── Expert state ────────────────────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState("industry");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selected, setSelected] = useState({
-    industry: new Set(
-      allExperts
-        .filter((e) => e.category === "industry" && e.featured)
-        .map((e) => e.id),
-    ),
-    department: new Set(
-      allExperts
-        .filter((e) => e.category === "department" && e.featured)
-        .map((e) => e.id),
-    ),
-    competency: new Set(
-      allExperts
-        .filter((e) => e.category === "competency" && e.featured)
-        .map((e) => e.id),
-    ),
-  });
-  const [expertSaved, setExpertSaved] = useState(false);
-
-  const toggleExpert = (id) => {
-    setSelected((prev) => {
-      const next = new Set(prev[activeTab]);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        if (next.size >= 6) return prev;
-        next.add(id);
-      }
-      return { ...prev, [activeTab]: next };
-    });
-  };
-
-  // workshops previewer
-  const [featuredWorkshops, setFeaturedWorkshops] = useState([]);
-  const [searchWorkshopQuery, setSearchWorkshopQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [activeWorkshopTab, setActiveWorkshopTab] = useState("All");
-
-  const workshopTabs = [
-    { key: "All", label: "All" },
-    { key: "Technology", label: "Tech" },
-    { key: "Corporate", label: "Business" },
-    { key: "Healthcare", label: "Health" },
-    { key: "Finance", label: "Finance" },
-    { key: "Marketing", label: "Marketing" },
-    { key: "Design", label: "Creative" },
-    { key: "Growth", label: "Growth" },
-  ];
-
-  const fetchFeaturedWorkshops = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5001/api/workshops/admin/homepage/featworkshops",
-      );
-      if (res.data.success) {
-        setFeaturedWorkshops(res.data.data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch featured workshops", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchFeaturedWorkshops();
-  }, []);
-
-  const handleWorkshopSearch = async () => {
-    if (!searchWorkshopQuery.trim()) return;
-    setIsSearching(true);
-    try {
-      let url = `http://localhost:5001/api/workshops/admin/homepage/search?keyword=${encodeURIComponent(searchWorkshopQuery)}`;
-      if (activeWorkshopTab !== "All") {
-        url += `&industry=${encodeURIComponent(activeWorkshopTab)}`;
-      }
-      const res = await axios.get(url);
-      if (res.data.success) {
-        setSearchResults(res.data.workshops || []);
-      }
-    } catch (err) {
-      console.error("Failed to search", err);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const toggleFeaturedWorkshop = async (id) => {
-    try {
-      const res = await axios.patch(
-        `http://localhost:5001/api/workshops/admin/homepage/${id}`,
-      );
-      if (res.data.success) {
-        fetchFeaturedWorkshops();
-      }
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to toggle workshop");
-    }
-  };
-
-  // Derived: filter featured workshops for the active tab
-  const filteredFeatured = activeWorkshopTab === "All"
-    ? featuredWorkshops
-    : featuredWorkshops.filter(w => w.classification?.industry === activeWorkshopTab);
+  const [settings, setSettings] = useState(gs);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   const expertCategories = [
     {
@@ -235,14 +92,6 @@ export default function HomepagePage() {
     },
   ];
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setSearchQuery(""); // Clear search when switching tabs
-  };
-
-  // ── Settings state ──────────────────────────────────────────────────────────
-  const [settings, setSettings] = useState(gs);
-  const [settingsSaved, setSettingsSaved] = useState(false);
   const updateSetting = (key, value) =>
     setSettings((prev) => ({ ...prev, [key]: value }));
 
@@ -312,291 +161,30 @@ export default function HomepagePage() {
       </div>
 
       {/* ── 1. Hero Slider Images ───────────────────────────────────────────── */}
-      <Card>
-        {/* Card header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <div>
-            <p className="text-sm font-semibold text-slate-900">
-              Hero Slider Images
-            </p>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Up to 4 images. These rotate at the top of the homepage.
-            </p>
-          </div>
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
-            {images.filter((i) => i.active).length} / 4 Used
-          </span>
-        </div>
-
-        {/* Slide rows */}
-        <div className="p-4 space-y-3">
-          {images.map((img) => {
-            const wc = wordCount(img.caption);
-            const over = wc > 20;
-            return (
-              <div
-                key={img.id}
-                className="flex items-start gap-3 bg-white border border-slate-200 rounded-xl p-3"
-              >
-                {/* Drag handle */}
-                <div
-                  className="mt-3 text-slate-300 cursor-grab select-none flex-shrink-0"
-                  title="Drag to reorder"
-                >
-                  <svg
-                    width="10"
-                    height="16"
-                    viewBox="0 0 10 16"
-                    fill="currentColor"
-                  >
-                    <circle cx="2" cy="2" r="1.5" />
-                    <circle cx="8" cy="2" r="1.5" />
-                    <circle cx="2" cy="8" r="1.5" />
-                    <circle cx="8" cy="8" r="1.5" />
-                    <circle cx="2" cy="14" r="1.5" />
-                    <circle cx="8" cy="14" r="1.5" />
-                  </svg>
-                </div>
-
-                {/* Thumbnail + change image */}
-                <div className="flex-shrink-0">
-                  <div className="relative w-28 h-20 rounded-lg overflow-hidden bg-slate-100 group cursor-pointer upload-zone">
-                    <img
-                      src={img.url}
-                      alt={img.caption}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="upload-overlay absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Upload size={14} className="text-white" />
-                      <span className="text-white text-[10px] font-medium">
-                        Upload
-                      </span>
-                    </div>
-                  </div>
-                  <button className="mt-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium w-full text-left">
-                    Change Image
-                  </button>
-                </div>
-
-                {/* Caption */}
-                <div className="flex-1 min-w-0">
-                  <label className="text-xs font-medium text-slate-600 mb-1 block">
-                    Caption Text
-                  </label>
-                  <input
-                    type="text"
-                    value={img.caption}
-                    onChange={(e) => updateCaption(img.id, e.target.value)}
-                    placeholder="Enter caption..."
-                    className={cn(
-                      "w-full text-sm text-slate-700 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400",
-                      over ? "border-red-300 bg-red-50" : "border-slate-200",
-                    )}
-                  />
-                  {over && (
-                    <p className="text-[11px] text-red-500 mt-1">
-                      {wc}/20 words — too long
-                    </p>
-                  )}
-                </div>
-
-                {/* Active toggle + delete */}
-                <div className="flex flex-col items-end gap-3 flex-shrink-0 pt-1">
-                  <div className="flex items-center gap-2">
-                    <Toggle
-                      checked={img.active}
-                      onChange={() => toggleActive(img.id)}
-                    />
-                    <span className="text-xs font-medium text-slate-600">
-                      Active
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => removeImage(img.id)}
-                    className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all"
-                    title="Remove slide"
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Add Another Slide */}
-          {images.length < 4 && (
-            <button className="w-full border-2 border-dashed border-slate-200 rounded-xl py-3.5 flex items-center justify-center gap-2 text-sm font-medium text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/40 transition-all">
-              <Plus size={16} />
-              Add Another Slide
-            </button>
-          )}
-        </div>
-
-        {/* Footer save */}
-        <div className="px-4 pb-4 flex items-center justify-between">
-          {images.length < 4 && (
-            <p className="text-xs text-slate-400">
-              Slides loop every{" "}
-              <b className="text-slate-600">{settings.heroSliderInterval}s</b>
-            </p>
-          )}
-          <div className="ml-auto">
-            <Button onClick={saveHero} size="sm">
-              Save Changes
-            </Button>
-          </div>
-        </div>
-      </Card>
+      <HeroSliderSection
+        images={images}
+        updateCaption={updateCaption}
+        toggleActive={toggleActive}
+        removeImage={removeImage}
+        saveHero={saveHero}
+        settings={settings}
+      />
 
       {/* ── 2. Featured Experts ────────────────────────────────────────────── */}
-      <Card>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center">
-              <Users size={14} className="text-violet-600" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-900">
-                Featured Experts
-              </p>
-              <p className="text-xs text-slate-500">
-                Select up to 6 per category
-              </p>
-            </div>
-          </div>
-          <Button
-            onClick={() => {
-              setExpertSaved(true);
-              setTimeout(() => setExpertSaved(false), 3000);
-            }}
-            size="sm"
-          >
-            Save
-          </Button>
-        </div>
-
-        <div className="p-5 space-y-4">
-          {/* Category pills */}
-          <div className="grid sm:grid-cols-3 gap-3">
-            {expertCategories.map((cat) => {
-              const count = selected[cat.key].size;
-              const experts = allExperts.filter(
-                (e) => e.category === cat.key && selected[cat.key].has(e.id),
-              );
-              return (
-                <button
-                  key={cat.key}
-                  onClick={() => handleTabChange(cat.key)}
-                  className={cn(
-                    "text-left bg-white border rounded-xl p-3.5 transition-all hover:shadow-sm",
-                    activeTab === cat.key
-                      ? `ring-2 ${cat.ring} border-transparent`
-                      : "border-slate-200",
-                  )}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-1.5">
-                      <span className={cn("w-2 h-2 rounded-full", cat.dot)} />
-                      <p className={cn("text-xs font-semibold", cat.color)}>
-                        {cat.label}
-                      </p>
-                    </div>
-                    <Badge variant={count === 6 ? "success" : "warning"}>
-                      {count}/6
-                    </Badge>
-                  </div>
-                  <div className="flex items-center">
-                    {experts.slice(0, 5).map((e) => (
-                      <img
-                        key={e.id}
-                        src={e.avatar}
-                        alt={e.name}
-                        className="w-6 h-6 rounded-full object-cover border-2 border-white -ml-1 first:ml-0"
-                      />
-                    ))}
-                    {count > 5 && (
-                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-semibold text-slate-600 -ml-1 border-2 border-white">
-                        +{count - 5}
-                      </div>
-                    )}
-                    {count === 0 && (
-                      <span className="text-xs text-slate-400 italic">
-                        None selected
-                      </span>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Expert grid */}
-          <div className="border border-slate-100 rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-slate-100">
-              <div className="flex items-center gap-1.5">
-                <span className={cn("w-2 h-2 rounded-full", activeCat?.dot)} />
-                <p className="text-xs font-semibold text-slate-700 capitalize">
-                  {activeTab} Experts
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <Search
-                    size={14}
-                    className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search all experts..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-48 text-xs pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-white"
-                  />
-                </div>
-                <span className="text-xs text-slate-500">
-                  {selectedSet.size}/6 selected
-                </span>
-              </div>
-            </div>
-            <div className="p-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {filtered.map((expert) => {
-                const isSel = selectedSet.has(expert.id);
-                return (
-                  <button
-                    key={expert.id}
-                    onClick={() => toggleExpert(expert.id)}
-                    className={cn(
-                      "relative flex items-center gap-2.5 p-2.5 rounded-lg border text-left transition-all",
-                      isSel
-                        ? "border-blue-400 bg-blue-50"
-                        : "border-slate-200 bg-white hover:bg-slate-50",
-                    )}
-                  >
-                    {isSel && (
-                      <div className="absolute top-2 right-2 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                        <Check size={9} className="text-white" />
-                      </div>
-                    )}
-                    <img
-                      src={expert.avatar}
-                      alt={expert.name}
-                      className="w-8 h-8 rounded-full object-cover shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold text-slate-900 truncate">
-                        {expert.name}
-                      </p>
-                      <p className="text-xs text-slate-500 truncate">
-                        {expert.title}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </Card>
+      <FeaturedExpertsSection
+        setExpertSaved={setExpertSaved}
+        expertCategories={expertCategories}
+        selected={selected}
+        allExperts={allExperts}
+        handleTabChange={handleTabChange}
+        activeTab={activeTab}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedSet={selectedSet}
+        activeCat={activeCat}
+        filtered={filtered}
+        toggleExpert={toggleExpert}
+      />
 
       {/* Featured Workshops Section */}
 
@@ -634,60 +222,20 @@ export default function HomepagePage() {
                 {tab.label}
                 {tab.key !== "All" && (
                   <span className="ml-1.5 text-[10px] opacity-60">
-                    ({featuredWorkshops.filter(w => w.classification?.industry === tab.key).length})
+                    ({topWorkshopsByIndustry[tab.key]?.length})
                   </span>
                 )}
               </button>
             ))}
           </div>
 
-          {/* Currently Featured Table */}
-          <div className="mb-6">
-            <p className="text-xs font-semibold text-slate-600 mb-2">
-              Featured in "{activeWorkshopTab === "All" ? "All Categories" : workshopTabs.find(t => t.key === activeWorkshopTab)?.label}" ({filteredFeatured.length})
-            </p>
-            {filteredFeatured.length > 0 ? (
-              <div className="border border-slate-200 rounded-xl overflow-hidden">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="bg-blue-50/60 border-b border-blue-100">
-                      <th className="px-4 py-2.5 text-[11px] font-semibold text-blue-600 uppercase tracking-wider">Title</th>
-                      <th className="px-4 py-2.5 text-[11px] font-semibold text-blue-600 uppercase tracking-wider">Trainer</th>
-                      <th className="px-4 py-2.5 text-[11px] font-semibold text-blue-600 uppercase tracking-wider">Industry</th>
-                      <th className="px-4 py-2.5 text-[11px] font-semibold text-blue-600 uppercase tracking-wider text-center w-24">Featured</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredFeatured.map((workshop) => (
-                      <tr key={workshop._id} className="border-b border-slate-100 last:border-b-0 hover:bg-blue-50/30 transition-colors">
-                        <td className="px-4 py-3">
-                          <p className="text-xs font-semibold text-slate-900 line-clamp-1">{workshop.basicInformation?.title}</p>
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="text-xs text-slate-700">{workshop.assignedTrainer?.fullName || "—"}</p>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-[11px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">{workshop.classification?.industry || "—"}</span>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <input
-                            type="checkbox"
-                            checked={true}
-                            onChange={() => toggleFeaturedWorkshop(workshop._id)}
-                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-xs text-slate-400 py-6 text-center border border-dashed border-slate-200 rounded-xl">
-                No workshops featured{activeWorkshopTab !== "All" ? ` in ${workshopTabs.find(t => t.key === activeWorkshopTab)?.label}` : ""}. Search below to add some.
-              </p>
-            )}
-          </div>
+          <FeaturedWorkshopsTable
+            activeWorkshopTab={activeWorkshopTab}
+            workshopTabs={workshopTabs}
+            filteredFeatured={filteredFeatured}
+            toggleFeaturedWorkshop={toggleFeaturedWorkshop}
+            featuredWorkshops={featuredWorkshops}
+          />
 
           {/* Search Bar */}
           <div className="pt-4 border-t border-slate-100">
@@ -772,75 +320,14 @@ export default function HomepagePage() {
       </Card>
 
       {/* ── YouTube Videos Section ──────────────────────────────────────────────── */}
-      <Card>
-        <div className="flex items-center justify-between px-5 py-4 border-b">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
-              <Youtube size={14} className="text-red-600" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold">YouTube Videos</p>
-              <p className="text-xs text-slate-500">
-                Manage the latest 8 videos displayed on the homepage carousel
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-5">
-          <div className="flex gap-2 mb-6">
-            <Input
-              placeholder="Paste YouTube URL here..."
-              value={youtubeUrl}
-              onChange={(val) => setYoutubeUrl(val)}
-              className="flex-1"
-            />
-            <Button
-              onClick={addYoutubeVideo}
-              disabled={isAddingYoutube || !youtubeUrl}
-            >
-              {isAddingYoutube ? "Adding..." : "Add Video"}
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {youtubeVideos.map((video) => (
-              <div
-                key={video._id}
-                className="relative group rounded-xl border border-slate-200 overflow-hidden bg-white"
-              >
-                <button
-                  onClick={() => deleteYoutubeVideo(video._id)}
-                  className="absolute top-2 right-2 w-7 h-7 bg-white/90 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-50"
-                  title="Delete Video"
-                >
-                  <Trash2 size={14} />
-                </button>
-                <div className="relative aspect-video bg-slate-100">
-                  <img
-                    src={`https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`}
-                    alt={video.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-3">
-                  <p
-                    className="text-xs font-semibold text-slate-900 line-clamp-2"
-                    title={video.title}
-                  >
-                    {video.title}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {youtubeVideos.length === 0 && (
-              <p className="text-sm text-slate-500 col-span-full py-4 text-center border border-dashed rounded-xl">
-                No YouTube videos added yet.
-              </p>
-            )}
-          </div>
-        </div>
-      </Card>
+      <YoutubeSection
+        youtubeUrl={youtubeUrl}
+        setYoutubeUrl={setYoutubeUrl}
+        youtubeVideos={youtubeVideos}
+        isAddingYoutube={isAddingYoutube}
+        addYoutubeVideo={addYoutubeVideo}
+        deleteYoutubeVideo={deleteYoutubeVideo}
+      />
 
       {/* ── 3. Other Sections ──────────────────────────────────────────────── */}
       <Card>
