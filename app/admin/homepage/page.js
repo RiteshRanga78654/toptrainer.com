@@ -186,7 +186,7 @@ export default function HomepagePage() {
         toggleExpert={toggleExpert}
       />
 
-      {/* Featured Workshops Section */}
+      {/* Featured Workshops Section ------------------------*/}
 
       <Card>
         <div className="flex items-center justify-between px-5 py-4 border-b">

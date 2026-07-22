@@ -17,8 +17,8 @@ import reviewRouter from "./routes/reviewRouter.js";
 import industryRouter from "./routes/industryRouter.js";
 import competencyRouter from "./routes/competencyRouter.js";
 import mediaRouter from "./routes/mediaRouter.js";
-import youtubeVideoRouter from "./routes/youtubeVideoRouter.js";
-
+import youtubeRouter from "./routes/youtubeVideoRouter.js";
+import featuredRouter from "./routes/featuredItems.js";
 
 
 dotenv.config();
@@ -50,7 +50,8 @@ app.use("/api/reviews", reviewRouter);
 app.use("/api/industries", industryRouter);
 app.use("/api/competencies", competencyRouter);
 app.use("/api/media", mediaRouter);
-app.use("/api/youtube-videos", youtubeVideoRouter);
+app.use("/api/youtube-videos", youtubeRouter);
+app.use("/api/featured-lists", featuredRouter);
 
 
 connectDB();
