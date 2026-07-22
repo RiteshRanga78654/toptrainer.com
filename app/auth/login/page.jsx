@@ -37,7 +37,7 @@ export default function UserTrainerLoginPage() {
     if (!token || !user?.role) return;
 
     if (user.role === "admin") {
-      router.replace("/admin/dashboard");
+      router.replace("/admin");
     } else if (user.role === "trainer") {
       router.replace("/trainer/dashboard");
     } else {
@@ -64,7 +64,7 @@ export default function UserTrainerLoginPage() {
       ).unwrap();
 
       if (result.user.role === "admin") {
-        router.replace("/admin/dashboard");
+        router.replace("/admin");
       } else if (result.user.role === "trainer") {
         router.replace("/trainer/dashboard");
       } else {
@@ -272,9 +272,14 @@ export default function UserTrainerLoginPage() {
               <h2 className="text-[28px] font-bold text-gray-900 mb-2 tracking-tight">
                 Welcome back!
               </h2>
-              <p className="text-gray-500 text-[15px]">
-                Login to explore trainers and resources
-              </p>
+               <div className="anim-7 text-center">
+                  <p className="text-[14px] text-gray-500 font-medium">
+                    New here?{" "}
+                    <Link href="/auth/register" className="text-[#5A5FE0] font-semibold hover:underline">
+                      Join us
+                    </Link>
+                  </p>
+                </div>
             </div>
 
             <div className="anim-3 flex border-b border-gray-100 mb-8 justify-center">
@@ -413,14 +418,6 @@ export default function UserTrainerLoginPage() {
               </div>
 
               <div className="flex flex-col items-center justify-center gap-3 mt-6">
-                <div className="anim-7 text-center">
-                  <p className="text-[14px] text-gray-500 font-medium">
-                    New here?{" "}
-                    <Link href="/auth/register" className="text-[#5A5FE0] font-semibold hover:underline">
-                      Join us
-                    </Link>
-                  </p>
-                </div>
 
                 <div className="flex items-center gap-3 w-3/4">
                   <div className="flex-1 h-[1px] bg-gray-100" />
