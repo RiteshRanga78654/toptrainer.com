@@ -22,7 +22,6 @@ import featuredRouter from "./routes/featuredItems.js";
 import mediaRouter from "./routes/mediaRouter.js";
 import heroImageRouter from "./routes/heroImageRouter.js";
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -53,7 +52,7 @@ app.use("/api/youtube-videos", youtubeRouter);
 app.use("/api/featured-lists", featuredRouter);
 app.use("/api/media", mediaRouter);
 app.use("/api/hero-images", heroImageRouter);
-
+app.use("/api/admin", adminAuthRouter);
 
 
 connectDB();
