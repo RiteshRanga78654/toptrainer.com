@@ -337,6 +337,7 @@ export default function HomepagePage() {
                     : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50",
                 )}
               >
+                {tab.label}
               </button>
             ))}
           </div>
