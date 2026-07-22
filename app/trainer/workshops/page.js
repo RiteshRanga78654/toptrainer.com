@@ -333,6 +333,60 @@ body{font-family:var(--ffb);background:#eef0f4;color:var(--ink);}
 .seats-dot{width:7px;height:7px;border-radius:50%;background:#dc2626;flex-shrink:0;animation:pulse 1.2s infinite;}
 `;
 
+// ─── Backend <-> Frontend mapping ─────────────────────────────────────────────
+// Backend Workshop doc nests everything under basicInformation/schedule/
+// pricing/learningDetails/classification/conductedMode/mediaGallery/analytics.
+// This page (and WorkshopFormModal) work with a flat shape, so we translate
+// here at the API boundary instead of touching the UI below.
+function mapWorkshopFromBackend(w) {
+  const trainerDoc = w.assignedTrainer || w.createdBy || {};
+  const isTrainerDoc = trainerDoc && typeof trainerDoc === "object" && trainerDoc.fullName;
+
+  return {
+    _id: w._id,
+    status: w.status,
+    isFeatured: !!w.isFeatured,
+    isLive: (w.conductedMode?.conductedAs || []).includes("Live Online"),
+    category: w.classification?.industry || w.basicInformation?.category || "",
+    title: w.basicInformation?.title || "Untitled Workshop",
+    shortDesc: w.basicInformation?.shortDescription || "",
+    fullDesc: w.basicInformation?.fullDescription || "",
+    coverImg: w.basicInformation?.coverImage?.url || w.basicInformation?.thumbnail?.url || "",
+    seats: w.schedule?.maxCapacity || 0,
+    mode: (w.schedule?.deliveryMode || "").toLowerCase(),
+    duration: w.schedule?.duration ? { value: w.schedule.duration, unit: "day" } : null,
+    dateRange: w.schedule?.dateRange || "",
+    timeSlot: w.schedule?.timeSlot || "",
+    startDate: w.schedule?.startDate || "",
+    endDate: w.schedule?.endDate || "",
+    location: w.schedule?.location || w.schedule?.venue || "",
+    price: {
+      original: w.pricing?.originalPrice || w.pricing?.price || 0,
+      discounted: w.pricing?.discountedPrice || 0,
+      emi: w.pricing?.emiPerMonth || 0,
+      includes: w.learningDetails?.includedItems || [],
+    },
+    learningOutcomes: w.learningDetails?.learningOutcomes || [],
+    tags: w.classification?.tags || [],
+    certifications: [], // Workshop model has no per-workshop certifications field yet
+    photos: (w.mediaGallery?.snapshots || []).map((s, i) => ({ src: s.url, label: `Session ${i + 1}` })),
+    classTypes: (w.conductedMode?.conductedAs || []).map((type) => ({
+      type: type === "Live Online" ? "live" : type === "Offline" ? "offline" : "recorded",
+      count: null,
+    })),
+    rating: w.analytics?.rating || 0,
+    reviews: w.analytics?.views || 0,
+    trainer: isTrainerDoc
+      ? {
+          name: trainerDoc.fullName,
+          profileImage: trainerDoc.profilePhoto?.url || "",
+          designation: trainerDoc.subjectLine || trainerDoc.companyName || "",
+        }
+      : {},
+    createdAt: w.createdAt,
+  };
+}
+
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmt(n) {
   return new Intl.NumberFormat("en-IN", {
@@ -809,8 +863,8 @@ export default function TrainerWorkshopsPage() {
     setLoading(true); setFetchError("");
     try {
       const res  = await workshopsAPI.getAll({ mine: true });
-      const list = res.data?.data || res.data || [];
-      setWorkshops(Array.isArray(list) ? list : []);
+      const list = res.data?.workshops || res.data?.data || res.data || [];
+      setWorkshops(Array.isArray(list) ? list.map(mapWorkshopFromBackend) : []);
     } catch (err) {
       setFetchError(err.response?.data?.message || err.message || "Failed to load workshops.");
     } finally { setLoading(false); }
@@ -827,13 +881,13 @@ export default function TrainerWorkshopsPage() {
   async function handleSave(payload, id) {
     if (id) {
       const res     = await workshopsAPI.update(id, payload);
-      const updated = res.data?.data || res.data;
+      const updated = mapWorkshopFromBackend(res.data?.workshop || res.data?.data || res.data);
       setWorkshops(prev => prev.map(w => w._id === id ? updated : w));
       if (sel?._id === id) setSel(updated);
       showToast("✅ Workshop updated!");
     } else {
       const res     = await workshopsAPI.create(payload);
-      const created = res.data?.data || res.data;
+      const created = mapWorkshopFromBackend(res.data?.workshop || res.data?.data || res.data);
       setWorkshops(prev => [created, ...prev]);
       showToast("🎉 Workshop created!");
     }
@@ -859,7 +913,7 @@ export default function TrainerWorkshopsPage() {
     setToggling(w._id);
     try {
       const res     = await workshopsAPI.updateStatus(w._id, next);
-      const updated = res.data?.data || { ...w, status: next };
+      const updated = res.data?.workshop ? mapWorkshopFromBackend(res.data.workshop) : { ...w, status: next };
       setWorkshops(prev => prev.map(x => x._id === w._id ? updated : x));
       if (sel?._id === w._id) setSel(updated);
     } catch (err) {

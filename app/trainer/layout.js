@@ -5,19 +5,19 @@ import Link from 'next/link'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../store/slices/authSlice'
 import {
-  LayoutDashboard, BookOpen, FileText, BarChart2,
+  LayoutDashboard, BookOpen, Star, FileText, BarChart2,
   User, LogOut, Menu, X, ChevronRight,
 } from 'lucide-react'
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 const T = {
-  blue:   '#2563eb',
+  blue: '#2563eb',
   violet: '#7c3aed',
-  slate:  '#0f172a',
-  muted:  '#64748b',
-  light:  '#94a3b8',
+  slate: '#0f172a',
+  muted: '#64748b',
+  light: '#94a3b8',
   border: 'rgba(226,232,240,0.8)',
-  bg:     '#f8fafc',
+  bg: '#f8fafc',
 }
 
 const SIDEBAR_WIDTH = 258
@@ -82,17 +82,18 @@ const GLOBAL_CSS = `
 // ─── Nav items ────────────────────────────────────────────────────────────────
 const NAV = [
   { href: '/trainer/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/trainer/profile',   label: 'Profile',   icon: User            },
-  { href: '/trainer/articles',  label: 'Articles',  icon: FileText        },
-  { href: '/trainer/workshops', label: 'Workshops', icon: BookOpen        },
-  { href: '/trainer/analytics', label: 'Analytics', icon: BarChart2       },
+  { href: '/trainer/profile', label: 'Profile', icon: User },
+  { href: '/trainer/articles', label: 'Articles', icon: FileText },
+  { href: '/trainer/workshops', label: 'Workshops', icon: BookOpen },
+  { href: '/trainer/analytics', label: 'Analytics', icon: BarChart2 },
+  { href: '/trainer/reviews', label: 'Reviews', icon: Star },
 ]
 
 // ─── Auth Guard ───────────────────────────────────────────────────────────────
 function AuthGuard({ children }) {
   const router = useRouter()
-  const user   = useSelector(s => s.auth?.user)
-  const token  = useSelector(s => s.auth?.token)
+  const user = useSelector(s => s.auth?.user)
+  const token = useSelector(s => s.auth?.token)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -137,13 +138,16 @@ function AuthGuard({ children }) {
 function Sidebar({ open, onClose }) {
   const pathname = usePathname()
   const dispatch = useDispatch()
-  const router   = useRouter()
-  const user     = useSelector(s => s.auth?.user)
+  const router = useRouter()
+  const user = useSelector(s => s.auth?.user)
 
-  const handleLogout = () => {
-    dispatch(logout())
-    localStorage.removeItem('tt_token')
-    router.replace('/auth/login')
+  const handleLogout = async () => {
+    try {
+      dispatch(logout());
+      router.replace('/auth/login');
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
   }
 
   const initials = (user?.name || 'T').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -188,9 +192,9 @@ function Sidebar({ open, onClose }) {
               <div>
                 <div style={{
                   fontFamily: "'Plus Jakarta Sans',sans-serif",
-                  fontWeight: 800, fontSize: '1rem', color: T.slate, lineHeight: 1.1, 
-                }}>TopTrainer</div>  
-                <div style={{ fontSize: '0.65rem', color: T.slate, letterSpacing: 1.1 , }}>
+                  fontWeight: 800, fontSize: '1rem', color: T.slate, lineHeight: 1.1,
+                }}>TopTrainer</div>
+                <div style={{ fontSize: '0.65rem', color: T.slate, letterSpacing: 1.1, }}>
                   Trainer Portal
                 </div>
               </div>
@@ -212,7 +216,47 @@ function Sidebar({ open, onClose }) {
           </div>
         </div>
 
-        
+        {/* User pill */}
+        <div style={{ padding: '14px 16px 8px' }}>
+          <Link href="/trainer/profile" onClick={onClose} style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            background: 'linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.05))',
+            border: '1px solid rgba(37,99,235,0.12)',
+            borderRadius: 12, padding: '10px 12px', textDecoration: 'none',
+            transition: 'all 0.2s',
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg,rgba(37,99,235,0.1),rgba(124,58,237,0.08))'}
+            onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.05))'}
+          >
+            <div style={{
+              width: 36, height: 36, borderRadius: 10, flexShrink: 0, overflow: 'hidden',
+              background: `linear-gradient(135deg,${T.blue},${T.violet})`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: "'Plus Jakarta Sans',sans-serif",
+              fontWeight: 700, fontSize: '0.95rem', color: 'white',
+            }}>
+              {user?.avatar
+                ? <img src={user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />
+                : initials
+              }
+            </div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{
+                fontWeight: 700, fontSize: '0.82rem', color: T.slate,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {user?.name || 'Trainer'}
+              </div>
+              <div style={{
+                fontSize: '0.67rem', color: T.muted,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {user?.email || ''}
+              </div>
+            </div>
+            <ChevronRight size={13} color={T.light} />
+          </Link>
+        </div>
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: '4px 10px', overflowY: 'auto' }}>

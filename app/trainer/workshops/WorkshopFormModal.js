@@ -202,22 +202,33 @@ const CLASS_TYPES = [
   { key: "workshop", label: "Workshop",    Icon: CalIcon },
 ];
 
+// Backend conductedMode.conductedAs enum is ["Live Online","Offline","Recorded"].
+// There's no backend equivalent for the "workshop" class-type option below —
+// it's kept in the picker for UI completeness but simply isn't sent on save.
+const CLASS_TYPE_TO_BACKEND = { live: "Live Online", offline: "Offline", recorded: "Recorded" };
+
+// Backend schedule.deliveryMode enum is ["Online","Offline","Hybrid","In-Person"].
+const MODE_TO_DELIVERY = { online: "Online", offline: "Offline", hybrid: "Hybrid" };
+const DELIVERY_TO_MODE = { Online: "online", Offline: "offline", Hybrid: "hybrid", "In-Person": "offline" };
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const csv = str => (str || "").split(",").map(s => s.trim()).filter(Boolean);
+const toDateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : "");
 
 function emptyForm() {
   return {
     title:"", category:"", mode:"online", trainer:"",
     shortDesc:"", fullDesc:"", targetAudience:"",
-    coverImg:"",
-    photos: [],                   // [{ src, label }]  — matches schema photoSchema
+    coverImg:"", coverImgFile:null,          // coverImg = preview URL (blob or existing), coverImgFile = raw File to upload
+    photos: [],                   // [{ src, file, label }]
+    startDate:"", endDate:"",     // backend requires both — no UI field existed for these before
     dateRange:"", timeSlot:"", location:"",
     duration:{ value:"", unit:"hours" },
     seats:"", maxParticipants:"",
     price:{ original:"", discounted:"", emi:"", currency:"INR", includes:"" },
-    learningOutcomes:"",   // comma-separated → array on save
+    learningOutcomes:"",
     prerequisites:"",
-    topics:"",             // comma-separated → stored as tags or topics
+    topics:"",
     competency:"", industry:"", tags:"",
     certifications:"",
     classTypes:[],
@@ -225,6 +236,8 @@ function emptyForm() {
   };
 }
 
+// `w` here is the FLATTENED shape produced by mapWorkshopFromBackend() in
+// page.js (not the raw nested backend doc), so most fields line up directly.
 function workshopToForm(w) {
   const dur = w.duration
     ? (typeof w.duration === "object"
@@ -235,14 +248,16 @@ function workshopToForm(w) {
   return {
     title:          w.title          || "",
     category:       w.category       || "",
-    mode:           w.mode           || "online",
+    mode:           DELIVERY_TO_MODE[w.mode] || w.mode || "online",
     trainer:        w.trainer?._id   || w.trainer || "",
     shortDesc:      w.shortDesc      || "",
     fullDesc:       w.fullDesc       || "",
     targetAudience: w.targetAudience || "",
     coverImg:       w.coverImg       || "",
-    // schema stores photos as [{ src, label }]; gallery/photos are the same thing
-    photos:         (w.photos || w.gallery || []).map(p => ({ src: p.src || p.url || "", label: p.label || "" })),
+    coverImgFile:   null, // no re-upload unless the trainer picks a new file
+    photos:         (w.photos || w.gallery || []).map(p => ({ src: p.src || p.url || "", file: null, label: p.label || "" })),
+    startDate:      toDateInput(w.startDate),
+    endDate:        toDateInput(w.endDate),
     dateRange:      w.dateRange      || "",
     timeSlot:       w.timeSlot       || "",
     location:       w.location       || "",
@@ -263,7 +278,10 @@ function workshopToForm(w) {
     industry:         w.industry          || "",
     tags:             (w.tags             || []).join(", "),
     certifications:   (w.certifications   || []).join(", "),
-    classTypes:       w.classTypes        || [],
+    classTypes:       (w.classTypes || []).map(ct => ({
+                        type: Object.keys(CLASS_TYPE_TO_BACKEND).find(k => CLASS_TYPE_TO_BACKEND[k] === ct.type) || ct.type,
+                        count: ct.count ?? "",
+                      })),
     isLive:           w.isLive            || false,
     isFeatured:       w.isFeatured        || false,
     status:           w.status            || "draft",
@@ -271,86 +289,68 @@ function workshopToForm(w) {
 }
 
 /**
- * formToPayload — converts form state to the exact shape the Mongoose schema expects.
- *
- * Key fixes:
- *  - duration sent as { value: Number, unit: String }  (schema uses an object, not a string)
- *  - photos mapped to [{ src, label }]  (schema's photoSchema)
- *  - price.includes, learningOutcomes, prerequisites, certifications, tags all sent as arrays
- *  - topics stored in tags array (add a separate `topics` field if your schema has one)
+ * buildFormData — converts form state into the multipart/form-data body the
+ * real backend expects: nested objects (basicInformation/schedule/pricing/
+ * learningDetails/classification/conductedMode) as JSON strings, plus actual
+ * File objects for coverImage/thumbnail/snapshots. The backend requires BOTH
+ * a coverImage and a thumbnail on basicInformation — this form only collects
+ * one image, so the same file is sent for both.
  */
-function formToPayload(f, status) {
-  return {
-    title:          f.title.trim(),
-    category:       f.category,
-    mode:           f.mode,
-    trainer:        f.trainer || undefined,
-    shortDesc:      f.shortDesc.trim(),
-    fullDesc:       f.fullDesc.trim(),
+function buildFormData(f, status) {
+  const fd = new FormData();
+
+  fd.append("basicInformation", JSON.stringify({
+    title: f.title.trim(),
+    category: f.category,
+    shortDescription: f.shortDesc.trim(),
+    fullDescription: f.fullDesc.trim(),
     targetAudience: f.targetAudience.trim(),
-    coverImg:       f.coverImg,
+  }));
 
-    // photos → [{ src, label }]  matches photoSchema
-    photos: f.photos.map(p => ({ src: p.src, label: p.label || "" })),
-
+  fd.append("schedule", JSON.stringify({
+    startDate: f.startDate,
+    endDate: f.endDate,
     dateRange: f.dateRange.trim(),
-    timeSlot:  f.timeSlot.trim(),
-    location:  f.location.trim(),
+    timeSlot: f.timeSlot.trim(),
+    duration: Number(f.duration.value) || 1,
+    location: f.location.trim(),
+    deliveryMode: MODE_TO_DELIVERY[f.mode] || "Online",
+    maxCapacity: Number(f.seats) || 30,
+  }));
 
-    // ✅ duration as object — matches schema { value: Number, unit: String }
-    duration: {
-      value: Number(f.duration.value) || 0,
-      unit:  f.duration.unit || "hours",
-    },
+  fd.append("pricing", JSON.stringify({
+    originalPrice: Number(f.price.original) || 0,
+    discountedPrice: f.price.discounted ? Number(f.price.discounted) : 0,
+    emiPerMonth: f.price.emi ? Number(f.price.emi) : 0,
+    price: Number(f.price.original) || 0,
+  }));
 
-    seats:           f.seats           ? Number(f.seats)           : undefined,
-    maxParticipants: f.maxParticipants ? Number(f.maxParticipants) : undefined,
-
-    price: {
-      original:   Number(f.price.original)   || 0,
-      discounted: f.price.discounted ? Number(f.price.discounted) : 0,
-      emi:        f.price.emi        ? Number(f.price.emi)        : 0,
-      currency:   f.price.currency,
-      includes:   csv(f.price.includes),
-    },
-
+  fd.append("learningDetails", JSON.stringify({
     learningOutcomes: csv(f.learningOutcomes),
-    prerequisites:    csv(f.prerequisites),
-    // topics → stored as tags in schema; adjust if you add a dedicated topics field
-    tags:             csv(f.topics || f.tags),
-    certifications:   csv(f.certifications),
+    topicsCovered: csv(f.topics),
+    prerequisites: csv(f.prerequisites),
+    includedItems: csv(f.price.includes),
+  }));
 
+  fd.append("classification", JSON.stringify({
     competency: f.competency.trim(),
-    industry:   f.industry.trim(),
+    industry: f.industry.trim(),
+    tags: csv(f.tags),
+  }));
 
-    classTypes: f.classTypes.map(ct => ({ ...ct, count: Number(ct.count) || 0 })),
-    isLive:     f.isLive,
-    isFeatured: f.isFeatured,
-    status,
-  };
-}
+  const conductedAs = f.classTypes.map(ct => CLASS_TYPE_TO_BACKEND[ct.type]).filter(Boolean);
+  fd.append("conductedMode", JSON.stringify({ conductedAs }));
 
-// ─── Image upload helper (tries server, falls back to base64) ─────────────────
-async function uploadFile(file) {
-  // Try the server upload endpoint first
-  try {
-    const fd = new FormData();
-    fd.append("image", file);
-    const res = await fetch("/api/v1/uploads/workshop", { method: "POST", body: fd });
-    if (res.ok) {
-      const data = await res.json();
-      const url = data?.url || data?.data?.url;
-      if (url) return url;
-    }
-  } catch { /* fall through */ }
+  fd.append("status", status);
+  if (f.trainer) fd.append("assignedTrainer", f.trainer);
 
-  // Fallback: base64 data URL (works even if /api/v1/uploads is not wired yet)
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload  = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+  if (f.coverImgFile) {
+    fd.append("coverImage", f.coverImgFile);
+    fd.append("thumbnail", f.coverImgFile); // backend requires both — reuse the same image
+  }
+  f.photos.forEach(p => { if (p.file) fd.append("snapshots", p.file); });
+
+  return fd;
 }
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
@@ -370,11 +370,9 @@ function Field({ label, required, hint, children }) {
 export default function WorkshopFormModal({ workshop, onSave, onClose, trainers }) {
   const isEdit = Boolean(workshop?._id);
 
-  const [form,           setForm]           = useState(() => workshop ? workshopToForm(workshop) : emptyForm());
-  const [saving,         setSaving]         = useState(false);
-  const [uploadingCover, setUploadingCover] = useState(false);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [error,          setError]          = useState("");
+  const [form,   setForm]   = useState(() => workshop ? workshopToForm(workshop) : emptyForm());
+  const [saving, setSaving] = useState(false);
+  const [error,  setError]  = useState("");
 
   const coverRef = useRef();
   const photoRef = useRef();
@@ -383,24 +381,21 @@ export default function WorkshopFormModal({ workshop, onSave, onClose, trainers 
   const setPrice = useCallback((k, v) => setForm(p => ({ ...p, price:    { ...p.price,    [k]: v } })), []);
   const setDur   = useCallback((k, v) => setForm(p => ({ ...p, duration: { ...p.duration, [k]: v } })), []);
 
-  // ── cover upload ────────────────────────────────────────
-  async function handleCoverUpload(e) {
+  // ── cover: just take the file, no upload until Save (backend uploads to Cloudinary itself) ──
+  function handleCoverUpload(e) {
     const file = e.target.files?.[0]; if (!file) return;
-    setUploadingCover(true);
-    try   { set("coverImg", await uploadFile(file)); }
-    catch { setError("Cover image upload failed."); }
-    finally { setUploadingCover(false); e.target.value = ""; }
+    if (!file.type.startsWith("image/")) { setError("Please select a valid image file."); return; }
+    setForm(p => ({ ...p, coverImg: URL.createObjectURL(file), coverImgFile: file }));
+    setError("");
+    e.target.value = "";
   }
 
-  // ── session snapshot upload ─────────────────────────────
-  async function handlePhotoUpload(e) {
+  // ── session snapshot: same — local preview only, real upload happens on Save ──
+  function handlePhotoUpload(e) {
     const file = e.target.files?.[0]; if (!file || form.photos.length >= 4) return;
-    setUploadingPhoto(true);
-    try {
-      const url = await uploadFile(file);
-      setForm(p => ({ ...p, photos: [...p.photos, { src: url, label: "" }] }));
-    } catch { setError("Photo upload failed."); }
-    finally { setUploadingPhoto(false); e.target.value = ""; }
+    if (!file.type.startsWith("image/")) { setError("Please select a valid image file."); return; }
+    setForm(p => ({ ...p, photos: [...p.photos, { src: URL.createObjectURL(file), file, label: "" }] }));
+    e.target.value = "";
   }
 
   function updatePhotoLabel(idx, label) {
@@ -436,11 +431,13 @@ export default function WorkshopFormModal({ workshop, onSave, onClose, trainers 
     if (!form.category)         { setError("Category is required.");          return; }
     if (!form.shortDesc.trim()) { setError("Short description is required."); return; }
     if (!form.mode)             { setError("Mode is required.");              return; }
+    if (!form.startDate)        { setError("Start date is required.");        return; }
+    if (!form.endDate)          { setError("End date is required.");          return; }
     if (!form.duration.value)   { setError("Duration is required.");          return; }
     if (!form.price.original)   { setError("Original price is required.");    return; }
     if (!form.coverImg)         { setError("Cover image is required.");       return; }
     setSaving(true);
-    try   { await onSave(formToPayload(form, status), workshop?._id); }
+    try   { await onSave(buildFormData(form, status), workshop?._id); }
     catch (err) { setError(err.response?.data?.message || err.message || "Save failed."); }
     finally { setSaving(false); }
   }
@@ -474,8 +471,6 @@ export default function WorkshopFormModal({ workshop, onSave, onClose, trainers 
               >
                 {form.coverImg ? (
                   <><img src={form.coverImg} alt="cover" className="cov-img" /><div className="cov-overlay">Change</div></>
-                ) : uploadingCover ? (
-                  <Loader2 size={22} className="spin" style={{ color:"var(--blue)" }} />
                 ) : (
                   <div className="cov-ph"><ImageIcon size={24} /><span>Upload Cover</span></div>
                 )}
@@ -483,7 +478,7 @@ export default function WorkshopFormModal({ workshop, onSave, onClose, trainers 
               <div className="cov-info">
                 <p className="cov-title">Workshop cover photo</p>
                 <p>Recommended: 1280×720 px (16:9)</p>
-                <p style={{ fontSize:".72rem", marginTop:4 }}>Shown on your workshop card across TopTrainer.</p>
+                <p style={{ fontSize:".72rem", marginTop:4 }}>Shown on your workshop card across TopTrainer. Also used as the thumbnail.</p>
               </div>
               <input ref={coverRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleCoverUpload} />
             </div>
@@ -511,7 +506,7 @@ export default function WorkshopFormModal({ workshop, onSave, onClose, trainers 
             </div>
 
             <Field label="Short Description" required hint="Shown on the card — keep it under 150 chars.">
-              <textarea className="fta" rows={2} maxLength={250}
+              <textarea className="fta" rows={2} maxLength={150}
                 placeholder="A punchy one-liner about what participants will gain…"
                 value={form.shortDesc} onChange={e => set("shortDesc", e.target.value)} style={{ minHeight:70 }} />
             </Field>
@@ -544,7 +539,18 @@ export default function WorkshopFormModal({ workshop, onSave, onClose, trainers 
             {/* ── Schedule & Venue ── */}
             <div className="msec">Schedule &amp; Venue</div>
             <div className="fcols">
-              <Field label="Date Range" hint="e.g. 15 Jul – 17 Jul 2025">
+              <Field label="Start Date" required>
+                <input className="finp" type="date"
+                  value={form.startDate} onChange={e => set("startDate", e.target.value)} />
+              </Field>
+              <Field label="End Date" required>
+                <input className="finp" type="date"
+                  value={form.endDate} onChange={e => set("endDate", e.target.value)} />
+              </Field>
+            </div>
+
+            <div className="fcols">
+              <Field label="Date Range" hint="Display text — e.g. 15 Jul – 17 Jul 2025">
                 <input className="finp" placeholder="15 Jul – 17 Jul 2025"
                   value={form.dateRange} onChange={e => set("dateRange", e.target.value)} />
               </Field>
@@ -634,10 +640,6 @@ export default function WorkshopFormModal({ workshop, onSave, onClose, trainers 
               <input className="finp" placeholder="leadership, communication, soft-skills"
                 value={form.tags} onChange={e => set("tags", e.target.value)} />
             </Field>
-            {/* <Field label="Your Certifications" hint="Comma-separated — shown on the workshop detail page.">
-              <input className="finp" placeholder="ICF Certified Coach, PMP, SHRM-SCP"
-                value={form.certifications} onChange={e => set("certifications", e.target.value)} />
-            </Field> */}
 
             {/* ── How It's Conducted ── */}
             <div className="msec">How It's Conducted</div>
@@ -679,11 +681,8 @@ export default function WorkshopFormModal({ workshop, onSave, onClose, trainers 
                 </div>
               ))}
               {form.photos.length < 4 && (
-                <div className="gal-add" onClick={() => !uploadingPhoto && photoRef.current?.click()}>
-                  {uploadingPhoto
-                    ? <Loader2 size={20} className="spin" style={{ color:"var(--blue)" }} />
-                    : <><Upload size={20} /><span>Add Photo</span></>
-                  }
+                <div className="gal-add" onClick={() => photoRef.current?.click()}>
+                  <Upload size={20} /><span>Add Photo</span>
                 </div>
               )}
             </div>

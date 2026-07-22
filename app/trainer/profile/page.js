@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import {
   User, Mail, Phone, Globe, MapPin, Linkedin, Youtube, Instagram,
@@ -10,6 +10,7 @@ import {
   ChevronDown, BookOpen, UserPlus, Plus, Trash2, Image as ImageIcon,
   Video, GraduationCap, Link, Trophy, Image as Img, Zap
 } from 'lucide-react'
+import { trainersAPI } from '../../lib/api'
 
 // ─────────────────────────────────────────────────────────
 // LOCATION DATA
@@ -367,6 +368,141 @@ function Ring({ pct }) {
 }
 
 // ─────────────────────────────────────────────────────────
+// BACKEND <-> FORM MAPPING
+// ─────────────────────────────────────────────────────────
+// Backend TrainerProfile doc nests everything under contactInfo/
+// onlinePresence/expertiseDomain/additionalDetails/profileSummary, plus
+// awards[]/education[]/certifications[]/workshops[] arrays. This page keeps
+// a flat `form` + separate array states, so we translate at the API
+// boundary instead of touching the UI below.
+//
+// KNOWN GAPS (backend has no field for these — they stay local-only):
+//  - the "Professional Experience" tab (job title/org/years)
+//  - videoURLs, globalMarkets
+//  - `travel` is stored as a plain Boolean on the backend (openToTravel),
+//    so the specific dropdown label ("PAN India" vs "Zonal Travel Only"
+//    etc.) can't be reconstructed on load — it comes back blank.
+function trainerToForm(t) {
+  return {
+
+    name: t.fullName || '',
+    companyName: t.companyName || '',
+    subjectLine: t.subjectLine || '',
+    tagLine: (t.tagsLine || [])[0] || '',
+    email: t.contactInfo?.email || '',
+    phone: t.contactInfo?.phone || '',
+    whatsapp: t.contactInfo?.whatsapp || '',
+    country: t.contactInfo?.location?.country || '',
+    state: t.contactInfo?.location?.state || '',
+    city: t.contactInfo?.location?.city || '',
+    website: t.onlinePresence?.website || '',
+    linkedin: t.onlinePresence?.linkedin || '',
+    youtube: t.onlinePresence?.youtube || '',
+    instagram: t.onlinePresence?.instagram || '',
+    facebook: t.onlinePresence?.facebook || '',
+    industry: t.expertiseDomain?.industry || [],
+    domain: t.expertiseDomain?.domain || [],
+    competency: t.expertiseDomain?.competencies || [],
+    trainerType: t.expertiseDomain?.TrainerType || '',
+    bio: t.profileSummary?.profileSummary || '',
+    highestQualification: t.education?.[0]?.highestQualification || '',
+    institution: t.education?.[0]?.institution || '',
+    graduationYear: t.education?.[0]?.completionYear || '',
+    travel: '', // can't be reconstructed from a boolean — see note above
+    languages: (t.additionalDetails?.languagesFluent || [])[0] || '',
+    trainerCerts: (t.additionalDetails?.trainerCertifications || [])[0] || '',
+    experience: t.additionalDetails?.trainingExperience || '',
+    audience: (t.additionalDetails?.audienceLevel || [])[0] || '',
+    fees: t.additionalDetails?.feesPerDay || '',
+  }
+}
+
+function buildProfileFormData(form, extra) {
+  const {
+    workshops, awards, certEntries,
+    tempPicFile, tempBannerFile, profileFiles, certFiles, galleryFiles,
+  } = extra
+
+  const fd = new FormData()
+  fd.append('fullName', form.name.trim())
+  fd.append('companyName', form.companyName.trim())
+  fd.append('subjectLine', form.subjectLine.trim())
+  fd.append('tagsLine', JSON.stringify(form.tagLine.trim() ? [form.tagLine.trim()] : []))
+
+  fd.append('contactInfo', JSON.stringify({
+    email: form.email.trim(),
+    phone: form.phone.trim(),
+    whatsapp: form.whatsapp.trim(),
+    location: { city: form.city, state: form.state, country: form.country },
+  }))
+
+  fd.append('onlinePresence', JSON.stringify({
+    website: form.website.trim(),
+    linkedin: form.linkedin.trim(),
+    youtube: form.youtube.trim(),
+    instagram: form.instagram.trim(),
+    facebook: form.facebook.trim(),
+  }))
+
+  fd.append('expertiseDomain', JSON.stringify({
+    industry: form.industry,
+    domain: form.domain,
+    competencies: form.competency,
+    TrainerType: form.trainerType,
+  }))
+
+  fd.append('additionalDetails', JSON.stringify({
+    openToTravel: !!form.travel,
+    languagesFluent: form.languages ? [form.languages] : [],
+    trainerCertifications: form.trainerCerts ? [form.trainerCerts] : [],
+    trainingExperience: form.experience,
+    audienceLevel: form.audience ? [form.audience] : [],
+    feesPerDay: form.fees,
+  }))
+
+  fd.append('profileSummary', JSON.stringify({ profileSummary: form.bio.trim() }))
+
+  fd.append('education', JSON.stringify(
+    (form.highestQualification || form.institution || form.graduationYear)
+      ? [{ highestQualification: form.highestQualification, institution: form.institution, completionYear: form.graduationYear }]
+      : []
+  ))
+
+  fd.append('awards', JSON.stringify(
+    awards.filter(a => a.title.trim()).map(a => ({
+      title: a.title, organisation: a.org, year: a.year, category: a.category, description: a.desc,
+    }))
+  ))
+
+  fd.append('certifications', JSON.stringify(
+    certEntries.filter(c => c.name.trim()).map(c => ({
+      name: c.name, organisation: c.org, year: c.year,
+    }))
+  ))
+
+  fd.append('workshops', JSON.stringify(
+    workshops.filter(w => w.title.trim()).map(w => ({
+      companyName: w.company, title: w.title, duration: w.duration, location: w.location,
+      industry: w.industry, domain: w.domain, competency: w.competency,
+      totalParticipants: w.participants ? Number(w.participants) || 0 : 0,
+      summary: w.summary,
+    }))
+  ))
+
+  if (tempPicFile) fd.append('profilePhoto', tempPicFile)
+  if (tempBannerFile) fd.append('bannerPhoto', tempBannerFile)
+  profileFiles.forEach(f => fd.append('profilepdf', f))
+  certFiles.forEach(f => fd.append('uploadCertificates', f))
+  galleryFiles.forEach(f => fd.append('galleryImages', f))
+  // Backend only applies uploaded workshopPhotos to workshops[0] right now —
+  // that's a backend limitation, not something fixable from this form.
+  const firstWorkshopFiles = (workshops[0]?.photos || []).filter(p => p?.file).map(p => p.file)
+  firstWorkshopFiles.forEach(f => fd.append('workshopPhotos', f))
+
+  return fd
+}
+
+// ─────────────────────────────────────────────────────────
 // MULTI-SELECT
 // ─────────────────────────────────────────────────────────
 function MultiSelect({ label, icon: Icon, options, value = [], onChange, disabled }) {
@@ -556,9 +692,9 @@ function LocationFields({ form, setForm, editing }) {
 function WorkshopPhotoSlot({ index, photo, onUpload, editing }) {
   return (
     <div className="ws-photo-slot">
-      {editing && <input type="file" accept="image/*" onChange={e => { const f = e.target.files[0]; if (f) onUpload(index, URL.createObjectURL(f)) }}/>}
-      {photo
-        ? <img src={photo} alt={`Workshop photo ${index + 1}`}/>
+      {editing && <input type="file" accept="image/*" onChange={e => { const f = e.target.files[0]; if (f) onUpload(index, f) }}/>}
+      {photo?.url
+        ? <img src={photo.url} alt={`Workshop photo ${index + 1}`}/>
         : <><Camera size={15} color="#93c5fd"/><span className="ws-photo-slot-lbl">Photo {index + 1}</span></>
       }
     </div>
@@ -567,8 +703,10 @@ function WorkshopPhotoSlot({ index, photo, onUpload, editing }) {
 
 function WorkshopEntry({ num, data, onChange, onRemove, editing }) {
   const [photos, setPhotos] = useState(data.photos || [null, null, null])
-  const handlePhoto = (idx, url) => {
-    const next = [...photos]; next[idx] = url; setPhotos(next)
+  // photos[i] is now { url, file } instead of a plain URL string, so the
+  // real File is available when building FormData on save.
+  const handlePhoto = (idx, file) => {
+    const next = [...photos]; next[idx] = { url: URL.createObjectURL(file), file }; setPhotos(next)
     onChange({ ...data, photos: next })
   }
   const upd = (key, val) => onChange({ ...data, [key]: val })
@@ -589,7 +727,7 @@ function WorkshopEntry({ num, data, onChange, onRemove, editing }) {
         </div>
       )}
       {data.summary && <div className="tpd-field" style={{ marginBottom: 10 }}><label className="tpd-label">Summary</label><p className="tpd-view" style={{ whiteSpace: 'pre-wrap' }}>{data.summary}</p></div>}
-      {photos.some(Boolean) && <div style={{ display: 'flex', gap: 8 }}>{photos.map((p, i) => p && <img key={i} src={p} alt="" className="ph-thumb"/>)}</div>}
+      {photos.some(Boolean) && <div style={{ display: 'flex', gap: 8 }}>{photos.map((p, i) => p?.url && <img key={i} src={p.url} alt="" className="ph-thumb"/>)}</div>}
     </div>
   )
 
@@ -616,7 +754,7 @@ function WorkshopEntry({ num, data, onChange, onRemove, editing }) {
         <textarea className="tpd-inp no-ico" style={{ height: 75 }} value={data.summary || ''} onChange={e => upd('summary', e.target.value)} placeholder="Brief summary — objectives, key topics, outcomes…"/>
       </div>
       <div>
-        <div className="tpd-label" style={{ marginBottom: 7 }}><span className="tpd-label-ico"><Camera size={11}/></span>Workshop Photos (up to 3)</div>
+        <div className="tpd-label" style={{ marginBottom: 7 }}><span className="tpd-label-ico"><Camera size={11}/></span>Workshop Photos (up to 3){num === 1 ? '' : ' — not saved yet, backend only stores photos for Workshop #1'}</div>
         <div style={{ display: 'flex', gap: 9 }}>
           {photos.map((p, i) => <WorkshopPhotoSlot key={i} index={i} photo={p} onUpload={handlePhoto} editing={editing}/>)}
         </div>
@@ -654,7 +792,6 @@ function AwardEntry({ num, data, onChange, onRemove, editing }) {
         <div className="tpd-field"><label className="tpd-label"><span className="tpd-label-ico"><Building2 size={11}/></span>Awarded By (Organisation)</label><div className="tpd-inp-wrap"><div className="tpd-inp-ico"><Building2 size={13}/></div><input type="text" className="tpd-inp" value={data.org || ''} onChange={e => upd('org', e.target.value)} placeholder="e.g. Elevate Learning, NASSCOM"/></div></div>
         <div className="tpd-field"><label className="tpd-label"><span className="tpd-label-ico"><Star size={11}/></span>Year</label><div className="tpd-inp-wrap"><div className="tpd-inp-ico"><Star size={13}/></div><input type="text" className="tpd-inp" value={data.year || ''} onChange={e => upd('year', e.target.value)} placeholder="e.g. 2023"/></div></div>
         <div className="tpd-field"><label className="tpd-label"><span className="tpd-label-ico"><Award size={11}/></span>Award Category</label><div className="tpd-inp-wrap"><div className="tpd-inp-ico"><Award size={13}/></div><select className="tpd-inp" value={data.category || ''} onChange={e => upd('category', e.target.value)}><option value="">Select</option>{OPTS.awardCategory.map((o, i) => <option key={i}>{o}</option>)}</select></div></div>
-        <div className="tpd-field"><label className="tpd-label"><span className="tpd-label-ico"><Trophy size={11}/></span>Type</label><div className="tpd-inp-wrap"><div className="tpd-inp-ico"><Trophy size={13}/></div><select className="tpd-inp" value={data.awardType || 'Award'} onChange={e => upd('awardType', e.target.value)}><option value="Award">Award (Trophy Icon)</option><option value="Certificate">Certificate (Ribbon Icon)</option></select></div></div>
         <div className="tpd-field sp2"><label className="tpd-label"><span className="tpd-label-ico"><FileText size={11}/></span>Brief Description <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span></label><textarea className="tpd-inp no-ico" style={{ height: 68 }} value={data.desc || ''} onChange={e => upd('desc', e.target.value)} placeholder="Short note about this award…"/></div>
       </div>
     </div>
@@ -662,7 +799,7 @@ function AwardEntry({ num, data, onChange, onRemove, editing }) {
 }
 
 // ─────────────────────────────────────────────────────────
-// EXPERIENCE ENTRY
+// EXPERIENCE ENTRY  (no backend field yet — local-only, see note above)
 // ─────────────────────────────────────────────────────────
 function ExperienceEntry({ num, data, onChange, onRemove, editing }) {
   const upd = (key, val) => onChange({ ...data, [key]: val })
@@ -749,7 +886,7 @@ function Sec({ icon: Icon, title, sub, children }) {
 }
 
 // ─────────────────────────────────────────────────────────
-// PASSWORD SECTION
+// PASSWORD SECTION — now calls the real backend
 // ─────────────────────────────────────────────────────────
 function PasswordSection() {
   const [open, setOpen] = useState(false)
@@ -769,9 +906,20 @@ function PasswordSection() {
   const save = async () => {
     if (!validate()) return
     setSaving(true)
-    await new Promise(r => setTimeout(r, 1000))
-    flash('Password updated!'); setForm({ cur: '', nxt: '', cfm: '' }); setOpen(false)
-    setSaving(false)
+    try {
+      await trainersAPI.changePassword({ currentPassword: form.cur, newPassword: form.nxt })
+      flash('Password updated!')
+      setForm({ cur: '', nxt: '', cfm: '' })
+      setOpen(false)
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to update password'
+      // Wrong current password comes back as a field-level error so it
+      // shows right under the "Current Password" input.
+      if (err?.response?.status === 401) setErrs({ cur: msg })
+      else flash(msg, 'error')
+    } finally {
+      setSaving(false)
+    }
   }
   const str = pwStrength(form.nxt)
   return (
@@ -813,6 +961,8 @@ export default function TrainerProfileDashboard() {
 
   const [tab,     setTab]     = useState('personal')
   const [editing, setEditing] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [saving,  setSaving]  = useState(false)
   const [toast,   setToast]   = useState(null)
   const [errors,  setErrors]  = useState({})
@@ -822,11 +972,14 @@ export default function TrainerProfileDashboard() {
   const [bannerImg,    setBannerImg]     = useState(null)
   const [tempPic,      setTempPic]       = useState(null)
   const [tempBanner,   setTempBanner]    = useState(null)
+  const [tempPicFile,    setTempPicFile]    = useState(null) // raw File for upload
+  const [tempBannerFile, setTempBannerFile] = useState(null)
 
   // File uploads
   const [profileFiles, setProfileFiles] = useState([])
   const [certFiles,    setCertFiles]    = useState([])
   const [galleryURLs,  setGalleryURLs]  = useState([])
+  const [galleryFiles, setGalleryFiles] = useState([])
 
   // Dynamic entries
   const [workshops,   setWorkshops]   = useState([{ company: '', title: '', duration: '', location: '', participants: '', industry: '', domain: '', competency: '', summary: '', photos: [null, null, null] }])
@@ -851,6 +1004,35 @@ export default function TrainerProfileDashboard() {
 
   const flash = (msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 3500) }
 
+  // ── Load real profile on mount ──────────────────────────
+  const fetchProfile = useCallback(async () => {
+    setLoading(true); setLoadError(null)
+    try {
+      const res = await trainersAPI.getProfile()
+      const t = res.data?.trainer || res.data?.data || res.data
+      setForm(trainerToForm(t))
+      setProfilePic(t.profilePhoto?.url || null)
+      setBannerImg(t.bannerPhoto?.url || null)
+
+      if (t.awards?.length) setAwards(t.awards.map(a => ({ title: a.title || '', org: a.organisation || '', year: a.year || '', category: a.category || '', desc: a.description || '' })))
+      if (t.certifications?.length) setCertEntries(t.certifications.map(c => ({ name: c.name || '', org: c.organisation || '', year: c.year || '' })))
+      if (t.workshops?.length) setWorkshops(t.workshops.map(w => ({
+        company: w.companyName || '', title: w.title || '', duration: w.duration || '',
+        location: w.location || '', participants: w.totalParticipants != null ? String(w.totalParticipants) : '',
+        industry: w.industry || '', domain: w.domain || '', competency: w.competency || '',
+        summary: w.summary || '',
+        photos: (w.photos || []).slice(0, 3).concat([null, null, null]).slice(0, 3).map(p => p ? { url: p.url, file: null } : null),
+      })))
+      if (t.profileSummary?.galleryImages?.length) setGalleryURLs(t.profileSummary.galleryImages.map(g => g.url))
+    } catch (err) {
+      setLoadError(err?.response?.data?.message || 'Failed to load profile')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchProfile() }, [fetchProfile])
+
   const handleChange = e => {
     const { name, value } = e.target
     setForm(f => ({ ...f, [name]: value }))
@@ -871,17 +1053,32 @@ export default function TrainerProfileDashboard() {
   const handleSave = async () => {
     if (!validate()) return
     setSaving(true)
-    await new Promise(r => setTimeout(r, 900)) // replace with actual API call
-    if (tempPic) setProfilePic(tempPic)
-    if (tempBanner) setBannerImg(tempBanner)
-    flash('Profile updated successfully!')
-    setEditing(false)
-    setSaving(false)
+    try {
+      const fd = buildProfileFormData(form, {
+        workshops, awards, certEntries,
+        tempPicFile, tempBannerFile, profileFiles, certFiles, galleryFiles,
+      })
+      const res = await trainersAPI.updateProfile(fd)
+      const updated = res.data?.trainer || res.data?.data || res.data
+
+      // Re-sync everything from what the server actually saved
+      setForm(trainerToForm(updated))
+      if (updated.profilePhoto?.url) setProfilePic(updated.profilePhoto.url)
+      if (updated.bannerPhoto?.url) setBannerImg(updated.bannerPhoto.url)
+      setTempPic(null); setTempBanner(null); setTempPicFile(null); setTempBannerFile(null)
+
+      flash('Profile updated successfully!')
+      setEditing(false)
+    } catch (err) {
+      flash(err?.response?.data?.message || 'Failed to update profile', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleCancel = () => {
     setEditing(false); setErrors({})
-    setTempPic(null); setTempBanner(null)
+    setTempPic(null); setTempBanner(null); setTempPicFile(null); setTempBannerFile(null)
   }
 
   const handlePicChange = e => {
@@ -890,6 +1087,7 @@ export default function TrainerProfileDashboard() {
     const reader = new FileReader()
     reader.onload = ev => setTempPic(ev.target.result)
     reader.readAsDataURL(f)
+    setTempPicFile(f)
   }
 
   const handleBannerChange = e => {
@@ -897,6 +1095,7 @@ export default function TrainerProfileDashboard() {
     const reader = new FileReader()
     reader.onload = ev => setTempBanner(ev.target.result)
     reader.readAsDataURL(f)
+    setTempBannerFile(f)
   }
 
   const activePic    = tempPic    || profilePic
@@ -931,6 +1130,31 @@ export default function TrainerProfileDashboard() {
   const updEntry = (setter, idx, val) => setter(prev => { const n = [...prev]; n[idx] = val; return n })
   const addEntry = (setter, def, max = 10) => setter(prev => prev.length < max ? [...prev, { ...def }] : prev)
   const removeEntry = (setter, idx) => setter(prev => prev.filter((_, i) => i !== idx))
+
+  if (loading) {
+    return (
+      <div className="tpd-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <style>{CSS}</style>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', border: '3px solid #dbeafe', borderTopColor: 'var(--blue)' }} className="spin"/>
+          <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>Loading your profile…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="tpd-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <style>{CSS}</style>
+        <div style={{ textAlign: 'center' }}>
+          <AlertTriangle size={32} color="#dc2626" style={{ marginBottom: 10 }}/>
+          <p style={{ color: '#dc2626', fontWeight: 700, marginBottom: 12 }}>{loadError}</p>
+          <button className="tpd-btn tpd-btn-pri" onClick={fetchProfile}>Retry</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="tpd-page">
@@ -1114,6 +1338,7 @@ export default function TrainerProfileDashboard() {
                         <div className="up-zone">
                           <input type="file" multiple accept="image/*" onChange={e => {
                             const files = Array.from(e.target.files || [])
+                            setGalleryFiles(files)
                             setGalleryURLs(files.map(f => URL.createObjectURL(f)))
                           }}/>
                           <div className="up-zone-ico"><ImageIcon size={16}/></div>
@@ -1127,7 +1352,7 @@ export default function TrainerProfileDashboard() {
                     </div>
                   )}
 
-                  {/* Video URLs */}
+                  {/* Video URLs — no backend field yet, local only */}
                   <div style={{ marginTop: 18, borderTop: '1.5px solid #eef2ff', paddingTop: 15 }}>
                     <div className="tpd-label" style={{ marginBottom: 9 }}>
                       <span className="tpd-label-ico"><Video size={11}/></span>Video URLs
@@ -1182,13 +1407,13 @@ export default function TrainerProfileDashboard() {
                     <AwardEntry key={idx} num={idx + 1} data={data} onChange={val => updEntry(setAwards, idx, val)} onRemove={() => removeEntry(setAwards, idx)} editing={editing}/>
                   ))}
                   {editing && awards.length < 10 && (
-                    <button type="button" className="add-entry-btn" onClick={() => addEntry(setAwards, { title: '', org: '', year: '', category: '', awardType: 'Award', desc: '' })}>
+                    <button type="button" className="add-entry-btn" onClick={() => addEntry(setAwards, { title: '', org: '', year: '', category: '', desc: '' })}>
                       <Plus size={14}/> Add Another Award ({awards.length}/10)
                     </button>
                   )}
                 </Sec>
 
-                <Sec icon={Briefcase} title="Professional Experience" sub={`Your career journey · ${experiences.length} added`}>
+                <Sec icon={Briefcase} title="Professional Experience" sub={`Your career journey · ${experiences.length} added — not saved yet, backend has no field for this section`}>
                   {experiences.map((data, idx) => (
                     <ExperienceEntry key={idx} num={idx + 1} data={data} onChange={val => updEntry(setExperiences, idx, val)} onRemove={() => removeEntry(setExperiences, idx)} editing={editing}/>
                   ))}
@@ -1256,7 +1481,7 @@ export default function TrainerProfileDashboard() {
                   </div>
                 </Sec>
 
-                {/* Global Markets */}
+                {/* Global Markets — no backend field yet, local only */}
                 <Sec icon={Globe} title="Global Market Interest" sub="Select all international markets you serve or target">
                   {editing ? (
                     <div className="gm-list">

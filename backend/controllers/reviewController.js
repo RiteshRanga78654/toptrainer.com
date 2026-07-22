@@ -59,7 +59,7 @@ export const getMyReviews = asyncHandler(async (req, res) => {
 
 
 export const getAllReviews = asyncHandler(async (req, res) => {
-  const reviews = await Review.find()
+const reviews = await Review.find({ trainerId: req.params.id })
     .populate("user", "name email")
     .populate("trainer", "trainerId fullName profilePhoto companyName")
     .populate("workshop", "basicInformation.title")
@@ -96,14 +96,12 @@ export const getSingleReview = asyncHandler(async (req, res) => {
 export const getTrainerReviews = asyncHandler(async (req, res) => {
 
   const reviews = await Review.find({
-    trainer: req.trainer._id,
+    trainer: req.params.trainerId,
     status: "approved",
   })
-    .populate(
-      "user", "name",
-      "trainer",
-      "fullName profilePhoto companyName"
-    ).populate("user", "name")
+    .populate("user", "firstName lastName")
+    .populate("trainer", "trainerId fullName profilePhoto companyName")
+    .populate("workshop", "basicInformation.title")
     .sort({ createdAt: -1 });
 
   res.status(200).json({
@@ -111,7 +109,6 @@ export const getTrainerReviews = asyncHandler(async (req, res) => {
     count: reviews.length,
     reviews,
   });
-
 });
 
 export const getWorkshopReviews = asyncHandler(async (req, res) => {
@@ -263,4 +260,20 @@ export const deleteReview = asyncHandler(async (req, res) => {
     message: "Review deleted successfully",
   });
 
+});
+
+export const getMyTrainerReviews = asyncHandler(async (req, res) => {
+
+  const reviews = await Review.find({
+    trainer: req.trainer._id,
+  })
+    .populate("user", "firstName lastName")
+    .populate("workshop", "basicInformation.title")
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    count: reviews.length,
+    reviews,
+  });
 });
