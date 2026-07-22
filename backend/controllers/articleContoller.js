@@ -188,3 +188,37 @@ export const updateArticle = asyncHandler(async (req, res) => {
         article: updatedArticle,
     });
 });
+
+
+
+export const getAllArticles = async (req, res)=>{
+    try {
+        const { keyword, creatorType, page = 1, limit = 10 } = req.query;
+        let query = {};
+
+        if (keyword) {
+            query.title = { $regex: keyword, $options: "i" };
+        }
+        
+        if (creatorType) {
+            query.creatorType = creatorType;
+        }
+
+        const skip = (page - 1) * limit;
+
+        const result = await Article.find(query).skip(skip).limit(Number(limit)).sort({ createdAt: -1 });
+        const count = await Article.countDocuments(query);
+        
+        res.status(200).json({
+            success: true,
+            count: count,
+            currentPage: Number(page),
+            totalPages: Math.ceil(count / limit),
+            data: result,
+        });
+
+    } catch(error) {
+        console.error("error occured while fetching", error);
+        res.status(500).json({ success: false, message: "Error fetching articles" });
+    }
+}

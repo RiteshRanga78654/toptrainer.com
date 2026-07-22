@@ -22,12 +22,12 @@ export const isToggle = asyncHandler(async (req, res) => {
     category,
   });
 
-  if (itemType==="Workshop" && count >= 8 ) {
+  if ((itemType==="Workshop" || itemType==="Article") && count >= 8 ) {
     return res
       .status(400)
       .json({
         message:
-          "Limit of 8 Workshops reached, Please delete a workshop before adding one",
+          `Limit of 8 ${itemType} reached, Please delete a ${itemType} before adding one`,
       });
   }
   if (itemType==="TrainerProfile" && count >= 6 ) {
@@ -94,7 +94,6 @@ export const getFeaturedList = asyncHandler(async (req, res) => {
           category
       }
     }
-
     else if(itemType==="TrainerProfile"){
       populateFilter = {
         path:"itemRef",
@@ -104,7 +103,16 @@ export const getFeaturedList = asyncHandler(async (req, res) => {
           itemType,
       }
     }
-
+    else if (itemType==="Article") {
+      
+      populateFilter = {
+        path:"itemRef",
+        match: {status: "published"}
+      }
+      filter = {
+          itemType,
+      }
+    }
     else{
       return res.status(400).json({
               success: false,

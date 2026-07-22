@@ -31,6 +31,14 @@ const articleSchema = new mongoose.Schema({
         type: String,
         ref: "TrainerProfile",
     },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'creatorType'
+    },
+    creatorType: {
+        type: String,
+        enum: ['Admin', 'TrainerProfile']
+    },
     coverImage: {
       url: {
         type: String,

@@ -1,9 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  generalSettings as gs,
-  allExperts
-} from "../data/mockData";
+import { generalSettings as gs, allExperts } from "../data/mockData";
 import { Card, Toast, Input, Button } from "../../components/ui";
 import { LayoutGrid, ChevronRight, ExternalLink, Search } from "lucide-react";
 import { cn } from "../../lib/api";
@@ -12,11 +9,11 @@ import FeaturedTrainersTable from "./components/FeaturedTrainersTable";
 import HeroSliderSection from "./components/HeroSliderSection";
 import YoutubeSection from "./components/YoutubeSection";
 import useHomepageState from "./hooks/useHomepageState";
-
-
+import FeaturedArticles from "./components/FeaturedArticles";
 
 export default function HomepagePage() {
-  const { youtubeState, heroState, expertState, workshopState } = useHomepageState();
+  const { youtubeState, heroState, expertState, workshopState, articleState } =
+    useHomepageState();
 
   const {
     youtubeVideos,
@@ -72,6 +69,22 @@ export default function HomepagePage() {
     handleWorkshopSearch,
     toggleFeaturedWorkshop,
   } = workshopState;
+
+  const {
+    articleTabs,
+    featuredArticles,
+    articleSearchQuery,
+    articleSearchResults,
+    activeArticleTab,
+    isSearchingArticle,
+    articleSearchCurrentPage,
+    articleSearchTotalPages,
+    setActiveArticleTab,
+    setArticleSearchQuery,
+    setArticleSearchResults,
+    handleArticleSearch,
+    toggleFeaturedArticle,
+  } = articleState;
 
   const [settings, setSettings] = useState(gs);
   const [settingsSaved, setSettingsSaved] = useState(false);
@@ -157,13 +170,16 @@ export default function HomepagePage() {
           {/* Search Bar */}
           <div className="pt-4 border-t border-slate-100">
             <p className="text-xs font-semibold text-slate-600 mb-2">
-              Search Trainers {activeTrainerTab !== "All" ? `(${trainerTabs.find(t => t.key === activeTrainerTab)?.label} only)` : ""}
+              Search Trainers{" "}
+              {activeTrainerTab !== "All"
+                ? `(${trainerTabs.find((t) => t.key === activeTrainerTab)?.label} only)`
+                : ""}
             </p>
             <div className="flex gap-2 mb-4">
               <div className="flex-1">
                 <input
                   type="text"
-                  placeholder={`Search ${trainerTabs.find(t => t.key === activeTrainerTab)?.label} trainers by name...`}
+                  placeholder={`Search ${trainerTabs.find((t) => t.key === activeTrainerTab)?.label} trainers by name...`}
                   value={searchTrainerQuery}
                   onChange={(e) => setSearchTrainerQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleTrainerSearch()}
@@ -177,7 +193,7 @@ export default function HomepagePage() {
                   "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
                   isSearchingTrainer || !searchTrainerQuery.trim()
                     ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-blue-600 text-white hover:bg-blue-700",
                 )}
               >
                 <Search size={14} className="inline-block mr-1.5 -mt-0.5" />
@@ -195,31 +211,52 @@ export default function HomepagePage() {
                   <table className="w-full text-left">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Title</th>
-                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Company</th>
-                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center w-24">Featured</th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                          Title
+                        </th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                          Company
+                        </th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center w-24">
+                          Featured
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {searchTrainerResults.map((trainer) => {
-                        const isFeatured = featuredTrainers.some(fw => fw._id === trainer._id);
+                        const isFeatured = featuredTrainers.some(
+                          (fw) => fw._id === trainer._id,
+                        );
                         return (
-                          <tr key={trainer._id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors">
+                          <tr
+                            key={trainer._id}
+                            className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors"
+                          >
                             <td className="px-4 py-3">
-                              <p className="text-xs font-semibold text-slate-900 line-clamp-1">{trainer.fullName}</p>
+                              <p className="text-xs font-semibold text-slate-900 line-clamp-1">
+                                {trainer.fullName}
+                              </p>
                             </td>
                             <td className="px-4 py-3">
-                              <p className="text-xs text-slate-700">{trainer.expertiseDomain.industry || "—"}</p>
+                              <p className="text-xs text-slate-700">
+                                {trainer.expertiseDomain.industry || "—"}
+                              </p>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">{trainer.companyName || "—"}</span>
+                              <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
+                                {trainer.companyName || "—"}
+                              </span>
                             </td>
                             <td className="px-4 py-3 text-center">
                               <input
                                 type="checkbox"
                                 checked={isFeatured}
-                                onChange={() => toggleFeaturedTrainer(trainer._id)}
+                                onChange={() =>
+                                  toggleFeaturedTrainer(trainer._id)
+                                }
                                 className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
                               />
                             </td>
@@ -233,18 +270,28 @@ export default function HomepagePage() {
                 {searchTrainerTotalPages > 1 && (
                   <div className="flex items-center justify-between mt-4">
                     <button
-                      onClick={() => handleTrainerSearch(searchTrainerCurrentPage - 1)}
-                      disabled={searchTrainerCurrentPage === 1 || isSearchingTrainer}
+                      onClick={() =>
+                        handleTrainerSearch(searchTrainerCurrentPage - 1)
+                      }
+                      disabled={
+                        searchTrainerCurrentPage === 1 || isSearchingTrainer
+                      }
                       className="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       Previous
                     </button>
                     <span className="text-xs font-medium text-slate-500">
-                      Page {searchTrainerCurrentPage} of {searchTrainerTotalPages}
+                      Page {searchTrainerCurrentPage} of{" "}
+                      {searchTrainerTotalPages}
                     </span>
                     <button
-                      onClick={() => handleTrainerSearch(searchTrainerCurrentPage + 1)}
-                      disabled={searchTrainerCurrentPage === searchTrainerTotalPages || isSearchingTrainer}
+                      onClick={() =>
+                        handleTrainerSearch(searchTrainerCurrentPage + 1)
+                      }
+                      disabled={
+                        searchTrainerCurrentPage === searchTrainerTotalPages ||
+                        isSearchingTrainer
+                      }
                       className="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
@@ -290,12 +337,6 @@ export default function HomepagePage() {
                     : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50",
                 )}
               >
-                {tab.label}
-                {tab.key !== "All" && (
-                  <span className="ml-1.5 text-[10px] opacity-60">
-                    ({topWorkshopsByIndustry[tab.key]?.length})
-                  </span>
-                )}
               </button>
             ))}
           </div>
@@ -310,13 +351,20 @@ export default function HomepagePage() {
           {/* Search Bar */}
           <div className="pt-4 border-t border-slate-100">
             <p className="text-xs font-semibold text-slate-600 mb-2">
-              Search Workshops {activeWorkshopTab !== "All" ? `(${workshopTabs.find(t => t.key === activeWorkshopTab)?.label} only)` : ""}
+              Search Workshops{" "}
+              {activeWorkshopTab !== "All"
+                ? `(${workshopTabs.find((t) => t.key === activeWorkshopTab)?.label} only)`
+                : ""}
             </p>
             <div className="flex gap-2 mb-4">
               <div className="flex-1">
                 <input
                   type="text"
-                  placeholder={activeWorkshopTab === "All" ? "Search by title, industry, competency, tag..." : `Search ${workshopTabs.find(t => t.key === activeWorkshopTab)?.label} workshops by title...`}
+                  placeholder={
+                    activeWorkshopTab === "All"
+                      ? "Search by title, industry, competency, tag..."
+                      : `Search ${workshopTabs.find((t) => t.key === activeWorkshopTab)?.label} workshops by title...`
+                  }
                   value={searchWorkshopQuery}
                   onChange={(e) => setSearchWorkshopQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleWorkshopSearch()}
@@ -330,7 +378,7 @@ export default function HomepagePage() {
                   "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
                   isSearching || !searchWorkshopQuery.trim()
                     ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-blue-600 text-white hover:bg-blue-700",
                 )}
               >
                 <Search size={14} className="inline-block mr-1.5 -mt-0.5" />
@@ -348,32 +396,55 @@ export default function HomepagePage() {
                   <table className="w-full text-left">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Title</th>
-                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Trainer</th>
-                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Industry</th>
-                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center w-24">Featured</th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                          Title
+                        </th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                          Trainer
+                        </th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                          Industry
+                        </th>
+                        <th className="px-4 py-2.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center w-24">
+                          Featured
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {searchResults.map((workshop) => {
-                        const isFeatured = featuredWorkshops.some(fw => fw._id === workshop._id);
+                        const isFeatured = featuredWorkshops.some(
+                          (fw) => fw._id === workshop._id,
+                        );
                         return (
-                          <tr key={workshop._id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors">
+                          <tr
+                            key={workshop._id}
+                            className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors"
+                          >
                             <td className="px-4 py-3">
-                              <p className="text-xs font-semibold text-slate-900 line-clamp-1">{workshop.basicInformation?.title}</p>
-                              <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">{workshop.basicInformation?.shortDescription}</p>
+                              <p className="text-xs font-semibold text-slate-900 line-clamp-1">
+                                {workshop.basicInformation?.title}
+                              </p>
+                              <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
+                                {workshop.basicInformation?.shortDescription}
+                              </p>
                             </td>
                             <td className="px-4 py-3">
-                              <p className="text-xs text-slate-700">{workshop.assignedTrainer?.fullName || "—"}</p>
+                              <p className="text-xs text-slate-700">
+                                {workshop.assignedTrainer?.fullName || "—"}
+                              </p>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">{workshop.classification?.industry || "—"}</span>
+                              <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
+                                {workshop.classification?.industry || "—"}
+                              </span>
                             </td>
                             <td className="px-4 py-3 text-center">
                               <input
                                 type="checkbox"
                                 checked={isFeatured}
-                                onChange={() => toggleFeaturedWorkshop(workshop._id)}
+                                onChange={() =>
+                                  toggleFeaturedWorkshop(workshop._id)
+                                }
                                 className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
                               />
                             </td>
@@ -383,12 +454,14 @@ export default function HomepagePage() {
                     </tbody>
                   </table>
                 </div>
-                
+
                 {/* Pagination Controls */}
                 {searchTotalPages > 0 && (
                   <div className="flex items-center justify-between mt-4">
                     <button
-                      onClick={() => handleWorkshopSearch(searchCurrentPage - 1)}
+                      onClick={() =>
+                        handleWorkshopSearch(searchCurrentPage - 1)
+                      }
                       disabled={searchCurrentPage === 1 || isSearching}
                       className="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
@@ -398,8 +471,12 @@ export default function HomepagePage() {
                       Page {searchCurrentPage} of {searchTotalPages}
                     </span>
                     <button
-                      onClick={() => handleWorkshopSearch(searchCurrentPage + 1)}
-                      disabled={searchCurrentPage === searchTotalPages || isSearching}
+                      onClick={() =>
+                        handleWorkshopSearch(searchCurrentPage + 1)
+                      }
+                      disabled={
+                        searchCurrentPage === searchTotalPages || isSearching
+                      }
                       className="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
@@ -420,6 +497,23 @@ export default function HomepagePage() {
         isAddingYoutube={isAddingYoutube}
         addYoutubeVideo={addYoutubeVideo}
         deleteYoutubeVideo={deleteYoutubeVideo}
+      />
+
+      {/* Featured Article Section */}
+
+      <FeaturedArticles
+        articleTabs={articleTabs}
+        featuredArticles={featuredArticles}
+        articleSearchQuery={articleSearchQuery}
+        articleSearchResults={articleSearchResults}
+        activeArticleTab={activeArticleTab}
+        isSearchingArticle={isSearchingArticle}
+        articleSearchCurrentPage={articleSearchCurrentPage}
+        articleSearchTotalPages={articleSearchTotalPages}
+        setActiveArticleTab={setActiveArticleTab}
+        setArticleSearchQuery={setArticleSearchQuery}
+        handleArticleSearch={handleArticleSearch}
+        toggleFeaturedArticle={toggleFeaturedArticle}
       />
 
       {/* Toasts */}

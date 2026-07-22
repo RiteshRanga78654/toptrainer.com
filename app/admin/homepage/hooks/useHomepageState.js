@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import axios from "axios";
 import {
   allExperts,
@@ -239,7 +239,6 @@ export default function useHomepageState() {
   const [searchTotalPages, setSearchTotalPages] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
   const [activeWorkshopTab, setActiveWorkshopTab] = useState("All");
-  const [topWorkshopsByIndustry, setTopWorkshopsByIndustry] = useState([]);
 
   const workshopTabs = [
     { key: "All", label: "All" },
@@ -313,6 +312,80 @@ export default function useHomepageState() {
     }
   };
 
+  // Article Section
+  const articleTabs = [
+    { key: "TrainerProfile", label: "Trainer" },
+    { key: "Admin", label: "Admin" },
+  ];
+
+  const [activeArticleTab, setActiveArticleTab] = useState("TrainerProfile");
+  const [articleSearchQuery, setArticleSearchQuery] = useState("");
+  const [articleSearchResults, setArticleSearchResults] = useState([]);
+  const [featuredArticles, setFeaturedArticles] = useState([]);
+  const [isSearchingArticle, setIsSearchingArticle] = useState(false);
+  const [articleSearchCurrentPage, setArticleSearchCurrentPage] = useState(1);
+  const [articleSearchTotalPages, setArticleSearchTotalPages] = useState(1);
+
+  const fetchFeaturedArticles = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5001/api/featured-lists?itemType=Article&category=${activeArticleTab}`
+      );
+      if (res.data.success) {
+        const articlesOnly = res.data.data.map((item) => item.itemRef);
+        setFeaturedArticles(articlesOnly);
+      }
+    } catch (err) {
+      console.error("Failed to fetch featured articles", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeaturedArticles();
+  }, [activeArticleTab]);
+
+  const toggleFeaturedArticle = async (id) => {
+    let url = "http://localhost:5001/api/featured-lists/toggle";
+    let body = {
+      itemRef: id,
+      itemType: "Article",
+      category: activeArticleTab,
+    };
+    try {
+      const res = await axios.post(url, body);
+      if (res.data.success) {
+        fetchFeaturedArticles();
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to toggle article");
+    }
+  };
+
+  const handleArticleSearch = async (page = 1) => {
+    setIsSearchingArticle(true);
+    try {
+      let url = `http://localhost:5001/api/articles?page=${page}&limit=10`;
+
+      if (articleSearchQuery.trim() !== "") {
+        url += `&keyword=${encodeURIComponent(articleSearchQuery)}`;
+      }
+      if (activeArticleTab) {
+        url += `&creatorType=${encodeURIComponent(activeArticleTab)}`;
+      }
+
+      const res = await axios.get(url);
+      if (res.data.success) {
+        setArticleSearchResults(res.data.data || []);
+        setArticleSearchCurrentPage(res.data.currentPage || 1);
+        setArticleSearchTotalPages(res.data.totalPages || 1);
+      }
+    } catch (err) {
+      console.error("Failed to search articles", err);
+    } finally {
+      setIsSearchingArticle(false);
+    }
+  };
+
   return {
     youtubeState: {
       youtubeVideos,
@@ -350,20 +423,34 @@ export default function useHomepageState() {
       toggleFeaturedTrainer,
     },
     workshopState: {
+      workshopTabs,
       featuredWorkshops,
       searchWorkshopQuery,
-      setSearchWorkshopQuery,
       searchResults,
-      setSearchResults,
       searchCurrentPage,
       searchTotalPages,
       isSearching,
       activeWorkshopTab,
+      setSearchWorkshopQuery,
       setActiveWorkshopTab,
-      topWorkshopsByIndustry,
-      workshopTabs,
+      setSearchResults,
       handleWorkshopSearch,
       toggleFeaturedWorkshop,
+    },
+    articleState: {
+      articleTabs,
+      featuredArticles,
+      articleSearchQuery,
+      articleSearchResults,
+      activeArticleTab,
+      isSearchingArticle,
+      articleSearchCurrentPage,
+      articleSearchTotalPages,
+      setActiveArticleTab,
+      setArticleSearchQuery,
+      setArticleSearchResults,
+      handleArticleSearch,
+      toggleFeaturedArticle,
     },
   };
 }

@@ -3,113 +3,16 @@
 import { Eye, Share2, Clock, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
+import axios from "axios";
 
-/* ━━━ ARTICLE DATA ━━━ */
-const articles = [
-  {
-    id: 1,
-    category: "Health",
-    title: "How to Control Diabetes Naturally: A Complete Guide",
-    desc: "Managing diabetes doesn't just mean taking medication — lifestyle, diet and mindset all play powerful roles in long-term control.",
-    author: "Dr. Priya Sharma",
-    date: "Apr 10, 2026",
-    views: "9,113",
-    shares: "48",
-    image: "/Images/2026-02-14T05-30-01.539Z-001.png",
-    initials: "DP",
-    featured: true,
-    read: "8 min",
-  },
-  {
-    id: 2,
-    category: "Finance",
-    title: "The Road to Financial Independence",
-    desc: "Financial independence means having enough passive income to cover your expenses — here's how to get there faster.",
-    author: "Rahul Mehta",
-    date: "Apr 08, 2026",
-    views: "7,240",
-    shares: "63",
-    image: "/Images/trainee1.png",
-    initials: "RM",
-    featured: false,
-    read: "6 min",
-  },
-  {
-    id: 3,
-    category: "Wellness",
-    title: "Benefits of Yoga: Transform Your Mind and Body",
-    desc: "Yoga is far more than just flexibility training — it rewires your nervous system and builds lasting inner calm.",
-    author: "Meera Nair",
-    date: "Apr 06, 2026",
-    views: "5,830",
-    shares: "37",
-    image: "/Images/trainee1.png",
-    initials: "MN",
-    featured: false,
-    read: "5 min",
-  },
-  {
-    id: 4,
-    category: "Health",
-    title: "Best Morning Routine for a Healthy Life",
-    desc: "Start your day with science-backed habits that sharpen your mental clarity and boost energy levels all day long.",
-    author: "Anita Verma",
-    date: "Apr 05, 2026",
-    views: "4,120",
-    shares: "25",
-    image: "/Images/trainee1.png",
-    initials: "AV",
-    featured: false,
-    read: "4 min",
-  },
-  {
-    id: 5,
-    category: "Finance",
-    title: "Investing Basics Every Beginner Should Know",
-    desc: "Learn the fundamentals of investing and start growing your wealth with confidence — even on a very small budget.",
-    author: "Amit Jain",
-    date: "Apr 04, 2026",
-    views: "6,540",
-    shares: "41",
-    image: "/Images/2026-02-14T05-30-01.539Z-001.png",
-    initials: "AJ",
-    featured: false,
-    read: "7 min",
-  },
-  {
-    id: 6,
-    category: "Wellness",
-    title: "Meditation Techniques for Stress Relief",
-    desc: "Simple, proven meditation techniques that reduce stress and improve focus in just 10 minutes a day.",
-    author: "Sanya Mehta",
-    date: "Apr 03, 2026",
-    views: "3,890",
-    shares: "29",
-    image: "/Images/2026-02-14T05-30-01.539Z-001.png",
-    initials: "SM",
-    featured: false,
-    read: "5 min",
-  },
-];
-
-const categoryStyles = {
-  Health: {
-    tag: "bg-blue-50 text-blue-600 border border-blue-100",
-    avatar: "bg-blue-100 text-blue-600",
-  },
-  Finance: {
-    tag: "bg-emerald-50 text-emerald-600 border border-emerald-100",
-    avatar: "bg-emerald-100 text-emerald-600",
-  },
-  Wellness: {
-    tag: "bg-violet-50 text-violet-600 border border-violet-100",
-    avatar: "bg-violet-100 text-violet-600",
-  },
-};
 
 /* ━━━ ARTICLE CARD ━━━ */
 function ArticleCard({ article, index }) {
-  const styles = categoryStyles[article.category];
+
+  const handleReadArticle = ()=>{
+    
+  }
+
   return (
     <div
       className="h-full flex flex-col group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
@@ -117,13 +20,13 @@ function ArticleCard({ article, index }) {
     >
       <div className="relative h-52 overflow-hidden">
         <Image
-          src={article.image}
+          src={article.coverImage.url}
           alt={article.title}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-        <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-sm bg-white/85 ${styles.tag}`}>
+        <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-sm bg-white/85`}>
           {article.category}
         </span>
         {article.featured && (
@@ -133,7 +36,7 @@ function ArticleCard({ article, index }) {
         )}
         <div className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] font-medium px-2.5 py-1 rounded-lg">
           <Clock size={11} />
-          {article.read}
+          {article.views}
         </div>
       </div>
       <div className="p-5 flex flex-col flex-grow">
@@ -141,23 +44,25 @@ function ArticleCard({ article, index }) {
           {article.title}
         </h3>
         <p className="text-[13px] text-gray-500 leading-relaxed mb-4 line-clamp-2 flex-grow">
-          {article.desc}
+          {article.shortDescription}
         </p>
         <div className="flex items-center gap-3 mb-4 mt-auto">
-          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${styles.avatar}`}>
-            {article.initials}
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0`}>
+            {/*article.initials*/}DK
           </div>
           <div>
             <p className="text-[13px] font-semibold text-gray-800">{article.author}</p>
-            <p className="text-[11px] text-gray-400">{article.date}</p>
+            <p className="text-[11px] text-gray-400">{article.createdAt}</p>
           </div>
         </div>
         <div className="flex items-center justify-between border-t border-gray-100 pt-3">
           <div className="flex items-center gap-4 text-[12px] text-gray-400">
             <span className="flex items-center gap-1.5"><Eye size={13} />{article.views}</span>
-            <span className="flex items-center gap-1.5"><Share2 size={13} />{article.shares}</span>
+            <span className="flex items-center gap-1.5"><Share2 size={13} />{/*article.shares*/}shares</span>
           </div>
-          <button className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-blue-50 to-violet-50 border border-blue-100 text-blue-600 text-[12px] font-semibold hover:from-blue-600 hover:to-blue-700 hover:text-white hover:border-transparent transition-all duration-200 hover:shadow-md hover:shadow-blue-200">
+          <button 
+          onClick={handleReadArticle}
+          className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-blue-50 to-violet-50 border border-blue-100 text-blue-600 text-[12px] font-semibold hover:from-blue-600 hover:to-blue-700 hover:text-white hover:border-transparent transition-all duration-200 hover:shadow-md hover:shadow-blue-200">
             Read →
           </button>
         </div>
@@ -291,7 +196,7 @@ function MobileCarousel({ articles }) {
       >
         {articles.map((article, i) => (
           <div
-            key={article.id}
+            key={article._id}
             className="flex-none snap-start snap-always pt-1 px-0.5 pb-2 w-full sm:w-[calc(50%-8px)] lg:w-[calc(25%-12px)]"
           >
             <ArticleCard
@@ -369,7 +274,7 @@ function MobileCarousel({ articles }) {
         <button
           onClick={next}
           disabled={
-            isAtEnd || currentIndex === articles.length - 1
+            isAtEnd || currentIndex === articles?.length - 1
           }
           className="
             w-10
@@ -400,24 +305,38 @@ function MobileCarousel({ articles }) {
 
       {/* Counter */}
       <p className="text-center text-xs text-gray-400 mt-3 font-medium">
-        {currentIndex + 1} / {articles.length} articles
+        {currentIndex + 1} / {articles?.length} articles
       </p>
     </div>
   );
 }
 
+
 /* ━━━ MAIN COMPONENT ━━━ */
 export default function Articles() {
-  const [activeFilter, setActiveFilter] = useState("All Topics");
+  const [featuredArticles, setFeaturedArticles] = useState([]);
+ 
 
-  const filtered =
-    activeFilter === "All Topics"
-      ? articles
-      : articles.filter((a) => a.category === activeFilter);
+// Fetching Featured articles
 
-  const handleFilter = (cat) => {
-    setActiveFilter(cat);
-  };
+const fetchFeaturedArticles = async()=>{
+  
+  try{
+    const res = await axios.get(`http://localhost:5001/api/featured-lists?itemType=Article`)
+    if(res.data.success){
+      const articlesFeatured = res.data.data.map(item => item.itemRef)
+      setFeaturedArticles(articlesFeatured)
+    }
+
+  }catch(error){
+    console.error("an error occured while fetching articles: ", error)
+  }
+}
+
+useEffect(()=>{
+  fetchFeaturedArticles()
+},[])
+
 
   return (
     <>
@@ -586,11 +505,11 @@ export default function Articles() {
                 <div className="hidden sm:flex items-center justify-between mb-8 flex-wrap gap-4">
                   <div>
                     <p className="text-sm text-gray-400 font-medium uppercase tracking-widest mb-1">
-                      {activeFilter === "All Topics" ? "All Articles" : activeFilter}
+                      All Articles
                     </p>
                     <p className="text-gray-500 text-sm">
                       Showing{" "}
-                      <span className="font-semibold text-gray-700">{filtered.length}</span> articles
+                      <span className="font-semibold text-gray-700">{featuredArticles?.length}</span> articles
                     </p>
                   </div>
                   <div className="flex items-center gap-3 min-w-[200px]">
@@ -606,8 +525,8 @@ export default function Articles() {
 
                 {/* ── RESPONSIVE CAROUSEL ── */}
                 <div className="w-full">
-                  {filtered.length > 0 ? (
-                    <MobileCarousel articles={filtered} />
+                  {featuredArticles?.length > 0 ? (
+                    <MobileCarousel articles={featuredArticles} />
                   ) : (
                     <div className="text-center py-20 text-gray-400">
                       <BookOpen size={40} className="mx-auto mb-4 opacity-40" />
