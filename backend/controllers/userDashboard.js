@@ -81,12 +81,12 @@ export const getUserDashboard = asyncHandler(
         );
         res.status(200).json({
             success: true,
-            date: {
+            data: {
                 user: {
                     _id: user._id,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    eamil: user.email,
+                    email: user.email,
                 },
 
                 newTrainers: {

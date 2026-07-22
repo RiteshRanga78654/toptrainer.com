@@ -15,7 +15,7 @@ import {
 import Footer from "../../components/footer";
 import DownloadButton from "../../profile/DownloadButton";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
@@ -351,7 +351,7 @@ export default function Profile() {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`${API_BASE}/api/trainers/${trainerId}`);
+        const res = await fetch(`${API_BASE}/trainers/${trainerId}`);
         const data = await res.json();
 
         if (!res.ok || !data.success) {

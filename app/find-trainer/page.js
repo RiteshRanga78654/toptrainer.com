@@ -369,7 +369,7 @@ export default function FindTrainersPage() {
       const raw = data.trainers || data.data || [];
 
       const trainerList = raw.map((trainer) => ({
-        id: trainer.trainerId, // FIX: was trainer.trainerId (didn't exist on the doc)
+        id: trainer._id,
         name: trainer.fullName,
         image: trainer.profilePhoto?.url || "/Images/default-trainer.png",
         title: trainer.subjectLine,
@@ -400,7 +400,7 @@ export default function FindTrainersPage() {
   const fetchShortlist = async () => {
     if (!user) { setShortlistedIds(new Set()); return; }
     try {
-      const { data } = await userDashboardAPI.getShortlisted();
+      const { data } = await userDashboardAPI.getShortlistedProfiles();
       const list = data?.trainers || [];
       setShortlistedIds(new Set(list.map((t) => t._id)));
     } catch (err) {
