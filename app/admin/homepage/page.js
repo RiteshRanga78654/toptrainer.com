@@ -13,6 +13,8 @@ import HeroSliderSection from "./components/HeroSliderSection";
 import YoutubeSection from "./components/YoutubeSection";
 import useHomepageState from "./hooks/useHomepageState";
 
+
+
 export default function HomepagePage() {
   const { youtubeState, heroState, expertState, workshopState } = useHomepageState();
 
@@ -31,7 +33,8 @@ export default function HomepagePage() {
     images,
     heroSaved,
     setHeroSaved,
-    updateCaption,
+    addHeroImage,
+    reorderHeroImages,
     toggleActive,
     removeImage,
     saveHero,
@@ -100,11 +103,11 @@ export default function HomepagePage() {
       {/* ── 1. Hero Slider Images ───────────────────────────────────────────── */}
       <HeroSliderSection
         images={images}
-        updateCaption={updateCaption}
         toggleActive={toggleActive}
         removeImage={removeImage}
         saveHero={saveHero}
         settings={settings}
+        addHeroImage={addHeroImage}
       />
 
       {/* ── 2. Featured Trainers (Experts) ─────────────────────────────────── */}

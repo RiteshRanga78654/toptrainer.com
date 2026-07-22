@@ -863,7 +863,7 @@ const GlobalStyles = () => (
 );
 
 /* ━━━ SLIDES ━━━ */
-const slides = [
+const defaultSlides = [
   {
     label: "Expert Trainer",
     color: "#2563eb",
@@ -884,11 +884,30 @@ const slides = [
   },
 ];
 
+
 const Page = () => {
   const categoryRef = useRef(null);
   const [catIndex, setCatIndex] = useState(0);
   const [active, setActive] = useState(0);
   const [animKey, setAnimKey] = useState(0); // ✅ separate key to force re-animation
+  const [slides, setSlides] = useState(defaultSlides);
+
+  useEffect(() => {
+    fetch("http://localhost:5001/api/hero-images/active")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data.length > 0) {
+          const apiSlides = data.data.map(img => ({
+            label: "Top Trainer",
+            color: "#2563eb",
+            bg: "#eff6ff",
+            img: img.url,
+          }));
+          setSlides(apiSlides);
+        }
+      })
+      .catch(err => console.error("Error fetching hero images", err));
+  }, []);
 
   // ✅ FIX: update both active index AND animKey together so image + animation always re-trigger
   useEffect(() => {
@@ -900,7 +919,7 @@ const Page = () => {
       });
     }, 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [slides.length]);
 
   const categories = [
     {
@@ -1083,7 +1102,7 @@ const Page = () => {
                   style={{
                     background: cur.bg,
                     borderRadius: 28,
-                    padding: 0, // 🔥 no gap
+                    padding: 0, 
                     border: `1.5px solid ${cur.color}22`,
                     boxShadow: `0 16px 50px ${cur.color}22`,
                   }}
@@ -1097,7 +1116,7 @@ const Page = () => {
                     }}
                   >
                     <Image
-                      key={cur.img} // 🔥 force update
+                      key={cur.img} 
                       src={cur.img}
                       alt={cur.label}
                       fill

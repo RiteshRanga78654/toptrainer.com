@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  heroImages as initialHero,
   allExperts,
 } from "../../data/mockData";
 
@@ -66,21 +65,92 @@ export default function useHomepageState() {
   };
 
   // ── Hero state ──────────────────────────────────────────────────────────────
-  const [images, setImages] = useState(initialHero);
+  const [images, setImages] = useState([]);
   const [heroSaved, setHeroSaved] = useState(false);
 
-  const updateCaption = (id, caption) =>
-    setImages((prev) =>
-      prev.map((img) => (img.id === id ? { ...img, caption } : img)),
-    );
-  const toggleActive = (id) =>
+  useEffect(() => {
+    fetch("http://localhost:5001/api/hero-images")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setImages(data.data);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch hero images", err));
+  }, []);
+
+  const toggleActive = async (id) => {
+    const imgToUpdate = images.find((img) => img._id === id);
+    if (!imgToUpdate) return;
+    
+    // Optimistic UI update
     setImages((prev) =>
       prev.map((img) =>
-        img.id === id ? { ...img, active: !img.active } : img,
+        img._id === id ? { ...img, active: !img.active } : img,
       ),
     );
-  const removeImage = (id) =>
-    setImages((prev) => prev.filter((img) => img.id !== id));
+
+    try {
+      await axios.put(`http://localhost:5001/api/hero-images/${id}`, {
+        active: !imgToUpdate.active,
+      }, { withCredentials: true });
+    } catch (err) {
+      console.error("Failed to toggle active", err);
+      // Revert on failure
+      setImages((prev) =>
+        prev.map((img) =>
+          img._id === id ? { ...img, active: imgToUpdate.active } : img,
+        ),
+      );
+    }
+  };
+
+  const removeImage = async (id) => {
+    try {
+      const res = await axios.delete(`http://localhost:5001/api/hero-images/${id}`, { withCredentials: true });
+      if (res.data.success) {
+        setImages((prev) => prev.filter((img) => img._id !== id));
+      }
+    } catch (err) {
+      console.error("Failed to delete image", err);
+    }
+  };
+
+  const addHeroImage = async (file) => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await axios.post("http://localhost:5001/api/hero-images", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        setImages((prev) => [...prev, res.data.data]);
+        setHeroSaved(true);
+        setTimeout(() => setHeroSaved(false), 3000);
+      }
+    } catch (err) {
+      console.error("Failed to upload hero image", err);
+    }
+  };
+
+  // Reordering logic
+  const reorderHeroImages = async (newImages) => {
+    setImages(newImages); // Optimistic UI update
+    const orderMap = {};
+    newImages.forEach((img, index) => {
+      orderMap[img._id] = index;
+    });
+
+    try {
+      await axios.put("http://localhost:5001/api/hero-images/reorder", { orderMap }, { withCredentials: true });
+    } catch (err) {
+      console.error("Failed to reorder images", err);
+    }
+  };
+
   const saveHero = () => {
     setHeroSaved(true);
     setTimeout(() => setHeroSaved(false), 3000);
@@ -258,7 +328,8 @@ export default function useHomepageState() {
       images,
       heroSaved,
       setHeroSaved,
-      updateCaption,
+      addHeroImage,
+      reorderHeroImages,
       toggleActive,
       removeImage,
       saveHero,
