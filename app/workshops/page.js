@@ -431,7 +431,7 @@ export default function WorkshopsPage() {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`${API_BASE}/api/workshops/published`);
+        const res = await fetch(`${API_BASE}/workshops/published`);
         const data = await res.json();
 
         if (!res.ok || !data.success) {

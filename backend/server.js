@@ -10,7 +10,6 @@ import userRouter from "./routes/userRouter.js";
 import userDashBoard from "./routes/userDashboardRouter.js"
 import trainerRouter from "./routes/trainerRouter.js";
 import trainerDashboard from "./routes/trainerDashboardRouter.js"
-import adminAuthRouter from "./routes/adminAuthRouter.js";
 import adminDashBoard from "./routes/adminDashboardRouter.js"
 import workshopRouter from "./routes/workshopRouter.js";
 import articleRouter from "./routes/articleRouter.js";
@@ -19,7 +18,7 @@ import industryRouter from "./routes/industryRouter.js";
 import competencyRouter from "./routes/competencyRouter.js";
 import mediaRouter from "./routes/mediaRouter.js";
 import youtubeVideoRouter from "./routes/youtubeVideoRouter.js";
-import authRouter from "./routes/authRouter.js"
+
 
 
 dotenv.config();
@@ -32,7 +31,7 @@ console.log("SERVER ENV:", process.env.CLOUDINARY_CLOUD_NAME);
 const app = express();
 app.use(
   cors({
-    origin: "https://toptrainer-com.vercel.app/",
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -41,7 +40,6 @@ app.use(cookieParser());
 
 app.use("/api/users", userRouter);
 app.use("/api/trainers", trainerRouter);
-app.use("/api/admin", adminAuthRouter);
 app.use("/api/admin", adminDashBoard);
 app.use("/api/trainer", trainerDashboard);
 app.use("/api/user", userDashBoard);
@@ -51,7 +49,6 @@ app.use("/api/reviews", reviewRouter);
 app.use("/api/industries", industryRouter);
 app.use("/api/competencies", competencyRouter);
 app.use("/api/media", mediaRouter);
-app.use("/api/auth", authRouter);
 app.use("/api/youtube-videos", youtubeVideoRouter);
 
 

@@ -407,7 +407,7 @@ export default function WorkshopDetailPage() {
       try {
         setLoading(true);
 
-        const res = await fetch(`${API_BASE}/api/workshops/published/${workshopId}`);
+        const res = await fetch(`${API_BASE}/workshops/published/${workshopId}`);
         const data = await res.json();
 
         if (!res.ok || !data.success) {
@@ -418,7 +418,7 @@ export default function WorkshopDetailPage() {
         const mapped = mapWorkshopDetail(data.workshop);
         setW(mapped);
 
-        const relatedRes = await fetch(`${API_BASE}/api/workshops/published`);
+        const relatedRes = await fetch(`${API_BASE}/workshops/published`);
         const relatedData = await relatedRes.json();
 
         if (relatedRes.ok && relatedData.success) {
