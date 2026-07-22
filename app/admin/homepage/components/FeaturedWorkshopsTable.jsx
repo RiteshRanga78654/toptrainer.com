@@ -36,9 +36,6 @@ export default function FeaturedWorkshopsTable({
             </thead>
             <tbody>
               {featuredWorkshops.map((workshop) => {
-                const isFeatured = featuredWorkshops.some(
-                  (fw) => fw._id === workshop._id,
-                );
                 return (
                   <tr
                     key={workshop._id}
@@ -51,7 +48,7 @@ export default function FeaturedWorkshopsTable({
                     </td>
                     <td className="px-4 py-3">
                       <p className="text-xs text-slate-700">
-                        {workshop.assignedTrainer?.fullName || "—"}
+                        {workshop.assignedTrainer || "—"}
                       </p>
                     </td>
                     <td className="px-4 py-3">
@@ -62,7 +59,7 @@ export default function FeaturedWorkshopsTable({
                     <td className="px-4 py-3 text-center">
                       <input
                         type="checkbox"
-                        checked={isFeatured}
+                        checked={true}
                         onChange={() => toggleFeaturedWorkshop(workshop._id)}
                         className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
                       />

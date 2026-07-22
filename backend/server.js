@@ -16,12 +16,10 @@ import articleRouter from "./routes/articleRouter.js";
 import reviewRouter from "./routes/reviewRouter.js";
 import industryRouter from "./routes/industryRouter.js";
 import competencyRouter from "./routes/competencyRouter.js";
-import mediaRouter from "./routes/mediaRouter.js";
+import searchRouter from "./routes/searchRouter.js"
 import youtubeRouter from "./routes/youtubeVideoRouter.js";
 import featuredRouter from "./routes/featuredItems.js";
-
-
-dotenv.config();
+import mediaRouter from "./routes/mediaRouter.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -49,9 +47,10 @@ app.use("/api/articles", articleRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/industries", industryRouter);
 app.use("/api/competencies", competencyRouter);
-app.use("/api/media", mediaRouter);
+app.use("/api/search", searchRouter);
 app.use("/api/youtube-videos", youtubeRouter);
 app.use("/api/featured-lists", featuredRouter);
+app.use("/api/media", mediaRouter);
 
 
 connectDB();

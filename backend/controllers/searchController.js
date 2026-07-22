@@ -30,7 +30,7 @@ export const globalSearch = asyncHandler(
         const searchRegex = buildSearchRegex(keyword);
 
         const trainerPromise = TrainerProfile.find({
-            status: "active",
+            status: "approved",
             $or: [
                 { fullName: searchRegex },
                 { companyName: searchRegex },
@@ -45,7 +45,7 @@ export const globalSearch = asyncHandler(
             .select("fullName companyName subjectLine tagsLine profileSummary expertiseDomain isFeatured").limit(5);
 
         const workshopPromise = workshops.find({
-            status: "active",
+            status: "published",
             visibility: true,
             $or: [
                 { "basicInformation.title": searchRegex },
@@ -70,13 +70,13 @@ export const globalSearch = asyncHandler(
             .limit(5);
 
 
-        const [trainers, workshops, articles] = await Promise.all([trainerPromise, workshopPromise, articlePromise]);
+        const [trainers, Workshops, articles] = await Promise.all([trainerPromise, workshopPromise, articlePromise]);
 
         res.status(200).json({
             success: true,
             data: {
                 trainers,
-                workshops,
+                Workshops,
                 articles,
             },
 
@@ -94,20 +94,28 @@ export const searchTrainers = asyncHandler(
         }
         if (keyword) {
             const searchRegex = buildSearchRegex(keyword);
-            if (keyword.toUpperCase().startsWith("TR")) {
-                filter.trainerId = keyword.toUpperCase();
-            } else {
-                filter.$or = [
-                    { fullName: searchRegex },
-                    { companyName: searchRegex },
-                    { subjectLine: searchRegex },
-                    { tagsLine: searchRegex },
-                    { "profileSummary.profileSummary": searchRegex },
-                    { "expertiseDomain.industry": searchRegex },
-                    { "expertiseDomain.domain": searchRegex },
-                    { "expertiseDomain.competencies": searchRegex },
-                ];
-            }
+            filter.$or = [
+                { fullName: searchRegex },
+                { companyName: searchRegex },
+                { subjectLine: searchRegex },
+                { tagsLine: searchRegex },
+                { "profileSummary.profileSummary": searchRegex },
+                { "expertiseDomain.industry": searchRegex },
+                { "expertiseDomain.domain": searchRegex },
+                { "expertiseDomain.competencies": searchRegex },
+            ];
+        }
+        if (industry) {
+            filter["expertiseDomain.industry"] = industry;
+        }
+        if (competency) {
+            filter["expertiseDomain.competency"] = competency;
+        }
+        if (trainerType) {
+            filter["expertiseDomain.trainerType"] = trainerType;
+        }
+        if (city) {
+            filter["contactInfo.location.city"] = buildSearchRegex(city);
         }
             if (industry) {
                 filter["expertiseDomain.industry"] = industry;
@@ -141,9 +149,8 @@ export const searchTrainers = asyncHandler(
                 currentPage: page,
                 totalPages: Math.ceil(totalCount / limit),
                 trainers,
-
-            })
         });
+    });
 
 export const searchWorkshops = asyncHandler(
     async (req, res) => {
@@ -208,7 +215,8 @@ export const searchWorkshops = asyncHandler(
             totalPages: Math.ceil(totalCount / limit),
             workshops: workshopsList,
         });
-    });
+    }
+);
 
 export const searchArticles = asyncHandler(
     async (req, res) => {

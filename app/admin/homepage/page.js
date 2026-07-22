@@ -284,7 +284,6 @@ export default function HomepagePage() {
                     </thead>
                     <tbody>
                       {searchResults.map((workshop) => {
-                        const isFeatured = featuredWorkshops.some(fw => fw._id === workshop._id);
                         return (
                           <tr key={workshop._id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors">
                             <td className="px-4 py-3">
@@ -300,7 +299,7 @@ export default function HomepagePage() {
                             <td className="px-4 py-3 text-center">
                               <input
                                 type="checkbox"
-                                checked={isFeatured}
+                                checked={false}
                                 onChange={() => toggleFeaturedWorkshop(workshop._id)}
                                 className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
                               />

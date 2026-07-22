@@ -138,7 +138,7 @@ export default function useHomepageState() {
     { key: "All", label: "All" },
     { key: "Technology", label: "Tech" },
     { key: "Business", label: "Business" },
-    { key: "Health & Wellness", label: "Health" },
+    { key: "Health", label: "Health" },
     { key: "Finance", label: "Finance" },
     { key: "Marketing", label: "Marketing" },
     { key: "Creative Arts", label: "Creative" },
@@ -151,7 +151,8 @@ export default function useHomepageState() {
         `http://localhost:5001/api/featured-lists?itemType=Workshop&category=${activeWorkshopTab}`,
       );
       if (res.data.success) {
-        setFeaturedWorkshops(res.data.data);
+        const workshopOnly = res.data.data.map(item => item.itemRef);
+        setFeaturedWorkshops(workshopOnly);
       }
     } catch (err) {
       console.error("Failed to fetch featured workshops", err);
@@ -161,7 +162,7 @@ export default function useHomepageState() {
  
   useEffect(() => {
     fetchFeaturedWorkshops();
-  }, []);
+  }, [activeWorkshopTab]);
 
   const handleWorkshopSearch = async () => {
     if (!searchWorkshopQuery.trim()) return;
@@ -186,10 +187,13 @@ export default function useHomepageState() {
 
   const toggleFeaturedWorkshop = async (id) => {
     let url ="http://localhost:5001/api/featured-lists/toggle";
+
     let body = {
+      itemRef: id,
       itemType:"Workshop",
       category:`${activeWorkshopTab}`
     }
+
     try {
       const res = await axios.post(url,body);
       if (res.data.success) {
