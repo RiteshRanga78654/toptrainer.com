@@ -1,8 +1,6 @@
 import express from "express";
 
-import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle, updateArticle } from "../controllers/articleContoller.js";
-import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle, getAllArticles} from "../controllers/articleContoller.js";
-
+import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle, updateArticle, getAllArticles } from "../controllers/articleContoller.js";
 import { protectAdmin } from "../middleware/adminAuthMiddleware.js";
 import { protectTrainer } from "../middleware/trainerAuthMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
