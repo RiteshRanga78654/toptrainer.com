@@ -381,13 +381,15 @@ export const userDashboardAPI = {
   getShortlistedProfiles: () => API.get("/user/shortlisted"),
   toggleShortlist: (trainerId) => API.post(`/user/shortlist/${trainerId}`),
   getWorkshops: (params = {}) => API.get("/user/workshops", { params }),
-  toggleSaveWorkshop: (workshopId) =>
-    API.post(`/user/save-workshop/${workshopId}`),
+  toggleSaveWorkshop: (workshopId) => API.post(`/user/save-workshop/${workshopId}`),
+  removeSavedWorkshop: (workshopId) => API.delete(`/user/save-workshop/${workshopId}`),
+  getSavedWorkshopStatus: (workshopId) => API.get(`/user/save-workshop/${workshopId}/status`),
   getArticles: (params = {}) => API.get("/user/articles", { params }),
   toggleSaveArticle: (articleId) => API.post(`/user/save-article/${articleId}`),
   getArticleById: (articleId) => API.get(`/user/articles/${articleId}`),
-  getMyReviews: () => API.get("reviews/my-review"),
+ getMyReviews: () => API.get("reviews/my-review"),
 };
+
 
 // ── Reviews ──────────────────────────────────────────────────
 export const reviewsAPI = {

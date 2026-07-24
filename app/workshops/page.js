@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
+import toast from "react-hot-toast";
 import {
   Brain, BarChart3, Monitor, Mic, Leaf, Users,
   Globe, Star, ArrowRight, X,
@@ -9,8 +11,10 @@ import {
   Bookmark, ChevronLeft, ChevronRight,
   MapPin, Target, Building2
 } from "lucide-react";
+import { useAuth } from "../hooks";
+import { userDashboardAPI } from "../lib/api";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 /* ─────────────────────────────────────────────
    DATA
@@ -323,7 +327,7 @@ function HeroSection() {
 /* ─────────────────────────────────────────────
    WORKSHOP CARD
 ───────────────────────────────────────────── */
-function WorkshopCard({ w }) {
+function WorkshopCard({ w, isSaved, onToggleBookmark, bookmarkBusy }) {
   const col = CAT_COLORS[w.category] || CAT_COLORS.sales;
   const CatLabel = CATEGORIES.find(c => c.id === w.category)?.label || w.category;
 
@@ -337,10 +341,20 @@ function WorkshopCard({ w }) {
         </div>
 
         <button
-          onClick={e => e.preventDefault()}
-          style={{ position:'absolute', top:12, right:12, width:32, height:32, borderRadius:8, background:'white', border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}
+          onClick={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleBookmark?.(w.id);
+          }}
+          disabled={bookmarkBusy}
+          aria-label={isSaved ? "Remove bookmark" : "Add bookmark"}
+          style={{ position:'absolute', top:12, right:12, width:32, height:32, borderRadius:8, background:'white', border:'none', cursor: bookmarkBusy ? 'wait' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(0,0,0,0.1)', opacity: bookmarkBusy ? 0.7 : 1 }}
         >
-          <Bookmark size={14} style={{ color:'#94a3b8' }} />
+          <Bookmark
+            size={14}
+            style={{ color: isSaved ? '#ef4444' : '#94a3b8' }}
+            fill={isSaved ? '#ef4444' : 'none'}
+          />
         </button>
 
         {w.isLive && (
@@ -417,13 +431,87 @@ function WorkshopCard({ w }) {
    MAIN PAGE
 ───────────────────────────────────────────── */
 export default function WorkshopsPage() {
+  const router = useRouter();
+  const { user, initialized } = useAuth();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
   const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [savedIds, setSavedIds] = useState(() => new Set());
+  const [bookmarkBusyId, setBookmarkBusyId] = useState("");
   const sliderRef = useRef(null);
+
+  // Load which workshops the logged-in user has already bookmarked
+  useEffect(() => {
+    if (!initialized || !user) return;
+    let ignore = false;
+
+    (async () => {
+      try {
+        const res = await userDashboardAPI.getWorkshops({ limit: 100 });
+        const saved = res?.data?.data?.saved?.workshops || [];
+        if (!ignore) {
+          setSavedIds(new Set(saved.map(w => String(w?._id))));
+        }
+      } catch (_) {
+        // silently ignore — bookmark state just won't pre-fill
+      }
+    })();
+
+    return () => { ignore = true; };
+  }, [initialized, user]);
+
+  const handleToggleBookmark = useCallback(async (workshopId) => {
+    if (!initialized) return;
+
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    setBookmarkBusyId(workshopId);
+    const wasSaved = savedIds.has(String(workshopId));
+
+    // optimistic update
+    setSavedIds(prev => {
+      const next = new Set(prev);
+      if (wasSaved) next.delete(String(workshopId));
+      else next.add(String(workshopId));
+      return next;
+    });
+
+    try {
+      const res = await userDashboardAPI.toggleSaveWorkshop(workshopId);
+      const isSaved = res?.data?.isSaved;
+
+      setSavedIds(prev => {
+        const next = new Set(prev);
+        if (isSaved) next.add(String(workshopId));
+        else next.delete(String(workshopId));
+        return next;
+      });
+
+      toast.success(isSaved ? "Workshop bookmarked" : "Bookmark removed");
+    } catch (err) {
+      // revert optimistic update
+      setSavedIds(prev => {
+        const next = new Set(prev);
+        if (wasSaved) next.add(String(workshopId));
+        else next.delete(String(workshopId));
+        return next;
+      });
+
+      if (err?.response?.status === 401) {
+        router.push("/auth/login");
+      } else {
+        toast.error(err?.response?.data?.message || "Something went wrong");
+      }
+    } finally {
+      setBookmarkBusyId("");
+    }
+  }, [initialized, user, savedIds, router]);
 
   useEffect(() => {
     const fetchWorkshops = async () => {
@@ -431,7 +519,7 @@ export default function WorkshopsPage() {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`${API_BASE}/workshops/published`);
+        const res = await fetch(`${API_BASE}/api/workshops/published`);
         const data = await res.json();
 
         if (!res.ok || !data.success) {
@@ -544,7 +632,7 @@ export default function WorkshopsPage() {
                   {visible.map((w, i) => (
                     <div key={w.id} className="min-w-full snap-center px-1">
                       <div className="card-anim" style={{ animationDelay:`${i*60}ms` }}>
-                        <WorkshopCard w={w} />
+                        <WorkshopCard w={w} isSaved={savedIds.has(String(w.id))} onToggleBookmark={handleToggleBookmark} bookmarkBusy={bookmarkBusyId === w.id} />
                       </div>
                     </div>
                   ))}
@@ -561,7 +649,7 @@ export default function WorkshopsPage() {
               <div className="hidden sm:grid grid-cols-2 xl:grid-cols-3 gap-6">
                 {visible.map((w, i) => (
                   <div key={w.id} className="card-anim" style={{ animationDelay:`${i*60}ms` }}>
-                    <WorkshopCard w={w} />
+                    <WorkshopCard w={w} isSaved={savedIds.has(String(w.id))} onToggleBookmark={handleToggleBookmark} bookmarkBusy={bookmarkBusyId === w.id} />
                   </div>
                 ))}
               </div>

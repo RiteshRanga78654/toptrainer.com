@@ -2,16 +2,19 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
   ArrowLeft, Star, Clock, Users, Tag, CheckCircle2,
   BadgeCheck, Zap, ArrowRight, ChevronRight, Award,
   Camera, IndianRupee, Wifi, MapPin, Play, Calendar,
   GraduationCap, Brain, BarChart3, Mic, Leaf,
-  TrendingUp, Shield
+  TrendingUp, Shield, Bookmark
 } from "lucide-react";
+import { useAuth } from "../../hooks";
+import { userDashboardAPI } from "../../lib/api";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 const CATEGORIES = [
   { id: "all", label: "All" },
@@ -397,17 +400,69 @@ function mapWorkshopDetail(item) {
 
 export default function WorkshopDetailPage() {
   const { id: slugParam } = useParams();
+  const router = useRouter();
+  const { user, initialized } = useAuth();
   const workshopId = useMemo(() => slugToId(slugParam), [slugParam]);
   const [w, setW] = useState(null);
   const [relatedWorkshops, setRelatedWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
+  const [bookmarkBusy, setBookmarkBusy] = useState(false);
+
+  useEffect(() => {
+    if (!initialized || !user || !workshopId) {
+      setIsSaved(false);
+      return;
+    }
+    let ignore = false;
+
+    (async () => {
+      try {
+        const res = await userDashboardAPI.getSavedWorkshopStatus(workshopId);
+        if (!ignore) setIsSaved(Boolean(res?.data?.isSaved));
+      } catch (_) {
+        // ignore — leave as unsaved
+      }
+    })();
+
+    return () => { ignore = true; };
+  }, [initialized, user, workshopId]);
+
+  const handleToggleBookmark = async () => {
+    if (!initialized) return;
+
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    setBookmarkBusy(true);
+    const wasSaved = isSaved;
+    setIsSaved(!wasSaved);
+
+    try {
+      const res = await userDashboardAPI.toggleSaveWorkshop(workshopId);
+      const saved = Boolean(res?.data?.isSaved);
+      setIsSaved(saved);
+      toast.success(saved ? "Workshop bookmarked" : "Bookmark removed");
+    } catch (err) {
+      setIsSaved(wasSaved);
+      if (err?.response?.status === 401) {
+        router.push("/auth/login");
+      } else {
+        toast.error(err?.response?.data?.message || "Something went wrong");
+      }
+    } finally {
+      setBookmarkBusy(false);
+    }
+  };
 
   useEffect(() => {
     const fetchWorkshop = async () => {
       try {
         setLoading(true);
 
-        const res = await fetch(`${API_BASE}/workshops/published/${workshopId}`);
+        const res = await fetch(`${API_BASE}/api/workshops/published/${workshopId}`);
         const data = await res.json();
 
         if (!res.ok || !data.success) {
@@ -418,7 +473,7 @@ export default function WorkshopDetailPage() {
         const mapped = mapWorkshopDetail(data.workshop);
         setW(mapped);
 
-        const relatedRes = await fetch(`${API_BASE}/workshops/published`);
+        const relatedRes = await fetch(`${API_BASE}/api/workshops/published`);
         const relatedData = await relatedRes.json();
 
         if (relatedRes.ok && relatedData.success) {
@@ -565,6 +620,28 @@ export default function WorkshopDetailPage() {
                       LIVE NOW
                     </span>
                   )}
+
+                  <button
+                    onClick={handleToggleBookmark}
+                    disabled={bookmarkBusy}
+                    aria-label={isSaved ? "Remove bookmark" : "Bookmark this workshop"}
+                    style={{
+                      marginLeft: "auto",
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      width: 38, height: 38, borderRadius: 99,
+                      background: "rgba(255,255,255,0.85)", backdropFilter: "blur(8px)",
+                      border: "1px solid rgba(37,99,235,0.15)",
+                      boxShadow: "0 4px 16px rgba(37,99,235,0.08)",
+                      cursor: bookmarkBusy ? "wait" : "pointer",
+                      opacity: bookmarkBusy ? 0.7 : 1,
+                    }}
+                  >
+                    <Bookmark
+                      size={16}
+                      style={{ color: isSaved ? "#ef4444" : "#64748b" }}
+                      fill={isSaved ? "#ef4444" : "none"}
+                    />
+                  </button>
                 </div>
               </div>
 

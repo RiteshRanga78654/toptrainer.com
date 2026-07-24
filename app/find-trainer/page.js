@@ -14,52 +14,112 @@ const LOAD_MORE_COUNT = 4;
 /* ── Animated Background ── */
 function AnimatedBackground() {
   const canvasRef = useRef(null);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     const ctx = canvas.getContext("2d");
     let animId;
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
     resize();
     window.addEventListener("resize", resize);
+
     const rand = (min, max) => Math.random() * (max - min) + min;
-    const dots = Array.from({ length: 50 }, () => ({ x: rand(0, window.innerWidth), y: rand(0, window.innerHeight), r: rand(1.5, 3.5), vx: rand(-0.15, 0.15), vy: rand(-0.2, -0.05), alpha: rand(0.35, 0.7), pulse: rand(0, Math.PI * 2) }));
-    const blobs = Array.from({ length: 4 }, () => ({ x: rand(0, window.innerWidth), y: rand(0, window.innerHeight), r: rand(120, 220), vx: rand(-0.08, 0.08), vy: rand(-0.07, 0.07), hue: rand(250, 280) }));
+
+    const dots = Array.from({ length: 50 }, () => ({
+      x: rand(0, window.innerWidth),
+      y: rand(0, window.innerHeight),
+      r: rand(1.5, 3.5),
+      vx: rand(-0.15, 0.15),
+      vy: rand(-0.2, -0.05),
+      alpha: rand(0.35, 0.7),
+      pulse: rand(0, Math.PI * 2),
+    }));
+
+    const blobs = Array.from({ length: 4 }, () => ({
+      x: rand(0, window.innerWidth),
+      y: rand(0, window.innerHeight),
+      r: rand(120, 220),
+      vx: rand(-0.08, 0.08),
+      vy: rand(-0.07, 0.07),
+      hue: rand(250, 280),
+    }));
+
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       blobs.forEach((b) => {
-        b.x += b.vx; b.y += b.vy;
+        b.x += b.vx;
+        b.y += b.vy;
         if (b.x < -b.r) b.x = canvas.width + b.r;
         if (b.x > canvas.width + b.r) b.x = -b.r;
         if (b.y < -b.r) b.y = canvas.height + b.r;
         if (b.y > canvas.height + b.r) b.y = -b.r;
+
         const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
         g.addColorStop(0, `hsla(${b.hue}, 70%, 85%, 0.18)`);
         g.addColorStop(1, `hsla(${b.hue}, 70%, 85%, 0)`);
-        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
       });
+
       dots.forEach((d) => {
-        d.pulse += 0.02; d.x += d.vx; d.y += d.vy;
-        if (d.y < -4) { d.y = canvas.height + 4; d.x = rand(0, canvas.width); }
+        d.pulse += 0.02;
+        d.x += d.vx;
+        d.y += d.vy;
+
+        if (d.y < -4) {
+          d.y = canvas.height + 4;
+          d.x = rand(0, canvas.width);
+        }
         if (d.x < -4) d.x = canvas.width + 4;
         if (d.x > canvas.width + 4) d.x = -4;
+
         const alphaNow = d.alpha * (0.7 + 0.3 * Math.sin(d.pulse));
-        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(139, 92, 246, ${alphaNow})`; ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(139, 92, 246, ${alphaNow})`;
+        ctx.fill();
       });
+
       animId = requestAnimationFrame(draw);
     };
+
     draw();
-    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
   }, []);
-  return <canvas ref={canvasRef} style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: -1 }} />;
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        zIndex: -1,
+      }}
+    />
+  );
 }
 
-/* ── Trainer Card ──
-   NOTE: `trainer` here is the SIMPLIFIED shape built in fetchTrainers()
-   below (id, name, image, title, company, rating, reviews, skills[],
-   location, experience, price, verified, topRated) — not the raw backend
-   TrainerProfile document. Keep this in sync with fetchTrainers(). */
+/* ── Trainer Card ── */
 const TrainerCard = ({ trainer, index, isShortlisted, onToggleShortlist }) => {
   const [busy, setBusy] = useState(false);
 
@@ -67,55 +127,91 @@ const TrainerCard = ({ trainer, index, isShortlisted, onToggleShortlist }) => {
     e.preventDefault();
     e.stopPropagation();
     if (busy) return;
+
     setBusy(true);
-    await onToggleShortlist(trainer.id);
+    await onToggleShortlist(trainer._id);
     setBusy(false);
   };
 
   return (
     <div
       className="bg-white rounded-2xl border border-blue-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
-      style={{ animation: `cardEntrance 0.5s cubic-bezier(0.22,1,0.36,1) ${index * 0.07}s both`, boxShadow: "0 2px 12px rgba(30,58,138,0.07)" }}
+      style={{
+        animation: `cardEntrance 0.5s cubic-bezier(0.22,1,0.36,1) ${index * 0.07}s both`,
+        boxShadow: "0 2px 12px rgba(30,58,138,0.07)",
+      }}
     >
-      {/* Image */}
       <div className="relative w-full overflow-hidden" style={{ height: "200px" }}>
-        <img src={trainer.image} alt={trainer.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+        <img
+          src={trainer.image}
+          alt={trainer.name}
+          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 via-transparent to-transparent pointer-events-none" />
+
         <button
           onClick={handleHeartClick}
           disabled={busy}
           className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform disabled:opacity-60"
           title={isShortlisted ? "Remove from shortlist" : "Add to shortlist"}
+          aria-label={isShortlisted ? "Remove from shortlist" : "Add to shortlist"}
         >
-          <svg className={`w-4 h-4 ${isShortlisted ? "text-red-500" : "text-blue-300"}`} fill={isShortlisted ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          <svg
+            className={`w-4 h-4 ${isShortlisted ? "text-red-500" : "text-blue-300"}`}
+            fill={isShortlisted ? "currentColor" : "none"}
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
           </svg>
         </button>
+
         {trainer.topRated && (
-          <div className="absolute top-3 left-3 text-white font-bold px-2.5 py-1 rounded-full" style={{ background: "linear-gradient(135deg, #1e3a8a, #2563eb)", fontSize: "10px", letterSpacing: "0.03em" }}>
+          <div
+            className="absolute top-3 left-3 text-white font-bold px-2.5 py-1 rounded-full"
+            style={{
+              background: "linear-gradient(135deg, #1e3a8a, #2563eb)",
+              fontSize: "10px",
+              letterSpacing: "0.03em",
+            }}
+          >
             ★ Top Rated
           </div>
         )}
       </div>
 
-      {/* Content */}
       <div className="p-4">
-        {/* Name + Rating row */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
-            <h3 className="font-bold text-base truncate" style={{ color: "#0f172a" }}>{trainer.name}</h3>
+            <h3 className="font-bold text-base truncate" style={{ color: "#0f172a" }}>
+              {trainer.name}
+            </h3>
             {trainer.verified && (
               <svg className="w-4 h-4 flex-shrink-0" style={{ color: "#1d4ed8" }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
               </svg>
             )}
           </div>
+
           <div className="flex items-center gap-1 flex-shrink-0">
             <svg className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            <span className="text-sm font-bold" style={{ color: "#1e3a8a" }}>  {trainer.rating || 0}</span>
-            <span className="text-xs" style={{ color: "#94a3b8" }}>( {trainer.reviews || 0})</span>
+            <span className="text-sm font-bold" style={{ color: "#1e3a8a" }}>
+              {trainer.rating || 0}
+            </span>
+            <span className="text-xs" style={{ color: "#94a3b8" }}>
+              ({trainer.reviews || 0})
+            </span>
           </div>
         </div>
 
@@ -126,7 +222,11 @@ const TrainerCard = ({ trainer, index, isShortlisted, onToggleShortlist }) => {
 
         <div className="flex flex-wrap gap-1.5 mt-3">
           {(trainer.skills || []).slice(0, 3).map((skill, i) => (
-            <span key={`${trainer.id}-${skill}-${i}`} className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#dbeafe", color: "#1e3a8a" }}>
+            <span
+              key={`${trainer.id}-${skill}-${i}`}
+              className="text-xs px-2 py-0.5 rounded-full font-medium"
+              style={{ background: "#dbeafe", color: "#1e3a8a" }}
+            >
               {skill}
             </span>
           ))}
@@ -138,16 +238,14 @@ const TrainerCard = ({ trainer, index, isShortlisted, onToggleShortlist }) => {
         </div>
 
         <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: "#dbeafe" }}>
-          <Link href={`/trainer-profile/${trainer.id}`}>
-            <button
-              className="text-xs px-3 py-1.5 rounded-lg font-semibold transition-all duration-200"
-              style={{ border: "1.5px solid #bfdbfe", color: "#1d4ed8", background: "white" }}
-              onMouseEnter={e => { e.currentTarget.style.background = "#eff6ff"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "white"; }}
-            >
-              View Profile
-            </button>
+          <Link
+            href={`/trainer-profile/${trainer.id}`}
+            className="text-xs px-3 py-1.5 rounded-lg font-semibold transition-all duration-200"
+            style={{ border: "1.5px solid #bfdbfe", color: "#1d4ed8", background: "white" }}
+          >
+            View Profile
           </Link>
+
           <div className="text-xs text-right" style={{ color: "#64748b" }}>
             <div className="flex items-center gap-1 justify-end">
               <svg className="w-3 h-3 flex-shrink-0" style={{ color: "#93c5fd" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -165,9 +263,25 @@ const TrainerCard = ({ trainer, index, isShortlisted, onToggleShortlist }) => {
 };
 
 /* ── Sidebar Filter Panel ── */
-const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRange, experienceFilter,
-   toggleExperience, selectedSkills, toggleSkill, verifiedOnly, setVerifiedOnly, availableThisWeek,
-    setAvailableThisWeek, offersTrial, setOffersTrial, resetFilters, skillSearch, setSkillSearch }) => {
+const FilterSidebar = ({
+  ratingFilter,
+  setRatingFilter,
+  priceRange,
+  setPriceRange,
+  experienceFilter,
+  toggleExperience,
+  selectedSkills,
+  toggleSkill,
+  verifiedOnly,
+  setVerifiedOnly,
+  availableThisWeek,
+  setAvailableThisWeek,
+  offersTrial,
+  setOffersTrial,
+  resetFilters,
+  skillSearch,
+  setSkillSearch,
+}) => {
   const experienceOptions = ["0 – 1 years", "1 – 3 years", "3 – 5 years", "5+ years"];
   const filteredSkillOptions = allSkills.filter((s) => s.toLowerCase().includes(skillSearch.toLowerCase()));
   const inputStyle = { border: "1.5px solid #bfdbfe", borderRadius: "8px", background: "white", color: "#0f172a" };
@@ -198,7 +312,7 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
             />
             <span className="text-xs" style={{ color: "#475569" }}>{r} & above</span>
             <div className="flex gap-0.5 ml-auto">
-              {[1,2,3,4,5].map((s) => (
+              {[1, 2, 3, 4, 5].map((s) => (
                 <svg key={s} className={`w-3 h-3 ${s <= r ? "text-amber-400" : "text-blue-100"}`} fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
@@ -211,16 +325,31 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
       <div className="mb-5">
         <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Price / Hour</h3>
         <div className="flex justify-between text-xs mb-2" style={{ color: "#64748b" }}>
-          <span>${priceRange[0]}</span><span>${priceRange[1]}+</span>
+          <span>${priceRange[0]}</span>
+          <span>${priceRange[1]}+</span>
         </div>
-        <input type="range" min={10} max={200} value={priceRange[1]} onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])} className="w-full" style={{ accentColor: "#5376d4" }} />
+        <input
+          type="range"
+          min={10}
+          max={200}
+          value={priceRange[1]}
+          onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+          className="w-full"
+          style={{ accentColor: "#5376d4" }}
+        />
       </div>
 
       <div className="mb-5">
         <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#264bb0" }}>Experience</h3>
         {experienceOptions.map((exp) => (
           <label key={exp} className="flex items-center gap-2 mb-2 cursor-pointer">
-            <input type="checkbox" checked={experienceFilter.includes(exp)} onChange={() => toggleExperience(exp)} className="w-3.5 h-3.5 rounded" style={{ accentColor: "#1e3a8a" }} />
+            <input
+              type="checkbox"
+              checked={experienceFilter.includes(exp)}
+              onChange={() => toggleExperience(exp)}
+              className="w-3.5 h-3.5 rounded"
+              style={{ accentColor: "#1e3a8a" }}
+            />
             <span className="text-xs" style={{ color: "#475569" }}>{exp}</span>
           </label>
         ))}
@@ -232,11 +361,25 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
           <svg className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3" style={{ color: "#93c5fd" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input type="text" placeholder="Search skills" value={skillSearch} onChange={(e) => setSkillSearch(e.target.value)} className="w-full pl-6 pr-2 py-1.5 text-xs" style={inputStyle} />
+          <input
+            type="text"
+            placeholder="Search skills"
+            value={skillSearch}
+            onChange={(e) => setSkillSearch(e.target.value)}
+            className="w-full pl-6 pr-2 py-1.5 text-xs"
+            style={inputStyle}
+          />
         </div>
+
         {filteredSkillOptions.map((skill) => (
           <label key={skill} className="flex items-center gap-2 mb-2 cursor-pointer">
-            <input type="checkbox" checked={selectedSkills.includes(skill)} onChange={() => toggleSkill(skill)} className="w-3.5 h-3.5 rounded" style={{ accentColor: "#1e3a8a" }} />
+            <input
+              type="checkbox"
+              checked={selectedSkills.includes(skill)}
+              onChange={() => toggleSkill(skill)}
+              className="w-3.5 h-3.5 rounded"
+              style={{ accentColor: "#1e3a8a" }}
+            />
             <span className="text-xs" style={{ color: "#475569" }}>{skill}</span>
           </label>
         ))}
@@ -250,8 +393,15 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
         ].map(({ label, value, setter }) => (
           <div key={label} className="flex items-center justify-between">
             <span className="text-xs" style={{ color: "#475569" }}>{label}</span>
-            <button onClick={() => setter(!value)} className="relative w-8 h-4 rounded-full transition-colors flex-shrink-0" style={{ background: value ? "#1e3a8a" : "#dbeafe" }}>
-              <span className="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform" style={{ transform: value ? "translateX(16px)" : "translateX(2px)" }} />
+            <button
+              onClick={() => setter(!value)}
+              className="relative w-8 h-4 rounded-full transition-colors flex-shrink-0"
+              style={{ background: value ? "#1e3a8a" : "#dbeafe" }}
+            >
+              <span
+                className="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform"
+                style={{ transform: value ? "translateX(16px)" : "translateX(2px)" }}
+              />
             </button>
           </div>
         ))}
@@ -260,8 +410,16 @@ const FilterSidebar = ({ ratingFilter, setRatingFilter, priceRange, setPriceRang
       <button
         className="w-full text-white text-sm font-bold py-2.5 rounded-xl transition-all duration-200"
         style={{ background: "linear-gradient(135deg, #1e3a8a, #2563eb)" }}
-        onMouseEnter={e => { e.currentTarget.style.background = "linear-gradient(135deg, #1d4ed8, #3b82f6)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(30,58,138,0.35)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-        onMouseLeave={e => { e.currentTarget.style.background = "linear-gradient(135deg, #1e3a8a, #2563eb)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none"; }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "linear-gradient(135deg, #1d4ed8, #3b82f6)";
+          e.currentTarget.style.boxShadow = "0 6px 20px rgba(30,58,138,0.35)";
+          e.currentTarget.style.transform = "translateY(-1px)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "linear-gradient(135deg, #1e3a8a, #2563eb)";
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.transform = "none";
+        }}
       >
         Apply Filters
       </button>
@@ -292,18 +450,31 @@ export default function FindTrainersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ── Shortlist state — Set of trainer ids the logged-in user has shortlisted ──
   const [shortlistedIds, setShortlistedIds] = useState(new Set());
 
   const popularTags = ["Sales", "Marketing", "Finance", "Tech", "Leadership", "Machine Learning"];
 
-  const toggleExperience = (exp) => setExperienceFilter((prev) => prev.includes(exp) ? prev.filter((e) => e !== exp) : [...prev, exp]);
-  const toggleSkill = (skill) => { setSelectedSkills((prev) => prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]); setVisibleCount(INITIAL_COUNT); };
+  const toggleExperience = (exp) =>
+    setExperienceFilter((prev) => (prev.includes(exp) ? prev.filter((e) => e !== exp) : [...prev, exp]));
+
+  const toggleSkill = (skill) => {
+    setSelectedSkills((prev) => (prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]));
+    setVisibleCount(INITIAL_COUNT);
+  };
+
   const resetFilters = () => {
-    setRatingFilter(null); setPriceRange([10, 200]); setExperienceFilter([]);
-    setSelectedSkills([]); setVerifiedOnly(false); setAvailableThisWeek(false);
-    setOffersTrial(false); setSearchQuery(""); setSelectedLocation("");
-    setMode("Online"); setVisibleCount(INITIAL_COUNT); setSidebarOpen(false);
+    setRatingFilter(null);
+    setPriceRange([10, 200]);
+    setExperienceFilter([]);
+    setSelectedSkills([]);
+    setVerifiedOnly(false);
+    setAvailableThisWeek(false);
+    setOffersTrial(false);
+    setSearchQuery("");
+    setSelectedLocation("");
+    setMode("Online");
+    setVisibleCount(INITIAL_COUNT);
+    setSidebarOpen(false);
   };
 
   const expToYears = (expStr) => {
@@ -315,33 +486,44 @@ export default function FindTrainersPage() {
 
   const filteredTrainers = useMemo(() => {
     let result = [...trainers];
+
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter((t) =>
-        (t.name || "").toLowerCase().includes(q) ||
-        (t.title || "").toLowerCase().includes(q) ||
-        (t.skills || []).some((s) => s.toLowerCase().includes(q))
+      result = result.filter(
+        (t) =>
+          (t.name || "").toLowerCase().includes(q) ||
+          (t.title || "").toLowerCase().includes(q) ||
+          (t.skills || []).some((s) => s.toLowerCase().includes(q))
       );
     }
+
     if (ratingFilter !== null) result = result.filter((t) => (t.rating || 0) >= ratingFilter);
+
     if (priceRange[1] < 200) {
       result = result.filter((t) => Number(t.price) >= Number(priceRange[0]) && Number(t.price) <= Number(priceRange[1]));
     }
+
     if (experienceFilter.length > 0) {
       result = result.filter((t) => {
         const yrs = parseInt(t.experience) || 0;
-        return experienceFilter.some((ef) => { const [min, max] = expToYears(ef); return yrs >= min && yrs <= max; });
+        return experienceFilter.some((ef) => {
+          const [min, max] = expToYears(ef);
+          return yrs >= min && yrs <= max;
+        });
       });
     }
+
     if (selectedSkills.length > 0) result = result.filter((t) => selectedSkills.some((sk) => (t.skills || []).includes(sk)));
     if (verifiedOnly) result = result.filter((t) => t.verified);
     if (availableThisWeek) result = result.filter((t) => t.availableThisWeek);
     if (offersTrial) result = result.filter((t) => t.offersTrial);
     if (mode === "Online") result = result.filter((t) => t.online);
+
     if (sortBy === "Price: Low to High") result.sort((a, b) => a.price - b.price);
     else if (sortBy === "Price: High to Low") result.sort((a, b) => b.price - a.price);
     else if (sortBy === "Rating") result.sort((a, b) => b.rating - a.rating);
     else if (sortBy === "Most Reviews") result.sort((a, b) => b.reviews - a.reviews);
+
     return result;
   }, [trainers, searchQuery, ratingFilter, priceRange, experienceFilter, selectedSkills, verifiedOnly, availableThisWeek, offersTrial, mode, sortBy]);
 
@@ -351,25 +533,36 @@ export default function FindTrainersPage() {
   const inputStyle = { border: "1.5px solid #bfdbfe", borderRadius: "12px", background: "white", color: "#0f172a" };
 
   const sidebarProps = {
-    ratingFilter, setRatingFilter, priceRange, setPriceRange, experienceFilter, toggleExperience,
-    selectedSkills, toggleSkill, verifiedOnly, setVerifiedOnly, availableThisWeek, setAvailableThisWeek,
-    offersTrial, setOffersTrial, resetFilters, skillSearch, setSkillSearch,
+    ratingFilter,
+    setRatingFilter,
+    priceRange,
+    setPriceRange,
+    experienceFilter,
+    toggleExperience,
+    selectedSkills,
+    toggleSkill,
+    verifiedOnly,
+    setVerifiedOnly,
+    availableThisWeek,
+    setAvailableThisWeek,
+    offersTrial,
+    setOffersTrial,
+    resetFilters,
+    skillSearch,
+    setSkillSearch,
   };
 
-  // GET /api/trainers -> { success, count, trainers: [...raw TrainerProfile docs] }
-  // Raw docs use fullName / profilePhoto.url / subjectLine / companyName /
-  // expertiseDomain.competencies / contactInfo.location.{city,state} /
-  // additionalDetails.{trainingExperience,feesPerDay} / status / isFeatured.
-  // We map them here into the simplified shape TrainerCard + filters use.
   const fetchTrainers = async () => {
     try {
       setLoading(true);
       setError("");
+
       const { data } = await trainersAPI.getAll();
       const raw = data.trainers || data.data || [];
 
       const trainerList = raw.map((trainer) => ({
-        id: trainer._id,
+        id: trainer.trainerId || trainer._id,
+        _id: trainer._id,
         name: trainer.fullName,
         image: trainer.profilePhoto?.url || "/Images/default-trainer.png",
         title: trainer.subjectLine,
@@ -396,18 +589,20 @@ export default function FindTrainersPage() {
     }
   };
 
-  // ── Load the logged-in user's shortlist so hearts render red on page load ──
-  const fetchShortlist = async () => {
-    if (!user) { setShortlistedIds(new Set()); return; }
-    try {
-      const { data } = await userDashboardAPI.getShortlistedProfiles();
-      const list = data?.trainers || [];
-      setShortlistedIds(new Set(list.map((t) => t._id)));
-    } catch (err) {
-      // Silently ignore — shortlist just won't be pre-marked
-      console.error("Failed to load shortlist", err);
-    }
-  };
+ const fetchShortlist = async () => {
+  if (!user) {
+    setShortlistedIds(new Set());
+    return;
+  }
+
+  try {
+    const { data } = await userDashboardAPI.getShortlistedProfiles();
+    const list = data?.trainers || data?.profiles || data?.shortlistedProfiles || [];
+    setShortlistedIds(new Set(list.map((t) =>  t._id)));
+  } catch (err) {
+    console.error("Failed to load shortlist", err);
+  }
+};
 
   useEffect(() => {
     fetchTrainers();
@@ -417,44 +612,51 @@ export default function FindTrainersPage() {
     fetchShortlist();
   }, [user]);
 
-  // ── Toggle shortlist — redirect to login if not authenticated ──
-  const handleToggleShortlist = async (trainerId) => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
+ const handleToggleShortlist = async (trainerId) => {
+  console.log("clicked trainerId:", trainerId);
 
-    // Optimistic UI update
+  if (!user) {
+    router.push("/auth/login");
+    return;
+  }
+
+  if (!trainerId) {
+    console.error("trainerId missing:", trainerId);
+    return;
+  }
+
+  setShortlistedIds((prev) => {
+    const next = new Set(prev);
+    if (next.has(trainerId)) next.delete(trainerId);
+    else next.add(trainerId);
+    return next;
+  });
+
+  try {
+    const { data } = await userDashboardAPI.toggleShortlist(trainerId);
+    console.log("toggle shortlist success:", data);
+
+    setShortlistedIds((prev) => {
+      const next = new Set(prev);
+      if (data?.isShortlisted) next.add(trainerId);
+      else next.delete(trainerId);
+      return next;
+    });
+  } catch (err) {
+    console.error("Failed to toggle shortlist");
+    console.error("status:", err?.response?.status);
+    console.error("data:", err?.response?.data);
+    console.error("message:", err?.response?.data?.message);
+    console.error("trainerId sent:", trainerId);
+
     setShortlistedIds((prev) => {
       const next = new Set(prev);
       if (next.has(trainerId)) next.delete(trainerId);
       else next.add(trainerId);
       return next;
     });
-
-    try {
-      const { data } = await userDashboardAPI.toggleShortlist(trainerId);
-      // Sync with backend's authoritative isShortlisted value
-      setShortlistedIds((prev) => {
-        const next = new Set(prev);
-        if (data.isShortlisted) next.add(trainerId);
-        else next.delete(trainerId);
-        return next;
-      });
-    } catch (err) {
-      // Revert optimistic update on failure
-      setShortlistedIds((prev) => {
-        const next = new Set(prev);
-        if (next.has(trainerId)) next.delete(trainerId);
-        else next.add(trainerId);
-        return next;
-      });
-      if (err?.response?.status === 401) {
-        router.push("/auth/login");
-      }
-      console.error("Failed to toggle shortlist", err);
-    }
-  };
+  }
+};
 
   return (
     <>
@@ -490,7 +692,7 @@ export default function FindTrainersPage() {
           <FilterSidebar {...sidebarProps} />
         </div>
 
-        <div className="mx-auto max-w-screen-7xl px-3 sm:px-4 md:px-6  pb-12">
+        <div className="mx-auto max-w-screen-7xl px-3 sm:px-4 md:px-6 pb-12">
           <div className="flex gap-6 items-start">
             <aside className="hidden lg:block w-64 xl:w-72 flex-shrink-0 sticky top-6 mt-8" style={{ animation: "fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both" }}>
               <FilterSidebar {...sidebarProps} />
@@ -500,7 +702,16 @@ export default function FindTrainersPage() {
               <div className="text-center pt-8 sm:pt-10 pb-5" style={{ animation: "fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both" }}>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl py-2 font-extrabold" style={{ fontFamily: "'Clash Display', sans-serif", color: "#0f172a" }}>
                   Find the{" "}
-                  <span style={{ background: "linear-gradient(90deg, #1e3a8a 0%, #2563eb 40%, #1d4ed8 70%, #4f46e5 100%)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmer 4s linear infinite" }}>
+                  <span
+                    style={{
+                      background: "linear-gradient(90deg, #1e3a8a 0%, #2563eb 40%, #1d4ed8 70%, #4f46e5 100%)",
+                      backgroundSize: "200% auto",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      animation: "shimmer 4s linear infinite",
+                    }}
+                  >
                     Right Trainer
                   </span>{" "}
                   for Your Goal
@@ -522,7 +733,7 @@ export default function FindTrainersPage() {
                   Filters
                   {(ratingFilter || experienceFilter.length > 0 || selectedSkills.length > 0 || verifiedOnly || availableThisWeek || offersTrial) && (
                     <span className="w-4 h-4 rounded-full text-white text-xs flex items-center justify-center" style={{ background: "#1e3a8a" }}>
-                      {[ratingFilter ? 1 : 0, experienceFilter.length, selectedSkills.length, verifiedOnly ? 1 : 0, availableThisWeek ? 1 : 0, offersTrial ? 1 : 0].reduce((a,b) => a+b, 0)}
+                      {[ratingFilter ? 1 : 0, experienceFilter.length, selectedSkills.length, verifiedOnly ? 1 : 0, availableThisWeek ? 1 : 0, offersTrial ? 1 : 0].reduce((a, b) => a + b, 0)}
                     </span>
                   )}
                 </button>
@@ -531,7 +742,14 @@ export default function FindTrainersPage() {
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#93c5fd" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <input type="text" placeholder="Search trainers, skills..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="trainer-input w-full pl-9 pr-4 py-2.5 text-sm" style={inputStyle} />
+                  <input
+                    type="text"
+                    placeholder="Search trainers, skills..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="trainer-input w-full pl-9 pr-4 py-2.5 text-sm"
+                    style={inputStyle}
+                  />
                 </div>
 
                 <div className="flex gap-2">
@@ -539,18 +757,35 @@ export default function FindTrainersPage() {
                     <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#93c5fd" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     </svg>
-                    <input type="text" placeholder="Location" value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)} className="trainer-input pl-9 pr-3 py-2.5 text-sm w-full sm:w-32" style={inputStyle} />
+                    <input
+                      type="text"
+                      placeholder="Location"
+                      value={selectedLocation}
+                      onChange={(e) => setSelectedLocation(e.target.value)}
+                      className="trainer-input pl-9 pr-3 py-2.5 text-sm w-full sm:w-32"
+                      style={inputStyle}
+                    />
                   </div>
+
                   <select value={mode} onChange={(e) => setMode(e.target.value)} className="trainer-input px-3 py-2.5 text-sm" style={{ ...inputStyle, cursor: "pointer" }}>
                     <option>Online</option>
                     <option>In-Person</option>
                     <option>Both</option>
                   </select>
+
                   <button
                     className="text-white text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex-shrink-0"
                     style={{ background: "linear-gradient(135deg, #1e3a8a, #2563eb)" }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "linear-gradient(135deg, #1d4ed8, #3b82f6)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(30,58,138,0.35)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "linear-gradient(135deg, #1e3a8a, #2563eb)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none"; }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "linear-gradient(135deg, #1d4ed8, #3b82f6)";
+                      e.currentTarget.style.boxShadow = "0 6px 20px rgba(30,58,138,0.35)";
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "linear-gradient(135deg, #1e3a8a, #2563eb)";
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.transform = "none";
+                    }}
                   >
                     Search
                   </button>
@@ -564,9 +799,11 @@ export default function FindTrainersPage() {
                     key={tag}
                     onClick={() => toggleSkill(tag)}
                     className="tag-pill text-xs px-3 py-1 rounded-full font-semibold"
-                    style={selectedSkills.includes(tag)
-                      ? { background: "linear-gradient(135deg, #1e3a8a, #2563eb)", color: "white", border: "1.5px solid transparent" }
-                      : { background: "white", color: "#1e40af", border: "1.5px solid #bfdbfe" }}
+                    style={
+                      selectedSkills.includes(tag)
+                        ? { background: "linear-gradient(135deg, #1e3a8a, #2563eb)", color: "white", border: "1.5px solid transparent" }
+                        : { background: "white", color: "#1e40af", border: "1.5px solid #bfdbfe" }
+                    }
                   >
                     {tag}
                   </button>
@@ -583,7 +820,9 @@ export default function FindTrainersPage() {
                   <div className="text-5xl mb-4">⚠️</div>
                   <h3 className="font-bold text-lg" style={{ color: "#1e3a8a" }}>Couldn't load trainers</h3>
                   <p className="text-sm mt-1" style={{ color: "#94a3b8" }}>{error}</p>
-                  <button onClick={fetchTrainers} className="mt-4 text-sm font-semibold hover:underline" style={{ color: "#2563eb" }}>Try again</button>
+                  <button onClick={fetchTrainers} className="mt-4 text-sm font-semibold hover:underline" style={{ color: "#2563eb" }}>
+                    Try again
+                  </button>
                 </div>
               ) : (
                 <>
@@ -611,7 +850,7 @@ export default function FindTrainersPage() {
                             key={trainer.id}
                             trainer={trainer}
                             index={i}
-                            isShortlisted={shortlistedIds.has(trainer.id)}
+                            isShortlisted={shortlistedIds.has(trainer._id)}
                             onToggleShortlist={handleToggleShortlist}
                           />
                         ))}
@@ -624,14 +863,28 @@ export default function FindTrainersPage() {
                             <span className="font-semibold" style={{ color: "#1e3a8a" }}>{filteredTrainers.length}</span> trainers
                           </p>
                           <div className="w-48 h-1 rounded-full overflow-hidden" style={{ background: "#dbeafe" }}>
-                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(visibleTrainers.length / filteredTrainers.length) * 100}%`, background: "linear-gradient(90deg, #1e3a8a, #2563eb)" }} />
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${(visibleTrainers.length / filteredTrainers.length) * 100}%`,
+                                background: "linear-gradient(90deg, #1e3a8a, #2563eb)",
+                              }}
+                            />
                           </div>
                           <button
                             onClick={() => setVisibleCount((c) => c + LOAD_MORE_COUNT)}
                             className="flex items-center gap-2 text-sm font-semibold px-8 py-2.5 rounded-xl transition-all"
                             style={{ background: "white", border: "1.5px solid #bfdbfe", color: "#1e40af", boxShadow: "0 2px 8px rgba(30,58,138,0.07)" }}
-                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#60a5fa"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(30,58,138,0.14)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#bfdbfe"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(30,58,138,0.07)"; e.currentTarget.style.transform = "none"; }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = "#60a5fa";
+                              e.currentTarget.style.boxShadow = "0 6px 20px rgba(30,58,138,0.14)";
+                              e.currentTarget.style.transform = "translateY(-1px)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = "#bfdbfe";
+                              e.currentTarget.style.boxShadow = "0 2px 8px rgba(30,58,138,0.07)";
+                              e.currentTarget.style.transform = "none";
+                            }}
                           >
                             Load More
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -644,7 +897,9 @@ export default function FindTrainersPage() {
                       {!hasMore && filteredTrainers.length > INITIAL_COUNT && (
                         <div className="mt-10 flex flex-col items-center gap-2">
                           <p className="text-sm" style={{ color: "#94a3b8" }}>You've seen all {filteredTrainers.length} trainers</p>
-                          <button onClick={resetFilters} className="text-xs font-semibold hover:underline" style={{ color: "#2563eb" }}>Reset filters to explore more</button>
+                          <button onClick={resetFilters} className="text-xs font-semibold hover:underline" style={{ color: "#2563eb" }}>
+                            Reset filters to explore more
+                          </button>
                         </div>
                       )}
                     </>
@@ -653,7 +908,9 @@ export default function FindTrainersPage() {
                       <div className="text-5xl mb-4">🔍</div>
                       <h3 className="font-bold text-lg" style={{ color: "#1e3a8a" }}>No trainers found</h3>
                       <p className="text-sm mt-1" style={{ color: "#94a3b8" }}>Try adjusting your filters or search terms</p>
-                      <button onClick={resetFilters} className="mt-4 text-sm font-semibold hover:underline" style={{ color: "#2563eb" }}>Reset all filters</button>
+                      <button onClick={resetFilters} className="mt-4 text-sm font-semibold hover:underline" style={{ color: "#2563eb" }}>
+                        Reset all filters
+                      </button>
                     </div>
                   )}
                 </>

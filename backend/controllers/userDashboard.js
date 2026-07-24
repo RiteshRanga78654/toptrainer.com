@@ -81,12 +81,12 @@ export const getUserDashboard = asyncHandler(
         );
         res.status(200).json({
             success: true,
-            data: {
+            date: {
                 user: {
                     _id: user._id,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    email: user.email,
+                    eamil: user.email,
                 },
 
                 newTrainers: {
@@ -181,34 +181,122 @@ export const getShortlistedTrainers = asyncHandler(async (req, res) => {
 });
 
 export const toggleSaveWorkshop = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const workshopId = req.params.workshopId;
 
-    const userId = req.user._id;
-    const workshopId = req.params.workshopId;
+  const workshop = await Workshop.findById(workshopId);
+  if (!workshop) {
+    return res.status(404).json({
+      success: false,
+      message: "Workshop not found",
+    });
+  }
 
-    const workshop = await Workshop.findById(workshopId);
-    if (!workshop) {
-        return res.status(404).json({ success: false, message: "Workshop not found" });
-    }
-    if (workshop.status !== "published") {
-        return res.status(400).json({ success: false, message: "This workshop is not available" });
-    }
+  if (workshop.status !== "published") {
+    return res.status(400).json({
+      success: false,
+      message: "This workshop is not available",
+    });
+  }
 
-    const user = await User.findById(userId);
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
 
-    const alreadySaved = user.savedWorkshops
-        .some((id) => id.toString() === workshopId.toString());
+  const alreadySaved = user.savedWorkshops.some(
+    (id) => id.toString() === workshopId.toString()
+  );
 
-    if (alreadySaved) {
-        user.savedWorkshops = user.savedWorkshops.filter(
-            (id) => id.toString() !== workshopId.toString()
-        );
-        await user.save();
-        return res.status(200).json({ success: true, message: "Workshop removed from saved", isSaved: false });
-    } else {
-        user.savedWorkshops.push(workshopId);
-        await user.save();
-        return res.status(200).json({ success: true, message: "Workshop saved successfully", isSaved: true });
-    }
+  if (alreadySaved) {
+    user.savedWorkshops = user.savedWorkshops.filter(
+      (id) => id.toString() !== workshopId.toString()
+    );
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Workshop removed from saved",
+      isSaved: false,
+      workshopId,
+    });
+  }
+
+  user.savedWorkshops.push(workshopId);
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Workshop saved successfully",
+    isSaved: true,
+    workshopId,
+  });
+});
+
+export const removeSavedWorkshop = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const workshopId = req.params.workshopId;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  const wasSaved = user.savedWorkshops.some(
+    (id) => id.toString() === workshopId.toString()
+  );
+
+  if (!wasSaved) {
+    return res.status(200).json({
+      success: true,
+      message: "Workshop already removed",
+      isSaved: false,
+      workshopId,
+    });
+  }
+
+  user.savedWorkshops = user.savedWorkshops.filter(
+    (id) => id.toString() !== workshopId.toString()
+  );
+
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Workshop removed from saved",
+    isSaved: false,
+    workshopId,
+  });
+});
+
+export const getSavedWorkshopStatus = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const workshopId = req.params.workshopId;
+
+  const user = await User.findById(userId).select("savedWorkshops");
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  const isSaved = user.savedWorkshops.some(
+    (id) => id.toString() === workshopId.toString()
+  );
+
+  return res.status(200).json({
+    success: true,
+    workshopId,
+    isSaved,
+  });
 });
 
 export const getUserWorkshops = asyncHandler(async (req, res) => {
@@ -300,53 +388,102 @@ export const getUserWorkshops = asyncHandler(async (req, res) => {
     });
 });
 
-export const toggleSaveArticle = asyncHandler(
-    async (req, res) => {
-        const articleId = req.params.articleId;
+export const toggleSaveArticle = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const articleId = req.params.articleId;
 
-        const article = await Article.findById(articleId);
-        if (!article) {
-            return res.status(404).json({
-                success: true,
-                message: "Article not found",
-            })
-        }
-        if (article.status !== "published") {
-            return res.status(400).json({
-                success: false,
-                message: "This article is not available",
-            })
-        }
+  const article = await Article.findById(articleId);
+  if (!article) {
+    return res.status(404).json({
+      success: false,
+      message: "Article not found",
+    });
+  }
 
-        const user = await User.findById(userId);
+  if (article.status !== "published") {
+    return res.status(400).json({
+      success: false,
+      message: "This article is not available",
+    });
+  }
 
-        const alreadySaved = user.savedArticles.some((id) => id.toString() !== articleId.toString());
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
 
-        if (alreadySaved) {
+  const alreadySaved = user.savedArticles.some(
+    (id) => id.toString() === articleId.toString()
+  );
 
-            user.savedArticles = user.savedArticles.filter(
-                (id) => id.toString() !== articleId.toString()
-            );
-            await user.save();
+  if (alreadySaved) {
+    user.savedArticles = user.savedArticles.filter(
+      (id) => id.toString() !== articleId.toString()
+    );
 
-            return res.status(200).json({
-                success: true,
-                message: "Article removed from saved",
-                isSaved: false,
-            });
-        } else {
+    await user.save();
 
-            user.savedArticles.push(articleId);
-            await user.save();
+    return res.status(200).json({
+      success: true,
+      message: "Article removed from saved",
+      isSaved: false,
+      articleId,
+    });
+  }
 
-            return res.status(200).json({
-                success: true,
-                message: "Article saved successfully",
-                isSaved: true,
-            });
-        }
-    }
-)
+  user.savedArticles.push(articleId);
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Article saved successfully",
+    isSaved: true,
+    articleId,
+  });
+});
+
+export const removeSavedArticle = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const articleId = req.params.articleId;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  const wasSaved = user.savedArticles.some(
+    (id) => id.toString() === articleId.toString()
+  );
+
+  if (!wasSaved) {
+    return res.status(200).json({
+      success: true,
+      message: "Article already removed",
+      isSaved: false,
+      articleId,
+    });
+  }
+
+  user.savedArticles = user.savedArticles.filter(
+    (id) => id.toString() !== articleId.toString()
+  );
+
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Article removed from saved",
+    isSaved: false,
+    articleId,
+  });
+});
+
 export const getUserArticles = asyncHandler(async (req, res) => {
  
     const userId = req.user._id;

@@ -20,37 +20,76 @@ import {
 import Link from "next/link";
 import { userDashboardAPI } from "../../lib/api"; // apne path ke hisab se change karo
 
-const savedWorkshopsSeed = [
-  {
-    id: "ws-1",
-    title: "Advanced AI Ethics",
-    meta: "15 Jul • Online",
-    shortLabel: "AI Ethics",
-    color: "bg-indigo-50 text-indigo-600",
-  },
-  {
-    id: "ws-2",
-    title: "Negotiation Skills for Leaders",
-    meta: "20 Jul • In-person (London)",
-    shortLabel: "Negotiation Skills",
-    color: "bg-teal-50 text-teal-700",
-  },
-  {
-    id: "ws-3",
-    title: "Product Strategy Masterclass",
-    meta: "25 Jul • Online",
-    shortLabel: "Product Strategy",
-    color: "bg-blue-50 text-blue-700",
-  },
+const WORKSHOP_COLORS = [
+  "bg-indigo-50 text-indigo-600",
+  "bg-teal-50 text-teal-700",
+  "bg-blue-50 text-blue-700",
+  "bg-pink-50 text-pink-600",
+  "bg-amber-50 text-amber-700",
 ];
+
+function mapSavedWorkshop(item, index) {
+  const dateRange = item?.schedule?.dateRange || "";
+  const location = item?.schedule?.location || item?.schedule?.venue || "Online";
+
+  return {
+    id: item?._id,
+    title: item?.basicInformation?.title || "Untitled Workshop",
+    meta: [dateRange, location].filter(Boolean).join(" • "),
+    shortLabel: (item?.basicInformation?.title || "Workshop").slice(0, 18),
+    color: WORKSHOP_COLORS[index % WORKSHOP_COLORS.length],
+  };
+}
 
 export default function ShortlistedProfiles() {
   const [trainers, setTrainers] = useState([]);
-  const [savedWorkshops] = useState(savedWorkshopsSeed);
+  const [savedWorkshops, setSavedWorkshops] = useState([]);
+  const [savedWorkshopsLoading, setSavedWorkshopsLoading] = useState(true);
+  const [removingWorkshopId, setRemovingWorkshopId] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function fetchSavedWorkshops() {
+      try {
+        setSavedWorkshopsLoading(true);
+        const res = await userDashboardAPI.getWorkshops({ limit: 100 });
+        const rawList = res?.data?.data?.saved?.workshops || [];
+
+        if (!ignore) {
+          setSavedWorkshops(rawList.map(mapSavedWorkshop));
+        }
+      } catch (err) {
+        // keep the widget silent on error, just show empty state
+      } finally {
+        if (!ignore) setSavedWorkshopsLoading(false);
+      }
+    }
+
+    fetchSavedWorkshops();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const handleRemoveSavedWorkshop = async (workshopId) => {
+    try {
+      setRemovingWorkshopId(workshopId);
+      await userDashboardAPI.toggleSaveWorkshop(workshopId);
+      setSavedWorkshops((prev) => prev.filter((w) => w.id !== workshopId));
+    } catch (err) {
+      console.error(
+        err?.response?.data?.message || err?.message || "Failed to remove saved workshop"
+      );
+    } finally {
+      setRemovingWorkshopId("");
+    }
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -348,34 +387,51 @@ export default function ShortlistedProfiles() {
               </div>
 
               <div className="flex flex-col gap-6 flex-1">
-                {savedWorkshops.map((workshop, index) => (
-                  <div
-                    key={workshop.id || `${workshop.title}-${index}`}
-                    className="flex items-start gap-4"
-                  >
+                {savedWorkshopsLoading ? (
+                  <p className="text-[13px] text-slate-500">Loading saved workshops...</p>
+                ) : savedWorkshops.length === 0 ? (
+                  <p className="text-[13px] text-slate-500">
+                    No saved workshops yet. Bookmark a workshop to see it here.
+                  </p>
+                ) : (
+                  savedWorkshops.map((workshop, index) => (
                     <div
-                      className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center relative ${workshop.color}`}
+                      key={workshop.id || `${workshop.title}-${index}`}
+                      className="flex items-start gap-4"
                     >
-                      <span className="font-bold text-[8px] leading-tight text-center px-1">
-                        {workshop.shortLabel}
-                      </span>
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-slate-200 border border-white flex items-center justify-center text-[10px] text-slate-500 overflow-hidden">
-                        <User className="w-3 h-3" />
-                      </div>
-                    </div>
+                      <Link href={`/workshops/${workshop.id}`} className="flex items-start gap-4 flex-1 min-w-0">
+                        <div
+                          className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center relative ${workshop.color}`}
+                        >
+                          <span className="font-bold text-[8px] leading-tight text-center px-1">
+                            {workshop.shortLabel}
+                          </span>
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-slate-200 border border-white flex items-center justify-center text-[10px] text-slate-500 overflow-hidden">
+                            <User className="w-3 h-3" />
+                          </div>
+                        </div>
 
-                    <div className="flex-1 mt-0.5">
-                      <h3 className="text-[13px] font-bold text-slate-900 leading-tight">
-                        {workshop.title}
-                      </h3>
-                      <p className="text-[11px] text-slate-500 mt-1">{workshop.meta}</p>
-                    </div>
+                        <div className="flex-1 mt-0.5 min-w-0">
+                          <h3 className="text-[13px] font-bold text-slate-900 leading-tight truncate">
+                            {workshop.title}
+                          </h3>
+                          <p className="text-[11px] text-slate-500 mt-1">{workshop.meta}</p>
+                        </div>
+                      </Link>
 
-                    <button className="text-blue-600 mt-1" type="button">
-                      <Bookmark className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
+                      <button
+                        className="text-red-500 mt-1 disabled:opacity-50"
+                        type="button"
+                        disabled={removingWorkshopId === workshop.id}
+                        onClick={() => handleRemoveSavedWorkshop(workshop.id)}
+                        aria-label="Remove saved workshop"
+                        title="Remove from saved workshops"
+                      >
+                        <Bookmark className="w-4 h-4" fill="currentColor" />
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
 
               <div className="mt-6 pt-5 border-t border-slate-100 flex justify-center">
