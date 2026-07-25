@@ -106,26 +106,39 @@ const normalizeWorkshop = (w = {}) => ({
   ...w,
   id: w._id || w.id,
   title: w?.basicInformation?.title || w.title || "",
-  shortDesc: w?.basicInformation?.shortDesc || w.shortDesc || "",
-  fullDesc: w?.basicInformation?.fullDesc || w.fullDesc || "",
+  shortDesc: w?.basicInformation?.shortDescription || w?.basicInformation?.shortDesc || w.shortDesc || "",
+  fullDesc: w?.basicInformation?.fullDescription || w?.basicInformation?.fullDesc || w.fullDesc || "",
   category: w?.basicInformation?.category || w.category || "",
   coverImg: w?.basicInformation?.coverImage?.url || w.coverImg || "",
   thumbnail: w?.basicInformation?.thumbnail?.url || w.thumbnail || "",
+  targetAudience: w?.basicInformation?.targetAudience || w.targetAudience || "",
+  startDate: w?.schedule?.startDate || w.startDate || null,
+  endDate: w?.schedule?.endDate || w.endDate || null,
   duration: w?.schedule?.duration || w.duration,
-  seats: w?.schedule?.seats ?? w.seats ?? 0,
+  seats: w?.schedule?.maxCapacity ?? w?.schedule?.seats ?? w.seats ?? 0,
+  maxCapacity: w?.schedule?.maxCapacity ?? w.maxCapacity ?? 0,
   location: w?.schedule?.location || w.location || "",
   dateRange: w?.schedule?.dateRange || w.dateRange || "",
   timeSlot: w?.schedule?.timeSlot || w.timeSlot || "",
-  price: w?.pricing || w.price || {},
+  deliveryMode: w?.schedule?.deliveryMode || w.deliveryMode || "",
+  price: w?.pricing?.price ?? w?.pricing?.originalPrice ?? (typeof w.price === "number" ? w.price : 0),
+  pricing: w?.pricing || w.pricing || {},
   learningOutcomes:
     w?.learningDetails?.learningOutcomes || w.learningOutcomes || [],
+  prerequisites: w?.learningDetails?.prerequisites || w.prerequisites || [],
+  topicsCovered: w?.learningDetails?.topicsCovered || w.topicsCovered || [],
   certifications: w?.learningDetails?.certifications || w.certifications || [],
   tags: w?.classification?.tags || w.tags || [],
+  competency: w?.classification?.competency || w.competency || "",
+  industry: w?.classification?.industry || w.industry || "",
   isFeatured: w?.classification?.isFeatured ?? w.isFeatured ?? false,
   isLive: w?.classification?.isLive ?? w.isLive ?? false,
-  mode: w?.conductedMode?.mode || w.mode || "",
-  classTypes: w?.conductedMode?.classTypes || w.classTypes || [],
+  mode: w?.schedule?.deliveryMode || w?.conductedMode?.mode || w.mode || "",
+  classTypes: w?.conductedMode?.conductedAs || w?.conductedMode?.classTypes || w.classTypes || [],
   photos: w?.mediaGallery?.snapshots || w.photos || [],
+  enrolledCount: w?.analytics?.enrolledCount ?? w.enrolledCount ?? 0,
+  views: w?.analytics?.views ?? w.views ?? 0,
+  rating: w?.analytics?.rating ?? w.rating ?? 0,
 });
 
 const mapWorkshopList = (items = []) => items.map(normalizeWorkshop);
@@ -246,6 +259,114 @@ export const workshopsAPI = {
     form.append("status", "draft");
 
     const res = await API.put(`/workshops/trainer/${id}`, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+};
+
+// ----------------------------Admin workshop api-----------------------------------
+
+export const adminWorkshopsAPI = {
+  getAll: async () => {
+    const res = await API.get("/workshops/admin/all");
+    return {
+      data: {
+        workshops: mapWorkshopList(res?.data?.workshops || []),
+      },
+    };
+  },
+
+  getDrafts: async () => {
+    const res = await API.get("/workshops/admin/drafts");
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        drafts: mapWorkshopList(res?.data?.drafts || []),
+      },
+    };
+  },
+
+  getPublished: async () => {
+    const res = await API.get("/workshops/admin/published");
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshops: mapWorkshopList(res?.data?.workshops || []),
+      },
+    };
+  },
+
+  getOne: async (id) => {
+    const res = await API.get(`/workshops/admin/One-workshop/${id}`);
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+
+  create: async (data) => {
+    const res = await API.post("/workshops/admin/create", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+
+  update: async (id, data) => {
+    const res = await API.put(`/workshops/admin/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+
+  delete: (id) => API.delete(`/workshops/admin/${id}`),
+
+  publish: async (id) => {
+    const res = await API.put(`/workshops/admin/publish/${id}`);
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+
+  updateStatus: async (id, status) => {
+    if (status === "published") {
+      return adminWorkshopsAPI.publish(id);
+    }
+
+    const form = new FormData();
+    form.append("status", "draft");
+
+    const res = await API.put(`/workshops/admin/${id}`, form, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 

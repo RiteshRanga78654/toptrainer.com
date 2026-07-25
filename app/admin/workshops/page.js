@@ -1,7 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { workshopsAPI, trainersAPI } from '../../lib/api'
+import { useState, useEffect, useMemo } from 'react'
+import { adminWorkshopsAPI, trainersAPI } from '../../lib/api'
 import { usePagination, useFetch, useCRUD, useModal } from '../../hooks'
 import TopHeader from '../../components/shared/TopHeader'
 import {
@@ -11,7 +10,7 @@ import {
 } from '../../components/ui'
 import {
   Plus, BookOpen, Calendar, MapPin, Users,
-  DollarSign, Clock, Filter
+  DollarSign, Clock, Filter, Eye, FileText
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -40,34 +39,12 @@ function toDatetimeLocal(isoStr) {
   }
 }
 
-// ─── Main Page ─────────────────────────────────────────────────────────────
-// ─── Status filter pill row ────────────────────────────────────────────────
-function StatusPills({ value, onChange }) {
-  const opts = [
-    { label: 'All',       val: '' },
-    { label: 'Upcoming',  val: 'upcoming' },
-    { label: 'Ongoing',   val: 'ongoing' },
-    { label: 'Completed', val: 'completed' },
-    { label: 'Cancelled', val: 'cancelled' }
-  ]
-  return (
-    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-      {opts.map((o) => (
-        <button
-          key={o.val}
-          onClick={() => onChange(o.val)}
-          className={`btn btn-sm ${value === o.val ? 'btn-primary' : 'btn-outline'}`}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  )
-}
 
+// ─── Main Page ─────────────────────────────────────────────────────────────
 export default function AdminWorkshopsPage() {
   const [statusFilter, setStatusFilter] = useState('')
   const [modeFilter, setModeFilter]     = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
   
   const [trainers, setTrainers] = useState([])
   const [loadingTrainers, setLoadingTrainers] = useState(true)
@@ -86,27 +63,70 @@ export default function AdminWorkshopsPage() {
   const editModal   = useModal()
   const deleteModal = useModal()
 
-  const params = {
-    ...pagination.params,
-    ...(statusFilter && { status: statusFilter }),
-    ...(modeFilter   && { mode:   modeFilter   })
-  }
+  const { data, loading, refetch } = useFetch(adminWorkshopsAPI.getAll, {}, [])
+  const crud = useCRUD(adminWorkshopsAPI, { onSuccess: refetch })
 
-  const { data, loading, refetch } = useFetch(workshopsAPI.getAll, params, [statusFilter, modeFilter])
-  const crud = useCRUD(workshopsAPI, { onSuccess: refetch })
+  const allWorkshops = data?.workshops || data?.data || []
 
-  const workshops  = data?.data || data?.workshops || []
-  const totalPages = data?.pagination?.pages || data?.pages || 1
-  const total      = data?.pagination?.total  || data?.total  || 0
+  // ── Client-side filtering ────────────────────────────────────────────────
+  const filteredWorkshops = useMemo(() => {
+    let result = allWorkshops
 
-  // stat counts from current full list (only counts for visible page; ideally API returns totals)
-  const counts = {
-    total:     total,
-    upcoming:  workshops.filter((w) => w.status === 'upcoming').length,
-    ongoing:   workshops.filter((w) => w.status === 'ongoing').length,
-    completed: workshops.filter((w) => w.status === 'completed').length
-  }
+    // Text search
+    if (pagination.search) {
+      const q = pagination.search.toLowerCase()
+      result = result.filter((w) =>
+        (w.title || '').toLowerCase().includes(q) ||
+        (w.category || '').toLowerCase().includes(q) ||
+        (w.location || '').toLowerCase().includes(q)
+      )
+    }
 
+    // Status filter
+    if (statusFilter) {
+      result = result.filter((w) => w.status === statusFilter)
+    }
+
+    // Mode filter (deliveryMode from schedule)
+    if (modeFilter) {
+      result = result.filter((w) => {
+        const m = (w.mode || w.deliveryMode || '').toLowerCase()
+        return m === modeFilter.toLowerCase() || m === modeFilter
+      })
+    }
+
+    // Category filter
+    if (categoryFilter) {
+      result = result.filter((w) => w.category === categoryFilter)
+    }
+
+    return result
+  }, [allWorkshops, pagination.search, statusFilter, modeFilter, categoryFilter])
+
+  // ── Pagination ───────────────────────────────────────────────────────────
+  const pageSize = pagination.limit || 10
+  const totalFiltered = filteredWorkshops.length
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / pageSize))
+  const paginatedWorkshops = filteredWorkshops.slice(
+    (pagination.page - 1) * pageSize,
+    pagination.page * pageSize
+  )
+
+  // ── Stats from ALL workshops (not filtered) ──────────────────────────────
+  const counts = useMemo(() => ({
+    total:     allWorkshops.length,
+    draft:     allWorkshops.filter((w) => w.status === 'draft').length,
+    published: allWorkshops.filter((w) => w.status === 'published').length,
+    featured:  allWorkshops.filter((w) => w.isFeatured).length,
+  }), [allWorkshops])
+
+  // ── Unique categories for the filter dropdown ────────────────────────────
+  const categories = useMemo(() => {
+    const cats = [...new Set(allWorkshops.map((w) => w.category).filter(Boolean))]
+    return cats.sort()
+  }, [allWorkshops])
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
   const handleSubmit = async (formData) => {
     if (editModal.data?._id) {
       await crud.update(editModal.data._id, formData)
@@ -120,7 +140,7 @@ export default function AdminWorkshopsPage() {
     crud.updateStatus(id, newStatus)
   }
 
-  // Table columns
+  // ── Table columns ────────────────────────────────────────────────────────
   const columns = [
     {
       key: 'title',
@@ -172,18 +192,18 @@ export default function AdminWorkshopsPage() {
               {row.title}
             </p>
             <p style={{ fontSize: '0.73rem', color: 'var(--text-muted)' }}>
-              {row.mode || 'offline'}
+              {row.category || '—'}
             </p>
           </div>
         </div>
       )
     },
     {
-      key: 'trainer',
-      label: 'Trainer',
+      key: 'mode',
+      label: 'Mode',
       render: (row) => (
-        <span style={{ fontSize: '0.85rem' }}>
-          {row.trainer?.name || row.trainerName || '—'}
+        <span style={{ fontSize: '0.85rem', textTransform: 'capitalize' }}>
+          {row.mode || row.deliveryMode || '—'}
         </span>
       )
     },
@@ -225,7 +245,7 @@ export default function AdminWorkshopsPage() {
           <Users size={12} color="var(--text-muted)" />
           <span style={{ fontSize: '0.84rem' }}>
             {row.enrolledCount || 0}
-            {row.maxCapacity ? `/${row.maxCapacity}` : ''}
+            {row.maxCapacity ? `/${row.maxCapacity}` : row.seats ? `/${row.seats}` : ''}
           </span>
         </div>
       )
@@ -233,22 +253,25 @@ export default function AdminWorkshopsPage() {
     {
       key: 'price',
       label: 'Price',
-      render: (row) => (
-        <span
-          style={{
-            fontSize: '0.85rem',
-            fontWeight: 600,
-            color: row.price > 0 ? '#0ea5e9' : '#10b981'
-          }}
-        >
-          {row.price > 0 ? `$${Number(row.price).toFixed(2)}` : 'Free'}
-        </span>
-      )
+      render: (row) => {
+        const p = typeof row.price === 'number' ? row.price : 0
+        return (
+          <span
+            style={{
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              color: p > 0 ? '#0ea5e9' : '#10b981'
+            }}
+          >
+            {p > 0 ? `₹${p.toLocaleString()}` : 'Free'}
+          </span>
+        )
+      }
     },
     {
       key: 'status',
       label: 'Status',
-      render: (row) => <StatusBadge status={row.status || 'upcoming'} />
+      render: (row) => <StatusBadge status={row.status || 'draft'} />
     },
     {
       key: 'actions',
@@ -257,8 +280,8 @@ export default function AdminWorkshopsPage() {
         <RowMenu
           row={row}
           statusField="status"
-          activeVal="upcoming"
-          inactiveVal="cancelled"
+          activeVal="published"
+          inactiveVal="draft"
           onEdit={(r) => editModal.open(r)}
           onDelete={(r) => deleteModal.open(r)}
           onToggleStatus={handleStatusToggle}
@@ -276,11 +299,13 @@ export default function AdminWorkshopsPage() {
         <PageHeader
           title="Workshops"
           subtitle="Create and manage all training workshops"
-          actions={
-            <button className="btn-create" onClick={() => editModal.open(null)}>
-              <Plus size={16} /> Create Workshop
-            </button>
-          }
+
+          // Create Workshop button removed for now from admin
+          // actions={
+          //   <button className="btn-create" onClick={() => editModal.open(null)}>
+          //     <Plus size={16} /> Create Workshop
+          //   </button>
+          // }
         />
 
         <style>{CSS}</style>
@@ -296,27 +321,27 @@ export default function AdminWorkshopsPage() {
         >
           <StatCard
             label="Total Workshops"
-            value={total}
+            value={counts.total}
             icon={<BookOpen size={18} />}
             color="#0ea5e9"
           />
           <StatCard
-            label="Upcoming"
-            value={counts.upcoming}
-            icon={<Calendar size={18} />}
-            color="#8b5cf6"
-          />
-          <StatCard
-            label="Ongoing"
-            value={counts.ongoing}
-            icon={<Clock size={18} />}
+            label="Drafts"
+            value={counts.draft}
+            icon={<FileText size={18} />}
             color="#f59e0b"
           />
           <StatCard
-            label="Completed"
-            value={counts.completed}
-            icon={<BookOpen size={18} />}
+            label="Published"
+            value={counts.published}
+            icon={<Eye size={18} />}
             color="#10b981"
+          />
+          <StatCard
+            label="Featured"
+            value={counts.featured}
+            icon={<Calendar size={18} />}
+            color="#8b5cf6"
           />
         </div>
 
@@ -336,26 +361,49 @@ export default function AdminWorkshopsPage() {
             placeholder="Search workshops…"
           />
 
-          <StatusPills value={statusFilter} onChange={(v) => { setStatusFilter(v); pagination.setPage(1) }} />
+          <select
+            className="form-input bg-white rounded-xl border border-gray-200 "
+            style={{ width: 'auto', padding: '7px 12px' }}
+            value={statusFilter}
+            onChange={(e) => { setStatusFilter(e.target.value); pagination.setPage(1) }}
+          >
+            <option value="">All</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
 
           <select
-            className="form-input"
+            className="form-input bg-white rounded-xl border border-gray-200 "
             style={{ width: 'auto', padding: '7px 12px' }}
             value={modeFilter}
             onChange={(e) => { setModeFilter(e.target.value); pagination.setPage(1) }}
           >
             <option value="">All Modes</option>
-            <option value="offline">In-Person</option>
-            <option value="online">Online</option>
-            <option value="hybrid">Hybrid</option>
+            <option value="Offline">In-Person</option>
+            <option value="Online">Online</option>
+            <option value="Hybrid">Hybrid</option>
           </select>
+
+          {categories.length > 0 && (
+            <select
+              className="form-input bg-white rounded-xl border border-gray-200 "
+              style={{ width: 'auto', padding: '7px 12px' }}
+              value={categoryFilter}
+              onChange={(e) => { setCategoryFilter(e.target.value); pagination.setPage(1) }}
+            >
+              <option value="">All Categories</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Table */}
         <Card>
           <Table
             columns={columns}
-            data={workshops}
+            data={paginatedWorkshops}
             loading={loading}
             empty={
               <EmptyState
@@ -377,7 +425,7 @@ export default function AdminWorkshopsPage() {
           <Pagination
             page={pagination.page}
             totalPages={totalPages}
-            total={total}
+            total={totalFiltered}
             onPageChange={pagination.setPage}
           />
         </Card>
