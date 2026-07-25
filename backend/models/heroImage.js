@@ -14,6 +14,10 @@ const heroImageSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    caption: {
+      type: String,
+      default: "",
+    },
     order: {
       type: Number,
       default: 0,

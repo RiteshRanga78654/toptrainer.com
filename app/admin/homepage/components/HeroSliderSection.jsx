@@ -7,6 +7,7 @@ export default function HeroSliderSection({
   images,
   addHeroImage,
   toggleActive,
+  updateCaption,
   removeImage,
 }) {
   return (
@@ -27,7 +28,7 @@ export default function HeroSliderSection({
       </div>
 
       {/* Slide rows */}
-      <div className="p-4  grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="p-4 grid grid-cols-1 gap-4">
         {images.map((img) => {
           return (
             <div
@@ -36,9 +37,9 @@ export default function HeroSliderSection({
             >
               {/* Drag handle */}
 
-              <div className="flex gap-3">
+              <div className="flex flex-1 gap-3 items-center">
                 <div
-                  className="mt-3 text-slate-300 cursor-grab select-none shrink-0"
+                  className="mt-1 text-slate-300 cursor-grab select-none shrink-0"
                   title="Drag to reorder"
                 >
                   <svg
@@ -57,8 +58,8 @@ export default function HeroSliderSection({
                 </div>
 
                 {/* Thumbnail + change image */}
-                <div className="">
-                  <div className="relative w-28 md:w-40 h-20 rounded-lg overflow-hidden bg-slate-100 group cursor-pointer upload-zone">
+                <div className="shrink-0">
+                  <div className="relative w-28 md:w-32 h-20 rounded-lg overflow-hidden bg-slate-100 group cursor-pointer upload-zone">
                     <img
                       src={img.url}
                       alt="Hero slide"
@@ -83,26 +84,41 @@ export default function HeroSliderSection({
                     </label>
                   </div>
                 </div>
+
+                {/* Caption Input */}
+                <div className="flex-1 px-2">
+                  <input
+                    type="text"
+                    placeholder="Enter caption for this slide..."
+                    defaultValue={img.caption || ""}
+                    onBlur={(e) => {
+                      if (e.target.value !== img.caption) {
+                        updateCaption(img._id, e.target.value);
+                      }
+                    }}
+                    className="w-full text-sm border-b border-slate-200 focus:border-blue-500 focus:outline-none bg-transparent py-2 transition-colors placeholder:text-slate-400"
+                  />
+                </div>
               </div>
 
               
               {/* Active toggle + delete */}
-              <div className="flex flex-col gap-3  pt-1">
+              <div className="flex flex-col gap-3 shrink-0 items-end">
                 <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-slate-600">
+                    Active
+                  </span>
                   <Toggle
                     checked={img.active}
                     onChange={() => toggleActive(img._id)}
                   />
-                  <span className="text-xs font-medium text-slate-600">
-                    Active
-                  </span>
                 </div>
                 <button
                   onClick={() => removeImage(img._id)}
-                  className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all"
-                  title="Remove slide"
+                  className="text-slate-400 hover:text-red-500 transition-colors p-1 bg-slate-50 hover:bg-red-50 rounded-md"
+                  title="Remove Image"
                 >
-                  <Trash2 size={13} />
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>

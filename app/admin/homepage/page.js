@@ -33,6 +33,7 @@ export default function HomepagePage() {
     addHeroImage,
     reorderHeroImages,
     toggleActive,
+    updateCaption,
     removeImage,
     saveHero,
   } = heroState;
@@ -118,6 +119,7 @@ export default function HomepagePage() {
         images={images}
         toggleActive={toggleActive}
         removeImage={removeImage}
+        updateCaption={updateCaption}
         saveHero={saveHero}
         settings={settings}
         addHeroImage={addHeroImage}

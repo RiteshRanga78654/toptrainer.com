@@ -105,6 +105,24 @@ export default function useHomepageState() {
     }
   };
 
+  const updateCaption = async (id, newCaption) => {
+    // Optimistic UI update
+    const originalImage = images.find(img => img._id === id);
+    if (!originalImage) return;
+
+    setImages(prev => prev.map(img => img._id === id ? { ...img, caption: newCaption } : img));
+    
+    try {
+      await axios.put(`http://localhost:5001/api/hero-images/${id}`, {
+        caption: newCaption,
+      }, { withCredentials: true });
+    } catch (err) {
+      console.error("Failed to update caption", err);
+      // Revert on failure
+      setImages(prev => prev.map(img => img._id === id ? { ...img, caption: originalImage.caption } : img));
+    }
+  };
+
   const removeImage = async (id) => {
     try {
       const res = await axios.delete(`http://localhost:5001/api/hero-images/${id}`, { withCredentials: true });
@@ -404,6 +422,7 @@ export default function useHomepageState() {
       addHeroImage,
       reorderHeroImages,
       toggleActive,
+      updateCaption,
       removeImage,
       saveHero,
     },

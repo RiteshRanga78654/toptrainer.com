@@ -47,7 +47,7 @@ export const addHeroImage = asyncHandler(async (req, res) => {
 });
 
 export const updateHeroImage = asyncHandler(async (req, res) => {
-  const { active } = req.body;
+  const { active, caption } = req.body;
   
   const heroImage = await HeroImage.findById(req.params.id);
   
@@ -60,6 +60,9 @@ export const updateHeroImage = asyncHandler(async (req, res) => {
 
   if (active !== undefined) {
     heroImage.active = active;
+  }
+  if (caption !== undefined) {
+    heroImage.caption = caption;
   }
 
   await heroImage.save();
