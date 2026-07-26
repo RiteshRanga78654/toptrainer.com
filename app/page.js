@@ -626,10 +626,11 @@ const Page = () => {
       .then(data => {
         if (data.success && data.data.length > 0) {
           const apiSlides = data.data.map(img => ({
-            label: "Top Trainer",
+            label: img.caption || "Top Trainer",
             color: "#2563eb",
             bg: "#eff6ff",
             img: img.url,
+            caption: img.caption,
           }));
           setSlides(apiSlides);
         }
@@ -854,6 +855,15 @@ const Page = () => {
                         objectFit: "cover",
                       }}
                     />
+
+                    {/* CAPTION OVERLAY */}
+                    {cur.caption && (
+                      <div className="absolute bottom-0 left-0 w-full p-5 sm:p-6 bg-gradient-to-t from-black/50 via-black/20 to-transparent">
+                        <p className="text-white text-md md:text-lg font-bold tracking-wide">
+                          {cur.caption}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -1,7 +1,8 @@
 import { clsx } from "clsx";
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export const API = axios.create({
   baseURL: BASE_URL,
@@ -27,7 +28,7 @@ API.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 API.interceptors.response.use(
@@ -39,7 +40,7 @@ API.interceptors.response.use(
       localStorage.removeItem("accessToken");
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 function makeCRUD(basePath) {
@@ -75,17 +76,16 @@ export const trainersAPI = {
   getAll: (params = {}) => API.get("/search/trainers", { params }),
   getById: (id) => API.get(`/trainers/${id}`),
   getProfile: () => API.get("/trainers/me"),
-  updateProfile: (data) =>
-    API.put("/trainers/update-profile", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    }),
+  updateProfile: (data) => API.put("/trainers/update-profile", data, { headers: { "Content-Type": "multipart/form-data" } }),
   changePassword: (data) => API.put("/trainers/change-password", data),
   getStats: (id) => API.get(`/trainers/stats/${id}`),
-  register: (data) =>
+   register: (data) =>
     API.post("/trainers/register", data, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
+
 };
+
 
 const toArray = (payload, keys = []) => {
   if (Array.isArray(payload)) return payload;
@@ -99,6 +99,7 @@ const toArray = (payload, keys = []) => {
 
   return [];
 };
+
 
 // app/lib/api.js
 
@@ -117,8 +118,7 @@ const normalizeWorkshop = (w = {}) => ({
   dateRange: w?.schedule?.dateRange || w.dateRange || "",
   timeSlot: w?.schedule?.timeSlot || w.timeSlot || "",
   price: w?.pricing || w.price || {},
-  learningOutcomes:
-    w?.learningDetails?.learningOutcomes || w.learningOutcomes || [],
+  learningOutcomes: w?.learningDetails?.learningOutcomes || w.learningOutcomes || [],
   certifications: w?.learningDetails?.certifications || w.certifications || [],
   tags: w?.classification?.tags || w.tags || [],
   isFeatured: w?.classification?.isFeatured ?? w.isFeatured ?? false,
@@ -365,6 +365,7 @@ export function wordCount(str = "") {
   return str.trim().split(/\s+/).filter(Boolean).length;
 }
 
+
 // app/lib/api.js mein add karo — existing code ke baad
 
 // ── Trainer Dashboard API ─────────────────────────────────
@@ -374,6 +375,8 @@ export const trainerDashboardAPI = {
   getMyWorkshops: (params = {}) => API.get("/trainer/workshops", { params }),
   getMyArticles: (params = {}) => API.get("/trainer/articles", { params }),
   getAnalytics: () => API.get("/trainer/analytics"),
+  getMyReviews:() => API.get("/reviews//trainer-dashboard/my-reviews")
+
 };
 
 export const userDashboardAPI = {
@@ -388,6 +391,7 @@ export const userDashboardAPI = {
   toggleSaveArticle: (articleId) => API.post(`/user/save-article/${articleId}`),
   getArticleById: (articleId) => API.get(`/user/articles/${articleId}`),
  getMyReviews: () => API.get("reviews/my-review"),
+ removeShortlistedProfile: (trainerId) => API.delete(`/user/shortlist/${trainerId}`),
 };
 
 

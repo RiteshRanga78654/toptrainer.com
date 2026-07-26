@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMe } from '../../store/slices/authSlice'
@@ -15,6 +15,7 @@ export default function AuthGuard({ children, requiredRole }) {
   const pathname = usePathname()
   const dispatch = useDispatch()
   const { user, initialized, loading } = useSelector((state) => state.auth)
+  const [mounted, setMounted] = useState(false)
 
   const loginRoute = pathname?.startsWith('/admin') ? '/admin/login' : '/auth/login'
 
@@ -29,6 +30,11 @@ export default function AuthGuard({ children, requiredRole }) {
     }
   }, [])
 
+  useEffect(()=>{
+    setMounted(true)
+  },[])
+
+
   useEffect(() => {
     if (!initialized) return
     if (!user) {
@@ -40,7 +46,7 @@ export default function AuthGuard({ children, requiredRole }) {
     }
   }, [user, initialized])
 
-  if (!initialized || loading) {
+  if (!mounted || !initialized || loading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0c4a6e 0%, #0f172a 50%, #1e1b4b 100%)' }}>
         <div style={{ textAlign: 'center' }}>

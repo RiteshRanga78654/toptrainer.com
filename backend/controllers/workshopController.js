@@ -85,6 +85,21 @@ export const createWorkshop = asyncHandler(async (req, res) => {
   });
 });
 
+// Admin-only: fetch ALL workshops regardless of who created them
+export const getAllWorkshopsAdmin = asyncHandler(async (req, res) => {
+  const workshops = await Workshop.find({})
+    .populate({ path: "assignedTrainer", select: "fullName profilePhoto email" })
+    .populate({ path: "createdBy", select: "firstName lastName email fullName" })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  res.status(200).json({
+    success: true,
+    count: workshops.length,
+    workshops,
+  });
+});
+
 export const getDraftWorkshops = asyncHandler(async (req, res) => {
   const creatorId = req.admin?._id || req.trainer?._id;
 

@@ -66,11 +66,12 @@ export default function UserTrainerLoginPage() {
       if (result.user.role === "admin") {
         router.replace("/admin");
       } else if (result.user.role === "trainer") {
-        router.replace("/trainer/dashboard");
       } else {
         router.replace("/user/dashboard");
       }
-    } catch (_) {}
+    } catch (error) {
+      console.error("An error occured while login: ", error)
+    }
   };
 
   const handleChange = (e) => {
@@ -287,7 +288,7 @@ export default function UserTrainerLoginPage() {
                 Login
               </div>
             </div>
-
+            
             <form onSubmit={handleLogin} className="space-y-6">
               {error && (
                 <div className="anim-3 p-3 bg-red-50 border border-red-100 text-red-600 text-[14px] rounded-lg font-medium">
@@ -318,7 +319,6 @@ export default function UserTrainerLoginPage() {
                   />
                 </div>
               </div>
-
               <div className="anim-5 relative space-y-2">
                 <div className="flex justify-between items-center">
                   <label className="block text-[13px] font-semibold text-gray-800">
@@ -357,7 +357,7 @@ export default function UserTrainerLoginPage() {
                   </button>
                 </div>
               </div>
-
+                
               <div className="anim-5 flex items-center gap-3 mt-4">
                 <input
                   type="checkbox"

@@ -190,21 +190,19 @@ export default function ShortlistedProfiles() {
     return "/trainer";
   };
 
-  const handleUnshortlist = async (trainerId) => {
-    try {
-      setRemovingId(trainerId);
-
-      await userDashboardAPI.removeShortlistedProfile(trainerId);
-
-      setTrainers((prev) => prev.filter((trainer) => trainer.id !== trainerId));
-    } catch (err) {
-      console.error(
-        err?.response?.data?.message || err?.message || "Failed to remove shortlisted trainer"
-      );
-    } finally {
-      setRemovingId("");
-    }
-  };
+ const handleUnshortlist = async (trainerId) => {
+  try {
+    setRemovingId(trainerId);
+    await userDashboardAPI.removeShortlistedProfile(trainerId);
+    setTrainers((prev) => prev.filter((trainer) => trainer.trainerId !== trainerId)); // ✅ fix
+  } catch (err) {
+    console.error(
+      err?.response?.data?.message || err?.message || "Failed to remove shortlisted trainer"
+    );
+  } finally {
+    setRemovingId("");
+  }
+};
 
   return (
     <div className="pb-10">
@@ -279,7 +277,7 @@ export default function ShortlistedProfiles() {
               </div>
             ) : (
               filteredTrainers.map((trainer, idx) => {
-                const trainerKey = trainer.id || `${trainer.name}-${idx}`;
+              const trainerKey = trainer.trainerId || `${trainer.name}-${idx}`; // ✅ fix
 
                 return (
                   <div
