@@ -11,6 +11,7 @@ import Articles from "./components/article";
 // import Trainer from "./components/trainer";
 import Image from "next/image";
 import PopularTrainers from "./components/course";
+import WelcomeScreen from "./components/WelcomeScreen";
 
 /* ━━━ GLOBAL STYLES ━━━ */
 const GlobalStyles = () => (
@@ -619,6 +620,7 @@ const Page = () => {
   const [active, setActive] = useState(0);
   const [animKey, setAnimKey] = useState(0); // ✅ separate key to force re-animation
   const [slides, setSlides] = useState(defaultSlides);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:5001/api/hero-images/active")
@@ -692,8 +694,10 @@ const Page = () => {
   const cur = slides[active];
 
   return (
-    <div className="font-sans bg-white min-h-screen">
-      <GlobalStyles />
+    <>
+      {showSplash && <WelcomeScreen onComplete={() => setShowSplash(false)} />}
+      <div className="font-sans bg-white min-h-screen">
+        <GlobalStyles />
 
       <section className="hero-bg w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-[100px] pb-8 sm:pt-[110px] sm:pb-10 md:pt-[120px] md:pb-14 -mt-[80px]">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
@@ -939,6 +943,7 @@ const Page = () => {
       <Articles />
       {/* <Trainer /> */}
     </div>
+    </>
   );
 };
 
