@@ -92,31 +92,32 @@ export const searchTrainers = asyncHandler(
         const filter = {
             status: "approved",
         }
+
+        // If the keyword is a trainer code (e.g. "TR000101"), it uniquely
+        // identifies one trainer — category/industry filters should NOT be
+        // applied on top of it, otherwise the trainer won't be found unless
+        // the currently selected tab happens to match their category.
+        const isTrainerIdLookup = Boolean(keyword && keyword.toUpperCase().startsWith("TR"));
+
         if (keyword) {
             const searchRegex = buildSearchRegex(keyword);
-            filter.$or = [
-                { fullName: searchRegex },
-                { companyName: searchRegex },
-                { subjectLine: searchRegex },
-                { tagsLine: searchRegex },
-                { "profileSummary.profileSummary": searchRegex },
-                { "expertiseDomain.industry": searchRegex },
-                { "expertiseDomain.domain": searchRegex },
-                { "expertiseDomain.competencies": searchRegex },
-            ];
+            if (isTrainerIdLookup) {
+                filter.trainerId = keyword.toUpperCase();
+            } else {
+                filter.$or = [
+                    { fullName: searchRegex },
+                    { companyName: searchRegex },
+                    { subjectLine: searchRegex },
+                    { tagsLine: searchRegex },
+                    { "profileSummary.profileSummary": searchRegex },
+                    { "expertiseDomain.industry": searchRegex },
+                    { "expertiseDomain.domain": searchRegex },
+                    { "expertiseDomain.competencies": searchRegex },
+                ];
+            }
         }
-        if (industry) {
-            filter["expertiseDomain.industry"] = industry;
-        }
-        if (competency) {
-            filter["expertiseDomain.competency"] = competency;
-        }
-        if (trainerType) {
-            filter["expertiseDomain.trainerType"] = trainerType;
-        }
-        if (city) {
-            filter["contactInfo.location.city"] = buildSearchRegex(city);
-        }
+
+        if (!isTrainerIdLookup) {
             if (industry) {
                 filter["expertiseDomain.industry"] = industry;
             }
@@ -129,6 +130,7 @@ export const searchTrainers = asyncHandler(
             if (city) {
                 filter["contactInfo.location.city"] = buildSearchRegex(city);
             }
+        }
 
             if (isFeatured !== undefined) {
                 filter.isFeatured = isFeatured === "true";
@@ -149,8 +151,10 @@ export const searchTrainers = asyncHandler(
                 currentPage: page,
                 totalPages: Math.ceil(totalCount / limit),
                 trainers,
+
+            })
         });
-    });
+
 
 export const searchWorkshops = asyncHandler(
     async (req, res) => {
@@ -279,12 +283,12 @@ export const searchIndustries = asyncHandler(
             isActive: true,
         };
         if (keyword && keyword.trim() !== "") {
-            filter.industryName = buildSearchRegex(keyword);
+            filter.name = buildSearchRegex(keyword);
         }
 
         const industries = await Industry.find(filter)
-            .select("industryName icon")
-            .sort({ industryName: 1 })
+            .select("name icon")
+            .sort({ name: 1 })
             .limit(20);
 
         return res.status(200).json({
@@ -302,12 +306,12 @@ export const searchCompetencies = asyncHandler(
             isActive: true,
         };
         if (keyword && keyword.trim() !== "") {
-            filter.competencyName = buildSearchRegex(keyword);
+            filter.name = buildSearchRegex(keyword);
         }
 
         const competencies = await Competency.find(filter)
-            .select("competencyName")
-            .sort({ competencyName: 1 })
+            .select("name icon")
+            .sort({ name: 1 })
             .limit(20);
 
         return res.status(200).json({

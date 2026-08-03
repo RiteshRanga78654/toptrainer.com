@@ -69,11 +69,14 @@ export const userAPI = {
   getProfile: () => API.get("/users/me"),
   updateProfile: (data) => API.put("/users/update-profile", data),
   changePassword: (data) => API.put("/users/update-password", data),
+    getAll: (params = {}) => API.get("/admin/users", { params }),
+  updateStatus: (id, data) => API.patch(`/admin/users/${id}/status`, data),
 };
 
 export const trainersAPI = {
   ...makeCRUD("trainers"),
   getAll: (params = {}) => API.get("/search/trainers", { params }),
+    AgetAll: (params = {}) => API.get("/trainers", { params }),
   getById: (id) => API.get(`/trainers/${id}`),
   getProfile: () => API.get("/trainers/me"),
   updateProfile: (data) => API.put("/trainers/update-profile", data, { headers: { "Content-Type": "multipart/form-data" } }),
@@ -83,6 +86,8 @@ export const trainersAPI = {
     API.post("/trainers/register", data, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
+      updateStatus: (id, data) => API.patch(`/admin/trainers/${id}/status`, data),
+  updateFeatured: (id, data) => API.patch(`/admin/trainers/${id}/featured`, data),
 
 };
 
@@ -314,16 +319,28 @@ export const articlesAPI = {
 
   getDrafts: () => API.get("/articles/trainer/drafts"),
   getPublished: () => API.get("/articles/trainer/published"),
+  getAllTrainer: ()=> API.get("/articles/trainer/articles"),
+  getAllAdmin: ()=> API.get("/articles/admin/articles"),
+
+  // Search across ALL published articles (any creator), optionally filtered
+  // by keyword / industry / competency / department. Used by the admin
+  // "assign article to industry/competency/department" pickers.
+  searchPublic: (params = {}) => API.get("/articles", { params }),
+
+  // Assign or clear an article's industry / competency / department tag.
+  // Pass { industry: id | null } or { competency: id | null } or { department: id | null }.
+  updateTaxonomy: (id, data) => API.put(`/articles/admin/${id}`, data),
 };
 export const industriesAPI = makeCRUD("industries");
 export const competenciesAPI = makeCRUD("competencies");
-export const departmentsAPI = makeCRUD("departments");
+
 export const rankingsAPI = makeCRUD("rankings");
 export const cmsAPI = makeCRUD("cms");
 export const mediaAPI = makeCRUD("media");
 
 export const analyticsAPI = {
-  getDashboard: () => API.get("/analytics/dashboard"),
+  getDashboard: () => API.get("/admin/dashboard"),
+  getAnalytics: () => API.get("/admin/analytics"),
   getTrainerAnalytics: (params = {}) =>
     API.get("/analytics/trainers", { params }),
   getWorkshopAnalytics: (params = {}) =>
@@ -378,7 +395,10 @@ export const trainerDashboardAPI = {
   getMyReviews:() => API.get("/reviews//trainer-dashboard/my-reviews")
 
 };
-
+export const adminAuthAPI = {
+  getProfile: () => API.get("/admin/get-my-profile"),
+  updateProfile: (data) => API.post("/admin/update-profile", data),
+};
 export const userDashboardAPI = {
   getDashboard: () => API.get("/user/dashboard"),
   getShortlistedProfiles: () => API.get("/user/shortlisted"),
@@ -392,6 +412,7 @@ export const userDashboardAPI = {
   getArticleById: (articleId) => API.get(`/user/articles/${articleId}`),
  getMyReviews: () => API.get("reviews/my-review"),
  removeShortlistedProfile: (trainerId) => API.delete(`/user/shortlist/${trainerId}`),
+
 };
 
 
@@ -405,5 +426,203 @@ export const reviewsAPI = {
   getFeatured: () => API.get("/reviews/featured"),
   update: (id, data) => API.put(`/reviews/${id}`, data),
   delete: (id) => API.delete(`/reviews/${id}`),
+};
+export const adminWorkshopsAPI = {
+  getAll: async () => {
+    const res = await API.get("/workshops/admin/all");
+    return {
+      data: {
+        workshops: mapWorkshopList(res?.data?.workshops || []),
+      },
+    };
+  },
+
+  getDrafts: async () => {
+    const res = await API.get("/workshops/admin/drafts");
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        drafts: mapWorkshopList(res?.data?.drafts || []),
+      },
+    };
+  },
+
+  getPublished: async () => {
+    const res = await API.get("/workshops/admin/published");
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshops: mapWorkshopList(res?.data?.workshops || []),
+      },
+    };
+  },
+
+  getOne: async (id) => {
+    const res = await API.get(`/workshops/admin/One-workshop/${id}`);
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+
+  create: async (data) => {
+    const res = await API.post("/workshops/admin/create", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+
+  update: async (id, data) => {
+    const res = await API.put(`/workshops/admin/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+
+  delete: (id) => API.delete(`/workshops/admin/${id}`),
+
+  publish: async (id) => {
+    const res = await API.put(`/workshops/admin/publish/${id}`);
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+
+  updateStatus: async (id, status) => {
+    if (status === "published") {
+      return adminWorkshopsAPI.publish(id);
+    }
+
+    const form = new FormData();
+    form.append("status", "draft");
+
+    const res = await API.put(`/workshops/admin/${id}`, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return {
+      ...res,
+      data: {
+        ...res.data,
+        workshop: normalizeWorkshop(res?.data?.workshop || {}),
+      },
+    };
+  },
+};
+
+export const industryAPI = {
+  getAll: () => API.get("/industries"),
+  getActive: () => API.get("/industries/active"),
+  create: (data) => API.post("/industries", data),
+  update: (id, data) => API.put(`/industries/${id}`, data),
+  delete: (id) => API.delete(`/industries/${id}`),
+  toggleStatus: (id) => API.patch(`/industries/${id}/toggle-status`),
+};
+export const competencyAPI = {
+  getAll: () => API.get("/competencies"),
+  getActive: () => API.get("/competencies/active"),
+  create: (data) => API.post("/competencies", data),
+  update: (id, data) => API.put(`/competencies/${id}`, data),
+  delete: (id) => API.delete(`/competencies/${id}`),
+  toggleStatus: (id) => API.patch(`/competencies/${id}/toggle-status`),
+};
+export const departmentsAPI = {
+  getAll: () => API.get("/departments"),
+  getActive: () => API.get("/departments/active"),
+  create: (data) => API.post("/departments", data),
+  update: (id, data) => API.put(`/departments/${id}`, data),
+  delete: (id) => API.delete(`/departments/${id}`),
+  toggleStatus: (id) => API.patch(`/departments/${id}/toggle-status`),
+};
+export const youtubeVideosAPI = {
+  getAll: (params) => API.get("/youtube-videos", { params }),
+  create: (data) => API.post("/youtube-videos", data),
+  delete: (id) => API.delete(`/youtube-videos/${id}`),
+};
+export const articlesAdminAPI = {
+  getAll: async () => {
+    const [draftsRes, publishedRes] = await Promise.all([
+      API.get("/articles/admin/drafts"),
+      API.get("/articles/admin/published"),
+    ]);
+
+    const drafts = toArray(draftsRes?.data, ["drafts", "articles"]);
+    const published = toArray(publishedRes?.data, ["articles", "drafts"]);
+
+    return {
+      data: {
+        articles: [...drafts, ...published],
+        drafts,
+        published,
+      },
+    };
+  },
+
+  getOne: (id) => API.get(`/articles/${id}`),
+
+  create: (data) =>
+    API.post("/articles/admin/create", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+
+  update: (id, data) =>
+    API.put(`/articles/admin/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+
+  delete: (id) => API.delete(`/articles/admin/${id}`),
+
+  publish: (id) => API.put(`/articles/admin/publish/${id}`),
+
+  getMine: async () => {
+    const [draftsRes, publishedRes] = await Promise.all([
+      API.get("/articles/admin/drafts"),
+      API.get("/articles/admin/published"),
+    ]);
+
+    const drafts = toArray(draftsRes?.data, ["drafts", "articles"]);
+    const published = toArray(publishedRes?.data, ["articles", "drafts"]);
+
+    return {
+      data: {
+        articles: [...drafts, ...published],
+        drafts,
+        published,
+      },
+    };
+  },
+
+  getDrafts: () => API.get("/articles/admin/drafts"),
+  getPublished: () => API.get("/articles/admin/published"),
+};
+export const blogsAPI = {
+  getAll: (params = {}) =>
+    API.get("/articles/admin/articles", {
+      params: { status: "published", ...params },
+    }),
+  getOne: (id) => API.get(`/articles/${id}`),
 };
 export default API;

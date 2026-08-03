@@ -4,10 +4,6 @@ import User from "../models/user.js";
 import generateToken from "../utils/generationToken.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
 
-// POST /api/auth/login — single login box, no role selector.
-// Tries Admin -> TrainerProfile -> User (in that order) by email, and
-// returns whichever one's password matches. Order matters only if the same
-// email is somehow registered in more than one collection; admin wins.
 export const unifiedLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -18,7 +14,6 @@ export const unifiedLogin = asyncHandler(async (req, res) => {
     });
   }
 
-  // 1) Admin
   const admin = await Admin.findOne({ email });
   if (admin && (await admin.matchPassword(password))) {
     const token = generateToken(res, admin._id, "adminToken");
@@ -35,9 +30,15 @@ export const unifiedLogin = asyncHandler(async (req, res) => {
     });
   }
 
-  // 2) Trainer
   const trainer = await TrainerProfile.findOne({ email }).select("+password");
   if (trainer && (await trainer.comparePassword(password))) {
+    if (trainer.status === "inactive") {
+      return res.status(403).json({
+        success: false,
+        message: "Your account is deactivated. Please contact our support team.",
+      });
+    }
+
     const token = generateToken(res, trainer._id, "trainerToken");
     trainer.password = undefined;
     return res.status(200).json({
@@ -48,24 +49,30 @@ export const unifiedLogin = asyncHandler(async (req, res) => {
     });
   }
 
-  // 3) User
-  const user = await User.findOne({ email }).select("+password");
-  if (user && (await user.comparePassword(password))) {
-    user.isOnline = true;
-    user.lastActive = new Date();
-    await user.save({ validateBeforeSave: false });
-    const token = generateToken(res, user._id, "userToken");
-    user.password = undefined;
-    return res.status(200).json({
-      success: true,
-      role: "user",
-      token,
-      user,
+ const user = await User.findOne({ email }).select("+password");
+if (user && (await user.comparePassword(password))) {
+  if (user.status === "inactive") {
+    return res.status(403).json({
+      success: false,
+      message: "Your account is deactivated. Please contact our support team.",
     });
   }
 
-  // Same generic message regardless of which collection almost matched —
-  // don't reveal whether an email exists in one role vs another.
+  user.isOnline = true;
+  user.lastSeen = new Date();
+  await user.save({ validateBeforeSave: false });
+
+  const token = generateToken(res, user._id, "userToken");
+  user.password = undefined;
+
+  return res.status(200).json({
+    success: true,
+    role: "user",
+    token,
+    user,
+  });
+}
+
   return res.status(401).json({
     success: false,
     message: "Invalid email or password",

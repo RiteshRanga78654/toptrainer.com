@@ -25,8 +25,14 @@ const adminNav = [
       { label: 'Workshops',  href: '/admin/workshops',    icon: BookOpen },
       { label: 'Industry',   href: '/admin/industries',   icon: Building2 },
       { label: 'Competency', href: '/admin/competencies', icon: Award },
+      {label: 'Department', href: '/admin/departmentes', icon: Award},
       { label: 'Articles',   href: '/admin/articles',     icon: FileText },
       { label: 'Reports',    href: '/admin/reports',    icon: BarChart3 },
+    ]
+  },
+  {
+    label: 'ACCOUNT', items: [
+      { label: 'Profile', href: '/admin/profile', icon: User },
     ]
   },
 ]
@@ -150,7 +156,11 @@ function SidebarContent({ role, user, onClose, onLogout }) {
 
       {/* User + logout */}
       <div className="px-3 py-4 border-t border-slate-800 shrink-0 space-y-1">
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-800/60">
+        <Link
+          href={role === 'admin' ? '/admin/profile' : '/trainer/profile'}
+          onClick={onClose}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 transition-colors"
+        >
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
             {initials}
           </div>
@@ -159,7 +169,7 @@ function SidebarContent({ role, user, onClose, onLogout }) {
             <p className="text-xs text-slate-500 truncate capitalize">{user?.role ?? role}</p>
           </div>
           <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-        </div>
+        </Link>
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700/60 transition-colors"

@@ -4,7 +4,7 @@ import { articles as initialArticles } from "../data/mockData"
 import { Card, Badge, Button, Input, Select, Toast } from "../../components/ui"
 import { Plus, Search, Edit2, Trash2, Eye } from "lucide-react"
 import { formatDate, trainersAPI } from "../../lib/api"
-import ArticleFormModal from "../../trainer/articles/ArticleFormModal"
+import ArticleFormModal from "./ArticleFormModal"
 import { useEffect } from "react"
 
 const CSS = `

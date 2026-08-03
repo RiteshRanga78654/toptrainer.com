@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import axios from "axios";
 import YoutubeSection from "../components/youtube";
 import {
   Bot,
@@ -253,24 +254,6 @@ const trainersData = {
   ],
 };
 
-const articles = [
-  {
-    title: "How Generative AI is Reshaping Professional Workflows",
-    badge: "Featured",
-    image: "/Images/workshop2.png",
-  },
-  {
-    title: "Mastering Strategic Thinking in the AI Era",
-    badge: null,
-    image: "/Images/workshop2.png",
-  },
-  {
-    title: "Time Management Techniques for High-Performance Teams",
-    badge: null,
-    image: "/Images/workshop2.png",
-  },
-];
-
 const videos = [
   { title: "Introduction to Cloud Computing", duration: "12 min" },
   { title: "Agile Methodology Explained", duration: "15 min" },
@@ -384,6 +367,109 @@ function TrainerCard({ trainer }) {
   );
 }
 
+function ArticleSlider({ articles }) {
+  const scrollRef = useRef(null);
+  const [current, setCurrent] = useState(0);
+  const cardsPerSlide = 3;
+  const totalSlides = Math.ceil(articles.length / cardsPerSlide);
+
+  const goToSlide = (index) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const width = el.offsetWidth;
+    el.scrollTo({ left: width * index, behavior: "smooth" });
+    setCurrent(index);
+  };
+
+  const next = () => {
+    if (current < totalSlides - 1) goToSlide(current + 1);
+  };
+
+  const prev = () => {
+    if (current > 0) goToSlide(current - 1);
+  };
+
+  return (
+    <div className="relative">
+      <div
+        ref={scrollRef}
+        className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide"
+      >
+        {Array.from({ length: totalSlides }).map((_, slideIndex) => {
+          const start = slideIndex * cardsPerSlide;
+          const chunk = articles.slice(start, start + cardsPerSlide);
+
+          return (
+            <div
+              key={slideIndex}
+              className="min-w-full snap-start grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {chunk.map((a) => (
+                <div
+                  key={a._id || a.id || a.slug || a.title}
+                  className="relative rounded-2xl overflow-hidden cursor-pointer group hover:scale-[1.02] transition-all duration-300 h-68"
+                >
+                  <Image
+                    src={a.image || a.thumbnail || "/Images/workshop2.png"}
+                    alt={a.title || "Article"}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+                  {a.featured && (
+                    <span className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full z-10">
+                      Featured
+                    </span>
+                  )}
+
+                  <div className="absolute bottom-2 left-5 right-5 z-10">
+                    <p className="text-white font-bold text-lg leading-snug truncate">
+                      {a.title}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      {totalSlides > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-5">
+          <button
+            onClick={prev}
+            disabled={current === 0}
+            className="px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-700 disabled:opacity-40"
+          >
+            Prev
+          </button>
+
+          <div className="flex items-center gap-2">
+            {Array.from({ length: totalSlides }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goToSlide(i)}
+                className={`h-2 rounded-full transition-all ${
+                  current === i ? "w-6 bg-blue-600" : "w-2 bg-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={next}
+            disabled={current === totalSlides - 1}
+            className="px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-700 disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Industry() {
   const router = useRouter();
   const [activeIndustry, setActiveIndustry] = useState(
@@ -399,6 +485,50 @@ export default function Industry() {
   const [showExtra, setShowExtra] = useState(false);
   const trainers = trainersData[activeIndustry] || [];
   const displayed = showAll ? trainers : trainers.slice(0, 8);
+
+  const [articles, setArticles] = useState([]);
+  const [articlesLoading, setArticlesLoading] = useState(false);
+
+  // No tab-matching, no filter — just show every article that's been
+  // assigned to a department in admin, directly, once.
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setArticlesLoading(true);
+
+        const res = await axios.get("http://localhost:5000/api/articles", {
+          params: {
+            department: "any",
+          },
+        });
+
+        const rawArticles = res?.data?.data || res?.data?.articles || [];
+
+        const normalized = rawArticles.map((item) => ({
+          ...item,
+          featured: Boolean(item?.featured || item?.isFeatured),
+          image:
+            item?.image?.url ||
+            item?.thumbnail?.url ||
+            item?.thumbnail ||
+            item?.coverImage?.url ||
+            item?.coverImage ||
+            "/Images/workshop2.png",
+        }));
+
+        normalized.sort((a, b) => Number(b.featured) - Number(a.featured));
+
+        setArticles(normalized);
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+        setArticles([]);
+      } finally {
+        setArticlesLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
 
   return (
     <div
@@ -678,40 +808,50 @@ export default function Industry() {
             View All
           </button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((a) => (
-            <div
-              key={a.title}
-              className="relative rounded-2xl overflow-hidden cursor-pointer group hover:scale-[1.02] transition-all duration-300 h-68"
-            >
-              <Image
-                src={a.image}
-                alt={a.title}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-500"
-              />
+        {articlesLoading ? (
+          <div className="text-sm text-gray-500 py-10">Loading articles...</div>
+        ) : articles.length === 0 ? (
+          <div className="text-sm text-gray-500 py-10">
+            No articles added yet.
+          </div>
+        ) : articles.length > 3 ? (
+          <ArticleSlider articles={articles} />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((a) => (
+              <div
+                key={a._id || a.id || a.slug || a.title}
+                className="relative rounded-2xl overflow-hidden cursor-pointer group hover:scale-[1.02] transition-all duration-300 h-68"
+              >
+                <Image
+                  src={a.image}
+                  alt={a.title}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-              {a.badge && (
-                <span className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full z-10">
-                  {a.badge}
-                </span>
-              )}
+                {a.featured && (
+                  <span className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full z-10">
+                    Featured
+                  </span>
+                )}
 
-              <div className="absolute bottom-2 left-5 right-5 z-10">
-                <p className="text-white font-bold text-lg leading-snug ">
-                  {a.title}
-                </p>
+                <div className="absolute bottom-2 left-5 right-5 z-10">
+                  <p className="text-white font-bold text-lg leading-snug ">
+                    {a.title}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Videos */}
 
-      <YoutubeSection />
+      <YoutubeSection scope="entity" entityType="Department" />
     </div>
   );
 }

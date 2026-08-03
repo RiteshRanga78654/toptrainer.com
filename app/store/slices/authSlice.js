@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { authAPI } from "../../lib/api";
+import { authAPI, userAPI } from "../../lib/api";
 
 function saveToken(token) {
   if (typeof window === "undefined") return;
@@ -57,6 +57,40 @@ export const login = createAsyncThunk(
   }
 );
 
+export const register = createAsyncThunk(
+  "auth/register",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const res = await userAPI.register(formData);
+
+      const payload = res.data?.data || res.data;
+      const token = payload?.token;
+      const user = payload?.user;
+
+      if (!token || !user) {
+        return rejectWithValue(
+          payload?.message || "Invalid registration response from server"
+        );
+      }
+
+      const normalizedUser = {
+        ...user,
+        role: user.role || "user",
+      };
+
+      saveToken(token);
+      localStorage.setItem("role", normalizedUser.role || "");
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
+
+      return { token, user: normalizedUser };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Registration failed"
+      );
+    }
+  }
+);
+
 export const fetchMe = createAsyncThunk(
   "auth/me",
   async (_, { rejectWithValue }) => {
@@ -99,6 +133,12 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    updateUser: (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(state.user));
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -114,6 +154,22 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.initialized = true;
+      })
+      .addCase(register.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload.token;
+        state.user = action.payload.user;
+        state.initialized = true;
+        state.error = null;
+      })
+      .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.initialized = true;
@@ -142,5 +198,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, updateUser } = authSlice.actions;
 export default authSlice.reducer;

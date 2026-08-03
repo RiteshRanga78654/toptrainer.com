@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { CAT_COLORS, FILTERS, ARTICLES, makeSlug } from "./data";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { CAT_COLORS as CATCOLORS, FILTERS, makeSlug } from "./data";
+import { articlesAPI, trainersAPI, userDashboardAPI } from "../lib/api";
 
 // ─────────────────────────────────────────────
 // DATA & SUB-COMPONENTS FOR REDESIGNED TRAINER SECTION
@@ -12,68 +15,81 @@ const Loader2 = ({ size, className }) => (
 );
 const ChevronRight = ({ size }) => <span style={{ fontSize: size }}>→</span>;
 
-const allTrainers = [
-  { 
-    id: 1, 
-    name: "Priya Sharma", 
-    role: "Leadership &...", 
-    location: "Delhi, India",
-    badge: { text: "TOP RATED", bg: "#eff6ff", color: "#2563eb", border: "#dbeafe" },
-    desc: "Helping senior professionals unlock their leadership potential with proven frameworks.",
-    rating: "4.9", 
-    reviews: "312", 
-    sessions: "1.2K+",
-    exp: "8 yrs",
-    status: "Available",
-    tags: ["Leadership", "Soft Skills", "Management"],
-    tagColors: { bg: ["#fef9c3", "#fee2e2", "#e0e7ff"], text: ["#854d0e", "#991b1b", "#3730a3"] }
-  },
-  { 
-    id: 2, 
-    name: "Rahul Mehta", 
-    role: "Full Stack &...", 
-    location: "Bangalore, India",
-    badge: { text: "RISING STAR", bg: "#fdf4ff", color: "#d946ef", border: "#f5d0fe" },
-    desc: "From React to LLMs — practical, project-based learning that gets you hired.",
-    rating: "4.8", 
-    reviews: "278", 
-    sessions: "980+",
-    exp: "6 yrs",
-    status: "Available",
-    tags: ["Technical", "AI", "Web Dev"],
-    tagColors: { bg: ["#eff6ff", "#f5f3ff", "#ecfdf5"], text: ["#1e40af", "#5b21b6", "#065f46"] }
-  },
-  { 
-    id: 3, 
-    name: "Ananya Verma", 
-    role: "Data Science &...", 
-    location: "Mumbai, India",
-    badge: { text: "EXPERT", bg: "#f0fdf4", color: "#16a34a", border: "#bbf7d0" },
-    desc: "Making data science approachable — from Excel to neural networks step by step.",
-    rating: "5", 
-    reviews: "195", 
-    sessions: "740+",
-    exp: "5 yrs",
-    status: "Busy",
-    tags: ["Data Science", "Python", "MI"],
-    tagColors: { bg: ["#f0fdf4", "#f0fdfa", "#eff6ff"], text: ["#166534", "#115e59", "#1e40af"] }
-  },
-  { 
-    id: 4, 
-    name: "Vikram Nair", 
-    role: "Communi...", 
-    location: "Hyderabad, India",
-    badge: { text: "MOST BOOKED", bg: "#fff7ed", color: "#ea580c", border: "#ffedd5" },
-    desc: "Transforming introverts into compelling speakers through structured daily practice.",
-    rating: "4.9", 
-    reviews: "421", 
-    sessions: "1.5K+",
-    exp: "10 yrs",
-    status: "Available",
-    tags: ["Communication", "Soft Skills", "Confidence"],
-    tagColors: { bg: ["#fce7f3", "#fee2e2", "#fdf2f8"], text: ["#9d174d", "#991b1b", "#9d174d"] }
-  }
-];
+// ─────────────────────────────────────────────
+// NORMALIZERS — map real backend payloads onto the shape
+// the (unchanged) UI components below expect.
+// ─────────────────────────────────────────────
+const DEFAULT_BADGE = { text: "TRAINER", bg: "#eff6ff", color: "#2563eb", border: "#dbeafe" };
+const DEFAULT_TAG_COLORS = {
+  bg: ["#eff6ff", "#f5f3ff", "#ecfdf5", "#fff7ed"],
+  text: ["#1e40af", "#5b21b6", "#065f46", "#9a3412"],
+};
+
+function normalizeArticle(a = {}) {
+  const category = a.category || a.industry?.name || "General";
+  const catKey = category.toLowerCase().trim().replace(/\s+/g, "-");
+  const publishedDate = a.publishedAt || a.createdAt;
+  const authorName =
+    a.authorName ||
+    a.author?.fullName ||
+    a.trainer?.fullName ||
+    a.createdBy?.fullName ||
+    "TopTrainer";
+
+  return {
+    id: a.id || a._id,
+    title: a.title || "",
+    cat: category,
+    catKey,
+    image: a.coverImage?.url || a.image || "",
+    coverImg: a.coverImage?.url || a.image || "",
+    shortDesc: a.excerpt || a.shortDescription || "",
+    tags: a.tags || [],
+    author: authorName,
+    authorRole: a.author?.subjectLine || a.creatorType || "",
+    initials:
+      authorName
+        .split(" ")
+        .filter(Boolean)
+        .map((w) => w[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase() || "T",
+    readTime: a.readTime || "5 min",
+    date: publishedDate
+      ? new Date(publishedDate).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "",
+    trending: !!a.featured,
+    views: a.views || 0,
+  };
+}
+
+function normalizeTrainer(t = {}) {
+  return {
+    id: t.id || t._id,
+    name: t.fullName || t.name || "Trainer",
+    role: t.subjectLine || t.category || t.expertise || t.role || "Expert Trainer",
+    location: t.location || t.city || "India",
+    badge: t.badge || DEFAULT_BADGE,
+    desc:
+      t.bio ||
+      t.about ||
+      t.tagline ||
+      t.desc ||
+      "Experienced trainer helping professionals grow.",
+    rating: t.rating || t.avgRating || "4.8",
+    reviews: t.reviewsCount ?? t.totalReviews ?? t.reviews ?? "0",
+    sessions: t.sessionsCount || t.totalSessions || t.sessions || "0",
+    exp: t.experience || t.exp || "—",
+    status: t.isAvailable === false ? "Busy" : t.status || "Available",
+    tags: t.tags || t.skills || t.specialties || [],
+    tagColors: t.tagColors || DEFAULT_TAG_COLORS,
+  };
+}
 
 function TrainerCard({ trainer, delay }) {
   return (
@@ -452,10 +468,15 @@ const STYLES = `
 // ─────────────────────────────────────────────
 // ARTICLE CARD
 // ─────────────────────────────────────────────
-function ArticleCard({ article }) {
-  const [liked, setLiked] = useState(false);
+function ArticleCard({ article, isSaved, onToggleSave }) {
   const slug = makeSlug(article);
-  const col  = CAT_COLORS[article.catKey] || CAT_COLORS.gym;
+  const col = CATCOLORS?.[article.catKey] || {
+    color: "#1d4ed8",
+    pill: "#2563eb",
+    border: "rgba(37,99,235,0.2)",
+    avatarBg: "#eff6ff",
+    avatarColor: "#1d4ed8",
+  };
 
   return (
     <Link href={`/articles/${slug}`} className="art-card">
@@ -470,10 +491,12 @@ function ArticleCard({ article }) {
           }}>🔥 Trending</span>
         )}
         <button
-          onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(!liked); }}
+          onClick={e => { e.preventDefault(); e.stopPropagation(); onToggleSave?.(article.id); }}
           className="like-btn"
-          style={{ color: liked ? "#ef4444" : "#64748b" }}
-        >{liked ? "♥" : "♡"}</button>
+          title={isSaved ? "Remove from saved" : "Save article"}
+          aria-label={isSaved ? "Remove from saved" : "Save article"}
+          style={{ color: isSaved ? "#ef4444" : "#64748b" }}
+        >{isSaved ? "♥" : "♡"}</button>
       </div>
 
       <div style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", flex: 1 }}>
@@ -487,7 +510,7 @@ function ArticleCard({ article }) {
           {article.shortDesc}
         </p>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
-          {article.tags.map(t => <span key={t} className="tag-pill">{t}</span>)}
+          {(article.tags || []).map(t => <span key={t} className="tag-pill">{t}</span>)}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, borderTop: "1px solid rgba(37,99,235,0.08)", paddingTop: 13, marginTop: "auto" }}>
           <div style={{ width: 32, height: 32, borderRadius: 10, flexShrink: 0, background: col.avatarBg, color: col.avatarColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-display)" }}>
@@ -505,10 +528,18 @@ function ArticleCard({ article }) {
 // ─────────────────────────────────────────────
 // FEATURED CARD
 // ─────────────────────────────────────────────
-function FeaturedCard() {
-  const featured = ARTICLES.find(a => a.trending) || ARTICLES[0];
+function FeaturedCard({ articles }) {
+  const featured = articles.find(a => a.trending) || articles[0] || null;
+  if (!featured) return null;
+
   const slug = makeSlug(featured);
-  const col  = CAT_COLORS[featured.catKey] || CAT_COLORS.gym;
+  const col = (featured && CATCOLORS?.[featured.catKey]) || {
+    pill: "#2563eb",
+    color: "#1d4ed8",
+    border: "rgba(37,99,235,0.2)",
+    avatarBg: "#eff6ff",
+    avatarColor: "#1d4ed8",
+  };
 
   return (
     <div className="anim-fade-up delay-200" style={{ marginBottom: "2.5rem" }}>
@@ -549,11 +580,11 @@ function FeaturedCard() {
 }
 
 // ─────────────────────────────────────────────
-// RESTORED: ARTICLES HERO COMPONENT
+// ARTICLES HERO COMPONENT
 // ─────────────────────────────────────────────
-function ArticlesHero({ onSearch, inputVal, setInputVal }) {
-  const featured = ARTICLES.find(a => a.trending) || ARTICLES[0];
-  const col = CAT_COLORS[featured.catKey] || CAT_COLORS.gym;
+function ArticlesHero({ onSearch, inputVal, setInputVal, articles }) {
+  const featured = articles.find(a => a.trending) || articles[0] || null;
+  const col = (featured && CATCOLORS[featured.catKey]) || {};
 
   return (
     <div className="hero-bg">
@@ -627,23 +658,25 @@ function ArticlesHero({ onSearch, inputVal, setInputVal }) {
         </div>
 
         {/* ── RIGHT ── */}
-        <div className="hero-right anim-scale-in delay-300" style={{ position: "relative" }}>
-          <div style={{
-            position: "absolute", borderRadius: "50%", pointerEvents: "none",
-            width: "80%", height: "70%", left: "10%", top: "10%",
-            background: "radial-gradient(circle,rgba(99,102,241,0.22) 0%,transparent 70%)",
-            filter: "blur(52px)",
-          }} />
-          <div className="hero-img-wrap">
-            <img src={featured.coverImg} alt={featured.title} />
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg,rgba(37,99,235,0.06) 0%,transparent 50%,rgba(0,0,0,0.25) 100%)" }} />
-            <div style={{ position: "absolute", top: 16, left: 16, background: col.pill, color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, padding: "7px 14px", borderRadius: 99 }}>{featured.cat}</div>
-            {featured.trending && (
-              <div style={{ position: "absolute", top: 16, right: 16, background: "rgba(239,68,68,0.9)", color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, padding: "7px 14px", borderRadius: 99 }}>🔥 Trending</div>
-            )}
-            <div style={{ position: "absolute", bottom: 16, left: 16, display: "flex", alignItems: "center", gap: 6, background: "rgba(37,99,235,0.92)", color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, padding: "8px 14px", borderRadius: 99, boxShadow: "0 8px 24px rgba(37,99,235,0.4)" }}>📖 {featured.readTime} read</div>
+        {featured && (
+          <div className="hero-right anim-scale-in delay-300" style={{ position: "relative" }}>
+            <div style={{
+              position: "absolute", borderRadius: "50%", pointerEvents: "none",
+              width: "80%", height: "70%", left: "10%", top: "10%",
+              background: "radial-gradient(circle,rgba(99,102,241,0.22) 0%,transparent 70%)",
+              filter: "blur(52px)",
+            }} />
+            <div className="hero-img-wrap">
+              <img src={featured.coverImg} alt={featured.title} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg,rgba(37,99,235,0.06) 0%,transparent 50%,rgba(0,0,0,0.25) 100%)" }} />
+              <div style={{ position: "absolute", top: 16, left: 16,background: col.pill || "#2563eb", color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, padding: "7px 14px", borderRadius: 99 }}>{featured.cat}</div>
+              {featured.trending && (
+                <div style={{ position: "absolute", top: 16, right: 16, background: "rgba(239,68,68,0.9)", color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, padding: "7px 14px", borderRadius: 99 }}>🔥 Trending</div>
+              )}
+              <div style={{ position: "absolute", bottom: 16, left: 16, display: "flex", alignItems: "center", gap: 6, background: "rgba(37,99,235,0.92)", color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, padding: "8px 14px", borderRadius: 99, boxShadow: "0 8px 24px rgba(37,99,235,0.4)" }}>📖 {featured.readTime} read</div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -653,35 +686,148 @@ function ArticlesHero({ onSearch, inputVal, setInputVal }) {
 // MAIN PAGE COMPONENT
 // ─────────────────────────────────────────────
 export default function ArticlesPage() {
+  const router = useRouter();
+  const user = useSelector((s) => s.auth?.user);
+
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery,  setSearchQuery]  = useState("");
   const [inputVal,     setInputVal]     = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
   const [expanded,     setExpanded]     = useState(false);
 
-  // Trainer Section State logic
+  // Real data (fetched from the backend — no mock data)
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Saved / bookmarked article ids for the logged-in user (mirrors the
+  // trainer-shortlist pattern used on the find-trainer page).
+  const [savedIds, setSavedIds] = useState(new Set());
+
+  const [trainers, setTrainers] = useState([]);
   const [trVisibleCount, setTrVisibleCount] = useState(4);
   const [trLoading, setTrLoading] = useState(false);
+
+  const fetchArticles = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await articlesAPI.getAllTrainer();
+
+      const raw =
+        res?.data?.articles ||
+        res?.data?.data ||
+        [];
+
+      setArticles(raw.map(normalizeArticle));
+    } catch (err) {
+      console.error(err);
+      setError(err?.response?.data?.message || "Failed to load articles.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTrainers = async () => {
+    try {
+      const res = await trainersAPI.getAll();
+      const raw = res?.data?.trainers || res?.data?.data?.trainers || res?.data?.data || [];
+      setTrainers(raw.map(normalizeTrainer));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ── Fetch the user's saved/bookmarked articles ───────────────────────────
+  const fetchSavedArticles = async () => {
+    if (!user) {
+      setSavedIds(new Set());
+      return;
+    }
+
+    try {
+      const { data } = await userDashboardAPI.getArticles();
+      const list = data?.data?.saved?.articles || data?.saved?.articles || [];
+      setSavedIds(new Set(list.map((a) => a._id || a.id)));
+    } catch (err) {
+      console.error("Failed to load saved articles", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchArticles();
+    fetchTrainers();
+  }, []);
+
+  useEffect(() => {
+    fetchSavedArticles();
+  }, [user]);
+
+  // ── Toggle save/bookmark on an article ───────────────────────────────────
+  const handleToggleSaveArticle = async (articleId) => {
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    if (!articleId) {
+      console.error("articleId missing:", articleId);
+      return;
+    }
+
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(articleId)) next.delete(articleId);
+      else next.add(articleId);
+      return next;
+    });
+
+    try {
+      const { data } = await userDashboardAPI.toggleSaveArticle(articleId);
+
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        if (data?.isSaved) next.add(articleId);
+        else next.delete(articleId);
+        return next;
+      });
+    } catch (err) {
+      console.error("Failed to toggle saved article");
+      console.error("status:", err?.response?.status);
+      console.error("data:", err?.response?.data);
+      console.error("message:", err?.response?.data?.message);
+      console.error("articleId sent:", articleId);
+
+      // roll back the optimistic update
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(articleId)) next.delete(articleId);
+        else next.add(articleId);
+        return next;
+      });
+    }
+  };
 
   const handleLoadMoreTrainers = () => {
     setTrLoading(true);
     setTimeout(() => {
-      setTrVisibleCount((prev) => Math.min(prev + 4, allTrainers.length));
+      setTrVisibleCount((prev) => Math.min(prev + 4, trainers.length));
       setTrLoading(false);
     }, 800);
   };
 
-  const visibleTrainers = allTrainers.slice(0, trVisibleCount);
-  const hasMoreTrainers = trVisibleCount < allTrainers.length;
+  const visibleTrainers = trainers.slice(0, trVisibleCount);
+  const hasMoreTrainers = trVisibleCount < trainers.length;
 
   // Article filtration engine
-  const filtered = ARTICLES.filter(a => {
+  const filtered = articles.filter(a => {
     const matchF = activeFilter === "all" || a.catKey === activeFilter;
     const q      = searchQuery.toLowerCase();
     const matchS = !q
       || a.title.toLowerCase().includes(q)
       || a.cat.toLowerCase().includes(q)
-      || a.tags.some(t => t.toLowerCase().includes(q));
+      || (a.tags || []).some(t => t.toLowerCase().includes(q));
     return matchF && matchS;
   });
 
@@ -700,7 +846,7 @@ export default function ArticlesPage() {
       <main style={{ minHeight: "100vh", background: "#f8faff", fontFamily: "var(--font-body)" }}>
 
         {/* ══ HERO ══ */}
-        <ArticlesHero onSearch={handleSearch} inputVal={inputVal} setInputVal={setInputVal} />
+        <ArticlesHero onSearch={handleSearch} inputVal={inputVal} setInputVal={setInputVal} articles={articles} />
 
         {/* ══ FILTER BAR ══ */}
         <div className="filter-bar">
@@ -721,45 +867,65 @@ export default function ArticlesPage() {
         {/* ══ ARTICLES FEED CONTENT ══ */}
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "2.5rem 1rem 3rem" }}>
 
-          {activeFilter === "all" && !searchQuery && <FeaturedCard />}
-
-          {searchQuery && (
-            <div className="anim-fade-up" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: 8 }}>
-              <p style={{ fontFamily: "var(--font-body)", fontSize: 13.5, color: "#64748b" }}>
-                <strong style={{ color: "#0f172a" }}>{filtered.length}</strong> result{filtered.length !== 1 ? "s" : ""} for{" "}
-                <strong style={{ color: "#2563eb" }}>"{searchQuery}"</strong>
-              </p>
-              <button onClick={() => { setSearchQuery(""); setInputVal(""); setVisibleCount(6); setExpanded(false); }}
-                style={{ background: "none", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 99, padding: "4px 14px", fontSize: 12, cursor: "pointer", color: "#2563eb", fontFamily: "var(--font-display)" }}>
-                Clear ✕
-              </button>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "4rem 1rem" }}>
+              <div style={{ width: 40, height: 40, margin: "0 auto 14px", borderRadius: "50%", border: "3px solid #dbeafe", borderTopColor: "#2563eb", animation: "spin 0.8s linear infinite" }} />
+              <p style={{ color: "#64748b", fontFamily: "var(--font-body)" }}>Loading articles...</p>
             </div>
-          )}
-
-          <p className="anim-fade-up" style={{ fontFamily: "var(--font-display)", fontSize: 11, letterSpacing: "2px", textTransform: "uppercase", color: "#2563eb", marginBottom: "1.25rem", fontWeight: 700 }}>
-            {searchQuery ? "Search Results" : "Latest Articles"}
-          </p>
-
-          {visibleArticles.length > 0 ? (
-            <div className="art-grid">
-              {visibleArticles.map((a, i) => (
-                <div key={a.id} className={`anim-fade-up delay-${Math.min(7, i + 1) * 100}`} style={{ height: "100%" }}>
-                  <ArticleCard article={a} />
-                </div>
-              ))}
+          ) : error ? (
+            <div style={{ textAlign: "center", padding: "4rem 1rem" }}>
+              <p style={{ color: "#dc2626", fontWeight: 600, marginBottom: 12 }}>{error}</p>
+              <button onClick={fetchArticles} style={{ padding: "10px 24px", background: "#2563eb", color: "white", border: "none", borderRadius: 10, cursor: "pointer", fontWeight: 700 }}>
+                Retry
+              </button>
             </div>
           ) : (
-            <div style={{ textAlign: "center", padding: "4rem 1rem", color: "#94a3b8", fontFamily: "var(--font-body)", fontSize: 16 }}>
-              No articles found. Try a different search or filter.
-            </div>
-          )}
+            <>
+              {activeFilter === "all" && !searchQuery && <FeaturedCard articles={articles} />}
 
-          {filtered.length > 6 && (
-            <div style={{ textAlign: "center", marginTop: "2.75rem" }}>
-              <button className="load-btn" onClick={handleToggle}>
-                {expanded ? "Show Less ↑" : "Load More Articles →"}
-              </button>
-            </div>
+              {searchQuery && (
+                <div className="anim-fade-up" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: 8 }}>
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: 13.5, color: "#64748b" }}>
+                    <strong style={{ color: "#0f172a" }}>{filtered.length}</strong> result{filtered.length !== 1 ? "s" : ""} for{" "}
+                    <strong style={{ color: "#2563eb" }}>"{searchQuery}"</strong>
+                  </p>
+                  <button onClick={() => { setSearchQuery(""); setInputVal(""); setVisibleCount(6); setExpanded(false); }}
+                    style={{ background: "none", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 99, padding: "4px 14px", fontSize: 12, cursor: "pointer", color: "#2563eb", fontFamily: "var(--font-display)" }}>
+                    Clear ✕
+                  </button>
+                </div>
+              )}
+
+              <p className="anim-fade-up" style={{ fontFamily: "var(--font-display)", fontSize: 11, letterSpacing: "2px", textTransform: "uppercase", color: "#2563eb", marginBottom: "1.25rem", fontWeight: 700 }}>
+                {searchQuery ? "Search Results" : "Latest Articles"}
+              </p>
+
+              {visibleArticles.length > 0 ? (
+                <div className="art-grid">
+                  {visibleArticles.map((a, i) => (
+                    <div key={a.id} className={`anim-fade-up delay-${Math.min(7, i + 1) * 100}`} style={{ height: "100%" }}>
+                      <ArticleCard
+                        article={a}
+                        isSaved={savedIds.has(a.id)}
+                        onToggleSave={handleToggleSaveArticle}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: "center", padding: "4rem 1rem", color: "#94a3b8", fontFamily: "var(--font-body)", fontSize: 16 }}>
+                  No articles found. Try a different search or filter.
+                </div>
+              )}
+
+              {filtered.length > 6 && (
+                <div style={{ textAlign: "center", marginTop: "2.75rem" }}>
+                  <button className="load-btn" onClick={handleToggle}>
+                    {expanded ? "Show Less ↑" : "Load More Articles →"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -821,9 +987,9 @@ export default function ArticlesPage() {
               </div>
             )}
 
-            {!hasMoreTrainers && trVisibleCount > 4 && (
+            {!hasMoreTrainers && trainers.length > 0 && trVisibleCount > 4 && (
               <p style={{ textAlign: "center", fontFamily: "var(--font-body)", fontSize: "13px", color: "#94a3b8", marginTop: "32px" }}>
-                You've seen all {allTrainers.length} trainers ✓
+                You've seen all {trainers.length} trainers ✓
               </p>
             )}
           </div>

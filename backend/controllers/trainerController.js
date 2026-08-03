@@ -3,6 +3,9 @@ import TrainerProfile from '../models/trainerProfile.js';
 import generateToken from '../utils/generationToken.js';
 import cloudinary from '../config/cloudinary.js';
 import asyncHandler from '../middleware/asyncMiddlewire.js';
+import Industry from '../models/industry.js';
+import Competency from '../models/Competency.js';
+import Department from '../models/department.js';
 
 
 const parseIfString = (value) => {
@@ -13,6 +16,38 @@ const parseIfString = (value) => {
       return value || {}
     }
   }
+};
+
+/**
+ * Keeps an Industry/Competency/Department collection's `trainers` array
+ * in sync with a trainer's selected names for that taxonomy.
+ * oldNames/newNames are arrays of plain name strings (e.g. ["IT & Software"]).
+ */
+const syncTaxonomyLinks = async (Model, trainerId, oldNames = [], newNames = []) => {
+  const toRemove = oldNames.filter((n) => !newNames.includes(n));
+  const toAdd = newNames.filter((n) => !oldNames.includes(n));
+
+  if (toRemove.length) {
+    await Model.updateMany(
+      { name: { $in: toRemove } },
+      { $pull: { trainers: trainerId } }
+    );
+  }
+  if (toAdd.length) {
+    await Model.updateMany(
+      { name: { $in: toAdd } },
+      { $addToSet: { trainers: trainerId } }
+    );
+  }
+};
+
+/** Registers/unregisters a trainer against Industry, Department (domain), and Competency in one call. */
+const syncTrainerTaxonomies = async (trainerId, oldExpertise = {}, newExpertise = {}) => {
+  await Promise.all([
+    syncTaxonomyLinks(Industry, trainerId, oldExpertise.industry || [], newExpertise.industry || []),
+    syncTaxonomyLinks(Department, trainerId, oldExpertise.domain || [], newExpertise.domain || []),
+    syncTaxonomyLinks(Competency, trainerId, oldExpertise.competencies || [], newExpertise.competencies || []),
+  ]);
 };
 
 export const registerTrainer = asyncHandler(
@@ -205,7 +240,9 @@ console.log("Before create");
       profilePhoto,
       bannerPhoto,
     });
-  
+
+    // Link this trainer into Industry / Department / Competency "trainers" arrays
+    await syncTrainerTaxonomies(trainer._id, {}, trainer.expertiseDomain || {});
 
     trainer.password = undefined;
 
@@ -222,10 +259,8 @@ console.log("Before create");
 }
   }
 );
-
 export const loginTrainer = asyncHandler(
   async (req, res) => {
-
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -235,10 +270,7 @@ export const loginTrainer = asyncHandler(
       });
     }
 
-
-    const trainer = await TrainerProfile
-      .findOne({ email })
-      .select("+password");
+    const trainer = await TrainerProfile.findOne({ email }).select("+password");
 
     if (!trainer) {
       return res.status(401).json({
@@ -247,9 +279,7 @@ export const loginTrainer = asyncHandler(
       });
     }
 
-
-    const isMatched =
-      await trainer.comparePassword(password);
+    const isMatched = await trainer.comparePassword(password);
 
     if (!isMatched) {
       return res.status(401).json({
@@ -258,13 +288,14 @@ export const loginTrainer = asyncHandler(
       });
     }
 
+    if (trainer.status === "inactive") {
+      return res.status(403).json({
+        success: false,
+        message: "Your account is deactivated. Please contact our support team.",
+      });
+    }
 
-
-    const token = generateToken(
-      res,
-      trainer._id,
-      "trainerToken"
-    );
+    const token = generateToken(res, trainer._id, "trainerToken");
 
     trainer.password = undefined;
 
@@ -274,7 +305,6 @@ export const loginTrainer = asyncHandler(
       token,
       trainer,
     });
-
   }
 );
 
@@ -503,10 +533,20 @@ export const updateMyProfile = asyncHandler(
     }
  
     // ── Save to DB ──────────────────────────────────────────────
+    const oldExpertiseDomain = trainer.expertiseDomain || {};
+
     const updatedTrainer = await TrainerProfile.findByIdAndUpdate(
       req.trainer._id,
       req.body,
       { new: true, runValidators: true }
+    );
+
+    // Re-sync Industry / Department / Competency "trainers" arrays
+    // to reflect any added/removed expertise selections.
+    await syncTrainerTaxonomies(
+      req.trainer._id,
+      oldExpertiseDomain,
+      updatedTrainer.expertiseDomain || {}
     );
  
     res.status(200).json({

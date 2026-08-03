@@ -167,22 +167,32 @@ const fallbackVideos = [
   { videoId: "PkZNo7MFNFg", title: "Mastering JavaScript ES6+ Features",                                    views: "11K views"  },
 ];
 
-export default function YoutubeSection() {
+export default function YoutubeSection({ scope = "home", entityType, entityId }) {
   const [videos, setVideos] = useState(fallbackVideos);
   const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/youtube-videos")
+    const params = new URLSearchParams();
+    if (scope) params.set("scope", scope);
+    if (entityType) params.set("entityType", entityType);
+    if (entityId) params.set("entityId", entityId);
+
+    const base =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+    fetch(`${base}/youtube-videos?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data && data.data.length > 0) {
           // Add default views string to fetched data for UI consistency
           const formatted = data.data.map(v => ({ ...v, views: "New" }));
           setVideos(formatted);
+        } else {
+          setVideos([]);
         }
       })
       .catch((err) => console.error("Failed to fetch YouTube videos:", err));
-  }, []);
+  }, [scope, entityType, entityId]);
 
   useEffect(() => {
     if (videos.length === 0) return;
@@ -193,14 +203,17 @@ export default function YoutubeSection() {
   }, [videos.length]);
 
   const handlePrev = () => {
+    if (videos.length === 0) return;
     setActiveIdx((prev) => (prev - 1 + videos.length) % videos.length);
   };
 
   const handleNext = () => {
+    if (videos.length === 0) return;
     setActiveIdx((prev) => (prev + 1) % videos.length);
   };
 
   const getCardClass = (index) => {
+    if (videos.length === 0) return "coverflow-hidden";
     const prevIdx = (activeIdx - 1 + videos.length) % videos.length;
     const nextIdx = (activeIdx + 1) % videos.length;
 
@@ -209,6 +222,10 @@ export default function YoutubeSection() {
     if (index === nextIdx) return "coverflow-right";
     return "coverflow-hidden";
   };
+
+  if (videos.length === 0) {
+    return null;
+  }
 
   return (
     <>

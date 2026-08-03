@@ -1,6 +1,8 @@
 "use client"
 import { Bell, Search, Menu } from "lucide-react"
 import { usePathname } from "next/navigation"
+import Link from "next/link"
+import { useAuth } from "../../hooks"
 
 const pageTitles = {
   "/dashboard": { title: "Dashboard", subtitle: "Welcome back, Admin" },
@@ -10,15 +12,21 @@ const pageTitles = {
   "/dashboard/articles": { title: "Articles", subtitle: "Manage published articles" },
   "/dashboard/industry": { title: "Industry", subtitle: "Manage industry categories" },
   "/dashboard/competency": { title: "Competency", subtitle: "Manage competency categories" },
+  "/dashboard/department": {title: "Department", suntitle: "Manage Department categories"},
   "/dashboard/media": { title: "Media Library", subtitle: "Manage uploaded media" },
   "/dashboard/settings": { title: "General Settings", subtitle: "Configure your platform" },
   "/dashboard/users": { title: "Users", subtitle: "Manage platform users" },
   "/dashboard/reports": { title: "Reports & Analytics", subtitle: "Platform performance insights" },
+  
 }
 
 export default function TopBar({ onMenuClick }) {
   const pathname = usePathname()
+  const { user } = useAuth()
   const page = pageTitles[pathname] ?? { title: "TopTrainer Admin", subtitle: "" }
+  const initials = user?.name
+    ? user.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+    : "A"
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center px-6 gap-4 shrink-0">
@@ -40,7 +48,12 @@ export default function TopBar({ onMenuClick }) {
           <Bell size={16} className="text-slate-600" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
         </button>
-        <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold cursor-pointer">A</div>
+        <Link
+          href="/admin/profile"
+          className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold cursor-pointer hover:bg-blue-700 transition-colors"
+        >
+          {initials}
+        </Link>
       </div>
     </header>
   )

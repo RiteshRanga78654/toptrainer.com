@@ -10,7 +10,7 @@ import {
   ChevronDown, BookOpen, UserPlus, Plus, Trash2, Image as ImageIcon,
   Video, GraduationCap, Link, Trophy, Image as Img, Zap
 } from 'lucide-react'
-import { trainersAPI } from '../../lib/api'
+import { trainersAPI, industryAPI, competencyAPI, departmentsAPI } from '../../lib/api'
 
 // ─────────────────────────────────────────────────────────
 // LOCATION DATA
@@ -988,6 +988,50 @@ export default function TrainerProfileDashboard() {
   const [certEntries, setCertEntries] = useState([{ name: '', org: '', year: '' }])
   const [videoURLs,   setVideoURLs]   = useState([''])
   const [globalMarkets, setGlobalMarkets] = useState([])
+const [industries, setIndustries] = useState([]);
+const [competencies, setCompetencies] = useState([]);
+const [department, setDepartment]= useState([]);
+const industryOptions = (industries || []).map((item) => item.name).filter(Boolean);
+const competencyOptions = (competencies || []).map((item) => item.name).filter(Boolean);
+const departmentOptions = (department || []).map((item) => item.name).filter(Boolean);                                  
+
+const fetchIndustries = useCallback(async () => {
+  try {
+     const res = await industryAPI.getActive();
+    setIndustries(res?.data?.industries || res?.data?.data || []);
+  } catch (err) {
+    console.log("Industry fetch error:", err?.response?.data || err.message);
+    setIndustries([]);
+  }
+}, []);
+const fetchDepartment= useCallback(async () => {
+  try{
+    const res = await departmentsAPI.getActive();
+    setDepartment(res?.data?.departments || res?.data?.data || []);
+  } catch (err) {
+    console.log("Department fetch error:", err?.response?.data || err.message);       
+    setDepartment([]);
+  }
+}, []);
+const fetchCompetency = useCallback(async () => {
+  try{
+    const res = await competencyAPI.getActive();
+    setCompetencies(res?.data?.competencies || res?.data?.data || []);    
+  }catch (err) {
+    console.log("Competency fetch error:", err?.response?.data || err.message);           
+    setCompetencies([]);
+
+  }
+},[]);
+
+
+
+useEffect(() => {
+  fetchIndustries();
+  fetchDepartment();
+  fetchCompetency();
+
+}, [fetchIndustries, fetchDepartment, fetchCompetency]);
 
   // Form data — all fields from the join form
   const [form, setForm] = useState({
@@ -1032,6 +1076,8 @@ export default function TrainerProfileDashboard() {
   }, [])
 
   useEffect(() => { fetchProfile() }, [fetchProfile])
+
+
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -1391,9 +1437,16 @@ export default function TrainerProfileDashboard() {
             {tab === 'expertise' && (
               <Sec icon={Briefcase} title="Expertise & Domain" sub="Select all that apply — multiple choices allowed">
                 <div className="g2">
-                  <MultiSelect label="Industry & Sector Expertise"      icon={Briefcase} options={OPTS.industry}    value={form.industry}    onChange={handleMulti('industry')}    disabled={!editing}/>
-                  <MultiSelect label="Domain & Departmental Expertise"  icon={Target}    options={OPTS.domain}      value={form.domain}      onChange={handleMulti('domain')}      disabled={!editing}/>
-                  <MultiSelect label="Competency Expertise"             icon={Star}      options={OPTS.competency}  value={form.competency}  onChange={handleMulti('competency')}  disabled={!editing}/>
+<MultiSelect
+  label="Industry Sector Expertise"
+  icon={Briefcase}
+    options={industryOptions}
+  value={form.industry}
+  onChange={handleMulti('industry')} 
+  disabled={!editing}
+/>
+                  <MultiSelect label="Domain & Departmental Expertise"  icon={Target}    options={departmentOptions}      value={form.domain}      onChange={handleMulti('domain')}      disabled={!editing}/>
+                  <MultiSelect label="Competency Expertise"             icon={Star}      options={competencyOptions}  value={form.competency}  onChange={handleMulti('competency')}  disabled={!editing}/>
                   <SelField    label="Trainer Type"                     icon={UserPlus}  name="trainerType" options={OPTS.trainerType} value={form.trainerType} onChange={handleChange} editing={editing}/>
                 </div>
               </Sec>

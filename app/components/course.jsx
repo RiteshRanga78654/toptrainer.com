@@ -2,10 +2,16 @@
 
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Star, ArrowRight, TrendingUp, Code2, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  TrendingUp,
+  Code2,
+  Briefcase,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import axios from "axios";
 
-/* ── Inject styles ── */
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Satoshi:wght@300;400;500;600;700&display=swap');
 
@@ -18,8 +24,8 @@ const styles = `
   }
 
   @keyframes pcGradientShift {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
 
@@ -187,8 +193,8 @@ const styles = `
   }
 
   @keyframes pcShimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position:  200% center; }
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
   }
 
   .pc-tab {
@@ -220,7 +226,7 @@ const styles = `
 
   @keyframes pcFadeUp {
     from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .pc-fade-up {
@@ -254,17 +260,6 @@ const styles = `
     position: relative;
     overflow: hidden;
   }
-
-  .pc-see-all::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #1d4ed8, #7c3aed);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .pc-see-all:hover::before { opacity: 1; }
 
   .pc-see-all:hover {
     box-shadow: 0 8px 28px rgba(37,99,235,0.4);
@@ -301,17 +296,17 @@ const styles = `
 
   @keyframes pcBlobMorph {
     0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-    50%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
   }
 
   @keyframes pcFloat {
     0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-16px); }
+    50% { transform: translateY(-16px); }
   }
 
   @keyframes pcCardIn {
     from { opacity: 0; transform: translateY(32px) scale(0.96); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .pc-card-anim {
@@ -321,7 +316,7 @@ const styles = `
 
   @keyframes pcRowIn {
     from { opacity: 0; transform: translateX(-12px); }
-    to   { opacity: 1; transform: translateX(0); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   .pc-row-anim {
@@ -348,7 +343,7 @@ const styles = `
 
   @keyframes pcUnderlineGrow {
     from { width: 0; }
-    to   { width: 100%; }
+    to { width: 100%; }
   }
 
   .pc-count-badge {
@@ -364,7 +359,6 @@ const styles = `
     border: 1px solid rgba(37,99,235,0.15);
   }
 
-  /* ── Mobile scroll track ── */
   .pc-mobile-track {
     display: flex;
     overflow-x: scroll;
@@ -374,7 +368,9 @@ const styles = `
     -ms-overflow-style: none;
     gap: 0;
   }
+
   .pc-mobile-track::-webkit-scrollbar { display: none; }
+
   .pc-mobile-slide {
     flex: 0 0 100%;
     width: 100%;
@@ -390,16 +386,16 @@ const styles = `
 
 const categoryMeta = [
   {
-    key: "sales",
+    key: "Marketing",
     icon: TrendingUp,
     iconBg: "bg-orange-100",
     iconColor: "#ea580c",
     badge: "Hot",
     badgeColor: "bg-orange-50 text-orange-600 border-orange-200",
-   
+    title: "Popular in Sales",
   },
   {
-    key: "tech",
+    key: "Technology",
     icon: Code2,
     iconBg: "bg-blue-100",
     iconColor: "#2563eb",
@@ -408,7 +404,7 @@ const categoryMeta = [
     title: "Popular in Tech",
   },
   {
-    key: "business",
+    key: "Business",
     icon: Briefcase,
     iconBg: "bg-emerald-100",
     iconColor: "#059669",
@@ -418,7 +414,16 @@ const categoryMeta = [
   },
 ];
 
-/* ─── Mobile Carousel ─── */
+function getTrainerImage(item) {
+  return (
+    item?.profilePhoto?.url ||
+    item?.profileImage?.url ||
+    item?.avatar?.url ||
+    item?.avatar ||
+    "/logo.png"
+  );
+}
+
 function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
   const scrollRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -429,7 +434,10 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
     const half = Math.floor(MAX_DOTS / 2);
     let start = Math.max(0, currentIndex - half);
     let end = start + MAX_DOTS;
-    if (end > total) { end = total; start = end - MAX_DOTS; }
+    if (end > total) {
+      end = total;
+      start = end - MAX_DOTS;
+    }
     return Array.from({ length: MAX_DOTS }, (_, i) => start + i);
   };
 
@@ -452,7 +460,6 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
     return () => el.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  // Reset to first card when filter changes
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -460,20 +467,22 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
     setCurrentIndex(0);
   }, [displayData]);
 
-  const scrollTo = useCallback((index) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const clamped = Math.max(0, Math.min(index, total - 1));
-    el.scrollTo({ left: clamped * el.offsetWidth, behavior: "smooth" });
-    setCurrentIndex(clamped);
-  }, [total]);
+  const scrollTo = useCallback(
+    (index) => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const clamped = Math.max(0, Math.min(index, total - 1));
+      el.scrollTo({ left: clamped * el.offsetWidth, behavior: "smooth" });
+      setCurrentIndex(clamped);
+    },
+    [total]
+  );
 
   const prev = () => scrollTo(currentIndex - 1);
   const next = () => scrollTo(currentIndex + 1);
 
   return (
     <div className="w-full">
-      {/* Scrollable track */}
       <div ref={scrollRef} className="pc-mobile-track">
         {displayData.map((category, idx) => {
           const realIdx = activeTab !== null ? activeTab : idx;
@@ -486,7 +495,6 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
                 className={`pc-cat-card ${visible ? "pc-card-anim" : "opacity-0"}`}
                 style={{ animationDelay: `${0.25 + idx * 0.12}s` }}
               >
-                {/* Card header */}
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <div className={`pc-cat-icon ${meta.iconBg}`} style={{ color: meta.iconColor }}>
@@ -500,35 +508,51 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
                   </span>
                 </div>
 
-                {/* Trainer list */}
                 <div className="pc-scroll space-y-2 overflow-y-auto pr-1" style={{ maxHeight: 300 }}>
-                  {category.items.map((item, i) => (
-                    <div
-                      key={i}
-                      className={`pc-trainer-row ${visible ? "pc-row-anim" : "opacity-0"}`}
-                      style={{ animationDelay: `${0.3 + idx * 0.12 + i * 0.06}s` }}
-                    >
-                      <div className="pc-avatar-ring">
-                        <div className="pc-avatar-inner">
-                          <Image src={"/logo.png"} alt={item.fullName} fill className="object-cover" />
+                  {category.items.length > 0 ? (
+                    category.items.map((item, i) => (
+                      <div
+                        key={item?._id || item?.id || `${idx}-${i}`}
+                        className={`pc-trainer-row ${visible ? "pc-row-anim" : "opacity-0"}`}
+                        style={{ animationDelay: `${0.3 + idx * 0.12 + i * 0.06}s` }}
+                      >
+                        <div className="pc-avatar-ring">
+                          <div className="pc-avatar-inner">
+                            <Image
+                              src={getTrainerImage(item)}
+                              alt={item?.fullName || "Trainer"}
+                              fill
+                              className="object-cover"
+                              unoptimized
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-800 text-sm truncate">{item.fullName}</p>
-                        <p className="text-xs text-gray-400 truncate">{item.expertiseDomain?.competencies[0]}</p>
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <span className="pc-star text-yellow-400" style={{ fontSize: 10 }}>★</span>
-                          <span className="text-xs font-semibold text-blue-600">{/*item.rating*/}4/5</span>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-gray-800 text-sm truncate">
+                            {item?.fullName || "Unnamed Trainer"}
+                          </p>
+                          <p className="text-xs text-gray-400 truncate">
+                            {item?.expertiseDomain?.competencies?.[0] || "Expert Trainer"}
+                          </p>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <span className="pc-star text-yellow-400" style={{ fontSize: 10 }}>★</span>
+                            <span className="text-xs font-semibold text-blue-600">4/5</span>
+                          </div>
                         </div>
+
+                        <button className="pc-view-btn">
+                          View <ArrowRight size={10} />
+                        </button>
                       </div>
-                      <button className="pc-view-btn">
-                        View <ArrowRight size={10} />
-                      </button>
+                    ))
+                  ) : (
+                    <div className="text-sm text-gray-400 py-6 text-center">
+                      No featured trainers in this category.
                     </div>
-                  ))}
+                  )}
                 </div>
 
-                {/* Card footer */}
                 <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
                   <span className="text-xs text-gray-400">Updated today</span>
                   <button className="text-xs font-semibold text-blue-600 hover:text-purple-600 transition-colors flex items-center gap-1">
@@ -541,9 +565,7 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
         })}
       </div>
 
-      {/* Navigation row */}
       <div className="flex items-center justify-between mt-5 gap-3">
-        {/* Prev */}
         <button
           onClick={prev}
           disabled={currentIndex === 0}
@@ -553,28 +575,20 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
           Previous
         </button>
 
-        {/* Smart dots — max 8 */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          {showLeftEllipsis && (
-            <span className="w-1.5 h-1.5 rounded-full bg-gray-300 opacity-50" />
-          )}
+          {showLeftEllipsis && <span className="w-1.5 h-1.5 rounded-full bg-gray-300 opacity-50" />}
           {dotIndices.map((i) => (
             <button
               key={i}
               onClick={() => scrollTo(i)}
               className={`rounded-full transition-all duration-300 ${
-                i === currentIndex
-                  ? "w-5 h-2 bg-blue-600"
-                  : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
+                i === currentIndex ? "w-5 h-2 bg-blue-600" : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
               }`}
             />
           ))}
-          {showRightEllipsis && (
-            <span className="w-1.5 h-1.5 rounded-full bg-gray-300 opacity-50" />
-          )}
+          {showRightEllipsis && <span className="w-1.5 h-1.5 rounded-full bg-gray-300 opacity-50" />}
         </div>
 
-        {/* Next */}
         <button
           onClick={next}
           disabled={currentIndex === total - 1}
@@ -585,7 +599,6 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
         </button>
       </div>
 
-      {/* Counter */}
       <p className="text-center text-xs text-gray-400 mt-3 font-medium">
         {currentIndex + 1} / {total} categories
       </p>
@@ -593,61 +606,72 @@ function MobileCarousel({ displayData, categoryMeta, activeTab, visible }) {
   );
 }
 
-/* ── Main Component ── */
 export default function PopularTrainers() {
   const [activeTab, setActiveTab] = useState(null);
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
-  const [trainerData, setTrainerData] = useState([]);
+
+  const [trainerData, setTrainerData] = useState({
+    Marketing: [],
+    Technology: [],
+    Business: [],
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      ([entry]) => {
+        if (entry.isIntersecting) setVisible(true);
+      },
       { threshold: 0.1 }
     );
+
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
+  const fetchFeaturedTrainers = async () => {
+    try {
+      const categories = ["Marketing", "Technology", "Business"];
+
+      const responses = await Promise.all(
+        categories.map((category) =>
+          axios.get(
+            `http://localhost:5000/api/featured-lists?itemType=TrainerProfile&category=${category}`
+          )
+        )
+      );
+
+      console.log("featured category responses:", responses.map((r) => r.data));
+
+      setTrainerData({
+        Marketing: responses[0]?.data?.success
+          ? (responses[0].data.data || []).map((item) => item?.itemRef).filter(Boolean)
+          : [],
+        Technology: responses[1]?.data?.success
+          ? (responses[1].data.data || []).map((item) => item?.itemRef).filter(Boolean)
+          : [],
+        Business: responses[2]?.data?.success
+          ? (responses[2].data.data || []).map((item) => item?.itemRef).filter(Boolean)
+          : [],
+      });
+    } catch (error) {
+      console.error("error fetching the data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeaturedTrainers();
+  }, []);
+
   const tabLabels = ["Sales", "Tech", "Business"];
-  
-  
-  const fetchFeaturedTrainers = async ()=>{
-    try{
-      const res = await axios.get(`http://localhost:5001/api/featured-lists?itemType=TrainerProfile`)
-      if(res.data.success){
-        const trainerProfiles = res.data.data.map(item => item.itemRef)
-        setTrainerData(trainerProfiles);
-      }
-    }
-    catch(error){
-      console.error("error fetching the data: ", error);
-    }
-    
-  }
-  
-  useEffect(()=>{
-    fetchFeaturedTrainers()
-  },[activeTab])
-  
+
   const groupedData = [
-    {
-      title:  "Popular in Sales",
-      items: trainerData.filter(t => t.expertiseDomain?.industry?.includes("Marketing")),
-    },
-    {
-      title:  "Popular in Tech",
-      items: trainerData.filter(t => t.expertiseDomain?.industry?.includes("Technology")),
-    },
-    {
-      title:  "Popular in Business",
-      items: trainerData.filter(t => t.expertiseDomain?.industry?.includes("Business")),
-    }
+    { title: "Popular in Sales", items: trainerData.Marketing },
+    { title: "Popular in Tech", items: trainerData.Technology },
+    { title: "Popular in Business", items: trainerData.Business },
   ];
-  
+
   const displayData = activeTab !== null ? [groupedData[activeTab]] : groupedData;
-
-
 
   return (
     <>
@@ -661,39 +685,52 @@ export default function PopularTrainers() {
         <div className="pc-blob-2" />
 
         <div className="max-w-7xl mx-auto relative z-10">
-
-          {/* ── Header ── */}
           <div
-            className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 ${visible ? "pc-fade-up" : "opacity-0"}`}
+            className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 ${
+              visible ? "pc-fade-up" : "opacity-0"
+            }`}
             style={{ animationDelay: "0.1s" }}
           >
             <div>
               <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-full px-4 py-1.5 mb-3 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-blue-500" style={{ animation: "pcStarPulse 1.5s ease-in-out infinite" }} />
-                <span className="text-xs font-semibold text-gray-500 tracking-wide uppercase">3,600+ Expert Trainers</span>
+                <span
+                  className="w-2 h-2 rounded-full bg-blue-500"
+                  style={{ animation: "pcStarPulse 1.5s ease-in-out infinite" }}
+                />
+                <span className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
+                  3,600+ Expert Trainers
+                </span>
               </div>
+
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
                 Explore <span className="pc-shimmer pc-underline">Trainers</span>{" "}
                 <span className="text-gray-800">by Expertise</span>
               </h2>
+
               <p className="text-gray-500 text-sm md:text-base mt-2">
                 Handpicked experts across every domain — find your perfect match.
               </p>
             </div>
+
             <button className="pc-see-all self-start sm:self-auto">
               <span>See All Trainers</span>
               <ArrowRight size={14} style={{ position: "relative", zIndex: 1 }} />
             </button>
           </div>
 
-          {/* ── Tabs ── */}
           <div
-            className={`pc-tabs flex flex-wrap gap-2 mb-8 ${visible ? "pc-fade-up" : "opacity-0"}`}
+            className={`pc-tabs flex flex-wrap gap-2 mb-8 ${
+              visible ? "pc-fade-up" : "opacity-0"
+            }`}
             style={{ animationDelay: "0.2s" }}
           >
-            <button className={`pc-tab ${activeTab === null ? "active" : ""}`} onClick={() => setActiveTab(null)}>
+            <button
+              className={`pc-tab ${activeTab === null ? "active" : ""}`}
+              onClick={() => setActiveTab(null)}
+            >
               All Categories
             </button>
+
             {tabLabels.map((label, idx) => (
               <button
                 key={label}
@@ -705,7 +742,6 @@ export default function PopularTrainers() {
             ))}
           </div>
 
-          {/* ── MOBILE: Carousel ── */}
           <div className="block md:hidden">
             <MobileCarousel
               displayData={displayData}
@@ -715,7 +751,6 @@ export default function PopularTrainers() {
             />
           </div>
 
-          {/* ── DESKTOP: Grid ── */}
           <div
             className="hidden md:grid gap-6"
             style={{
@@ -742,39 +777,64 @@ export default function PopularTrainers() {
                       <div className={`pc-cat-icon ${meta.iconBg}`} style={{ color: meta.iconColor }}>
                         <Icon size={18} />
                       </div>
-                      <h3 className="font-bold text-gray-800 text-lg leading-tight">{category.title}</h3>
-                      <p className="text-xs text-gray-400 mt-0.5">{category.items.length} Trainers available</p>
+                      <h3 className="font-bold text-gray-800 text-lg leading-tight">
+                        {category.title}
+                      </h3>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {category.items.length} Trainers available
+                      </p>
                     </div>
+
                     <span className={`pc-count-badge text-xs border ${meta.badgeColor}`}>
                       {meta.badge}
                     </span>
                   </div>
 
                   <div className="pc-scroll space-y-2 overflow-y-auto pr-1" style={{ maxHeight: 300 }}>
-                    {category.items.map((item, i) => (
-                      <div
-                        key={i}
-                        className={`pc-trainer-row ${visible ? "pc-row-anim" : "opacity-0"}`}
-                        style={{ animationDelay: `${0.3 + idx * 0.12 + i * 0.06}s` }}
-                      >
-                        <div className="pc-avatar-ring">
-                          <div className="pc-avatar-inner">
-                            <Image src={"/logo.png"} alt={item.fullName} fill className="object-cover" />
+                    {category.items.length > 0 ? (
+                      category.items.map((item, i) => (
+                        <div
+                          key={item?._id || item?.id || `${idx}-${i}`}
+                          className={`pc-trainer-row ${visible ? "pc-row-anim" : "opacity-0"}`}
+                          style={{ animationDelay: `${0.3 + idx * 0.12 + i * 0.06}s` }}
+                        >
+                          <div className="pc-avatar-ring">
+                            <div className="pc-avatar-inner">
+                              <Image
+                                src={getTrainerImage(item)}
+                                alt={item?.fullName || "Trainer"}
+                                fill
+                                className="object-cover"
+                                unoptimized
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-gray-800 text-sm truncate">{item.fullName}</p>
-                          <p className="text-xs text-gray-400 truncate">{item.expertiseDomain?.competencies[0]}</p>
-                          <div className="flex items-center gap-1 mt-0.5">
-                            <span className="pc-star text-yellow-400" style={{ fontSize: 10 }}>★</span>
-                            <span className="text-xs font-semibold text-blue-600">{/*item.rating*/}4/5</span>
+
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-800 text-sm truncate">
+                              {item?.fullName || "Unnamed Trainer"}
+                            </p>
+                            <p className="text-xs text-gray-400 truncate">
+                              {item?.expertiseDomain?.competencies?.[0] || "Expert Trainer"}
+                            </p>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="pc-star text-yellow-400" style={{ fontSize: 10 }}>
+                                ★
+                              </span>
+                              <span className="text-xs font-semibold text-blue-600">4/5</span>
+                            </div>
                           </div>
+
+                          <button className="pc-view-btn">
+                            View <ArrowRight size={10} />
+                          </button>
                         </div>
-                        <button className="pc-view-btn">
-                          View <ArrowRight size={10} />
-                        </button>
+                      ))
+                    ) : (
+                      <div className="text-sm text-gray-400 py-6 text-center">
+                        No featured trainers in this category.
                       </div>
-                    ))}
+                    )}
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
@@ -787,7 +847,6 @@ export default function PopularTrainers() {
               );
             })}
           </div>
-
         </div>
       </section>
     </>

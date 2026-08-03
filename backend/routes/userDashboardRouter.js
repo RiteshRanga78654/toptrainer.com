@@ -4,7 +4,7 @@ import {
   getUserDashboard,
   toggleShortlistTrainer,
   getShortlistedTrainers,
-//   removeShortlistedTrainer,
+  removeShortlistedTrainer,
   toggleSaveWorkshop,
   removeSavedWorkshop,
   getUserWorkshops,
@@ -25,7 +25,7 @@ router.get("/dashboard", getUserDashboard);
 
 router.get("/shortlisted", getShortlistedTrainers);
 router.post("/shortlist/:trainerId", toggleShortlistTrainer);
-// router.delete("/shortlist/:trainerId", removeShortlistedTrainer);
+router.delete("/shortlist/:trainerId", removeShortlistedTrainer);
 
 router.get("/workshops", getUserWorkshops);
 router.get("/save-workshop/:workshopId/status", getSavedWorkshopStatus);

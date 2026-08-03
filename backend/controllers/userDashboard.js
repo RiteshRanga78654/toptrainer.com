@@ -180,6 +180,42 @@ export const getShortlistedTrainers = asyncHandler(async (req, res) => {
   });
 });
 
+
+export const removeShortlistedTrainer = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const trainerId = req.params.trainerId;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found" });
+  }
+
+  const wasShortlisted = user.shortlistedTrainers.some(
+    (id) => id.toString() === trainerId.toString()
+  );
+
+  if (!wasShortlisted) {
+    return res.status(200).json({
+      success: true,
+      message: "Trainer already removed from shortlist",
+      isShortlisted: false,
+      trainerId,
+    });
+  }
+
+  user.shortlistedTrainers = user.shortlistedTrainers.filter(
+    (id) => id.toString() !== trainerId.toString()
+  );
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Trainer removed from shortlisted",
+    isShortlisted: false,
+    trainerId,
+  });
+});
+
 export const toggleSaveWorkshop = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const workshopId = req.params.workshopId;

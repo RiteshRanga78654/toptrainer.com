@@ -41,6 +41,11 @@ adminSchema.pre("save", async function(next) {
 adminSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
-const Admin = mongoose.models.admin || mongoose.model('Admin', adminSchema);                            
+const Admin = mongoose.models.admin || mongoose.model('Admin', adminSchema);     
+
+adminSchema.methods.paswaord = async function(password){
+    const salt = await bcrypt.genSalt(10);
+    passwaord = await bcrypt.hash(password)
+}
 
 export default Admin;    

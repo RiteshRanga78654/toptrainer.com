@@ -10,6 +10,7 @@ import {
     updateWorkshopStatus,
     updateArticleStatus,
     getAdminAnalytics,
+     updateUserStatus ,
 } from '../controllers/adminDashboardController.js';
 
 import { protectAdmin } from "../middleware/adminAuthMiddleware.js";
@@ -21,6 +22,7 @@ router.get('/analytics', getAdminAnalytics);
 router.get('/users', getAllUsers);
 router.get('/users/:id', getUserById);
 router.delete('/users/:id', deleteUserById);
+router.patch("/users/:id/status", protectAdmin, updateUserStatus);
 router.patch('/trainers/:id/status', updateTrainerStatus);
 router.patch('/trainers/:id/featured', toggleTrainerFeatured);
 router.patch('/workshops/:id/status', updateWorkshopStatus);

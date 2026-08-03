@@ -23,6 +23,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import { blogsAPI } from "../../lib/api";
+import { mapArticleToCard, mapArticleToPost } from "../../lib/Blogmappers";
+
 // ─────────────────────────────────────────────
 //  DATA
 // ─────────────────────────────────────────────
@@ -265,8 +268,27 @@ const TAG_COLORS = {
 
 export default async function BlogPostPage({ params }) {
   const { slug } = await params;
-  const post = FEED_DATA.find((p) => p.slug === slug);
-  const related = FEED_DATA.filter((p) => p.slug !== slug).slice(0, 3);
+  let post = null;
+  let related = [];
+
+  try {
+    const [articleRes, listRes] = await Promise.allSettled([
+      blogsAPI.getOne(slug),
+      blogsAPI.getAll({ limit: 6 }),
+    ]);
+
+    if (articleRes.status === "fulfilled") {
+      const article = articleRes.value?.data?.article;
+      post = article ? mapArticleToPost(article) : null;
+    }
+
+    if (listRes.status === "fulfilled") {
+      const list = (listRes.value?.data?.data || listRes.value?.data?.articles || []).map(mapArticleToCard);
+      related = list.filter((item) => item.slug !== slug).slice(0, 3);
+    }
+  } catch (error) {
+    console.error("Failed to load blog post", error);
+  }
 
   if (!post) {
     return (
@@ -280,6 +302,9 @@ export default async function BlogPostPage({ params }) {
   }
 
   const tagClass = TAG_COLORS[post.tag] || "bg-gray-100 text-gray-600";
+  const sections = post.sections || [];
+  const tags = post.tags || [];
+  const introParagraphs = (post.intro || "").split(/\n\n/).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -347,16 +372,16 @@ export default async function BlogPostPage({ params }) {
             <div className="lg:hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-5">
               <p className="font-bold text-gray-800 text-sm mb-2">Table of Contents</p>
               <ol className="flex flex-col gap-0.5">
-                {post.sections.map((section, i) => {
-                  const label = section.heading.replace(/^\d+\.\s/, "");
+                {sections.map((section, i) => {
+                  const label = (section.heading || "").replace(/^\d+\.\s/, "");
                   return (
-                    <li key={i}>
+                    <li key={`${section.heading || "section"}-${i}`}>
                       <span className={`block text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                         i === 0
                           ? "bg-blue-50 text-blue-700 font-semibold"
                           : "text-gray-500 hover:text-blue-600 hover:bg-gray-50"
                       }`}>
-                        {i + 1}. {label}
+                        {i + 1}. {label || "Section"}
                       </span>
                     </li>
                   );
@@ -379,32 +404,44 @@ export default async function BlogPostPage({ params }) {
             </div>
 
             {/* Intro paragraphs */}
-            {post.intro.split("\n\n").map((para, i) => (
-              <p key={i} className="text-gray-600 text-sm leading-relaxed mb-4">
-                {para}
+            {introParagraphs.length > 0 ? (
+              introParagraphs.map((para, i) => (
+                <p key={`${para.slice(0, 12)}-${i}`} className="text-gray-600 text-sm leading-relaxed mb-4">
+                  {para}
+                </p>
+              ))
+            ) : (
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                {post.subtext || "No content available yet."}
               </p>
-            ))}
+            )}
 
             {/* Numbered sections */}
             <div className="mt-6 flex flex-col gap-6">
-              {post.sections.map((section, i) => {
-                const Icon = section.icon;
-                return (
-                  <div key={i} className="flex gap-4 items-start">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mt-0.5">
-                      <Icon size={18} className="text-blue-600" />
+              {sections.length > 0 ? (
+                sections.map((section, i) => {
+                  const Icon = section.icon;
+                  return (
+                    <div key={`${section.heading || "section"}-${i}`} className="flex gap-4 items-start">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mt-0.5">
+                        <Icon size={18} className="text-blue-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-sm font-bold text-gray-900 mb-1">
+                          {section.heading}
+                        </h2>
+                        <p className="text-gray-500 text-sm leading-relaxed">
+                          {section.body}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-sm font-bold text-gray-900 mb-1">
-                        {section.heading}
-                      </h2>
-                      <p className="text-gray-500 text-sm leading-relaxed">
-                        {section.body}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-500">
+                  Content will appear here once the article includes structured sections.
+                </div>
+              )}
             </div>
 
             {/* Conclusion box */}
@@ -425,7 +462,7 @@ export default async function BlogPostPage({ params }) {
             {/* Tags row */}
             <div className="mt-8 flex flex-wrap items-center gap-2">
               <span className="text-sm text-gray-500 font-medium">Tags:</span>
-              {post.tags.map((t) => (
+              {tags.map((t) => (
                 <span
                   key={t}
                   className="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
@@ -465,10 +502,10 @@ export default async function BlogPostPage({ params }) {
                 Table of Contents
               </p>
               <ol className="flex flex-col gap-1">
-                {post.sections.map((section, i) => {
-                  const label = section.heading.replace(/^\d+\.\s/, "");
+                {sections.map((section, i) => {
+                  const label = (section.heading || "").replace(/^\d+\.\s/, "");
                   return (
-                    <li key={i}>
+                    <li key={`${section.heading || "section"}-${i}`}>
                       <span
                         className={`block text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                           i === 0
@@ -476,7 +513,7 @@ export default async function BlogPostPage({ params }) {
                             : "text-gray-500 hover:text-blue-600 hover:bg-gray-50"
                         }`}
                       >
-                        {i + 1}. {label}
+                        {i + 1}. {label || "Section"}
                       </span>
                     </li>
                   );

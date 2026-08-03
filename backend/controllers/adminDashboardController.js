@@ -1,9 +1,9 @@
-
 import User from "../models/user.js";
 import TrainerProfile from "../models/trainerProfile.js";
 import Workshop from "../models/workshops.js";
 import Article from "../models/Article.js";
 import Review from "../models/review.js";
+import YoutubeVideo from "../models/youtubeVideo.js";
 
 import asyncHandler from "../middleware/asyncMiddlewire.js";
 
@@ -14,6 +14,7 @@ export const getDashboardData = asyncHandler(
         const totalWorkshops = await Workshop.countDocuments();
         const totalArticles = await Article.countDocuments();
         const totalReviews = await Review.countDocuments();
+        const totalVideos = await YoutubeVideo.countDocuments();
         const startOfMonth = new Date();
         startOfMonth.setDate(1);
         startOfMonth.setHours(0, 0, 0, 0);
@@ -31,12 +32,14 @@ export const getDashboardData = asyncHandler(
         const recentWorkshops = await Workshop.find()
             .sort({ createdAt: -1 })
             .limit(5)
-            .select("basicInformation schedule analytics pricing status createdAt");
+            .select("basicInformation schedule analytics pricing status assignedTrainer createdAt")
+            .populate("assignedTrainer", "fullName");
 
         const recentArticles = await Article.find()
             .sort({ createdAt: -1 })
             .limit(5)
-            .select('title category status views createdBy createdAt');
+            .select('title category status views coverImage author createdBy creatorType createdAt')
+            .populate("createdBy", "firstName lastName fullName email");
 
         const recentTrainers = await TrainerProfile.find()
             .sort({ createdAt: -1 })
@@ -46,7 +49,7 @@ export const getDashboardData = asyncHandler(
         const recentUsers = await User.find()
             .sort({ createdAt: -1 })
             .limit(5)
-            .select('firstName lastName email profileImage isOnline lastActive createdAt');
+            .select('firstName lastName email profileImage isOnline lastActive status createdAt');
 
         const recentReviews = await Review.find()
             .sort({ createdAt: -1 })
@@ -62,6 +65,7 @@ export const getDashboardData = asyncHandler(
                     totalWorkshops,
                     totalArticles,
                     totalReviews,
+                    totalVideos,
                     newUsersThisMonth,
                     newTrainersThisMonth,
                 },
@@ -76,41 +80,43 @@ export const getDashboardData = asyncHandler(
     });
 
 export const getAllUsers = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+  const query = {};
 
-    const query = {};
-    if (req.query.search) {
-        query.$or = [
-            { firstName: { $regex: req.query.search, $options: 'i' } },
-            { lastName: { $regex: req.query.search, $options: 'i' } },
-            { email: { $regex: req.query.search, $options: 'i' } },
-        ];
+  if (req.query.search) {
+    query.$or = [
+      { firstName: { $regex: req.query.search, $options: "i" } },
+      { lastName: { $regex: req.query.search, $options: "i" } },
+      { email: { $regex: req.query.search, $options: "i" } },
+      { phoneNumber: { $regex: req.query.search, $options: "i" } },
+    ];
+  }
 
-    }
+  if (req.query.status && req.query.status !== "all") {
+    query.status = req.query.status;
+  }
 
+  const users = await User.find(query)
+    .select(
+      "firstName lastName email phoneNumber profileImage isOnline lastSeen status createdAt"
+    )
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
 
-    const users = await User.find(query)
-     .select(
-            "firstName lastName email profileImage isOnline lastActive createdAt"
-        )
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 });
+  const total = await User.countDocuments(query);
 
-    const total = await User.countDocuments(query);
-
-    res.status(200).json({
-        success: true,
-        count: users.length,
-        total,
-        page,
-        totalPages: Math.ceil(total / limit),
-        users,
-    });
-
+  res.status(200).json({
+    success: true,
+    count: users.length,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+    users,
+  });
 });
 
 export const getUserById = asyncHandler(
@@ -146,40 +152,64 @@ export const deleteUserById = asyncHandler(
         });
     }
 );
+export const updateUserStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+
+  const allowed = ["active", "inactive"];
+  if (!allowed.includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: `Status must be one of: ${allowed.join(", ")}`,
+    });
+  }
+
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  user.status = status;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: status === "active" ? "User activated" : "User deactivated",
+    user,
+  });
+});
 
 export const updateTrainerStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
 
-    const { status, rejectionReason } = req.body;
-
-    const allowed = ['active', 'inactive'];
-    if (!allowed.includes(status)) {
-        return res.status(400).json({
-            success: false,
-            message: `Status must be one of: ${allowed.join(', ')}`,
-        });
-    }
-
-    const trainer = await TrainerProfile.findById(req.params.id);
-
-    if (!trainer) {
-        return res.status(404).json({
-            success: false,
-            message: 'Trainer not found',
-        });
-    }
-
-    trainer.status = status;
-    if (status === 'rejected' && rejectionReason) {
-        trainer.rejectionReason = rejectionReason;
-    }
-
-    await trainer.save();
-
-    res.status(200).json({
-        success: true,
-        message: `Trainer status updated to ${status}`,
-        trainer,
+  const allowed = ["approved", "inactive"];
+  if (!allowed.includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: `Status must be one of: ${allowed.join(", ")}`,
     });
+  }
+
+  const trainer = await TrainerProfile.findById(req.params.id);
+
+  if (!trainer) {
+    return res.status(404).json({
+      success: false,
+      message: "Trainer not found",
+    });
+  }
+
+  trainer.status = status;
+  await trainer.save();
+
+  res.status(200).json({
+    success: true,
+    message: status === "approved" ? "Trainer activated" : "Trainer deactivated",
+    trainer,
+  });
 });
 
 export const toggleTrainerFeatured = asyncHandler(async (req, res) => {
@@ -326,4 +356,3 @@ export const getAdminAnalytics = asyncHandler(async (req, res) => {
         },
     });
 });
-

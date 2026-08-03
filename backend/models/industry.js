@@ -1,26 +1,46 @@
-import mongoose from  "mongoose";
+import mongoose from "mongoose";
 
-const industrySchema = new mongoose.Schema({
-    industryName: {
-        type: String, 
-        required: [true, "Industry name is required"],
-         trim: true, 
+const industrySchema = new mongoose.Schema(
+{
+    name:{
+        type:String,
+        required:true,
+        unique:true,
+        trim:true
     },
-icon: {
-     type: String,
- required: [true, "Industry icon is required"], 
- default: "🏢", 
+
+    icon:{
+        type:String,
+        default:"🏢"
+    },
+
+    status:{
+        type:String,
+        enum:["active","inactive"],
+        default:"active"
+    },
+
+    isActive:{
+        type:Boolean,
+        default:true
+    },
+
+    trainers:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"TrainerProfile"
+        }
+    ],
+
+    workshops:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Workshop"
+        }
+    ]
 
 },
- isActive: {
-     type: Boolean, 
-     default: true, 
- },
+{timestamps:true}
+);
 
-}, {
-    timestamps: true,
-}) 
-
-const Industry = mongoose.models.Industry || mongoose.model("Industry", industrySchema);
-
-export default Industry;
+export default mongoose.model("Industry",industrySchema);

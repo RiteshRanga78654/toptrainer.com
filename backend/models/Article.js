@@ -27,18 +27,11 @@ const articleSchema = new mongoose.Schema({
     },
 
   
-    trainer: {
-        type: String,
-        ref: "TrainerProfile",
-    },
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        refPath: 'creatorType'
-    },
-    creatorType: {
-        type: String,
-        enum: ['Admin', 'TrainerProfile']
-    },
+   trainer: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "TrainerProfile",
+  default: null,
+},
     coverImage: {
       url: {
         type: String,
@@ -78,6 +71,23 @@ shortDescription: {
         trim: true,
       },
     ],
+     industry: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Industry",
+      default: null,
+    },
+
+    competency: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Competency",
+      default: null,
+    },
+
+    department: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      default: null,
+    },
 
     sections: [sectionSchema],
 

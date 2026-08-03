@@ -16,9 +16,11 @@ import {
   Bookmark,
   User,
   Star,
+  Newspaper,
 } from "lucide-react";
 import Link from "next/link";
 import { userDashboardAPI } from "../../lib/api"; // apne path ke hisab se change karo
+import { makeSlug } from "../../articles/data";
 
 const WORKSHOP_COLORS = [
   "bg-indigo-50 text-indigo-600",
@@ -41,11 +43,39 @@ function mapSavedWorkshop(item, index) {
   };
 }
 
+const ARTICLE_COLORS = [
+  "bg-violet-50 text-violet-600",
+  "bg-emerald-50 text-emerald-700",
+  "bg-sky-50 text-sky-700",
+  "bg-rose-50 text-rose-600",
+  "bg-orange-50 text-orange-700",
+];
+
+function mapSavedArticle(item, index) {
+  const publishedDate = item?.publishedAt || item?.createdAt;
+  const dateLabel = publishedDate
+    ? new Date(publishedDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    : "";
+
+  return {
+    id: item?._id || item?.id,
+    slug: makeSlug({ id: item?._id || item?.id, title: item?.title }),
+    title: item?.title || "Untitled Article",
+    meta: [item?.category, dateLabel].filter(Boolean).join(" • "),
+    coverImage: item?.coverImage?.url || "",
+    shortLabel: (item?.title || "Article").slice(0, 18),
+    color: ARTICLE_COLORS[index % ARTICLE_COLORS.length],
+  };
+}
+
 export default function ShortlistedProfiles() {
   const [trainers, setTrainers] = useState([]);
   const [savedWorkshops, setSavedWorkshops] = useState([]);
   const [savedWorkshopsLoading, setSavedWorkshopsLoading] = useState(true);
   const [removingWorkshopId, setRemovingWorkshopId] = useState("");
+  const [savedArticles, setSavedArticles] = useState([]);
+  const [savedArticlesLoading, setSavedArticlesLoading] = useState(true);
+  const [removingArticleId, setRemovingArticleId] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState("");
@@ -88,6 +118,46 @@ export default function ShortlistedProfiles() {
       );
     } finally {
       setRemovingWorkshopId("");
+    }
+  };
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function fetchSavedArticles() {
+      try {
+        setSavedArticlesLoading(true);
+        const res = await userDashboardAPI.getArticles({ limit: 100 });
+        const rawList = res?.data?.data?.saved?.articles || [];
+
+        if (!ignore) {
+          setSavedArticles(rawList.map(mapSavedArticle));
+        }
+      } catch (err) {
+        // keep the widget silent on error, just show empty state
+      } finally {
+        if (!ignore) setSavedArticlesLoading(false);
+      }
+    }
+
+    fetchSavedArticles();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const handleRemoveSavedArticle = async (articleId) => {
+    try {
+      setRemovingArticleId(articleId);
+      await userDashboardAPI.toggleSaveArticle(articleId);
+      setSavedArticles((prev) => prev.filter((a) => a.id !== articleId));
+    } catch (err) {
+      console.error(
+        err?.response?.data?.message || err?.message || "Failed to remove saved article"
+      );
+    } finally {
+      setRemovingArticleId("");
     }
   };
 
@@ -375,69 +445,190 @@ export default function ShortlistedProfiles() {
             </div>
           </div>
 
-          <div className="col-span-1">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 h-full flex flex-col">
+          <div className="col-span-1 flex flex-col gap-6">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-[17px] font-bold text-slate-900">
-                  Saved Workshops
-                </h2>
-                <Bookmark className="w-4 h-4 text-blue-600" />
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <Bookmark className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <h2 className="text-[16px] font-bold text-slate-900 leading-none">
+                    Saved Workshops
+                  </h2>
+                </div>
+                {!savedWorkshopsLoading && savedWorkshops.length > 0 && (
+                  <span className="text-[11px] font-bold text-blue-600 bg-blue-50 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0">
+                    {savedWorkshops.length}
+                  </span>
+                )}
               </div>
 
-              <div className="flex flex-col gap-6 flex-1">
+              <div className="flex flex-col gap-1 flex-1">
                 {savedWorkshopsLoading ? (
-                  <p className="text-[13px] text-slate-500">Loading saved workshops...</p>
+                  <div className="flex flex-col gap-3">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="flex items-center gap-3 animate-pulse">
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 flex-shrink-0" />
+                        <div className="flex-1 flex flex-col gap-2">
+                          <div className="h-3 bg-slate-100 rounded-full w-3/4" />
+                          <div className="h-2.5 bg-slate-100 rounded-full w-1/2" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ) : savedWorkshops.length === 0 ? (
-                  <p className="text-[13px] text-slate-500">
-                    No saved workshops yet. Bookmark a workshop to see it here.
-                  </p>
+                  <div className="flex flex-col items-center justify-center text-center gap-2 py-8 px-3 rounded-xl border border-dashed border-slate-200">
+                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center">
+                      <Bookmark className="w-4 h-4 text-slate-300" />
+                    </div>
+                    <p className="text-[12.5px] text-slate-500 leading-relaxed">
+                      No saved workshops yet.<br />Bookmark one to see it here.
+                    </p>
+                  </div>
                 ) : (
                   savedWorkshops.map((workshop, index) => (
                     <div
                       key={workshop.id || `${workshop.title}-${index}`}
-                      className="flex items-start gap-4"
+                      className="group flex items-center gap-3 rounded-xl px-2 py-2 -mx-2 transition-colors hover:bg-slate-50"
                     >
-                      <Link href={`/workshops/${workshop.id}`} className="flex items-start gap-4 flex-1 min-w-0">
+                      <Link href={`/workshops/${workshop.id}`} className="flex items-center gap-3 flex-1 min-w-0">
                         <div
-                          className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center relative ${workshop.color}`}
+                          className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center relative ring-1 ring-black/5 ${workshop.color}`}
                         >
                           <span className="font-bold text-[8px] leading-tight text-center px-1">
                             {workshop.shortLabel}
                           </span>
-                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-slate-200 border border-white flex items-center justify-center text-[10px] text-slate-500 overflow-hidden">
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-400 overflow-hidden">
                             <User className="w-3 h-3" />
                           </div>
                         </div>
 
-                        <div className="flex-1 mt-0.5 min-w-0">
-                          <h3 className="text-[13px] font-bold text-slate-900 leading-tight truncate">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-[13px] font-bold text-slate-900 leading-tight truncate group-hover:text-blue-600 transition-colors">
                             {workshop.title}
                           </h3>
-                          <p className="text-[11px] text-slate-500 mt-1">{workshop.meta}</p>
+                          <p className="text-[11px] text-slate-500 mt-0.5 truncate">{workshop.meta}</p>
                         </div>
                       </Link>
 
                       <button
-                        className="text-red-500 mt-1 disabled:opacity-50"
+                        className="w-7 h-7 flex-shrink-0 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
                         type="button"
                         disabled={removingWorkshopId === workshop.id}
                         onClick={() => handleRemoveSavedWorkshop(workshop.id)}
                         aria-label="Remove saved workshop"
                         title="Remove from saved workshops"
                       >
-                        <Bookmark className="w-4 h-4" fill="currentColor" />
+                        <Bookmark className="w-3.5 h-3.5" fill="currentColor" />
                       </button>
                     </div>
                   ))
                 )}
               </div>
 
-              <div className="mt-6 pt-5 border-t border-slate-100 flex justify-center">
+              <div className="mt-5 pt-4 border-t border-slate-100 flex justify-center">
                 <Link
                   href="/saved-workshops"
-                  className="text-blue-600 text-[13px] font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+                  className="group text-blue-600 text-[13px] font-semibold flex items-center gap-1 transition-all"
                 >
-                  View all saved workshops <ArrowRight className="w-4 h-4" />
+                  View all saved workshops
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0">
+                    <Newspaper className="w-4 h-4 text-violet-600" />
+                  </div>
+                  <h2 className="text-[16px] font-bold text-slate-900 leading-none">
+                    Saved Articles
+                  </h2>
+                </div>
+                {!savedArticlesLoading && savedArticles.length > 0 && (
+                  <span className="text-[11px] font-bold text-violet-600 bg-violet-50 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0">
+                    {savedArticles.length}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1 flex-1">
+                {savedArticlesLoading ? (
+                  <div className="flex flex-col gap-3">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="flex items-center gap-3 animate-pulse">
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 flex-shrink-0" />
+                        <div className="flex-1 flex flex-col gap-2">
+                          <div className="h-3 bg-slate-100 rounded-full w-3/4" />
+                          <div className="h-2.5 bg-slate-100 rounded-full w-1/2" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : savedArticles.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center text-center gap-2 py-8 px-3 rounded-xl border border-dashed border-slate-200">
+                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center">
+                      <Newspaper className="w-4 h-4 text-slate-300" />
+                    </div>
+                    <p className="text-[12.5px] text-slate-500 leading-relaxed">
+                      No saved articles yet.<br />Bookmark one to see it here.
+                    </p>
+                  </div>
+                ) : (
+                  savedArticles.map((article, index) => (
+                    <div
+                      key={article.id || `${article.title}-${index}`}
+                      className="group flex items-center gap-3 rounded-xl px-2 py-2 -mx-2 transition-colors hover:bg-slate-50"
+                    >
+                      <Link href={`/articles/${article.slug}`} className="flex items-center gap-3 flex-1 min-w-0">
+                        <div
+                          className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden ring-1 ring-black/5 ${article.color}`}
+                        >
+                          {article.coverImage ? (
+                            <img
+                              src={article.coverImage}
+                              alt={article.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="font-bold text-[8px] leading-tight text-center px-1">
+                              {article.shortLabel}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-[13px] font-bold text-slate-900 leading-tight truncate group-hover:text-violet-600 transition-colors">
+                            {article.title}
+                          </h3>
+                          <p className="text-[11px] text-slate-500 mt-0.5 truncate">{article.meta}</p>
+                        </div>
+                      </Link>
+
+                      <button
+                        className="w-7 h-7 flex-shrink-0 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                        type="button"
+                        disabled={removingArticleId === article.id}
+                        onClick={() => handleRemoveSavedArticle(article.id)}
+                        aria-label="Remove saved article"
+                        title="Remove from saved articles"
+                      >
+                        <Bookmark className="w-3.5 h-3.5" fill="currentColor" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-slate-100 flex justify-center">
+                <Link
+                  href="/articles"
+                  className="group text-violet-600 text-[13px] font-semibold flex items-center gap-1 transition-all"
+                >
+                  View all saved articles
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </div>
             </div>

@@ -48,6 +48,8 @@ import {
 import { createPortal } from "react-dom";
 import { GroupAnimation } from "framer-motion";
 import { set } from "react-hook-form";
+import {industryAPI, competencyAPI, departmentsAPI} from "../lib/api";
+
 
 const LOCATION_DATA = {
   India: {
@@ -612,6 +614,7 @@ function MultiSelect({ label, icon, options }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState([]);
   const [dropdownStyle, setDropdownStyle] = useState({});
+
   const wrapperRef = useRef(null);
   const triggerRef = useRef(null);
 
@@ -621,13 +624,19 @@ function MultiSelect({ label, icon, options }) {
       if (e.target.closest(".ms-dropdown")) return;
       setOpen(false);
     }
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const updatePosition = () => {
     if (!triggerRef.current) return;
+
     const rect = triggerRef.current.getBoundingClientRect();
+
     setDropdownStyle({
       position: "fixed",
       top: rect.bottom + 6,
@@ -638,23 +647,38 @@ function MultiSelect({ label, icon, options }) {
   };
 
   useEffect(() => {
-    if (open) updatePosition();
+    if (!open) return;
+
+    updatePosition();
+
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
   }, [open]);
 
-  const toggle = (opt) =>
+  const toggle = (opt) => {
     setSelected((prev) =>
-      prev.includes(opt) ? prev.filter((o) => o !== opt) : [...prev, opt],
+      prev.includes(opt)
+        ? prev.filter((o) => o !== opt)
+        : [...prev, opt]
     );
+  };
+
   const remove = (opt, e) => {
     e.stopPropagation();
     setSelected((prev) => prev.filter((o) => o !== opt));
   };
+
   const displayText =
     selected.length === 0
       ? null
       : selected.length <= 2
-        ? selected.join(", ")
-        : `${selected.slice(0, 2).join(", ")} +${selected.length - 2} more`;
+      ? selected.join(", ")
+      : `${selected.slice(0, 2).join(", ")} +${selected.length - 2} more`;
 
   return (
     <div
@@ -819,25 +843,25 @@ function WorkshopEntry({ num, onRemove }) {
           marginBottom: 11,
         }}
       >
-        <Sel
-          label="Industry"
-          icon={<Briefcase size={13} />}
-          options={[
-            "Real Estate",
-            "IT & Digital",
-            "Media & Entertainment",
-            "Banking & Finance",
-            "Telecommunications",
-            "Hospitality & Aviation",
-            "Healthcare & Pharma",
-            "Education Sector",
-            "Retail Industry",
-            "Automobile",
-            "Jewellery",
-            "FMCG",
-            "Other",
-          ]}
-        />
+      <Sel
+  label="Industry"
+  icon={<Briefcase size={13} />}
+  options={[
+    "Real Estate",
+    "IT & Digital",
+    "Media & Entertainment",
+    "Banking & Finance",
+    "Telecommunications",
+    "Hospitality & Aviation",
+    "Healthcare & Pharma",
+    "Education Sector",
+    "Retail Industry",
+    "Automobile",
+    "Jewellery",
+    "FMCG",
+    "Other",
+  ]}
+/>
         <Sel
           label="Domain"
           icon={<Target size={13} />}
@@ -1131,7 +1155,9 @@ export default function JoinTrainee() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPass, setConfirmPass] = useState("")
-
+  const [industries, setIndustries] = useState([]);
+  const [competencies, setCompetencies] = useState([]); 
+  const [department, setDepartment] = useState([]);
 
   // company type states
   const [cities, setCities] = "";
@@ -1139,6 +1165,50 @@ export default function JoinTrainee() {
   const [fullTrainers, setFullTrainers] = "";
   const [teamStrength, setTeamStrength] = "";
 
+  useEffect(()=> {
+    const fetchCompetency = async () => {
+      try {
+        const res = await competencyAPI.getActive();
+        setCompetencies(res?.data?.competencies || res?.data?.data || []);      
+      } catch (err){
+        console.log("Competency fetch error:", err?.response?.data || err.message);     
+       setCompetencies([]);
+      }
+    };
+    fetchCompetency();
+  },[]);
+  const competencyOptions = competencies.map((item) => item.name);  
+
+useEffect(()=> {
+    const fetchDepartment = async () => {
+      try {
+        const res = await departmentsAPI.getActive();
+        setDepartment(res?.data?.department || res?.data?.data || []);      
+      } catch (err){
+        console.log("Department fetch error:", err?.response?.data || err.message);     
+       setDepartment([]);
+      }
+    };
+    fetchDepartment();
+  },[]);
+  const 
+  departmentOptions = department.map((item) => item.name);  
+
+
+    useEffect(() => {
+    const fetchIndustries = async () => {
+      try {
+        const res = await industryAPI.getActive(); // ✅ public route, not getAll()
+        setIndustries(res?.data?.industries || res?.data?.data || []);
+      } catch (err) {
+        console.log("Industry fetch error:", err?.response?.data || err.message);
+        setIndustries([]);
+      }
+    };
+    fetchIndustries();
+  }, []);
+
+    const industryOptions = industries.map((item) => item.name);
   const handleProfilePic = (e) => {
     const f = e.target.files[0];
     if (f) setProfilePic(URL.createObjectURL(f));
@@ -1671,53 +1741,20 @@ export default function JoinTrainee() {
             sub="Select all that apply — multiple choices allowed"
           >
             <div className="field-grid">
-              <MultiSelect
-                label="Industry & Sector Expertise"
-                icon={<Briefcase size={13} />}
-                options={[
-                  "Real Estate",
-                  "IT & Digital",
-                  "Media & Entertainment",
-                  "Banking & Finance",
-                  "Telecommunications",
-                  "Hospitality & Aviation",
-                  "Healthcare & Pharma",
-                  "Education Sector",
-                  "Retail Industry",
-                  "Automobile",
-                  "Jewellery",
-                  "FMCG",
-                  "Other",
-                ]}
-              />
+             <MultiSelect
+  label="Industry & Sector Expertise"
+  icon={<Briefcase size={13} />}
+  options={industryOptions}
+/>
               <MultiSelect
                 label="Domain & Departmental Expertise"
                 icon={<Target size={13} />}
-                options={[
-                  "Logistics & Operations",
-                  "Soft Skills Development",
-                  "Sales & Business Development",
-                  "Leadership Transformation",
-                  "International Market Expansion",
-                  "Customer Service Excellence",
-                  "Branding & Communications",
-                  "Other",
-                ]}
+                options={departmentOptions}
               />
               <MultiSelect
                 label="Competency Expertise"
                 icon={<Star size={13} />}
-                options={[
-                  "AI Tools & Generative AI",
-                  "Strategic Thinking",
-                  "Communication & Narrative Building",
-                  "Multitasking Ability",
-                  "Team Building & Management",
-                  "Innovation",
-                  "Big Picture Thinking",
-                  "Time Management",
-                  "Other",
-                ]}
+                options={competencyOptions}
               />
               <Sel
                 label="Trainer Type"

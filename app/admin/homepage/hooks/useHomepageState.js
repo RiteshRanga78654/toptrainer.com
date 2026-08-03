@@ -12,7 +12,7 @@ export default function useHomepageState() {
   const [youtubeSaved, setYoutubeSaved] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/youtube-videos")
+    fetch("http://localhost:5000/api/youtube-videos")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -26,7 +26,7 @@ export default function useHomepageState() {
     if (!youtubeUrl) return;
     setIsAddingYoutube(true);
     try {
-      const res = await fetch("http://localhost:5001/api/youtube-videos", {
+      const res = await fetch("http://localhost:5000/api/youtube-videos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: youtubeUrl }),
@@ -51,7 +51,7 @@ export default function useHomepageState() {
   const deleteYoutubeVideo = async (id) => {
     try {
       const res = await fetch(
-        `http://localhost:5001/api/youtube-videos/${id}`,
+        `http://localhost:5000/api/youtube-videos/${id}`,
         {
           method: "DELETE",
         },
@@ -69,7 +69,7 @@ export default function useHomepageState() {
   const [heroSaved, setHeroSaved] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/hero-images")
+    fetch("http://localhost:5000/api/hero-images")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -91,7 +91,7 @@ export default function useHomepageState() {
     );
 
     try {
-      await axios.put(`http://localhost:5001/api/hero-images/${id}`, {
+      await axios.put(`http://localhost:5000/api/hero-images/${id}`, {
         active: !imgToUpdate.active,
       }, { withCredentials: true });
     } catch (err) {
@@ -113,7 +113,7 @@ export default function useHomepageState() {
     setImages(prev => prev.map(img => img._id === id ? { ...img, caption: newCaption } : img));
     
     try {
-      await axios.put(`http://localhost:5001/api/hero-images/${id}`, {
+      await axios.put(`http://localhost:5000/api/hero-images/${id}`, {
         caption: newCaption,
       }, { withCredentials: true });
     } catch (err) {
@@ -125,7 +125,7 @@ export default function useHomepageState() {
 
   const removeImage = async (id) => {
     try {
-      const res = await axios.delete(`http://localhost:5001/api/hero-images/${id}`, { withCredentials: true });
+      const res = await axios.delete(`http://localhost:5000/api/hero-images/${id}`, { withCredentials: true });
       if (res.data.success) {
         setImages((prev) => prev.filter((img) => img._id !== id));
       }
@@ -140,7 +140,7 @@ export default function useHomepageState() {
     formData.append("image", file);
 
     try {
-      const res = await axios.post("http://localhost:5001/api/hero-images", formData, {
+      const res = await axios.post("http://localhost:5000/api/hero-images", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
@@ -163,7 +163,7 @@ export default function useHomepageState() {
     });
 
     try {
-      await axios.put("http://localhost:5001/api/hero-images/reorder", { orderMap }, { withCredentials: true });
+      await axios.put("http://localhost:5000/api/hero-images/reorder", { orderMap }, { withCredentials: true });
     } catch (err) {
       console.error("Failed to reorder images", err);
     }
@@ -192,7 +192,7 @@ export default function useHomepageState() {
   const fetchFeaturedTrainers = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/featured-lists?itemType=TrainerProfile&category=${activeTrainerTab}`,
+        `http://localhost:5000/api/featured-lists?itemType=TrainerProfile&category=${activeTrainerTab}`,
       );
       if (res.data.success) {
         const trainersOnly = res.data.data.map(item => item.itemRef);
@@ -210,7 +210,7 @@ export default function useHomepageState() {
   const handleTrainerSearch = async (page = 1) => {
     setIsSearchingTrainer(true);
     try {
-      let url = `http://localhost:5001/api/search/trainers?keyword=${encodeURIComponent(
+      let url = `http://localhost:5000/api/search/trainers?keyword=${encodeURIComponent(
         searchTrainerQuery,
       )}&page=${page}`;
       
@@ -231,7 +231,7 @@ export default function useHomepageState() {
   };
 
   const toggleFeaturedTrainer = async (id) => {
-    let url = "http://localhost:5001/api/featured-lists/toggle";
+    let url = "http://localhost:5000/api/featured-lists/toggle";
     let body = {
       itemRef: id,
       itemType: "TrainerProfile",
@@ -272,7 +272,7 @@ export default function useHomepageState() {
   const fetchFeaturedWorkshops = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/featured-lists?itemType=Workshop&category=${activeWorkshopTab}`,
+        `http://localhost:5000/api/featured-lists?itemType=Workshop&category=${activeWorkshopTab}`,
       );
       if (res.data.success) {
         const workshopOnly = res.data.data.map(item => item.itemRef);
@@ -292,7 +292,7 @@ export default function useHomepageState() {
 
     setIsSearching(true);
     try {
-      let url = `http://localhost:5001/api/search/workshops?keyword=${encodeURIComponent(
+      let url = `http://localhost:5000/api/search/workshops?keyword=${encodeURIComponent(
         searchWorkshopQuery,
       )}&page=${page}`;
       if (activeWorkshopTab !== "All") {
@@ -312,7 +312,7 @@ export default function useHomepageState() {
   };
 
   const toggleFeaturedWorkshop = async (id) => {
-    let url ="http://localhost:5001/api/featured-lists/toggle";
+    let url ="http://localhost:5000/api/featured-lists/toggle";
 
     let body = {
       itemRef: id,
@@ -347,7 +347,7 @@ export default function useHomepageState() {
   const fetchFeaturedArticles = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/featured-lists?itemType=Article&category=${activeArticleTab}`
+        `http://localhost:5000/api/featured-lists?itemType=Article&category=${activeArticleTab}`
       );
       if (res.data.success) {
         const articlesOnly = res.data.data.map((item) => item.itemRef);
@@ -363,7 +363,7 @@ export default function useHomepageState() {
   }, [activeArticleTab]);
 
   const toggleFeaturedArticle = async (id) => {
-    let url = "http://localhost:5001/api/featured-lists/toggle";
+    let url = "http://localhost:5000/api/featured-lists/toggle";
     let body = {
       itemRef: id,
       itemType: "Article",
@@ -382,7 +382,7 @@ export default function useHomepageState() {
   const handleArticleSearch = async (page = 1) => {
     setIsSearchingArticle(true);
     try {
-      let url = `http://localhost:5001/api/articles?page=${page}&limit=10`;
+      let url = `http://localhost:5000/api/articles?page=${page}&limit=10`;
 
       if (articleSearchQuery.trim() !== "") {
         url += `&keyword=${encodeURIComponent(articleSearchQuery)}`;

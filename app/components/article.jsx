@@ -322,7 +322,7 @@ export default function Articles() {
 const fetchFeaturedArticles = async()=>{
   
   try{
-    const res = await axios.get(`http://localhost:5001/api/featured-lists?itemType=Article`)
+    const res = await axios.get(`http://localhost:5000/api/featured-lists?itemType=Article`)
     if(res.data.success){
       const articlesFeatured = res.data.data.map(item => item.itemRef)
       setFeaturedArticles(articlesFeatured)

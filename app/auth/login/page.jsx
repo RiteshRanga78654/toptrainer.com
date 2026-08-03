@@ -10,7 +10,7 @@ import {
   FileText,
   Calendar,
   Chrome,
-  Facebook,
+  Linkedin,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -66,12 +66,11 @@ export default function UserTrainerLoginPage() {
       if (result.user.role === "admin") {
         router.replace("/admin");
       } else if (result.user.role === "trainer") {
+        router.replace("/trainer/dashboard");
       } else {
         router.replace("/user/dashboard");
       }
-    } catch (error) {
-      console.error("An error occured while login: ", error)
-    }
+    } catch (_) {}
   };
 
   const handleChange = (e) => {
@@ -79,6 +78,11 @@ export default function UserTrainerLoginPage() {
       ...prev,
       [e.target.name]: e.target.value,
     }));
+  };
+
+  const handleSocialLogin = (provider) => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+    window.location.href = `${baseUrl}/auth/${provider}`;
   };
 
   return (
@@ -288,7 +292,7 @@ export default function UserTrainerLoginPage() {
                 Login
               </div>
             </div>
-            
+
             <form onSubmit={handleLogin} className="space-y-6">
               {error && (
                 <div className="anim-3 p-3 bg-red-50 border border-red-100 text-red-600 text-[14px] rounded-lg font-medium">
@@ -319,6 +323,7 @@ export default function UserTrainerLoginPage() {
                   />
                 </div>
               </div>
+
               <div className="anim-5 relative space-y-2">
                 <div className="flex justify-between items-center">
                   <label className="block text-[13px] font-semibold text-gray-800">
@@ -357,7 +362,7 @@ export default function UserTrainerLoginPage() {
                   </button>
                 </div>
               </div>
-                
+
               <div className="anim-5 flex items-center gap-3 mt-4">
                 <input
                   type="checkbox"
@@ -403,6 +408,7 @@ export default function UserTrainerLoginPage() {
               <div className="anim-7 flex flex-col gap-3">
                 <button
                   type="button"
+                  onClick={() => handleSocialLogin("google")}
                   className="social-btn w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 text-gray-700 text-[14px] font-semibold bg-white"
                 >
                   <Chrome size={20} className="text-[#EA4335]" />
@@ -410,10 +416,11 @@ export default function UserTrainerLoginPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => handleSocialLogin("linkedin")}
                   className="social-btn w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 text-gray-700 text-[14px] font-semibold bg-white"
                 >
-                  <Facebook size={20} className="text-[#1877F2]" fill="#1877F2" strokeWidth={0} />
-                  Continue with Facebook
+                  <Linkedin size={20} className="text-[#0A66C2]" />
+                  Continue with LinkedIn
                 </button>
               </div>
 

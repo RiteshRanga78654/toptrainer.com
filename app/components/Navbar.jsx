@@ -64,10 +64,12 @@ const Navbar = () => {
 
               <Link href="/">
                 <span className="cursor-pointer">
-                  <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                    Top
-                  </span>
-                  <span className="text-orange-400">Trainer</span>
+                 <Image
+                src="/topTrainer-logo.png"
+                alt="TopTrainer Logo"
+               width={70}
+                height={32}
+              />
                 </span>
               </Link>
             </h1>

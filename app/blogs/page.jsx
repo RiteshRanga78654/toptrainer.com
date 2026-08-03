@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import {
@@ -16,6 +16,9 @@ import {
   Search,
 } from "lucide-react";
 
+import { blogsAPI } from "../lib/api";
+import { mapArticleToCard } from "../lib/Blogmappers";
+
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
 const CATEGORIES_DATA = [
@@ -28,53 +31,6 @@ const CATEGORIES_DATA = [
   { icon: ChartLine, name: "Sales Training" },
   { icon: UsersRound, name: "Workplace Culture" },
   { icon: Cpu, name: "Technology in Training" },
-];
-
-const FEED_DATA = [
-  {
-    slug: "how-to-choose-the-right-corporate-trainer",
-    tag: "Corporate Training",
-    title: "How to Choose the Right Corporate Trainer for Your Organization",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&auto=format&fit=crop",
-    subtext: "Key factors to consider when selecting a trainer who can deliver real impact.",
-    authorImage: "https://ui-avatars.com/api/?name=Priya+Mehta&background=2563eb&color=fff",
-    authorName: "Priya Mehta",
-    date: "May 20, 2024",
-    time: "6 min read",
-  },
-  {
-    slug: "7-ld-strategies-to-build-a-future-ready-workforce",
-    tag: "L&D Strategies",
-    title: "7 L&D Strategies to Build a Future-Ready Workforce",
-    image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop",
-    subtext: "Practical strategies to align learning initiatives with business goals.",
-    authorImage: "https://ui-avatars.com/api/?name=Rahul+Desai&background=0e4b8c&color=fff",
-    authorName: "Rahul Desai",
-    date: "May 18, 2024",
-    time: "5 min read",
-  },
-  {
-    slug: "the-most-in-demand-soft-skills-in-2024",
-    tag: "Soft Skills",
-    title: "The Most In-Demand Soft Skills in 2024",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop",
-    subtext: "Skills that professionals need to thrive in the modern workplace.",
-    authorImage: "https://ui-avatars.com/api/?name=Anjali+Shah&background=2563eb&color=fff",
-    authorName: "Anjali Shah",
-    date: "May 15, 2024",
-    time: "4 min read",
-  },
-  {
-    slug: "how-technology-is-transforming-corporate-training",
-    tag: "Technology in Training",
-    title: "How Technology is Transforming Corporate Training",
-    image: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=600&auto=format&fit=crop",
-    subtext: "Explore the latest tools and trends shaping the future of learning.",
-    authorImage: "https://ui-avatars.com/api/?name=Karan+Malhotra&background=0e4b8c&color=fff",
-    authorName: "Karan Malhotra",
-    date: "May 12, 2024",
-    time: "6 min read",
-  },
 ];
 
 const TAG_COLORS = {
@@ -213,10 +169,10 @@ const Pagination = ({ currentPage, setCurrentPage }) => {
 
 // ─── MAIN SECTION ─────────────────────────────────────────────────────────────
 
-const MainSection = ({ search, setSearch, filter, setFilter, currentPage, setCurrentPage }) => {
+const MainSection = ({ articles, search, setSearch, filter, setFilter, currentPage, setCurrentPage }) => {
   const [activeCategory, setActiveCategory] = useState("All Topics");
 
-  const filtered = FEED_DATA.filter((d) => {
+  const filtered = articles.filter((d) => {
     const q = search.toLowerCase();
     return (
       d.title.toLowerCase().includes(q) ||
@@ -331,11 +287,32 @@ export default function BlogsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Most Recent");
   const [currentPage, setCurrentPage] = useState(1);
+  const [articles, setArticles] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    blogsAPI
+      .getAll()
+      .then((res) => {
+        if (cancelled) return;
+        const list = res?.data?.data || [];
+        setArticles(list.map(mapArticleToCard));
+      })
+      .catch(() => {
+        if (!cancelled) setArticles([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroSection />
       <MainSection
+        articles={articles}
         search={search}
         setSearch={setSearch}
         filter={filter}

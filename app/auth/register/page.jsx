@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Mail,
   Lock,
@@ -12,16 +12,24 @@ import {
   ShieldCheck,
   Calendar,
   Chrome,
-  Facebook,
+  Linkedin,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { register, clearError } from "../../store/slices/authSlice";
 
 export default function UserRegistrationPage() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const { loading, error, user, token } = useSelector((state) => state.auth);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const [form, setForm] = useState({
     firstName: "",
@@ -32,16 +40,66 @@ export default function UserRegistrationPage() {
     confirmPassword: "",
   });
 
-  const handleRegister = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => setIsLoading(false), 2000);
-  };
+  useEffect(() => {
+    if (!token || !user?.role) return;
+
+    if (user.role === "admin") {
+      router.replace("/admin");
+    } else if (user.role === "trainer") {
+      router.replace("/trainer/dashboard");
+    } else {
+      router.replace("/user/dashboard");
+    }
+  }, [token, user, router]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setFormError("");
+
+    if (form.password !== form.confirmPassword) {
+      setFormError("Passwords do not match.");
+      return;
+    }
+
+    if (form.password.length < 6) {
+      setFormError("Password must be at least 6 characters.");
+      return;
+    }
+
+    try {
+      const result = await dispatch(
+        register({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phoneNumber: form.phone,
+          password: form.password,
+          comfirmPassword: form.confirmPassword,
+        })
+      ).unwrap();
+
+      router.replace("/user/dashboard");
+    } catch (_) {
+      // error is already captured in redux state via `error`
+    }
+  };
+
+  const handleSocialSignup = (provider) => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+    window.location.href = `${baseUrl}/auth/${provider}`;
+  };
+
+  const isLoading = loading;
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-white">
@@ -97,7 +155,7 @@ export default function UserRegistrationPage() {
         .login-btn:active {
           transform: translateY(0);
         }
-        
+
         .social-btn {
           transition: all 0.2s ease;
         }
@@ -136,10 +194,10 @@ export default function UserRegistrationPage() {
 
       {/* Main Content */}
       <main className="flex-1 w-full max-w-[1600px] mx-auto flex flex-col lg:flex-row relative">
-        
+
         {/* LEFT COLUMN: Hero Section */}
         <div className="hidden lg:flex w-full lg:w-[45%] flex-col pt-12 pb-16 px-8 sm:px-14 lg:px-16 bg-[#F8F9FC] relative z-10 lg:border-r border-gray-100">
-          
+
           <div className="flex-1 flex flex-col max-w-[500px]">
             {/* Badge */}
             <div className="left-anim-2 inline-flex items-center self-start mb-8 border border-blue-200 bg-transparent rounded-full px-4 py-1.5">
@@ -205,7 +263,7 @@ export default function UserRegistrationPage() {
 
         {/* RIGHT COLUMN: Registration Form Card */}
         <div className="w-full lg:w-[55%] flex flex-col items-center justify-center p-6 lg:p-12 xl:p-16 relative z-10 bg-white min-h-[calc(100vh-100px)] lg:min-h-0">
-          
+
           <div className="sm:hidden text-center mb-8 w-full anim-1">
             <span className="text-[14px] text-gray-500 font-medium">
               Already have an account?{" "}
@@ -216,7 +274,7 @@ export default function UserRegistrationPage() {
           </div>
 
           <div className="anim-2 w-full max-w-[560px] bg-white rounded-[1.5rem] p-8 sm:p-10 border border-gray-200">
-            
+
             {/* Header */}
             <div className="mb-8">
               <h2 className="text-[28px] font-bold text-gray-900 mb-2 tracking-tight">
@@ -227,8 +285,14 @@ export default function UserRegistrationPage() {
               </p>
             </div>
 
+            {(formError || error) && (
+              <div className="mb-5 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-[13px] font-medium">
+                {formError || error}
+              </div>
+            )}
+
             <form onSubmit={handleRegister} className="space-y-5">
-              
+
               {/* Name Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 anim-3">
                 <div className="space-y-2">
@@ -316,6 +380,7 @@ export default function UserRegistrationPage() {
                     onFocus={() => setFocusedField("phone")}
                     onBlur={() => setFocusedField(null)}
                     className="flex-1 outline-none text-[15px] text-gray-900 placeholder-gray-400 w-full bg-transparent font-medium"
+                    required
                   />
                 </div>
               </div>
@@ -428,6 +493,7 @@ export default function UserRegistrationPage() {
               <div className="anim-7 flex flex-col gap-3">
                 <button
                   type="button"
+                  onClick={() => handleSocialSignup("google")}
                   className="social-btn w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 text-gray-700 text-[14px] font-semibold bg-white"
                 >
                   <Chrome size={20} className="text-[#EA4335]" />
@@ -435,15 +501,16 @@ export default function UserRegistrationPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => handleSocialSignup("linkedin")}
                   className="social-btn w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 text-gray-700 text-[14px] font-semibold bg-white"
                 >
-                  <Facebook
+                  <Linkedin
                     size={20}
-                    className="text-[#1877F2]"
-                    fill="#1877F2"
+                    className="text-[#0A66C2]"
+                    fill="#0A66C2"
                     strokeWidth={0}
                   />
-                  Sign up with Facebook
+                  Sign up with LinkedIn
                 </button>
               </div>
 
