@@ -36,6 +36,4 @@ router.put("/admin/:id", protectAdmin, workshopUploadFields, updateWorkshop );
 router.get("/admin/One-workshop/:id", protectAdmin, getSingleWorkshop)
 router.delete("/admin/:id", protectAdmin, deleteWorkshop);
 
-
-
 export default router;
