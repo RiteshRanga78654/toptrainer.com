@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from "next/image";
 import { usePathname, useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { logout } from '../../store/slices/authSlice'
@@ -28,6 +29,8 @@ const adminNav = [
       {label: 'Department', href: '/admin/departmentes', icon: Award},
       { label: 'Articles',   href: '/admin/articles',     icon: FileText },
       { label: 'Reports',    href: '/admin/reports',    icon: BarChart3 },
+      {label: 'About us', href: '/admin/aboutus', icon: Settings},
+      {label: 'Reviews', href: '/admin/review', icon: Star},
     ]
   },
   {
@@ -124,12 +127,10 @@ function SidebarContent({ role, user, onClose, onLogout }) {
       {/* Logo */}
       <div className="h-16 flex items-center px-5 border-b border-slate-800 shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
-            <GraduationCap size={16} className="text-white" />
+          <div className="w-8 h-8  rounded-lg flex items-center justify-center shrink-0">
+            <Image src="/logo.png" alt="Logo" width={20} height={20} className="object-contain" />
           </div>
-          <span className="text-white font-bold text-lg leading-none">
-            Top<span className="text-blue-400">Trainer</span>
-          </span>
+         <Image src="/topTrainer-logo.png" alt="Logo" width={120} height={40} className="object-contain" />
         </div>
         {onClose && (
           <button onClick={onClose} className="ml-auto text-slate-400 hover:text-white transition-colors">

@@ -1,5 +1,5 @@
 import express from "express";
-import {createReview, getMyReviews, getAllReviews, getSingleReview, getTrainerReviews, getWorkshopReviews, getFeaturedReviews, approveReview, toggleFeaturedReview, updateReview, deleteReview} from "../controllers/reviewController.js"
+import {createReview, getMyReviews, getAllReviews, getSingleReview, getTrainerReviews, getWorkshopReviews, getFeaturedReviews, approveReview, rejectReview, toggleFeaturedReview, updateReview, deleteReview, getMyTrainerReviews, getTrainerApprovedReviews} from "../controllers/reviewController.js"
 import { protectAdmin } from "../middleware/adminAuthMiddleware.js";
 import { protectTrainer } from "../middleware/trainerAuthMiddleware.js";
 import { protectUser } from "../middleware/userMiddleware.js";
@@ -13,22 +13,22 @@ router.get("/my-review", protectUser, getMyReviews);
 router.put("/:id", protectUser, updateReview);
 router.delete("/:id", protectUser, deleteReview);
 
-
-//public
-router.get("/:id", getSingleReview);
-router.get("/trainer/:trainerId", getTrainerReviews);
-router.get("/workshop/:workshopId", getWorkshopReviews);
-router.get("/featured", getFeaturedReviews);
-
 //trainer-dashboard
-router.get("/trainer-dashboard/my-reviews",protectTrainer,getTrainerReviews);
+router.get("/trainer-dashboard/my-reviews",protectTrainer,getMyTrainerReviews);
+router.get("/trainer-dashboard/approved-reviews", protectTrainer, getTrainerApprovedReviews);
 
 //admin
 router.get("/admin/all", protectAdmin, getAllReviews);
 router.put("/admin/approve/:id",protectAdmin,approveReview);
+router.put("/admin/reject/:id",protectAdmin,rejectReview);
 router.put("/admin/featured/:id",protectAdmin,toggleFeaturedReview);
 router.delete("/admin/:id",protectAdmin,deleteReview);
 
-export default router;
+//public (kept below /admin and /trainer-dashboard so literal paths like
+// "/featured" aren't shadowed by the "/:id" catch-all below)
+router.get("/trainer/:trainerId", getTrainerReviews);
+router.get("/workshop/:workshopId", getWorkshopReviews);
+router.get("/featured", getFeaturedReviews);
+router.get("/:id", getSingleReview);
 
-  
+export default router;
