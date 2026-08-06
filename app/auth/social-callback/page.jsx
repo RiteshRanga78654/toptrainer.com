@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function SocialCallbackPage() {
+function SocialCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -12,7 +12,6 @@ export default function SocialCallbackPage() {
     const role = searchParams.get("role");
     const userParam = searchParams.get("user");
 
-   
     try {
       const user = JSON.parse(decodeURIComponent(userParam));
       const normalizedUser = { ...user, role };
@@ -20,6 +19,7 @@ export default function SocialCallbackPage() {
       localStorage.setItem("tt_token", token);
       localStorage.setItem("role", role);
       localStorage.setItem("user", JSON.stringify(normalizedUser));
+
       document.cookie = `token=${token}; path=/; max-age=${7 * 24 * 3600}`;
 
       if (role === "trainer") {
@@ -32,5 +32,13 @@ export default function SocialCallbackPage() {
     }
   }, [router, searchParams]);
 
-  return null;
+  return <div>Loading...</div>;
+}
+
+export default function SocialCallbackPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SocialCallbackContent />
+    </Suspense>
+  );
 }
