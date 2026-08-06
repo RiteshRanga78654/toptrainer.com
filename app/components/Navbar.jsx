@@ -61,8 +61,7 @@ const Navbar = () => {
                 height={32}
                 className="object-contain"
               />
-
-              <Link href="/">
+ <Link href="/">
                 <span className="cursor-pointer">
                  <Image
                 src="/topTrainer-logo.png"

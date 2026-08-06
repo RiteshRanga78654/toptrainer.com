@@ -72,6 +72,13 @@ export const userAPI = {
     getAll: (params = {}) => API.get("/admin/users", { params }),
   updateStatus: (id, data) => API.patch(`/admin/users/${id}/status`, data),
 };
+export const adminReviewsAPI = {
+  getAll: (params = {}) => API.get("/reviews/admin/all", { params }),
+  approve: (id) => API.put(`/reviews/admin/approve/${id}`),
+  reject: (id) => API.put(`/reviews/admin/reject/${id}`),
+  toggleFeatured: (id) => API.put(`/reviews/admin/featured/${id}`),
+  delete: (id) => API.delete(`/reviews/admin/${id}`),
+};
 
 export const trainersAPI = {
   ...makeCRUD("trainers"),
