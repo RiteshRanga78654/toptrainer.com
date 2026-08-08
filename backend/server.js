@@ -37,7 +37,7 @@ console.log("SERVER ENV:", process.env.CLOUDINARY_CLOUD_NAME);
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:3000", // or whatever port Next.js runs on
+    origin: "toptrainer-com.vercel.app", // or whatever port Next.js runs on
     credentials: true,
   }),
 );
