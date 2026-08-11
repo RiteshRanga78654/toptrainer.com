@@ -28,6 +28,16 @@ export const getDashboardData = asyncHandler(
             createdAt: { $gte: startOfMonth }
         });
 
+        const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
+        const newUsersLast90Days = await User.countDocuments({
+            createdAt: { $gte: ninetyDaysAgo }
+        });
+
+        const newTrainersLast90Days = await TrainerProfile.countDocuments({
+            createdAt: { $gte: ninetyDaysAgo }
+        });
+
 
         const recentWorkshops = await Workshop.find()
             .sort({ createdAt: -1 })
@@ -68,6 +78,8 @@ export const getDashboardData = asyncHandler(
                     totalVideos,
                     newUsersThisMonth,
                     newTrainersThisMonth,
+                    newUsersLast90Days,
+                    newTrainersLast90Days,
                 },
                 recentWorkshops,
                 recentArticles,

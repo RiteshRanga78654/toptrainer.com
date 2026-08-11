@@ -5,7 +5,15 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import YoutubeSection from "../components/youtube";
 import axios from "axios";
-
+import {
+    Bot,
+    Brain,
+    MessageSquare,
+    Users,
+    Lightbulb,
+    Clock,
+    ChevronDown
+} from "lucide-react";
 const industries = [
   "IT & Software",
   "Healthcare",
@@ -14,48 +22,38 @@ const industries = [
   "Retail",
   "Education",
 ];
-
-const trainersData = {
-  "IT & Software": [
-    { name: "Karan Malhotra", role: "Leadership & Agile Coach", tags: ["Agile", "Scrum", "Leadership"], rating: 4.8, reviews: 128, workshops: 85, price: 15000, topRated: true, initials: "KM", color: "from-blue-600 to-blue-800", experience: "6+ years exp." },
-    { name: "Priya Menon", role: "Technical Trainer & Mentor", tags: ["Cloud Computing", "DevOps", "AWS"], rating: 4.7, reviews: 96, workshops: 60, price: 12000, topRated: false, initials: "PM", color: "from-indigo-500 to-indigo-700", experience: "4+ years exp." },
-    { name: "Arjun Rao", role: "Data Science & AI Trainer", tags: ["Python", "Machine Learning", "AI"], rating: 4.9, reviews: 142, workshops: 70, price: 18000, topRated: false, initials: "AR", color: "from-violet-600 to-violet-800", experience: "8+ years exp." },
-    { name: "Rohit Verma", role: "Full Stack Developer Trainer", tags: ["JavaScript", "React", "Node.js"], rating: 4.8, reviews: 88, workshops: 55, price: 14000, topRated: true, initials: "RV", color: "from-sky-500 to-sky-700", experience: "5+ years exp." },
-    { name: "Sneha Iyer", role: "Cybersecurity Expert", tags: ["Ethical Hacking", "Security", "Network"], rating: 4.8, reviews: 112, workshops: 65, price: 16000, topRated: false, initials: "SI", color: "from-teal-500 to-teal-700", experience: "7+ years exp." },
-    { name: "Vikram Singh", role: "DevOps & Infrastructure Coach", tags: ["DevOps", "Docker", "Kubernetes"], rating: 4.7, reviews: 79, workshops: 50, price: 13000, topRated: false, initials: "VS", color: "from-cyan-600 to-cyan-800", experience: "6+ years exp." },
-    { name: "Ankit Sharma", role: "Frontend Architecture Coach", tags: ["React", "Next.js", "UI/UX"], rating: 4.9, reviews: 154, price: 17000, topRated: true, initials: "AS", color: "from-blue-500 to-indigo-700", experience: "9+ years exp." },
-    { name: "Neha Kapoor", role: "Backend Systems Trainer", tags: ["Node.js", "Express", "MongoDB"], rating: 4.8, reviews: 121, price: 14500, topRated: false, initials: "NK", color: "from-cyan-500 to-blue-700", experience: "5+ years exp." },
-    { name: "Siddharth Jain", role: "Cloud Infrastructure Expert", tags: ["AWS", "Docker", "CI/CD"], rating: 4.7, reviews: 98, price: 16000, topRated: false, initials: "SJ", color: "from-sky-600 to-indigo-800", experience: "7+ years exp." },
-    { name: "Riya Khanna", role: "Data Engineering Mentor", tags: ["Python", "Spark", "ETL"], rating: 4.9, reviews: 176, price: 19000, topRated: true, initials: "RK", color: "from-indigo-500 to-purple-700", experience: "8+ years exp." },
-    { name: "Varun Mehta", role: "DevOps Automation Coach", tags: ["Kubernetes", "Terraform", "Linux"], rating: 4.8, reviews: 110, price: 15500, topRated: false, initials: "VM", color: "from-blue-600 to-cyan-800", experience: "6+ years exp." },
-    { name: "Ishita Rao", role: "AI Product Trainer", tags: ["LLMs", "Prompting", "GenAI"], rating: 4.9, reviews: 143, price: 21000, topRated: true, initials: "IR", color: "from-violet-600 to-blue-800", experience: "10+ years exp." }
-  ],
-  "Healthcare": [
-    { name: "Dr. Meera Nair", role: "Clinical Skills Trainer", tags: ["Patient Care", "Diagnostics", "EMR"], rating: 4.9, reviews: 156, workshops: 90, price: 20000, topRated: true, initials: "MN", color: "from-emerald-600 to-emerald-800", experience: "8+ years exp." },
-    { name: "Suresh Patel", role: "Hospital Management Coach", tags: ["Operations", "Leadership", "Quality"], rating: 4.7, reviews: 84, workshops: 48, price: 17000, topRated: false, initials: "SP", color: "from-green-600 to-green-800", experience: "6+ years exp." },
-    { name: "Dr. Anjali Shah", role: "Nursing Education Specialist", tags: ["Nursing", "Critical Care", "BLS"], rating: 4.8, reviews: 103, workshops: 62, price: 15000, topRated: false, initials: "AS", color: "from-teal-500 to-teal-700", experience: "7+ years exp." },
-  ],
-  "Finance": [
-    { name: "Rajesh Kumar", role: "CFA & Investment Coach", tags: ["CFA", "Equity", "Portfolio"], rating: 4.9, reviews: 201, workshops: 110, price: 25000, topRated: true, initials: "RK", color: "from-amber-600 to-amber-800", experience: "10+ years exp." },
-    { name: "Neha Sharma", role: "Financial Planning Expert", tags: ["CFP", "Tax", "Retirement"], rating: 4.7, reviews: 88, workshops: 55, price: 18000, topRated: false, initials: "NS", color: "from-yellow-600 to-yellow-800", experience: "6+ years exp." },
-    { name: "Vivek Joshi", role: "Risk & Compliance Trainer", tags: ["Risk Management", "Basel III", "AML"], rating: 4.8, reviews: 74, workshops: 42, price: 22000, topRated: false, initials: "VJ", color: "from-orange-500 to-orange-700", experience: "7+ years exp." },
-  ],
-  "Manufacturing": [
-    { name: "Harinder Singh", role: "Lean Manufacturing Coach", tags: ["Lean", "Six Sigma", "Kaizen"], rating: 4.8, reviews: 119, workshops: 72, price: 16000, topRated: true, initials: "HS", color: "from-red-600 to-red-800", experience: "8+ years exp." },
-    { name: "Deepa Krishnan", role: "Quality Systems Trainer", tags: ["ISO 9001", "QA", "Auditing"], rating: 4.6, reviews: 65, workshops: 38, price: 14000, topRated: false, initials: "DK", color: "from-rose-500 to-rose-700", experience: "5+ years exp." },
-    { name: "Manish Gupta", role: "Industrial Safety Expert", tags: ["EHS", "OSHA", "Risk"], rating: 4.7, reviews: 92, workshops: 58, price: 15000, topRated: false, initials: "MG", color: "from-pink-500 to-pink-700", experience: "6+ years exp." },
-  ],
-  "Retail": [
-    { name: "Kavita Nanda", role: "Retail Sales Trainer", tags: ["Sales", "Customer Experience", "VM"], rating: 4.8, reviews: 138, workshops: 80, price: 12000, topRated: true, initials: "KN", color: "from-purple-600 to-purple-800", experience: "7+ years exp." },
-    { name: "Amit Bose", role: "E-Commerce Growth Coach", tags: ["Shopify", "D2C", "Analytics"], rating: 4.7, reviews: 77, workshops: 44, price: 14000, topRated: false, initials: "AB", color: "from-violet-500 to-violet-700", experience: "5+ years exp." },
-    { name: "Ritu Malhotra", role: "Merchandising Specialist", tags: ["Category Mgmt", "Pricing", "Planogram"], rating: 4.6, reviews: 59, workshops: 35, price: 11000, topRated: false, initials: "RM", color: "from-fuchsia-500 to-fuchsia-700", experience: "4+ years exp." },
-  ],
-  "Education": [
-    { name: "Prof. Sunil Mehta", role: "Curriculum Design Expert", tags: ["EdTech", "Bloom's", "UDL"], rating: 4.9, reviews: 177, workshops: 95, price: 13000, topRated: true, initials: "SM", color: "from-blue-500 to-blue-700", experience: "9+ years exp." },
-    { name: "Pooja Verma", role: "Corporate L&D Trainer", tags: ["L&D", "ILT", "LMS"], rating: 4.8, reviews: 94, workshops: 60, price: 11000, topRated: false, initials: "PV", color: "from-indigo-400 to-indigo-600", experience: "6+ years exp." },
-    { name: "Dr. Ashok Rao", role: "K-12 Pedagogy Coach", tags: ["Pedagogy", "NEP 2020", "STEM"], rating: 4.7, reviews: 81, workshops: 50, price: 10000, topRated: false, initials: "DR", color: "from-sky-500 to-sky-700", experience: "7+ years exp." },
-  ],
+const industryIcons = {
+    "AI Tools": <Bot className="w-5 h-5" />,
+    "Generative AI": <Brain className="w-5 h-5" />,
+    "Strategic Thinking": <Brain className="w-5 h-5" />,
+    "Communication": <MessageSquare className="w-5 h-5" />,
+    "Leadership": <Users className="w-5 h-5" />,
+    "Time Management": <Clock className="w-5 h-5" />,
+    "Productivity": <Clock className="w-5 h-5" />,
+    "Innovation": <Lightbulb className="w-5 h-5" />,
+    "Big Picture Thinking": <Brain className="w-5 h-5" />
 };
+
+
+
+
+function normalizeTrainer(trainer) {
+    const industries = trainer?.expertiseDomain?.industries?.filter(Boolean) || [];
+    const tagsLine = trainer?.tagsLine?.filter(Boolean) || [];
+    const feesRaw = trainer?.additionalDetails?.feesPerDay;
+    const feesNumber = feesRaw ? Number(String(feesRaw).replace(/[^\d.]/g, "")) : null;
+
+    return {
+        id: trainer?._id,
+        trainerId: trainer?.trainerId || trainer?._id,
+        name: trainer?.fullName || "Unnamed Trainer",
+        role: trainer?.expertiseDomain?.TrainerType || trainer?.entityType || "Trainer",
+        tags: (tagsLine.length > 0 ? tagsLine : industries).slice(0, 3),
+        price: Number.isFinite(feesNumber) && feesNumber > 0 ? feesNumber : null,
+        image: trainer?.profilePhoto?.url || "/Images/trainee2.png",
+    };
+}
+
 
 function StarRating({ rating }) {
   return (
@@ -69,95 +67,71 @@ function StarRating({ rating }) {
 }
 
 function TrainerCard({ trainer }) {
-  const [liked, setLiked] = useState(false);
+    const [liked, setLiked] = useState(false);
+    return (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
+            <div className="relative">
+                <div className="relative h-44 w-full overflow-hidden">
+                    <Image
+                        src={trainer.image}
+                        alt={trainer.name}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                    />
 
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
-      <div className="relative">
-        <div className="relative h-44 w-full overflow-hidden">
-          <Image
-            src="/Images/trainee2.png"
-            alt={trainer.name}
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0" />
+                    <div className={`absolute inset-0 `} />
+                </div>
+                <button
+                    onClick={() => setLiked(!liked)}
+                    className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:scale-110 transition-transform"
+                >
+                    <svg className={`w-4 h-4 ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} fill={liked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div className="p-4">
+                <div className="flex items-center gap-1.5 mb-1">
+                    <h3 className="font-bold text-gray-900 text-base">{trainer.name}</h3>
+                    <svg className="w-4 h-4 text-blue-500 fill-blue-500" viewBox="0 0 20 20">
+                        <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
+                </div>
+
+                <p className="text-sm text-gray-500 mb-3">{trainer.role}</p>
+
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                    {trainer.tags.map((tag) => (
+                        <span
+                            key={tag}
+                            className="text-xs bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full font-medium border border-blue-100"
+                        >
+                            {tag}
+                        </span>
+                    ))}
+                </div>
+                <div className="flex items-end justify-between mt-4">
+                    <a href={`/trainer-profile/${trainer.trainerId}`}>
+                        <button className="border border-blue-600 text-blue-600 font-semibold text-sm px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 group-hover:shadow-sm">
+                            View Profile
+                        </button>
+                    </a>
+
+                    <div className="text-right">
+                        <p className="text-sm text-gray-500 mt-1">
+                            {trainer.price ? `₹${trainer.price.toLocaleString("en-IN")} / Day` : "Contact for pricing"}
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        {trainer.topRated && (
-          <span className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-            Top Rated
-          </span>
-        )}
-
-        <button
-          onClick={() => setLiked(!liked)}
-          className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:scale-110 transition-transform"
-        >
-          <svg
-            className={`w-4 h-4 ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`}
-            fill={liked ? "currentColor" : "none"}
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-1.5">
-            <h3 className="font-bold text-gray-900 text-base">{trainer.name}</h3>
-            <svg className="w-4 h-4 text-blue-500 fill-blue-500" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <StarRating rating={trainer.rating} />
-            <span className="text-xs text-gray-500">({trainer.reviews})</span>
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-500 mb-3">{trainer.role}</p>
-
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {trainer.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-xs bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full font-medium border border-blue-100"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        <hr className="border-0 h-px bg-gray-300 my-3" />
-
-        <div className="flex items-center justify-between mt-4">
-          <a href="/profile">
-            <button className="bg-blue-500 text-white font-semibold text-sm px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 group-hover:shadow-sm">
-              View Profile
-            </button>
-          </a>
-
-          <div className="text-right">
-            <p className="text-sm text-gray-500">{trainer.experience}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 function ArticleSlider({ articles }) {
@@ -265,25 +239,71 @@ function ArticleSlider({ articles }) {
 
 export default function Industry() {
   const router = useRouter();
-
+   const [industriesData, setIndustriesData] = useState([]);
+    const [industriesLoading, setIndustriesLoading] = useState(true);
   const [activeIndustry, setActiveIndustry] = useState("IT & Software");
   const [city, setCity] = useState("");
+   const [sortBy, setSortBy] = useState("Featured");
   const [industry, setIndustry] = useState("");
   const [price, setPrice] = useState("");
   const [experience, setExperience] = useState("");
   const [trainingType, setTrainingType] = useState("");
-  const [sortBy, setSortBy] = useState("Most Popular");
   const [showAll, setShowAll] = useState(false);
 
   const [articles, setArticles] = useState([]);
   const [articlesLoading, setArticlesLoading] = useState(false);
 
-  useEffect(() => {
-    if (industry) {
-      setActiveIndustry(industry);
-      setShowAll(false);
-    }
-  }, [industry]);
+
+    // Real industries, each populated with the trainers an admin has
+    // linked to them (see Competency.trainers in the backend model). This
+    // replaces the old hardcoded industries/extraIndustries/trainersData
+    // mock lists.
+    useEffect(() => {
+        const fetchIndustries = async () => {
+            try {
+                setIndustriesLoading(true);
+
+                const res = await axios.get("http://localhost:5000/api/industries/active");
+                const list = res?.data?.industries || [];
+
+                setIndustriesData(list);
+                setActiveIndustry((prev) => prev || list[0]?.name || "");
+            } catch (error) {
+                console.error("Error fetching Industries:", error);
+                setIndustriesData([]);
+            } finally {
+                setIndustriesLoading(false);
+            }
+        };
+
+        fetchIndustries();
+    }, []);
+
+    const industriesNames = useMemo(
+        () => industriesData.map((item) => item.name),
+        [industriesData]
+    );
+
+    const trainersForActiveIndustry = useMemo(() => {
+        const entry = industriesData.find((item) => item.name === activeIndustry);
+        return (entry?.trainers || []).filter(Boolean).map(normalizeTrainer);
+    }, [industriesData, activeIndustry]);
+
+    const trainers = useMemo(() => {
+        let result = trainersForActiveIndustry;
+
+        if (sortBy === "Price: Low to High") {
+            result = [...result].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+        } else if (sortBy === "Price: High to Low") {
+            result = [...result].sort((a, b) => (b.price ?? -Infinity) - (a.price ?? -Infinity));
+        } else if (sortBy === "Name (A-Z)") {
+            result = [...result].sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        return result;
+    }, [trainersForActiveIndustry, sortBy]);
+
+  
 
   // No tab-matching, no filter — just show every article that's been
   // assigned to an industry in admin, directly, once.
@@ -327,7 +347,7 @@ export default function Industry() {
   }, []);
 
   const filteredAndSortedTrainers = useMemo(() => {
-    let result = trainersData[activeIndustry] || [];
+    let result = trainers;
 
     if (experience) {
       result = result.filter((trainer) => {
@@ -354,7 +374,7 @@ export default function Industry() {
     }
 
     return result;
-  }, [activeIndustry, experience, sortBy]);
+  }, [trainers, experience, sortBy]);
 
   const displayed = showAll ? filteredAndSortedTrainers : filteredAndSortedTrainers.slice(0, 8);
 
@@ -433,11 +453,17 @@ export default function Industry() {
 
             <select
               value={industry}
-              onChange={(e) => setIndustry(e.target.value)}
+              onChange={(e) => {
+                setIndustry(e.target.value);
+                if (e.target.value) {
+                  setActiveIndustry(e.target.value);
+                  setShowAll(false);
+                }
+              }}
               className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none"
             >
               <option value="">Select Industry</option>
-              {industries.map((item) => (
+              {industriesNames.map((item) => (
                 <option key={item}>{item}</option>
               ))}
             </select>

@@ -125,6 +125,10 @@ export const toggleIndustryStatus = asyncHandler(async (req, res) => {
 
 export const getActiveIndustries = asyncHandler(async (req, res) => {
   const industries = await Industry.find({ isActive: true })
+    .populate(
+      "trainers",
+      "trainerId fullName profilePhoto expertiseDomain additionalDetails tagsLine entityType"
+    )
     .sort({ name: 1 });
 
   res.status(200).json({

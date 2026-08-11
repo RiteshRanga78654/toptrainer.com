@@ -149,13 +149,18 @@ function Milestone({ icon: Icon, label, org, year, delay }) {
   );
 }
 
-function Testimonial({ quote, name, role, delay }) {
+function Testimonial({ quote, name, role, rating = 5, delay }) {
+  const filled = Math.max(0, Math.min(5, Math.round(rating || 0)));
   return (
     <FadeIn delay={delay}>
       <div className="bg-blue-50 rounded-2xl p-5 border border-blue-100 h-full">
         <div className="flex gap-1 mb-3">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} size={13} className="fill-yellow-400 text-yellow-400" />
+            <Star
+              key={i}
+              size={13}
+              className={i < filled ? "fill-yellow-400 text-yellow-400" : "fill-blue-100 text-blue-200"}
+            />
           ))}
         </div>
         <p className="text-sm text-blue-800 leading-relaxed mb-4 italic">"{quote}"</p>
@@ -333,6 +338,7 @@ export default function Profile() {
   const [trainer, setTrainer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reviews, setReviews] = useState([]);
 
   const handleWriteReview = () => {
     const loggedIn = !!user || !!token || !!getClientToken();
@@ -367,6 +373,28 @@ export default function Profile() {
     };
 
     fetchTrainer();
+  }, [trainerId]);
+
+  // Real, admin-approved reviews submitted by users for this trainer.
+  useEffect(() => {
+    if (!trainerId) return;
+
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/reviews/trainer/${trainerId}`);
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          setReviews(data.reviews || []);
+        } else {
+          setReviews([]);
+        }
+      } catch (err) {
+        setReviews([]);
+      }
+    };
+
+    fetchReviews();
   }, [trainerId]);
 
   const location = useMemo(() => {
@@ -450,7 +478,38 @@ export default function Profile() {
   ];
 
   const articles = trainer?.articles?.filter(Boolean) || [];
-  const testimonials = trainer?.testimonials?.filter(Boolean) || [];
+
+  // "What People Say" is sourced from real user reviews that have been
+  // approved by an admin (status: "approved"), not from self-reported
+  // trainer testimonials.
+  const testimonials = (reviews || [])
+    .filter(Boolean)
+    .map((r) => {
+      const reviewerName =
+        `${r?.user?.firstName || ""} ${r?.user?.lastName || ""}`.trim() ||
+        r?.sessionInfo?.reviewerName ||
+        "Anonymous User";
+
+      const role =
+        r?.workshop?.basicInformation?.title
+          ? `Attended: ${r.workshop.basicInformation.title}`
+          : r?.sessionInfo?.city || "";
+
+      const quote =
+        r?.ratings?.overAllComment ||
+        r?.ratings?.deliveryComment ||
+        r?.ratings?.contentQualityComment ||
+        r?.ratings?.engagmentComment ||
+        "Great experience working with this trainer.";
+
+      return {
+        id: r?._id,
+        quote,
+        name: reviewerName,
+        role,
+        rating: r?.averageRating || r?.ratings?.overAll || 5,
+      };
+    });
   const featuredVideos = trainer?.videos?.filter(Boolean) || [];
   const marketKnowledge = trainer?.globalMarketKnowledge?.filter(Boolean) || [];
 
@@ -656,10 +715,11 @@ export default function Profile() {
                       <div className="grid sm:grid-cols-2 gap-4">
                         {testimonials.slice(0, 2).map((item, index) => (
                           <Testimonial
-                            key={index}
+                            key={item?.id || index}
                             quote={item?.quote}
                             name={item?.name}
                             role={item?.role}
+                            rating={item?.rating}
                             delay={index * 120}
                           />
                         ))}

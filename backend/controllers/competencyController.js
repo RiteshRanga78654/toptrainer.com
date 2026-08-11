@@ -51,9 +51,14 @@ export const getSingleCompetency = asyncHandler(async (req, res) => {
 });
 
 export const getActiveCompetencies = asyncHandler(async (req, res) => {
-  const competencies = await Competency.find({ isActive: true }).sort({
-    name: 1,
-  });
+  const competencies = await Competency.find({ isActive: true })
+    .populate(
+      "trainers",
+      "trainerId fullName profilePhoto expertiseDomain additionalDetails tagsLine entityType"
+    )
+    .sort({
+      name: 1,
+    });
 
   res.status(200).json({
     success: true,

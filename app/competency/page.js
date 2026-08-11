@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
@@ -38,313 +38,28 @@ const industryIcons = {
     "Innovation": <Lightbulb className="w-5 h-5" />,
     "Big Picture Thinking": <Brain className="w-5 h-5" />
 };
-const trainersData = {
-    "AI Tools": [
-        {
-            name: "Aarav Mehta",
-            role: "AI Productivity Coach",
-            tags: ["ChatGPT", "Automation", "AI Workflows"],
-            rating: 4.9,
-            reviews: 156,
-            price: 18000,
-            topRated: true,
-            initials: "AM",
-            color: "from-blue-600 to-indigo-800",
-            experience: "8+ years exp."
-        },
 
-        {
-            name: "Rohan Bhatia",
-            role: "AI Workflow Automation Expert",
-            tags: ["Zapier", "Automation", "AI Tools"],
-            rating: 4.8,
-            reviews: 118,
-            price: 17000,
-            topRated: false,
-            initials: "RB",
-            color: "from-blue-500 to-cyan-700",
-            experience: "7+ years exp."
-        },
-        {
-            name: "Simran Kaur",
-            role: "Enterprise AI Productivity Coach",
-            tags: ["Copilot", "Automation", "Workflows"],
-            rating: 4.9,
-            reviews: 164,
-            price: 19500,
-            topRated: true,
-            initials: "SK",
-            color: "from-indigo-600 to-blue-800",
-            experience: "9+ years exp."
-        },
-        {
-            name: "Aditya Sharma",
-            role: "AI Systems Consultant",
-            tags: ["AI Integration", "Tools", "Strategy"],
-            rating: 4.7,
-            reviews: 96,
-            price: 16000,
-            topRated: false,
-            initials: "AS",
-            color: "from-sky-500 to-indigo-700",
-            experience: "6+ years exp."
-        },
-        {
-            name: "Meera Joshi",
-            role: "AI Workplace Transformation Mentor",
-            tags: ["AI Adoption", "Efficiency", "Automation"],
-            rating: 4.8,
-            reviews: 135,
-            price: 18200,
-            topRated: true,
-            initials: "MJ",
-            color: "from-cyan-500 to-blue-700",
-            experience: "8+ years exp."
-        },
-        {
-            name: "Vikas Nanda",
-            role: "AI Tools Implementation Specialist",
-            tags: ["Prompting", "Tools", "Execution"],
-            rating: 4.7,
-            reviews: 89,
-            price: 15500,
-            topRated: false,
-            initials: "VN",
-            color: "from-blue-600 to-purple-700",
-            experience: "5+ years exp."
-        },
-        {
-            name: "Tanya Mehta",
-            role: "Digital AI Productivity Trainer",
-            tags: ["GenAI", "Optimization", "AI Tools"],
-            rating: 4.9,
-            reviews: 176,
-            price: 20500,
-            topRated: true,
-            initials: "TM",
-            color: "from-violet-600 to-blue-800",
-            experience: "10+ years exp."
-        },
+// Real trainer documents (from TrainerProfile) don't have the same shape
+// the old mock data used, so this normalizes each trainer into what the
+// card below expects, and keeps "View Profile" pointed at a trainer that
+// actually exists.
+function normalizeTrainer(trainer) {
+    const competencies = trainer?.expertiseDomain?.competencies?.filter(Boolean) || [];
+    const tagsLine = trainer?.tagsLine?.filter(Boolean) || [];
+    const feesRaw = trainer?.additionalDetails?.feesPerDay;
+    const feesNumber = feesRaw ? Number(String(feesRaw).replace(/[^\d.]/g, "")) : null;
 
+    return {
+        id: trainer?._id,
+        trainerId: trainer?.trainerId || trainer?._id,
+        name: trainer?.fullName || "Unnamed Trainer",
+        role: trainer?.expertiseDomain?.TrainerType || trainer?.entityType || "Trainer",
+        tags: (tagsLine.length > 0 ? tagsLine : competencies).slice(0, 3),
+        price: Number.isFinite(feesNumber) && feesNumber > 0 ? feesNumber : null,
+        image: trainer?.profilePhoto?.url || "/Images/trainee2.png",
+    };
+}
 
-        {
-            name: "Neha Kapoor",
-            role: "AI Transformation Expert",
-            tags: ["AI Tools", "Automation", "Prompting"],
-            rating: 4.8,
-            reviews: 121,
-            price: 16000,
-            topRated: false,
-            initials: "NK",
-            color: "from-cyan-500 to-blue-700",
-            experience: "7+ years exp."
-        }
-    ],
-
-    "Generative AI": [
-        {
-            name: "Ishita Rao",
-            role: "Generative AI Consultant",
-            tags: ["LLMs", "Prompt Engineering", "GenAI"],
-            rating: 4.9,
-            reviews: 143,
-            price: 21000,
-            topRated: true,
-            initials: "IR",
-            color: "from-violet-600 to-blue-800",
-            experience: "10+ years exp."
-        },
-        {
-            name: "Rahul Verma",
-            role: "AI Content Systems Expert",
-            tags: ["LLMs", "Content AI", "Automation"],
-            rating: 4.8,
-            reviews: 121,
-            price: 18500,
-            topRated: false,
-            initials: "RV",
-            color: "from-blue-500 to-indigo-700",
-            experience: "8+ years exp."
-        },
-        {
-            name: "Priya Sinha",
-            role: "Prompt Engineering Coach",
-            tags: ["Prompt Design", "LLM Apps", "AI"],
-            rating: 4.7,
-            reviews: 97,
-            price: 17000,
-            topRated: false,
-            initials: "PS",
-            color: "from-purple-500 to-blue-700",
-            experience: "6+ years exp."
-        },
-        {
-            name: "Aman Khurana",
-            role: "Enterprise GenAI Trainer",
-            tags: ["Enterprise AI", "LLMs", "Strategy"],
-            rating: 4.9,
-            reviews: 180,
-            price: 22000,
-            topRated: true,
-            initials: "AK",
-            color: "from-indigo-600 to-violet-800",
-            experience: "11+ years exp."
-        },
-        {
-            name: "Sneha Malhotra",
-            role: "AI Workflow Specialist",
-            tags: ["Automation", "Prompting", "AI"],
-            rating: 4.8,
-            reviews: 108,
-            price: 17500,
-            topRated: false,
-            initials: "SM",
-            color: "from-cyan-500 to-indigo-700",
-            experience: "7+ years exp."
-        },
-        {
-            name: "Karan Mehta",
-            role: "LLM Product Mentor",
-            tags: ["Products", "AI Systems", "GenAI"],
-            rating: 4.9,
-            reviews: 165,
-            price: 20500,
-            topRated: true,
-            initials: "KM",
-            color: "from-sky-600 to-blue-800",
-            experience: "9+ years exp."
-        },
-        {
-            name: "Ritika Sharma",
-            role: "Creative AI Consultant",
-            tags: ["Midjourney", "GenAI", "Design"],
-            rating: 4.7,
-            reviews: 88,
-            price: 16000,
-            topRated: false,
-            initials: "RS",
-            color: "from-violet-500 to-purple-700",
-            experience: "5+ years exp."
-        },
-        {
-            name: "Vikram Nair",
-            role: "AI Transformation Architect",
-            tags: ["AI Ops", "LLMs", "Scaling"],
-            rating: 4.9,
-            reviews: 201,
-            price: 24000,
-            topRated: true,
-            initials: "VN",
-            color: "from-blue-700 to-indigo-900",
-            experience: "12+ years exp."
-        }
-    ],
-
-    "Strategic Thinking": [
-        {
-            name: "Karan Malhotra",
-            role: "Business Strategy Coach",
-            tags: ["Decision Making", "Planning", "Strategy"],
-            rating: 4.8,
-            reviews: 128,
-            price: 17000,
-            topRated: true,
-            initials: "KM",
-            color: "from-blue-600 to-blue-800",
-            experience: "9+ years exp."
-        }
-    ],
-
-    "Communication": [
-        {
-            name: "Priya Menon",
-            role: "Executive Communication Trainer",
-            tags: ["Storytelling", "Presentation", "Influence"],
-            rating: 4.7,
-            reviews: 96,
-            price: 14000,
-            topRated: false,
-            initials: "PM",
-            color: "from-indigo-500 to-indigo-700",
-            experience: "6+ years exp."
-        }
-    ],
-
-    "Productivity": [
-        {
-            name: "Rohit Verma",
-            role: "Performance Optimization Coach",
-            tags: ["Focus", "Systems", "Efficiency"],
-            rating: 4.8,
-            reviews: 88,
-            price: 15000,
-            topRated: true,
-            initials: "RV",
-            color: "from-sky-500 to-sky-700",
-            experience: "7+ years exp."
-        }
-    ],
-
-    "Leadership": [
-        {
-            name: "Sneha Iyer",
-            role: "Leadership Development Expert",
-            tags: ["Team Building", "Management", "Coaching"],
-            rating: 4.9,
-            reviews: 132,
-            price: 19000,
-            topRated: true,
-            initials: "SI",
-            color: "from-teal-500 to-teal-700",
-            experience: "11+ years exp."
-        }
-    ],
-
-    "Innovation": [
-        {
-            name: "Vikram Singh",
-            role: "Innovation Strategy Mentor",
-            tags: ["Ideation", "Transformation", "Growth"],
-            rating: 4.8,
-            reviews: 110,
-            price: 17500,
-            topRated: false,
-            initials: "VS",
-            color: "from-purple-600 to-indigo-700",
-            experience: "8+ years exp."
-        }
-    ],
-
-    "Big Picture Thinking": [
-        {
-            name: "Ankit Sharma",
-            role: "Systems Thinking Coach",
-            tags: ["Vision", "Strategy", "Execution"],
-            rating: 4.9,
-            reviews: 154,
-            price: 18500,
-            topRated: true,
-            initials: "AS",
-            color: "from-blue-500 to-indigo-700",
-            experience: "10+ years exp."
-        }
-    ],
-
-    "Time Management": [
-        {
-            name: "Riya Khanna",
-            role: "Time Optimization Specialist",
-            tags: ["Planning", "Prioritization", "Execution"],
-            rating: 4.8,
-            reviews: 176,
-            price: 15500,
-            topRated: true,
-            initials: "RK",
-            color: "from-indigo-500 to-purple-700",
-            experience: "8+ years exp."
-        }
-    ]
-};
 
 
 const videos = [
@@ -353,17 +68,6 @@ const videos = [
     { title: "Data Science Career Roadmap", duration: "18 min" },
 ];
 
-function StarRating({ rating }) {
-    return (
-        <div className="flex items-center gap-1">
-            <svg className="w-4 h-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            <span className="text-sm font-semibold text-gray-800">{rating}</span>
-        </div>
-    );
-}
-
 function TrainerCard({ trainer }) {
     const [liked, setLiked] = useState(false);
     return (
@@ -371,19 +75,15 @@ function TrainerCard({ trainer }) {
             <div className="relative">
                 <div className="relative h-44 w-full overflow-hidden">
                     <Image
-                        src="/Images/trainee2.png"
+                        src={trainer.image}
                         alt={trainer.name}
                         fill
+                        unoptimized
                         className="object-cover"
                     />
 
                     <div className={`absolute inset-0 `} />
                 </div>
-                {trainer.topRated && (
-                    <span className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                        Top Rated
-                    </span>
-                )}
                 <button
                     onClick={() => setLiked(!liked)}
                     className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:scale-110 transition-transform"
@@ -395,24 +95,15 @@ function TrainerCard({ trainer }) {
             </div>
 
             <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1.5">
-                        <h3 className="font-bold text-gray-900 text-base">{trainer.name}</h3>
-                        <svg className="w-4 h-4 text-blue-500 fill-blue-500" viewBox="0 0 20 20">
-                            <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                        <StarRating rating={trainer.rating} />
-                        <span className="text-xs text-gray-500">
-                            ({trainer.reviews})
-                        </span>
-                    </div>
+                <div className="flex items-center gap-1.5 mb-1">
+                    <h3 className="font-bold text-gray-900 text-base">{trainer.name}</h3>
+                    <svg className="w-4 h-4 text-blue-500 fill-blue-500" viewBox="0 0 20 20">
+                        <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
                 </div>
 
                 <p className="text-sm text-gray-500 mb-3">{trainer.role}</p>
@@ -428,15 +119,15 @@ function TrainerCard({ trainer }) {
                     ))}
                 </div>
                 <div className="flex items-end justify-between mt-4">
-                    <button className="border border-blue-600 text-blue-600 font-semibold text-sm px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 group-hover:shadow-sm">
-                        View Profile
-                    </button>
+                    <a href={`/trainer-profile/${trainer.trainerId}`}>
+                        <button className="border border-blue-600 text-blue-600 font-semibold text-sm px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 group-hover:shadow-sm">
+                            View Profile
+                        </button>
+                    </a>
 
                     <div className="text-right">
-
-
                         <p className="text-sm text-gray-500 mt-1">
-                            {trainer.experience}
+                            {trainer.price ? `₹${trainer.price.toLocaleString("en-IN")} / Day` : "Contact for pricing"}
                         </p>
                     </div>
                 </div>
@@ -548,22 +239,75 @@ function ArticleSlider({ articles }) {
     );
 }
 
-export default function Industry() {
+export default function Competency() {
     const router = useRouter();
-    const [activeIndustry, setActiveIndustry] = useState("AI Tools");
+
+    const [competenciesData, setCompetenciesData] = useState([]);
+    const [competenciesLoading, setCompetenciesLoading] = useState(true);
+
+    const [activeIndustry, setActiveIndustry] = useState("");
     const [city, setCity] = useState("");
     const [competency, setCompetency] = useState("");
     const [price, setPrice] = useState("");
-    const [experience, setExperience] = useState("");
     const [trainingType, setTrainingType] = useState("");
-    const [sortBy, setSortBy] = useState("Most Popular");
+    const [sortBy, setSortBy] = useState("Featured");
     const [showAll, setShowAll] = useState(false);
     const [showExtra, setShowExtra] = useState(false);
-    const trainers = trainersData[activeIndustry] || [];
-    const displayed = showAll ? trainers : trainers.slice(0, 8);
+    const [experience, setExperience] = useState("");
 
     const [articles, setArticles] = useState([]);
     const [articlesLoading, setArticlesLoading] = useState(false);
+
+    // Real competencies, each populated with the trainers an admin has
+    // linked to them (see Competency.trainers in the backend model). This
+    // replaces the old hardcoded industries/extraIndustries/trainersData
+    // mock lists.
+    useEffect(() => {
+        const fetchCompetencies = async () => {
+            try {
+                setCompetenciesLoading(true);
+
+                const res = await axios.get("http://localhost:5000/api/competencies/active");
+                const list = res?.data?.competencies || [];
+
+                setCompetenciesData(list);
+                setActiveIndustry((prev) => prev || list[0]?.name || "");
+            } catch (error) {
+                console.error("Error fetching competencies:", error);
+                setCompetenciesData([]);
+            } finally {
+                setCompetenciesLoading(false);
+            }
+        };
+
+        fetchCompetencies();
+    }, []);
+
+    const competencyNames = useMemo(
+        () => competenciesData.map((item) => item.name),
+        [competenciesData]
+    );
+
+    const trainersForActiveIndustry = useMemo(() => {
+        const entry = competenciesData.find((item) => item.name === activeIndustry);
+        return (entry?.trainers || []).filter(Boolean).map(normalizeTrainer);
+    }, [competenciesData, activeIndustry]);
+
+    const trainers = useMemo(() => {
+        let result = trainersForActiveIndustry;
+
+        if (sortBy === "Price: Low to High") {
+            result = [...result].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+        } else if (sortBy === "Price: High to Low") {
+            result = [...result].sort((a, b) => (b.price ?? -Infinity) - (a.price ?? -Infinity));
+        } else if (sortBy === "Name (A-Z)") {
+            result = [...result].sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        return result;
+    }, [trainersForActiveIndustry, sortBy]);
+
+    const displayed = showAll ? trainers : trainers.slice(0, 8);
 
     // No tab-matching, no filter — just show every article that's been
     // assigned to a competency in admin, directly, once.
@@ -707,7 +451,7 @@ export default function Industry() {
                                 className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none"
                             >
                                 <option value=""> Competencies</option>
-                                {[...industries, ...extraIndustries].map((ind) => (
+                                {competencyNames.map((ind) => (
                                     <option key={ind} value={ind}>{ind}</option>
                                 ))}
                             </select>

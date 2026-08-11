@@ -71,8 +71,8 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <StatCard label="Total Users" value={(stats?.totalUsers ?? 0).toLocaleString()} change={`+${stats?.newUsersThisMonth ?? 0} this month`} icon={<Users size={18} className="text-violet-600" />} color="bg-violet-50" />
-        <StatCard label="Total Trainers" value={stats?.totalTrainers ?? 0} change={`+${stats?.newTrainersThisMonth ?? 0} this month`} icon={<GraduationCap size={18} className="text-blue-600" />} color="bg-blue-50" />
+        <StatCard label="Users Registered (Last 3 Months)" value={(stats?.newUsersLast90Days ?? 0).toLocaleString()} change={`+${stats?.newUsersThisMonth ?? 0} this month`} icon={<Users size={18} className="text-violet-600" />} color="bg-violet-50" />
+        <StatCard label="Trainers Registered (Last 3 Months)" value={stats?.newTrainersLast90Days ?? 0} change={`+${stats?.newTrainersThisMonth ?? 0} this month`} icon={<GraduationCap size={18} className="text-blue-600" />} color="bg-blue-50" />
         <StatCard label="Total Articles" value={stats?.totalArticles ?? 0} icon={<Newspaper size={18} className="text-amber-600" />} color="bg-amber-50" />
         <StatCard label="Total Workshops" value={stats?.totalWorkshops ?? 0} icon={<BookOpen size={18} className="text-emerald-600" />} color="bg-emerald-50" />
         <StatCard label="Total Videos" value={stats?.totalVideos ?? 0} icon={<Video size={18} className="text-pink-600" />} color="bg-pink-50" />

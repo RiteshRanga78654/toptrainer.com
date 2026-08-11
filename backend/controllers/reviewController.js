@@ -1,5 +1,31 @@
+import mongoose from "mongoose";
 import Review from "../models/review.js";
+import TrainerProfile from "../models/trainerProfile.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
+
+// Trainer profile links/URLs use the human-readable trainerId code (e.g.
+// "TR0001"), but Review.trainer stores the trainer's actual Mongo _id.
+// This resolves either form to the real _id so review lookups work
+// regardless of which one the caller passes in.
+const resolveTrainerObjectId = async (trainerIdParam) => {
+  if (!trainerIdParam) return null;
+
+  if (mongoose.Types.ObjectId.isValid(trainerIdParam)) {
+    // Could still be a coincidentally valid-looking string, so only
+    // trust it once we know it's not also a registered trainerId code.
+    const byCode = await TrainerProfile.findOne({
+      trainerId: String(trainerIdParam).toUpperCase(),
+    }).select("_id");
+    if (byCode) return byCode._id;
+    return trainerIdParam;
+  }
+
+  const byCode = await TrainerProfile.findOne({
+    trainerId: String(trainerIdParam).toUpperCase(),
+  }).select("_id");
+
+  return byCode?._id || null;
+};
 export const createReview = asyncHandler(async (req, res) => {
   const {
     trainer,
@@ -129,9 +155,17 @@ export const getSingleReview = asyncHandler(async (req, res) => {
 
 
 export const getTrainerReviews = asyncHandler(async (req, res) => {
+  const trainerObjectId = await resolveTrainerObjectId(req.params.trainerId);
+
+  if (!trainerObjectId) {
+    return res.status(404).json({
+      success: false,
+      message: "Trainer not found",
+    });
+  }
 
   const reviews = await Review.find({
-    trainer: req.params.trainerId,
+    trainer: trainerObjectId,
     status: "approved",
   })
     .populate("user", "firstName lastName")
@@ -331,17 +365,28 @@ export const deleteReview = asyncHandler(async (req, res) => {
 });
 
 export const getMyTrainerReviews = asyncHandler(async (req, res) => {
-  const trainerId = req.params.trainerId || req.trainer?._id || req.user?.trainerId;
+  const trainerIdParam = req.params.trainerId || req.trainer?._id || req.user?.trainerId;
 
-  if (!trainerId) {
+  if (!trainerIdParam) {
     return res.status(400).json({
       success: false,
       message: "Trainer ID missing",
     });
   }
 
+  const trainerObjectId = !req.params.trainerId && mongoose.Types.ObjectId.isValid(trainerIdParam)
+    ? trainerIdParam
+    : await resolveTrainerObjectId(trainerIdParam);
+
+  if (!trainerObjectId) {
+    return res.status(404).json({
+      success: false,
+      message: "Trainer not found",
+    });
+  }
+
   const reviews = await Review.find({
-    trainer: trainerId,
+    trainer: trainerObjectId,
   })
     .populate("user", "firstName lastName")
     .populate("trainer", "trainerId fullName profilePhoto companyName")
@@ -355,17 +400,28 @@ export const getMyTrainerReviews = asyncHandler(async (req, res) => {
   });
 });
 export const getTrainerApprovedReviews = asyncHandler(async (req, res) => {
-  const trainerId = req.trainer?._id || req.user?.trainerId || req.params.trainerId;
+  const trainerIdParam = req.trainer?._id || req.user?.trainerId || req.params.trainerId;
 
-  if (!trainerId) {
+  if (!trainerIdParam) {
     return res.status(400).json({
       success: false,
       message: "Trainer ID missing",
     });
   }
 
+  const trainerObjectId = mongoose.Types.ObjectId.isValid(trainerIdParam) && !req.params.trainerId
+    ? trainerIdParam
+    : await resolveTrainerObjectId(trainerIdParam);
+
+  if (!trainerObjectId) {
+    return res.status(404).json({
+      success: false,
+      message: "Trainer not found",
+    });
+  }
+
   const reviews = await Review.find({
-    trainer: trainerId,
+    trainer: trainerObjectId,
     status: "approved",
   })
     .populate("user", "firstName lastName designation companyName")

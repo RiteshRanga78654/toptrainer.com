@@ -52,9 +52,14 @@ export const getSingleDepartment = asyncHandler(async (req, res) => {
 });
 
 export const getActiveDepartments = asyncHandler(async (req, res) => {
-  const departments = await Department.find({ isActive: true }).sort({
-    name: 1,
-  });
+  const departments = await Department.find({ isActive: true })
+    .populate(
+      "trainers",
+      "trainerId fullName profilePhoto expertiseDomain additionalDetails tagsLine entityType"
+    )
+    .sort({
+      name: 1,
+    });
 
   res.status(200).json({
     success: true,
