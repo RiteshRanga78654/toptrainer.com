@@ -15,6 +15,8 @@ import {
 import { format } from 'date-fns'
 
 import WorkshopFormModal from '../../trainer/workshops/WorkshopFormModal'
+import HeroSliderSection from '../homepage/components/HeroSliderSection'
+import useWorkshopHeroImages from './useWorkshopHeroImages'
 
 const CSS = `
 .btn-create {
@@ -45,6 +47,8 @@ export default function AdminWorkshopsPage() {
   const [statusFilter, setStatusFilter] = useState('')
   const [modeFilter, setModeFilter]     = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+
+  const workshopHero = useWorkshopHeroImages()
   
   const [trainers, setTrainers] = useState([])
   const [loadingTrainers, setLoadingTrainers] = useState(true)
@@ -309,6 +313,17 @@ export default function AdminWorkshopsPage() {
         />
 
         <style>{CSS}</style>
+
+        {/* Workshops page hero images (shown on the public /workshops hero banner) */}
+        <div style={{ marginBottom: 24 }}>
+          <HeroSliderSection
+            images={workshopHero.images}
+            addHeroImage={workshopHero.addHeroImage}
+            toggleActive={workshopHero.toggleActive}
+            updateCaption={workshopHero.updateCaption}
+            removeImage={workshopHero.removeImage}
+          />
+        </div>
 
         {/* Stat mini cards */}
         <div

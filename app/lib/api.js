@@ -632,4 +632,20 @@ export const blogsAPI = {
     }),
   getOne: (id) => API.get(`/articles/${id}`),
 };
+
+// ── Communication Center ──────────────────────────────────────
+export const communicationAPI = {
+  getRecipients: (params = {}) =>
+    API.get("/admin/communications/recipients", { params }),
+  send: (data) => API.post("/admin/communications/send", data),
+  getHistory: (params = {}) =>
+    API.get("/admin/communications", { params }),
+  getAnalytics: () => API.get("/admin/communications/analytics"),
+  listTemplates: () => API.get("/admin/communications/templates"),
+  createTemplate: (data) => API.post("/admin/communications/templates", data),
+  updateTemplate: (id, data) =>
+    API.put(`/admin/communications/templates/${id}`, data),
+  deleteTemplate: (id) =>
+    API.delete(`/admin/communications/templates/${id}`),
+};
 export default API;

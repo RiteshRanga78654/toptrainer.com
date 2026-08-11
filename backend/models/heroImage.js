@@ -22,6 +22,14 @@ const heroImageSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // Which page these hero images belong to. Keeps the homepage slider
+    // and the workshops-page slider independent while reusing the same
+    // model/endpoints.
+    scope: {
+      type: String,
+      enum: ["homepage", "workshops"],
+      default: "homepage",
+    },
   },
   { timestamps: true }
 );

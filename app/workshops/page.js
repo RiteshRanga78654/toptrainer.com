@@ -219,17 +219,45 @@ const SLIDE_DURATION = 5000;
    HERO SECTION
 ───────────────────────────────────────────── */
 function HeroSection() {
+  const [slides, setSlides] = useState(SLIDES);
   const [current, setCurrent] = useState(0);
   const [exiting, setExiting] = useState(null);
   const [progressKey, setProgressKey] = useState(0);
   const timerRef = useRef(null);
 
+  // Admin-managed hero images (Admin → Workshops → Hero Slider Images).
+  // Falls back to the built-in default slides if none are set/active.
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(`${API_BASE}/api/hero-images/active?scope=workshops`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        const uploaded = data?.data || [];
+        if (uploaded.length > 0) {
+          setSlides(
+            uploaded.map((img) => ({
+              fallback: img.url,
+              label: img.caption || "",
+            }))
+          );
+          setCurrent(0);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch workshop hero images", err));
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const goTo = useCallback((nextIdx) => {
-    const next = ((nextIdx % SLIDES.length) + SLIDES.length) % SLIDES.length;
+    const next = ((nextIdx % slides.length) + slides.length) % slides.length;
     setExiting(current);
     setCurrent(next);
     setProgressKey((k) => k + 1);
-  }, [current]);
+  }, [current, slides.length]);
 
   useEffect(() => {
     timerRef.current = setTimeout(() => goTo(current + 1), SLIDE_DURATION);
@@ -245,7 +273,7 @@ function HeroSection() {
   return (
     <section style={{ position:'relative', overflow:'hidden', borderBottom:'1px solid rgba(37,99,235,0.1)', minHeight:650 }}>
       <div style={{ position:'absolute', inset:0, zIndex:0 }}>
-        {SLIDES.map((slide, i) => {
+        {slides.map((slide, i) => {
           let cls = 'hero-slide hidden';
           if (i === current) cls = 'hero-slide active';
           else if (i === exiting) cls = 'hero-slide exiting';
@@ -274,11 +302,11 @@ function HeroSection() {
 
       <div style={{ position:'absolute', top:20, right:48, zIndex:15, display:'flex', alignItems:'center', gap:6, padding:'7px 16px', borderRadius:99, background:'rgba(255,255,255,0.85)', backdropFilter:'blur(12px)', border:'1px solid rgba(37,99,235,0.15)', fontFamily:"'Clash Display',sans-serif", fontSize:11, fontWeight:700, letterSpacing:'0.07em', color:'#0f172a', textTransform:'uppercase', boxShadow:'0 4px 16px rgba(37,99,235,0.08)' }}>
         <span style={{ width:7, height:7, borderRadius:'50%', background:'#10b981', flexShrink:0, animation:'livePulse 1.4s ease-in-out infinite' }} />
-        {SLIDES[current].label}
+        {slides[current]?.label}
       </div>
 
       <div style={{ position:'absolute', bottom:44, right:48, zIndex:15, fontFamily:"'Clash Display',sans-serif", fontSize:12, fontWeight:600, letterSpacing:'0.06em', color:'#94a3b8' }}>
-        {String(current + 1).padStart(2,'0')} / {String(SLIDES.length).padStart(2,'0')}
+        {String(current + 1).padStart(2,'0')} / {String(slides.length).padStart(2,'0')}
       </div>
 
       <div style={{ position:'relative', zIndex:10, maxWidth:1280, margin:'0 auto', padding:'5rem 1.5rem 4.5rem', minHeight:580, display:'flex', flexDirection:'column', justifyContent:'center' }}>
@@ -312,7 +340,7 @@ function HeroSection() {
       </div>
 
       <div style={{ position:'absolute', bottom:28, left:'50%', transform:'translateX(-50%)', zIndex:15, display:'flex', alignItems:'center', gap:8 }}>
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => { clearTimeout(timerRef.current); goTo(i); }}

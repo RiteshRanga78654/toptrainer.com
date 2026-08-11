@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Search, Star } from "lucide-react";
+import { Search, Star, Mail } from "lucide-react";
 import { Button, Toast } from "../../components/ui";
 import { trainersAPI, cn } from "../../lib/api";
+import QuickSendModal from "../../components/admin/communications/QuickSendModal";
+import WhatsAppIcon from "../../components/admin/communications/WhatsAppIcon";
 
 export default function TrainersPage() {
   const [trainers, setTrainers] = useState([]);
@@ -11,6 +13,7 @@ export default function TrainersPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [toast, setToast] = useState(null);
+  const [quickModal, setQuickModal] = useState({ open: false, recipient: null, mode: "email" });
 
   const fetchTrainers = async () => {
     try {
@@ -137,6 +140,8 @@ export default function TrainersPage() {
                 <th className="px-5 py-4 font-semibold text-gray-700">Trainer Name</th>
                 <th className="px-5 py-4 font-semibold text-gray-700">Company Name</th>
                 <th className="px-5 py-4 font-semibold text-gray-700">Industry Name</th>
+                <th className="px-5 py-4 text-center font-semibold text-gray-700">Email</th>
+                <th className="px-5 py-4 text-center font-semibold text-gray-700">WhatsApp</th>
                 <th className="px-5 py-4 text-center font-semibold text-gray-700">Featured</th>
                 <th className="px-5 py-4 text-center font-semibold text-gray-700">Status</th>
                 <th className="px-5 py-4 text-center font-semibold text-gray-700">Action</th>
@@ -146,13 +151,13 @@ export default function TrainersPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-6 text-center text-gray-500">
+                  <td colSpan={8} className="px-5 py-6 text-center text-gray-500">
                     Loading trainers...
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-6 text-center text-gray-500">
+                  <td colSpan={8} className="px-5 py-6 text-center text-gray-500">
                     No trainers found
                   </td>
                 </tr>
@@ -175,6 +180,58 @@ export default function TrainersPage() {
 
                       <td className="px-5 py-4 text-gray-700">
                         {industries}
+                      </td>
+
+                      <td className="px-5 py-4 text-center">
+                        {trainer?.email || trainer?.contactInfo?.email ? (
+                          <button
+                            onClick={() =>
+                              setQuickModal({
+                                open: true,
+                                recipient: {
+                                  id: trainer._id,
+                                  type: "trainer",
+                                  name: trainer?.fullName || "-",
+                                  email: trainer?.email || trainer?.contactInfo?.email || "",
+                                  phone: trainer?.contactInfo?.whatsapp || trainer?.contactInfo?.phone || "",
+                                },
+                                mode: "email",
+                              })
+                            }
+                            className="inline-flex items-center justify-center rounded-lg p-2 text-blue-500 transition-all hover:bg-blue-50 hover:scale-110"
+                            title={`Send email to ${trainer?.fullName || "trainer"}`}
+                          >
+                            <Mail className="h-4 w-4" />
+                          </button>
+                        ) : (
+                          <span className="text-gray-300">—</span>
+                        )}
+                      </td>
+
+                      <td className="px-5 py-4 text-center">
+                        {trainer?.contactInfo?.whatsapp || trainer?.contactInfo?.phone ? (
+                          <button
+                            onClick={() =>
+                              setQuickModal({
+                                open: true,
+                                recipient: {
+                                  id: trainer._id,
+                                  type: "trainer",
+                                  name: trainer?.fullName || "-",
+                                  email: trainer?.email || trainer?.contactInfo?.email || "",
+                                  phone: trainer?.contactInfo?.whatsapp || trainer?.contactInfo?.phone || "",
+                                },
+                                mode: "whatsapp",
+                              })
+                            }
+                            className="inline-flex items-center justify-center rounded-lg p-2 text-emerald-500 transition-all hover:bg-emerald-50 hover:scale-110"
+                            title={`Send WhatsApp to ${trainer?.fullName || "trainer"}`}
+                          >
+                            <WhatsAppIcon size={16} />
+                          </button>
+                        ) : (
+                          <span className="text-gray-300">—</span>
+                        )}
                       </td>
 
                       <td className="px-5 py-4 text-center">
@@ -241,6 +298,13 @@ export default function TrainersPage() {
           </table>
         </div>
       </div>
+
+      <QuickSendModal
+        isOpen={quickModal.open}
+        onClose={() => setQuickModal({ open: false, recipient: null, mode: "email" })}
+        recipient={quickModal.recipient}
+        mode={quickModal.mode}
+      />
     </div>
   );
 }

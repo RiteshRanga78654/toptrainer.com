@@ -12,7 +12,7 @@ import {
   Home, Award, ImageIcon, Settings, BarChart3,
   Briefcase, Star, MessageSquare, BarChart2, Upload,
   LogOut, ChevronDown, X,
-  GraduationCap, BookMarked, User,
+  GraduationCap, BookMarked, User, Send,
 } from 'lucide-react'
 
 // ─── Nav definitions ──────────────────────────────────────────────────────────
@@ -31,6 +31,7 @@ const adminNav = [
       { label: 'Reports',    href: '/admin/reports',    icon: BarChart3 },
       {label: 'About us', href: '/admin/aboutus', icon: Settings},
       {label: 'Reviews', href: '/admin/review', icon: Star},
+      { label: 'Communications', href: '/admin/communications', icon: Send },
     ]
   },
   {

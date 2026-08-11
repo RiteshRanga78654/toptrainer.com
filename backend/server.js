@@ -28,6 +28,8 @@ import mediaRouter from "./routes/mediaRouter.js";
 import heroImageRouter from "./routes/heroImageRouter.js";
 import singleAuthRouter from "./routes/singleAuthRouter.js";
 import depaartmentRouter from "./routes/departmentRouter.js"
+import communicationRouter from "./routes/communicationRouter.js"
+import { startCommunicationScheduler } from "./controllers/communicationController.js"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, "../.env") });
@@ -37,7 +39,7 @@ console.log("SERVER ENV:", process.env.CLOUDINARY_CLOUD_NAME);
 const app = express();
 app.use(
   cors({
-    origin: "toptrainer-com.vercel.app", // or whatever port Next.js runs on
+    origin: "http://localhost:3000", // or whatever port Next.js runs on
     credentials: true,
   }),
 );
@@ -72,8 +74,10 @@ app.use("/api/featured-lists", featuredRouter);
 app.use("/api/media", mediaRouter);
 app.use("/api/hero-images", heroImageRouter);
 app.use("/api/auth", singleAuthRouter);
+app.use("/api/admin/communications", communicationRouter);
 
 connectDB();
+startCommunicationScheduler();
 
 app.use(errorMiddleware);
 app.listen(process.env.PORT || 5000, () => {
