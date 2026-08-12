@@ -1,16 +1,37 @@
 import mongoose from 'mongoose';
 import bcrypt from "bcryptjs";
+import { ALL_MODULES } from "../utils/permissions.js";
+
 const adminSchema = new mongoose.Schema({
 
     name: {
         type: String,
         required: [true, 'Name is required']
     },
+
     role: {
-  type: String,
-  default: "admin",
-  enum: ["admin"]
-},
+        type: String,
+        default: "administrator",
+        enum: [
+            "administrator",
+            "content_writer",
+            "standard_member"
+        ]
+    },
+
+    permissions: {
+        type: [String],
+        default: [...ALL_MODULES],
+    },
+
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
+
+    lastLogin: {
+        type: Date,
+    },
 
     email: {
          type: String,
@@ -21,14 +42,6 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Password is required'],   
     },
-    role: {
-        type: String,
-        enum: [
-            "administrator",
-            "Content_Writer",
-            "Standard"
-        ]
-    }
 
 },
 {
@@ -53,7 +66,7 @@ const Admin = mongoose.models.admin || mongoose.model('Admin', adminSchema);
 
 adminSchema.methods.paswaord = async function(password){
     const salt = await bcrypt.genSalt(10);
-    passwaord = await bcrypt.hash(password)
+    password = await bcrypt.hash(password)
 }
 
 export default Admin;    

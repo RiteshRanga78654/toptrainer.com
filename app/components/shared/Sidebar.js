@@ -7,12 +7,13 @@ import { useDispatch } from 'react-redux'
 import { logout } from '../../store/slices/authSlice'
 import { useAuth } from '../../hooks'
 import { cn } from '../../lib/api'
+import { hasFullAccess } from '../../lib/permissions'
 import {
   LayoutDashboard, Users, BookOpen, FileText, Building2,
   Home, Award, ImageIcon, Settings, BarChart3,
   Briefcase, Star, MessageSquare, BarChart2, Upload,
   LogOut, ChevronDown, X,
-  GraduationCap, BookMarked, User, Send,
+  GraduationCap, BookMarked, User, Send, ShieldCheck,
 } from 'lucide-react'
 
 // ─── Nav definitions ──────────────────────────────────────────────────────────
@@ -20,18 +21,19 @@ const adminNav = [
   {
     label: 'MAIN', items: [
       { label: 'Dashboard',  href: '/admin',                icon: LayoutDashboard, exact: true },
-      { label: 'Trainers',   href: '/admin/trainers',       icon: GraduationCap },
-      { label: 'Users',        href: '/admin/users',          icon: Settings },
-      { label: 'Homepage',   href: '/admin/homepage',       icon: Home },
-      { label: 'Workshops',  href: '/admin/workshops',    icon: BookOpen },
-      { label: 'Industry',   href: '/admin/industries',   icon: Building2 },
-      { label: 'Competency', href: '/admin/competencies', icon: Award },
-      {label: 'Department', href: '/admin/departmentes', icon: Award},
-      { label: 'Articles',   href: '/admin/articles',     icon: FileText },
-      { label: 'Reports',    href: '/admin/reports',    icon: BarChart3 },
-      {label: 'About us', href: '/admin/aboutus', icon: Settings},
-      {label: 'Reviews', href: '/admin/review', icon: Star},
-      { label: 'Communications', href: '/admin/communications', icon: Send },
+      { label: 'Trainers',   href: '/admin/trainers',       icon: GraduationCap, perm: 'trainers' },
+      { label: 'Users',      href: '/admin/users',          icon: Settings,      perm: 'users' },
+      { label: 'Homepage',   href: '/admin/homepage',       icon: Home,          perm: 'homepage' },
+      { label: 'Workshops',  href: '/admin/workshops',      icon: BookOpen,      perm: 'workshops' },
+      { label: 'Industry',   href: '/admin/industries',     icon: Building2,     perm: 'industry' },
+      { label: 'Competency', href: '/admin/competencies',   icon: Award,         perm: 'competency' },
+      { label: 'Department', href: '/admin/departmentes',   icon: Award,         perm: 'department' },
+      { label: 'Articles',   href: '/admin/articles',       icon: FileText,      perm: 'articles' },
+      { label: 'Reports',    href: '/admin/reports',        icon: BarChart3,     perm: 'reports' },
+      { label: 'About us',   href: '/admin/aboutus',        icon: Settings,      perm: 'about_us' },
+      { label: 'Reviews',    href: '/admin/review',         icon: Star,          perm: 'reviews' },
+      { label: 'Communications', href: '/admin/communications', icon: Send,      perm: 'communications' },
+      { label: 'Team & Access', href: '/admin/team',        icon: ShieldCheck,   perm: 'team' },
     ]
   },
   {
@@ -117,9 +119,22 @@ function NavItem({ item, depth = 0, onNavigate }) {
   )
 }
 
+// ─── RBAC sidebar filtering ───────────────────────────────────────────────────
+function shouldShowItem(item, user) {
+  if (!item.perm) return true
+  if (!user) return false
+  return hasFullAccess(user) || (user.permissions || []).includes(item.perm)
+}
+
 // ─── Sidebar content ──────────────────────────────────────────────────────────
 function SidebarContent({ role, user, onClose, onLogout }) {
-  const sections = role === 'admin' ? adminNav : trainerNav
+  const filteredSections = role === 'admin'
+    ? adminNav.map(section => ({
+        ...section,
+        items: section.items.filter(item => shouldShowItem(item, user)),
+      })).filter(section => section.items.length > 0)
+    : trainerNav
+
   const initials = user?.name ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'U'
 
   return (
@@ -142,7 +157,7 @@ function SidebarContent({ role, user, onClose, onLogout }) {
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
-        {sections.map(section => (
+        {filteredSections.map(section => (
           <div key={section.label}>
             <p className="px-3 mb-2 text-[10px] font-semibold tracking-widest text-slate-500 uppercase">
               {section.label}

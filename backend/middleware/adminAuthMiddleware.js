@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import User from "../models/admin.js";
+import Admin from "../models/admin.js";
+import TeamMember from "../models/teamMember.js";
 
 export const protectAdmin = async (req, res, next)  => {
     try{
@@ -16,7 +17,11 @@ export const protectAdmin = async (req, res, next)  => {
             process.env.JWT_SECRET
         );
 
-           const admin = await User.findById(decoded.id);
+           let admin = await Admin.findById(decoded.id);
+
+      if (!admin) {
+        admin = await TeamMember.findById(decoded.id);
+      }
 
     if (!admin) {
       return res.status(404).json({
@@ -25,14 +30,15 @@ export const protectAdmin = async (req, res, next)  => {
       });
     }
 
-    if (admin.role !== "admin") {
+    if (admin.isActive === false) {
       return res.status(403).json({
         success: false,
-        message: "Access denied. Admin only.",
+        message: "Account is deactivated. Contact support.",
       });
     }
 
     req.admin = admin;
+    req.isTeamMember = admin.role !== "administrator";
 
     next();
     } catch (error) {

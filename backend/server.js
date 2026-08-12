@@ -29,6 +29,7 @@ import heroImageRouter from "./routes/heroImageRouter.js";
 import singleAuthRouter from "./routes/singleAuthRouter.js";
 import depaartmentRouter from "./routes/departmentRouter.js"
 import communicationRouter from "./routes/communicationRouter.js"
+import teamMemberRouter from "./routes/teamMemberRouter.js"
 import { startCommunicationScheduler } from "./controllers/communicationController.js"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,6 +76,7 @@ app.use("/api/media", mediaRouter);
 app.use("/api/hero-images", heroImageRouter);
 app.use("/api/auth", singleAuthRouter);
 app.use("/api/admin/communications", communicationRouter);
+app.use("/api/team-members", teamMemberRouter);
 
 connectDB();
 startCommunicationScheduler();

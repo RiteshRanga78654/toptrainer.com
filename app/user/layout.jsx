@@ -45,13 +45,10 @@ export default function UserLayout({ children }) {
     user?.username ||
     user?.email?.split("@")?.[0] ||
     "User";
-
-  const profileImage =
-    user?.profileImage ||
-    user?.avatar ||
+const profileImage =
+  user?.profilePhoto?.url || user?.avatar ||
     user?.photo ||
-    user?.image ||
-    "";
+    user?.image || "";
 
   useEffect(() => {
     function handleClickOutside(event) {

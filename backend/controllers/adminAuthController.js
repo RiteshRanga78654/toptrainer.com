@@ -53,7 +53,8 @@ export const getMyProfile = asyncHandler(async (req, res) => {
 
     res.status(200).json({
         success: true,
-        admin
+        admin,
+        permissions: admin.permissions || [],
     });
 });
 

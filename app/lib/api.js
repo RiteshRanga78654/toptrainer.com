@@ -569,6 +569,14 @@ export const youtubeVideosAPI = {
   create: (data) => API.post("/youtube-videos", data),
   delete: (id) => API.delete(`/youtube-videos/${id}`),
 };
+
+export const teamMembersAPI = {
+  getAll: (params = {}) => API.get("/team-members", { params }),
+  getOne: (id) => API.get(`/team-members/${id}`),
+  create: (data) => API.post("/team-members", data),
+  update: (id, data) => API.put(`/team-members/${id}`, data),
+  delete: (id) => API.delete(`/team-members/${id}`),
+};
 export const articlesAdminAPI = {
   getAll: async () => {
     const [draftsRes, publishedRes] = await Promise.all([
