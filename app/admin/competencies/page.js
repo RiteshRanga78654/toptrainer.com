@@ -14,8 +14,9 @@ import { Plus, Edit2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   competenciesAPI,
+  competencyAPI,
   trainersAPI,
-  workshopsAPI,
+  adminWorkshopsAPI,
   youtubeVideosAPI,
   articlesAPI,
 } from "../../lib/api";
@@ -72,7 +73,7 @@ export default function CompetencyPage() {
       const [competencyRes, trainerRes, workshopRes] = await Promise.all([
         competenciesAPI.getAll(),
         trainersAPI.getAll(),
-        workshopsAPI.getAll(),
+        adminWorkshopsAPI.getAll(),
       ]);
 
       const competenciesData =
@@ -346,7 +347,7 @@ export default function CompetencyPage() {
     );
 
     try {
-      const res = await competenciesAPI.updateStatus(id, nextValue);
+      const res = await competencyAPI.toggleStatus(id);
       const updatedCompetency = res?.data?.data;
 
       setCompetencies((prev) =>

@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import {
   departmentsAPI,
   trainersAPI,
-  workshopsAPI,
+  adminWorkshopsAPI,
   youtubeVideosAPI,
   articlesAPI,
 } from "../../lib/api";
@@ -72,7 +72,7 @@ export default function DepartmentPage() {
       const [departmentRes, trainerRes, workshopRes] = await Promise.all([
         departmentsAPI.getAll(),
         trainersAPI.getAll(),
-        workshopsAPI.getAll(),
+        adminWorkshopsAPI.getAll(),
       ]);
 
       const departmentsData =
@@ -346,7 +346,7 @@ export default function DepartmentPage() {
     );
 
     try {
-      const res = await departmentsAPI.updateStatus(id, nextValue);
+      const res = await departmentsAPI.toggleStatus(id);
       const updatedDepartment = res?.data?.data;
 
       setDepartments((prev) =>

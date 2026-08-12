@@ -2,14 +2,13 @@ import Department from "../models/department.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
 
 export const createDepartment = asyncHandler(async (req, res) => {
-  const { name, icon, isActive, trainers = [],
-  workshops = [] = true } = req.body;
+  const { name, icon, isActive, trainers = [], workshops = [] } = req.body;
 
   const department = await Department.create({
     name,
     icon,
-      trainers,
-  workshops,
+    trainers,
+    workshops,
     isActive,
     createdBy: req.admin?._id,
   });
@@ -74,7 +73,7 @@ export const updateDepartment = asyncHandler(async (req, res) => {
 
   const department = await Department.findByIdAndUpdate(
     req.params.id,
-    { name, icon, isActive },
+    { name, icon, isActive, trainers, workshops },
     { new: true, runValidators: true }
   );
 

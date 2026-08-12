@@ -2,13 +2,14 @@ import Competency from "../models/Competency.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
 
 export const createCompetency = asyncHandler(async (req, res) => {
-  const { name, icon, isActive,   trainers = [],
-  workshops = [] = true } = req.body;
+  const { name, icon, isActive, trainers = [], workshops = [] } = req.body;
 
   const competency = await Competency.create({
     name,
     icon,
     isActive,
+    trainers,
+    workshops,
     createdBy: req.admin?._id,
   });
 
@@ -78,7 +79,7 @@ export const updateCompetency = asyncHandler(async (req, res) => {
 
   const competency = await Competency.findByIdAndUpdate(
     req.params.id,
-    { name, icon, isActive },
+    { name, icon, isActive, trainers, workshops },
     { new: true, runValidators: true }
   );
 

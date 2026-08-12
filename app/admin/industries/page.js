@@ -6,7 +6,7 @@ import { Card, Badge, Button, Modal, Input, Toggle, Toast } from "../../componen
 import {
   industryAPI,
   trainersAPI,
-  workshopsAPI,
+  adminWorkshopsAPI,
   youtubeVideosAPI,
   articlesAPI,
 } from "../../lib/api";
@@ -65,7 +65,7 @@ export default function IndustryPage() {
       const [industryRes, trainerRes, workshopRes] = await Promise.all([
         industryAPI.getAll(),
         trainersAPI.getAll(),
-        workshopsAPI.getAll(),
+        adminWorkshopsAPI.getAll(),
       ]);
 
       const industriesData = industryRes?.data?.industries || industryRes?.data?.data || [];
