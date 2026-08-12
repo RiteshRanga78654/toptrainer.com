@@ -1,206 +1,463 @@
 "use client";
+
 import { useState } from "react";
-import { Facebook, Twitter, Linkedin, Youtube, Instagram } from "lucide-react";
+import {
+  Linkedin,
+  Facebook,
+  Instagram,
+  Youtube,
+  X,
+  Mail,
+  ShieldCheck,
+  Star,
+  Users,
+  Lock,
+  Headphones,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 
+const exploreLinks = [
+  { name: "Find Trainers", href: "#" },
+  { name: "All Categories", href: "#" },
+  { name: "Articles", href: "/blogs" },
+  { name: "Videos", href: "#" },
+  { name: "Workshops", href: "#" },
+  { name: "Ebooks / Reading Material", href: "#" },
+  { name: "Training Companies", href: "#" },
+  { name: "Popular Social Channels", href: "#" },
+];
+
+const learnerLinks = [
+  { name: "Post a Requirement", href: "#" },
+  { name: "How It Works", href: "#" },
+  { name: "Corporate Training Solutions", href: "#" },
+  { name: "Custom Workshops", href: "#" },
+  { name: "Find Training Partners", href: "#" },
+  { name: "Pricing & Plans", href: "#" },
+  { name: "Success Stories", href: "#" },
+  { name: "Help Center", href: "#" },
+];
+
+const trainerLinks = [
+  { name: "Create Trainer Profile", href: "#" },
+  { name: "Write Articles", href: "#" },
+  { name: "Upload Videos", href: "#" },
+  { name: "Host Workshops", href: "#" },
+  { name: "Sell Ebooks / Courses", href: "#" },
+  { name: "Grow Your Audience", href: "#" },
+  { name: "Trainer Resources", href: "#" },
+  { name: "Guidelines & Policies", href: "#" },
+];
+
+const popularCategories = [
+  "Leadership",
+  "Communication",
+  "Sales & Marketing",
+  "Personal Development",
+  "Soft Skills",
+  "IT Skills",
+  "HR & Management",
+];
+
+const popularChannels = [
+  {
+    name: "Trainers Hub",
+    followers: "125K Followers",
+    color: "bg-[#1877F2]",
+    icon: Facebook,
+  },
+  {
+    name: "learning.with.experts",
+    followers: "98K Followers",
+    color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
+    icon: Instagram,
+  },
+  {
+    name: "Expert Talks",
+    followers: "245K Subscribers",
+    color: "bg-[#FF0000]",
+    icon: Youtube,
+  },
+];
+
+const trustFeatures = [
+  {
+    icon: ShieldCheck,
+    title: "Verified & Trusted",
+    desc: "Every trainer is verified for authenticity.",
+  },
+  {
+    icon: Star,
+    title: "High Quality Content",
+    desc: "Carefully curated articles, videos & resources.",
+  },
+  {
+    icon: Users,
+    title: "Learn at Your Own Pace",
+    desc: "Flexible learning for every schedule.",
+  },
+  {
+    icon: Lock,
+    title: "Secure & Safe",
+    desc: "Your data and privacy are our priority.",
+  },
+  {
+    icon: Headphones,
+    title: "Support",
+    desc: "We're here to help you succeed.",
+  },
+];
+
+const footerNavLinks = [
+  { name: "About Us", href: "/about" },
+  { name: "Careers", href: "#" },
+  { name: "Blog", href: "/blogs" },
+  { name: "Newsroom", href: "#" },
+  { name: "Contact Us", href: "#" },
+];
+
+const footerLegalLinks = [
+  { name: "Privacy Policy", href: "/privacy-policy" },
+  { name: "Terms of Use", href: "#" },
+  { name: "Refund Policy", href: "#" },
+  { name: "Cookies Policy", href: "#" },
+];
+
+const trustedStats = [
+  { num: "2,000+", label: "Trainer" },
+  { num: "100K+", label: "User" },
+  { num: "100%", label: "Secure Platform" },
+];
+
+const socialIcons = [
+  { Icon: Linkedin, color: "bg-[#0A66C2]" },
+  { Icon: Facebook, color: "bg-[#1877F2]" },
+  {
+    Icon: Instagram,
+    color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
+  },
+  { Icon: Youtube, color: "bg-[#FF0000]" },
+  { Icon: X, color: "bg-[#1a1a1a]" },
+];
+
 export default function Footer() {
-  const [checked, setChecked] = useState(false);
+  const [email, setEmail] = useState("");
 
-  const companies = [
-    "Web Development",
-    "Full Stack Development",
-    "Data Science",
-    "Machine Learning",
-    "Artificial Intelligence",
-    "Cyber Security",
-    "Cloud Computing",
-    "DevOps",
-    "UI/UX Design",
-    "Digital Marketing",
-    "Business Analytics",
-    "Entrepreneurship",
-    "Soft Skills",
-    "Communication Skills",
-    "Leadership Training",
-    "Public Speaking",
-    "Interview Preparation",
-    "Career Guidance",
-    "Corporate Training",
-    "Technical Skills",
-  ];
-  const socialIcons = [
-    { Icon: Facebook, color: "hover:bg-blue-600" },
-    { Icon: Twitter, color: "hover:bg-sky-400" },
-    { Icon: Linkedin, color: "hover:bg-blue-700" },
-    { Icon: Youtube, color: "hover:bg-red-600" },
-    { Icon: Instagram, color: "hover:bg-pink-500" },
-  ];
   return (
-    <footer className="bg-[#114FA3] text-white">
-      {/* Main grid */}
-      <div className="max-w-[1320px] mx-auto px-4 md:px-6 lg:px-8 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14">
-
-        {/* COLUMN 1 — Logo + Address + Map */}
-        <div>
-          <h2 className="text-3xl font-bold tracking-wide mb-6">Top Trainer</h2>
-
-          <p className="text-[15px] leading-7 text-gray-200">
-            <span className="font-semibold text-white">Address:</span> Office
-            Suite 8 &amp; 9, 3rd Floor, Ninex City Mart, Sohna Road, Near
-            Radisson Hotel, Sector 49, Gurugram, Haryana 122018
-          </p>
-
-          <div className="mt-6 w-[260px] h-[150px] rounded overflow-hidden">
-            <iframe
-              title="Trainer Hub Location Map"
-              className="w-full h-full"
-              loading="lazy"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3509.0894627894086!2d77.03865790919117!3d28.416557275682326!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d233cdeec2d81%3A0xaf6144fd2d8f2f4f!2sIREED%20Academy%20India%20Private%20Limited!5e0!3m2!1sen!2sin"
-            />
-          </div>
-        </div>
-
-        {/* COLUMNS 2 & 3 — Company + Links */}
-        <div className="col-span-1 sm:col-span-2 grid grid-cols-2 gap-8">
-          {/* Company */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 sm:mb-6">Company</h4>
-            <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
-              {[
-                { name: "About", link: "/about" },
-                { name: "Courses", link: "#" },
-                { name: "Mentors", link: "#" },
-                { name: "SiteMap", link: "#" },
-                { name: "Blogs", link: "/blogs" },
-                { name: "Privacy Policy", link: "/privacy-policy" },
-              ].map((item, i) => (
-                <li key={i}>
-                  <a
-                    href={item.link}
-                    className="hover:text-white hover:font-bold transition-all duration-200"
-                  >
-                    {item.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 sm:mb-6">Links</h4>
-            <ul className="space-y-2 sm:space-y-3 text-[14px] sm:text-[15px] text-gray-200">
-              {[
-                { name: "Contact Us", link: "#" },
-                { name: "FAQ's", link: "#" },
-                { name: "Terms and Conditions", link: "#" },
-                { name: "Trainers Review", link: "/review" },
-              ].map((item, i) => (
-                <li key={i}>
-                  <a
-                    href={item.link}
-                    className="hover:text-white hover:font-bold transition-all duration-200"
-                  >
-                    {item.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 p-6 rounded-xl bg-white/10 border border-white/20 shadow-sm backdrop-blur-sm">
-              <h4 className="text-white text-sm font-semibold mb-1">Are you an expert?</h4>
-              <p className="text-[13px] text-gray-200 mb-3">
-                Share your knowledge and grow.
+    <footer className="bg-white text-gray-800 w-full">
+      {/* ── Newsletter Bar ── */}
+      <div className="w-full bg-white/80 backdrop-blur-sm border-y border-gray-200/50 shadow-[0_4px_24px_rgba(37,99,235,0.03)]">
+        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-8 flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-500 flex items-center justify-center shrink-0">
+              <Mail size={22} className="text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
+                Stay Updated, Always.
+              </h3>
+              <p className="text-[13px] sm:text-[14px] text-gray-500 mt-0.5">
+                Get the latest articles, videos, workshops
+                <br className="hidden sm:block" /> and platform updates.
               </p>
-              <Link
-                href="/join-as-trainer"
-                className="block text-center w-full bg-white text-[#114FA3] px-3 py-2 rounded-lg text-sm font-bold hover:bg-gray-100 hover:shadow-md transition-all duration-200"
-              >
-                Join as a Trainer
-              </Link>
             </div>
           </div>
-        </div>
 
-        {/* COLUMN 4 — Contacts */}
-        <div>
-          <h4 className="text-lg font-semibold mb-6">Contacts</h4>
-
-          <p className="text-[15px] text-gray-200 mb-4">
-            Enter your email address to register
-          </p>
-
-          {/* Email input + Subscribe button */}
-          <div className="flex flex-col gap-3 w-full max-w-xs">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="flex w-full sm:w-auto items-center"
+          >
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full border border-white rounded-md px-3 py-2 text-black placeholder-gray-400 focus:outline-none"
+              className="w-full sm:w-[260px] px-4 py-2.5 rounded-l-lg border border-gray-300 bg-white text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
             />
             <button
-              className="w-full bg-black rounded-md px-4 py-2 text-sm sm:text-base font-semibold hover:bg-blue-400 transition"
+              type="submit"
+              className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-500 text-white font-semibold text-sm rounded-r-lg hover:from-blue-700 hover:to-purple-600 transition-all whitespace-nowrap shadow-[0_2px_8px_rgba(37,99,235,0.15)]"
             >
-              Subscribe →
+              Subscribe
             </button>
-          </div>
+          </form>
+        </div>
+      </div>
 
-          {/* Social Icons */}
-          <div className="flex gap-4 mt-6 mb-8">
-            {socialIcons.map(({ Icon, color }, i) => (
-              <div
-                key={i}
-                className={`w-11 h-10 flex items-center justify-center rounded-full bg-white text-[#114FA3] shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:text-white hover:scale-110 hover:shadow-xl ${color}`}
-              >
-                <Icon size={18} />
+      {/* ── Main Footer ── */}
+      <div className="w-full">
+        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-12 lg:py-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+            {/* Brand Column */}
+            <div className="lg:col-span-3">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-500 flex items-center justify-center shrink-0">
+                  <span className="text-white font-extrabold text-xl leading-none">
+                    T
+                  </span>
+                </div>
+                <h2 className="text-[22px] font-bold text-gray-900 leading-none">
+                  TopTrainer
+                </h2>
               </div>
-            ))}
-          </div>
 
-          {/* reCAPTCHA-style checkbox */}
-          <div
-            onClick={() => setChecked(!checked)}
-            className="flex items-center justify-between bg-white text-black px-3 sm:px-4 py-3 rounded-md border border-gray-300 shadow-sm w-full sm:w-[300px] cursor-pointer hover:shadow-md transition"
-          >
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div
-                className={`w-4 h-4 sm:w-5 sm:h-5 border-2 rounded flex items-center justify-center ${checked ? "bg-green-500 border-green-500" : "border-gray-400"
-                  }`}
-              >
-                {checked && (
-                  <span className="text-white text-[10px] sm:text-xs">✓</span>
-                )}
+              <p className="text-[17px] font-bold text-gray-900 leading-snug mb-4">
+                Connecting Expertise.
+                <br />
+                Inspiring Growth.
+              </p>
+
+              <p className="text-[13px] leading-relaxed text-gray-500 mb-6 max-w-[260px]">
+                A platform where experienced trainers showcase their knowledge,
+                share insights and empower learners and organisations to grow.
+              </p>
+
+              <div className="flex gap-2.5">
+                {socialIcons.map(({ Icon, color }, i) => (
+                  <a
+                    key={i}
+                    href="#"
+                    className={`w-9 h-9 rounded-full ${color} flex items-center justify-center text-white hover:opacity-85 transition-opacity`}
+                  >
+                    <Icon size={16} />
+                  </a>
+                ))}
               </div>
-              <p className="text-xs sm:text-sm">I'm not a robot</p>
             </div>
 
-            <div className="text-[9px] sm:text-[10px] text-gray-500 text-right leading-tight">
-              reCAPTCHA
-              <br />
-              <span className="underline cursor-pointer">Privacy</span> ·{" "}
-              <span className="underline cursor-pointer">Terms</span>
+            {/* Explore */}
+            <div className="lg:col-span-2">
+              <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                Explore
+              </h4>
+              <ul className="space-y-2.5">
+                {exploreLinks.map((item, i) => (
+                  <li key={i}>
+                    <a
+                      href={item.href}
+                      className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
+                    >
+                      {item.name}
+                      <ChevronRight
+                        size={12}
+                        className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* For Learners / Organisations */}
+            <div className="lg:col-span-2">
+              <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                For Learners / Organisations
+              </h4>
+              <ul className="space-y-2.5">
+                {learnerLinks.map((item, i) => (
+                  <li key={i}>
+                    <a
+                      href={item.href}
+                      className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
+                    >
+                      {item.name}
+                      <ChevronRight
+                        size={12}
+                        className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* For Trainers */}
+            <div className="lg:col-span-2">
+              <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                For Trainers
+              </h4>
+              <ul className="space-y-2.5">
+                {trainerLinks.map((item, i) => (
+                  <li key={i}>
+                    <a
+                      href={item.href}
+                      className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
+                    >
+                      {item.name}
+                      <ChevronRight
+                        size={12}
+                        className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Popular Categories + Follow Channels (inline side-by-side) */}
+            <div className="lg:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr] gap-6">
+                {/* Popular Categories */}
+                <div>
+                  <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                    Popular Categories
+                  </h4>
+                  <ul className="space-y-2.5 mb-4 md:mb-0">
+                    {popularCategories.map((cat, i) => (
+                      <li key={i}>
+                        <a
+                          href="#"
+                          className="text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
+                        >
+                          {cat}
+                        </a>
+                      </li>
+                    ))}
+                    <li>
+                      <a
+                        href="#"
+                        className="text-[13px] text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                      >
+                        View All Categories
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Follow Popular Channels */}
+                <div className="border border-gray-200/50 rounded-xl p-4 shadow-[0_2px_8px_rgba(37,99,235,0.03)]">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-[14px] font-bold text-gray-900">
+                      Follow Popular Channels
+                    </h4>
+                    <a
+                      href="#"
+                      className="text-[12px] text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      View All
+                    </a>
+                  </div>
+
+                  <div className="space-y-3">
+                    {popularChannels.map((ch, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <div
+                          className={`w-8 h-8 rounded-full ${ch.color} flex items-center justify-center text-white shrink-0`}
+                        >
+                          <ch.icon size={14} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">
+                            {ch.name}
+                          </p>
+                          <p className="text-[11px] text-gray-500">
+                            {ch.followers}
+                          </p>
+                        </div>
+                        <button className="text-[11px] px-3 py-1 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-50 hover:border-blue-300 transition-colors font-medium whitespace-nowrap">
+                          Follow
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom bar — Popular Skills */}
-      <div className="border-t border-white/20">
-        <div className="max-w-[1420px] mx-auto px-6 lg:px-16 py-10">
-          <h4 className="text-[16px] sm:text-[18px] font-semibold mb-6">
-            Popular Skills &amp; Training Categories
-          </h4>
-
-          <p className="text-[14px] sm:text-[15px] text-gray-200 leading-7 sm:leading-8 flex flex-wrap">
-            {companies.map((item, i) => (
-              <span key={i} className="whitespace-nowrap mb-2">
-                <a href="#" className="hover:text-white transition">
-                  {item}
-                </a>
-                {i !== companies.length - 1 && (
-                  <span className="mx-2 text-white/70">|</span>
-                )}
-              </span>
+      {/* ── Trust Strip ── */}
+      <div className="w-full bg-gray-50 border-t border-gray-200">
+        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            {trustFeatures.map((f, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                  <f.icon size={20} className="text-blue-700" />
+                </div>
+                <div>
+                  <h5 className="text-[13px] font-bold text-gray-900 leading-tight">
+                    {f.title}
+                  </h5>
+                  <p className="text-[12px] text-gray-500 mt-0.5 leading-snug">
+                    {f.desc}
+                  </p>
+                </div>
+              </div>
             ))}
-          </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom Bar ── */}
+      <div className="w-full bg-[#111827] text-white">
+        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-8">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 lg:gap-8">
+            {/* Left — Copyright */}
+            <div className="text-center lg:text-left lg:shrink-0">
+              <p className="text-[13px] text-gray-400">
+                &copy; 2026 All Rights Reserved. | Powered by IREED MEDIA
+              </p>
+            </div>
+
+            {/* Center — Nav Links */}
+            <div className="flex flex-wrap justify-center items-center gap-x-5 gap-y-2 text-gray-400 text-[13px]">
+              {footerNavLinks.map((item, i) => (
+                <span key={i} className="flex items-center gap-2.5">
+                  <Link
+                    href={item.href}
+                    className="hover:text-white transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                  {i < footerNavLinks.length - 1 && (
+                    <span className="text-gray-600">·</span>
+                  )}
+                </span>
+              ))}
+            </div>
+
+            {/* Right — Trusted By */}
+            <div className="shrink-0">
+              <p className="text-[13px] font-semibold text-gray-300 mb-3 text-center lg:text-right">
+                Trusted by
+              </p>
+              <div className="flex items-center justify-center lg:justify-end gap-5">
+                {trustedStats.map((s, i) => (
+                  <div key={i} className="text-center">
+                    <p className="text-[15px] font-bold text-white">{s.num}</p>
+                    <p className="text-[11px] text-gray-400">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Separator + Legal Links */}
+          <div className="border-t border-gray-700 mt-6 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[12px] text-gray-500 text-center sm:text-left">
+              Registering as a company?{" "}
+              <a
+                href="#"
+                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+              >
+                Add your company
+              </a>
+            </p>
+            <div className="flex flex-wrap justify-center sm:justify-end items-center gap-x-6 gap-y-2">
+              {footerLegalLinks.map((item, i) => (
+                <Link
+                  key={i}
+                  href={item.href}
+                  className="text-[12px] text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </footer>
