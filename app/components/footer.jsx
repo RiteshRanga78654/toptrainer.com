@@ -62,22 +62,26 @@ const popularCategories = [
 
 const popularChannels = [
   {
-    name: "Trainers Hub",
+    name: "IREED India",
     followers: "125K Followers",
     color: "bg-[#1877F2]",
     icon: Facebook,
+    href: "https://www.facebook.com/IREEDAcademy/"
   },
   {
-    name: "learning.with.experts",
+    name: "IREED India",
     followers: "98K Followers",
     color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
     icon: Instagram,
+    href: "https://www.instagram.com/ireed_india/"
+
   },
   {
-    name: "Expert Talks",
+    name: "IREED India",
     followers: "245K Subscribers",
     color: "bg-[#FF0000]",
     icon: Youtube,
+    href: "https://www.youtube.com/@ireedindia"
   },
 ];
 
@@ -111,10 +115,13 @@ const trustFeatures = [
 
 const footerNavLinks = [
   { name: "About Us", href: "/about" },
-  { name: "Careers", href: "#" },
+  { name: "Trainers", href: "/find-trainer" },
   { name: "Blog", href: "/blogs" },
-  { name: "Newsroom", href: "#" },
-  { name: "Contact Us", href: "#" },
+  { name: "Articles", href: "/articles" },
+  { name: "Privacy Policy", href: "/privacy-policy" },
+  { name: "Terms of Use", href: "#" },
+  { name: "Refund Policy", href: "#" },
+  { name: "Cookies Policy", href: "#" },
 ];
 
 const footerLegalLinks = [
@@ -187,10 +194,10 @@ export default function Footer() {
 
       {/* ── Main Footer ── */}
       <div className="w-full">
-        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-12 lg:py-14">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+        <div className="w-full mx-auto px-5 md:px-8 py-12 lg:py-14 ">
+          <div className="flex w-full justify-center">
             {/* Brand Column */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 border-r border-slate-200 p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-500 flex items-center justify-center shrink-0">
                   <span className="text-white font-extrabold text-xl leading-none">
@@ -226,143 +233,134 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Explore */}
-            <div className="lg:col-span-2">
-              <h4 className="text-[15px] font-bold text-gray-900 mb-4">
-                Explore
-              </h4>
-              <ul className="space-y-2.5">
-                {exploreLinks.map((item, i) => (
-                  <li key={i}>
-                    <a
-                      href={item.href}
-                      className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
-                    >
-                      {item.name}
-                      <ChevronRight
-                        size={12}
-                        className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
-                      />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* For Learners / Organisations */}
-            <div className="lg:col-span-2">
-              <h4 className="text-[15px] font-bold text-gray-900 mb-4">
-                For Learners / Organisations
-              </h4>
-              <ul className="space-y-2.5">
-                {learnerLinks.map((item, i) => (
-                  <li key={i}>
-                    <a
-                      href={item.href}
-                      className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
-                    >
-                      {item.name}
-                      <ChevronRight
-                        size={12}
-                        className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
-                      />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* For Trainers */}
-            <div className="lg:col-span-2">
-              <h4 className="text-[15px] font-bold text-gray-900 mb-4">
-                For Trainers
-              </h4>
-              <ul className="space-y-2.5">
-                {trainerLinks.map((item, i) => (
-                  <li key={i}>
-                    <a
-                      href={item.href}
-                      className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
-                    >
-                      {item.name}
-                      <ChevronRight
-                        size={12}
-                        className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
-                      />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Popular Categories + Follow Channels (inline side-by-side) */}
-            <div className="lg:col-span-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr] gap-6">
-                {/* Popular Categories */}
-                <div>
-                  <h4 className="text-[15px] font-bold text-gray-900 mb-4">
-                    Popular Categories
-                  </h4>
-                  <ul className="space-y-2.5 mb-4 md:mb-0">
-                    {popularCategories.map((cat, i) => (
-                      <li key={i}>
-                        <a
-                          href="#"
-                          className="text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
-                        >
-                          {cat}
-                        </a>
-                      </li>
-                    ))}
-                    <li>
+            {/* Footer Links  */}
+            <div className="flex justify-between p-6 gap-6">
+              {/* Explore */}
+              <div className="lg:col-span-2">
+                <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                  Explore
+                </h4>
+                <ul className="space-y-2.5">
+                  {exploreLinks.map((item, i) => (
+                    <li key={i}>
                       <a
-                        href="#"
-                        className="text-[13px] text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                        href={item.href}
+                        className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
                       >
-                        View All Categories
+                        {item.name}
+                        <ChevronRight
+                          size={12}
+                          className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
+                        />
                       </a>
                     </li>
-                  </ul>
-                </div>
+                  ))}
+                </ul>
+              </div>
 
-                {/* Follow Popular Channels */}
-                <div className="border border-gray-200/50 rounded-xl p-4 shadow-[0_2px_8px_rgba(37,99,235,0.03)]">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-[14px] font-bold text-gray-900">
-                      Follow Popular Channels
-                    </h4>
+              {/* For Learners / Organisations */}
+              <div className="lg:col-span-2">
+                <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                  For Learners / Organisations
+                </h4>
+                <ul className="space-y-2.5">
+                  {learnerLinks.map((item, i) => (
+                    <li key={i}>
+                      <a
+                        href={item.href}
+                        className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
+                      >
+                        {item.name}
+                        <ChevronRight
+                          size={12}
+                          className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
+                        />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* For Trainers */}
+              <div className="lg:col-span-2">
+                <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                  For Trainers
+                </h4>
+                <ul className="space-y-2.5">
+                  {trainerLinks.map((item, i) => (
+                    <li key={i}>
+                      <a
+                        href={item.href}
+                        className="group flex items-center gap-1 text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
+                      >
+                        {item.name}
+                        <ChevronRight
+                          size={12}
+                          className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all"
+                        />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Popular Categories */}
+              <div>
+                <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                  Popular Categories
+                </h4>
+                <ul className="space-y-2.5 mb-4 md:mb-0">
+                  {popularCategories.map((cat, i) => (
+                    <li key={i}>
+                      <a
+                        href="#"
+                        className="text-[13px] text-gray-600 hover:text-blue-700 transition-colors"
+                      >
+                        {cat}
+                      </a>
+                    </li>
+                  ))}
+                  <li>
                     <a
                       href="#"
-                      className="text-[12px] text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-[13px] text-blue-600 hover:text-blue-700 font-medium transition-colors"
                     >
-                      View All
+                      View All Categories
                     </a>
-                  </div>
-
-                  <div className="space-y-3">
-                    {popularChannels.map((ch, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-full ${ch.color} flex items-center justify-center text-white shrink-0`}
-                        >
-                          <ch.icon size={14} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">
-                            {ch.name}
-                          </p>
-                          <p className="text-[11px] text-gray-500">
-                            {ch.followers}
-                          </p>
-                        </div>
-                        <button className="text-[11px] px-3 py-1 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-50 hover:border-blue-300 transition-colors font-medium whitespace-nowrap">
-                          Follow
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  </li>
+                </ul>
               </div>
+            </div>
+
+            {/* Follow Popular Channels */}
+            <div className="space-y-3 border border-slate-200 rounded-xl p-6 ">
+
+              <div className="flex justify-between gap-4 font-bold ">
+                <p>Follow Popular Channels</p>
+                <p className="text-blue-600 cursor-pointer hover:text-blue-500">View All</p>
+              </div>
+
+              <div className="flex flex-col gap-6 mt-10 ">
+                {popularChannels.map((ch, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <div
+                      className={`w-8 h-8 rounded-full ${ch.color} flex items-center justify-center text-white shrink-0`}
+                    >
+                      <ch.icon size={14} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">
+                        {ch.name}
+                      </p>
+                      <p className="text-[11px] text-gray-500">{ch.followers}</p>
+                    </div>
+                    <button className="text-[11px] px-3 py-1 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-50 hover:border-blue-300 transition-colors font-medium whitespace-nowrap">
+                      Follow
+                    </button>
+                  </div>
+                ))}
+              </div>
+
             </div>
           </div>
         </div>
@@ -370,10 +368,10 @@ export default function Footer() {
 
       {/* ── Trust Strip ── */}
       <div className="w-full bg-gray-50 border-t border-gray-200">
-        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-10">
+        <div className="w-full mx-auto px-5 md:px-8 py-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {trustFeatures.map((f, i) => (
-              <div key={i} className="flex items-start gap-3">
+              <div key={i} className="flex items-start gap-3 border-r border-slate-200">
                 <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                   <f.icon size={20} className="text-blue-700" />
                 </div>
@@ -393,19 +391,19 @@ export default function Footer() {
 
       {/* ── Bottom Bar ── */}
       <div className="w-full bg-[#111827] text-white">
-        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-8">
+        <div className="w-full mx-auto px-5 md:px-8 py-8">
           <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 lg:gap-8">
             {/* Left — Copyright */}
-            <div className="text-center lg:text-left lg:shrink-0">
+            <div className="text-center lg:text-left lg:shrink-0 ">
               <p className="text-[13px] text-gray-400">
                 &copy; 2026 All Rights Reserved. | Powered by IREED MEDIA
               </p>
             </div>
 
             {/* Center — Nav Links */}
-            <div className="flex flex-wrap justify-center items-center gap-x-5 gap-y-2 text-gray-400 text-[13px]">
+            <div className="grid grid-cols-4 gap-x-5 gap-y-2 text-gray-400 text-[13px]">
               {footerNavLinks.map((item, i) => (
-                <span key={i} className="flex items-center gap-2.5">
+                <span key={i} className="flex items-center gap-3 ">
                   <Link
                     href={item.href}
                     className="hover:text-white transition-colors"
@@ -420,8 +418,8 @@ export default function Footer() {
             </div>
 
             {/* Right — Trusted By */}
-            <div className="shrink-0">
-              <p className="text-[13px] font-semibold text-gray-300 mb-3 text-center lg:text-right">
+            <div className="shrink-0 ">
+              <p className="text-[13px] font-semibold text-gray-300 mb-3 text-center lg:text-left">
                 Trusted by
               </p>
               <div className="flex items-center justify-center lg:justify-end gap-5">
@@ -435,29 +433,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Separator + Legal Links */}
-          <div className="border-t border-gray-700 mt-6 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-[12px] text-gray-500 text-center sm:text-left">
-              Registering as a company?{" "}
-              <a
-                href="#"
-                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
-              >
-                Add your company
-              </a>
-            </p>
-            <div className="flex flex-wrap justify-center sm:justify-end items-center gap-x-6 gap-y-2">
-              {footerLegalLinks.map((item, i) => (
-                <Link
-                  key={i}
-                  href={item.href}
-                  className="text-[12px] text-gray-500 hover:text-gray-300 transition-colors"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </footer>
