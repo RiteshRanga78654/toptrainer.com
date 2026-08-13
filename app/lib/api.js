@@ -67,17 +67,39 @@ export const userAPI = {
   login: (data) => API.post("/users/login", data),
   logout: () => API.get("/users/logout"),
   getProfile: () => API.get("/users/me"),
-  updateProfile: (data) => API.put("/users/update-profile", data),
+  updateProfile: (data) => {
+    const isFormData = typeof FormData !== "undefined" && data instanceof FormData;
+    return API.put(
+      "/users/update-profile",
+      data,
+      isFormData ? { headers: { "Content-Type": "multipart/form-data" } } : undefined
+    );
+  },
   changePassword: (data) => API.put("/users/update-password", data),
     getAll: (params = {}) => API.get("/admin/users", { params }),
   updateStatus: (id, data) => API.patch(`/admin/users/${id}/status`, data),
 };
+
 export const adminReviewsAPI = {
   getAll: (params = {}) => API.get("/reviews/admin/all", { params }),
   approve: (id) => API.put(`/reviews/admin/approve/${id}`),
   reject: (id) => API.put(`/reviews/admin/reject/${id}`),
   toggleFeatured: (id) => API.put(`/reviews/admin/featured/${id}`),
   delete: (id) => API.delete(`/reviews/admin/${id}`),
+};
+
+export const requirementsAPI = {
+  create: (data) => API.post("/requirements", data),
+  getMine: () => API.get("/requirements/my"),
+  getApproved: (params = {}) => API.get("/requirements/approved", { params }),
+};
+
+export const adminRequirementsAPI = {
+  getAll: (params = {}) => API.get("/requirements/admin/all", { params }),
+  getOne: (id) => API.get(`/requirements/admin/${id}`),
+  approve: (id) => API.put(`/requirements/admin/approve/${id}`),
+  reject: (id) => API.put(`/requirements/admin/reject/${id}`),
+  delete: (id) => API.delete(`/requirements/admin/${id}`),
 };
 
 export const trainersAPI = {

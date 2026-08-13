@@ -4,6 +4,7 @@ import Workshop from "../models/workshops.js";
 import Article from "../models/Article.js";
 import Review from "../models/review.js";
 import YoutubeVideo from "../models/youtubeVideo.js";
+import Requirement from "../models/requirement.js";
 
 import asyncHandler from "../middleware/asyncMiddlewire.js";
 
@@ -66,6 +67,18 @@ export const getDashboardData = asyncHandler(
             .limit(5)
             .select('reviewerName rating comment createdAt');
 
+        const requirementStats = {
+            pending: await Requirement.countDocuments({ status: "pending" }),
+            approved: await Requirement.countDocuments({ status: "approved" }),
+            rejected: await Requirement.countDocuments({ status: "rejected" }),
+        };
+
+        const latestPendingRequirements = await Requirement.find({ status: "pending" })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .select('title category format audienceSize description status user createdAt')
+            .populate('user', 'firstName lastName email');
+
         res.status(200).json({
             success: true,
             data: {
@@ -81,6 +94,8 @@ export const getDashboardData = asyncHandler(
                     newUsersLast90Days,
                     newTrainersLast90Days,
                 },
+                requirementStats,
+                latestPendingRequirements,
                 recentWorkshops,
                 recentArticles,
                 recentTrainers,

@@ -58,6 +58,7 @@ export function StatusBadge({ status }) {
     active:    { variant: 'success', label: 'Active' },
     inactive:  { variant: 'gray',    label: 'Inactive' },
     pending:   { variant: 'warning', label: 'Pending' },
+    approved:  { variant: 'success', label: 'Approved' },
     published: { variant: 'success', label: 'Published' },
     draft:     { variant: 'gray',    label: 'Draft' },
     rejected:  { variant: 'error',   label: 'Rejected' },

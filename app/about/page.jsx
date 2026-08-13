@@ -26,12 +26,12 @@ const BM = "#bfdbfe";
 const DARK = "#0b1a3a";
 
 const DEFAULT_STATS = [
-  { icon: "Users", num: "15,000+", lbl: "Learning Community" },
   { icon: "User", num: "5,000+", lbl: "Trainers" },
-  { icon: "ClipboardList", num: "300+", lbl: "Training Categories" },
-  { icon: "Briefcase", num: "100+", lbl: "Corporate Workshops" },
-  { icon: "Award", num: "25+", lbl: "Industries Covered" },
+  { icon: "Users", num: "15,000+", lbl: "Learners" },
+  { icon: "Briefcase", num: "100+", lbl: "Workshops" },
+  { icon: "ClipboardList", num: "300+", lbl: "Articles" },
   { icon: "Star", num: "4.8/5", lbl: "Learner Rating" },
+  { icon: "Award", num: "25+", lbl: "Expertise" },
 ];
 
 const DEFAULT_LEADERSHIP = [
@@ -174,6 +174,68 @@ const ICONS = {
   Award,
   Star,
 };
+
+function CountUp({ target, suffix = "", decimals = 0, duration = 1800 }) {
+  const ref = useRef(null);
+  const started = useRef(false);
+  const [val, setVal] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let raf;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !started.current) {
+            started.current = true;
+            const start = performance.now();
+            const tick = (now) => {
+              const progress = Math.min((now - start) / duration, 1);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              setVal(target * eased);
+              if (progress < 1) raf = requestAnimationFrame(tick);
+            };
+            raf = requestAnimationFrame(tick);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [target, duration]);
+
+  const formatted =
+    decimals > 0
+      ? val.toFixed(decimals)
+      : Math.round(val).toLocaleString("en-US");
+
+  return (
+    <span ref={ref}>
+      {formatted}
+      {suffix}
+    </span>
+  );
+}
+
+function StatNumber({ num }) {
+  const str = String(num ?? "");
+  const match = str.match(/^([\d,]+(?:\.\d+)?)(.*)$/);
+  if (!match) return <span>{str}</span>;
+
+  const raw = match[1];
+  const suffix = match[2];
+  const target = parseFloat(raw.replace(/,/g, ""));
+  const decimals = raw.includes(".") ? (raw.split(".")[1] || "").length : 0;
+
+  return <CountUp target={target} suffix={suffix} decimals={decimals} />;
+}
 
 function getImgSrc(img) {
   if (!img) return "";
@@ -378,6 +440,7 @@ function normalizeAbout(a) {
 
 export default function AboutPage() {
   const [about, setAbout] = useState(null);
+  const [liveStats, setLiveStats] = useState(null);
   const [teamFilter, setTeamFilter] = useState("All");
   const [cultureIndex, setCultureIndex] = useState(0);
   const cultureScrollRef = useRef(null);
@@ -400,7 +463,27 @@ export default function AboutPage() {
     })();
   }, []);
 
+  useEffect(() => {
+    fetch(`${API_BASE}/api/about/stats`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.stats) setLiveStats(data.stats);
+      })
+      .catch(() => {});
+  }, []);
+
   const normalized = about || normalizeAbout(null);
+
+  const stats = liveStats
+    ? [
+        { icon: "User", num: Number(liveStats.trainers || 0).toLocaleString("en-US"), lbl: "Trainers" },
+        { icon: "Users", num: Number(liveStats.users || 0).toLocaleString("en-US"), lbl: "Learners" },
+        { icon: "Briefcase", num: Number(liveStats.workshops || 0).toLocaleString("en-US"), lbl: "Workshops" },
+        { icon: "ClipboardList", num: Number(liveStats.articles || 0).toLocaleString("en-US"), lbl: "Articles" },
+        { icon: "Star", num: `${(Number(liveStats.rating) || 0).toFixed(1)}/5`, lbl: "Learner Rating" },
+        { icon: "Award", num: Number(liveStats.expertise || 0).toLocaleString("en-US"), lbl: "Expertise" },
+      ]
+    : normalized.stats;
 
   const filteredTeam =
     teamFilter === "All" ? normalized.team : normalized.team.filter((m) => m.category === teamFilter);
@@ -947,7 +1030,7 @@ export default function AboutPage() {
       </section>
 
       <div className="stats-strip">
-        {normalized.stats.map((s) => {
+        {stats.map((s) => {
           const Icon = ICONS[s.icon] || Users;
           return (
             <div key={s.lbl} className="stat-item">
@@ -955,7 +1038,9 @@ export default function AboutPage() {
                 <Icon size={18} />
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: 18, color: "#0f172a" }}>{s.num}</div>
+                <div style={{ fontWeight: 800, fontSize: 18, color: "#0f172a" }}>
+                  <StatNumber num={s.num} />
+                </div>
                 <div style={{ fontSize: 11, color: "#64748b" }}>{s.lbl}</div>
               </div>
             </div>
@@ -994,7 +1079,7 @@ export default function AboutPage() {
 
             <div className="impact-card">
               <div>
-                {DEFAULT_STATS.slice(0, 5).map((item) => {
+                {stats.slice(0, 5).map((item) => {
                   const Icon = ICONS[item.icon] || Users;
                   return (
                     <div key={item.lbl} className="impact-row">
@@ -1013,7 +1098,9 @@ export default function AboutPage() {
                         <Icon size={14} />
                       </div>
                       <div>
-                        <div style={{ fontWeight: 800, color: "#0f172a" }}>{item.num}</div>
+                        <div style={{ fontWeight: 800, color: "#0f172a" }}>
+                          <StatNumber num={item.num} />
+                        </div>
                         <div style={{ fontSize: 11, color: "#64748b" }}>{item.lbl}</div>
                       </div>
                     </div>

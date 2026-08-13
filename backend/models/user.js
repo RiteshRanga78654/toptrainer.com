@@ -36,6 +36,78 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please enter your Phone Number!"],
     },
 
+    avatar: {
+      url: {
+        type: String,
+        default: "",
+      },
+      publicId: {
+        type: String,
+        default: "",
+      },
+    },
+
+    dateOfBirth: {
+      type: Date,
+      default: null,
+      validate: {
+        validator: function (value) {
+          // Allow null/undefined (optional field) but never a future date.
+          return !value || value <= new Date();
+        },
+        message: "Date of birth cannot be in the future",
+      },
+    },
+
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other", "Prefer not to say", ""],
+      default: "",
+    },
+
+    city: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    state: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    country: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    address: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    profession: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    company: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: [1000, "Bio cannot exceed 1000 characters"],
+    },
+
     password: {
       type: String,
       required: true,

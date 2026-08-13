@@ -32,6 +32,7 @@ const adminNav = [
       { label: 'Reports',    href: '/admin/reports',        icon: BarChart3,     perm: 'reports' },
       { label: 'About us',   href: '/admin/aboutus',        icon: Settings,      perm: 'about_us' },
       { label: 'Reviews',    href: '/admin/review',         icon: Star,          perm: 'reviews' },
+      { label: 'Requirements', href: '/admin/requirements', icon: Briefcase,     perm: 'requirements' },
       { label: 'Communications', href: '/admin/communications', icon: Send,      perm: 'communications' },
       { label: 'Team & Access', href: '/admin/team',        icon: ShieldCheck,   perm: 'team' },
     ]

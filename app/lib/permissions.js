@@ -10,6 +10,7 @@ export const ALL_MODULES = [
   "reports",
   "about_us",
   "reviews",
+  "requirements",
   "communications",
 ];
 
@@ -25,6 +26,7 @@ export const MODULE_LABELS = {
   reports: "Reports",
   about_us: "About Us",
   reviews: "Reviews",
+  requirements: "Requirements",
   communications: "Communications",
 };
 

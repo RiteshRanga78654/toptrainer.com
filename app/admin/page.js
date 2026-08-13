@@ -1,9 +1,9 @@
 "use client"
 import { useEffect, useState } from "react"
-import { StatCard, Card, Badge } from "../components/ui"
-import { GraduationCap, Users, BookOpen, Newspaper, Video, MessageSquare, ArrowRight } from "lucide-react"
+import { StatCard, Card, Badge, StatusBadge, Button, Modal, ConfirmDialog, Toast, Avatar } from "../components/ui"
+import { GraduationCap, Users, BookOpen, Newspaper, Video, MessageSquare, ArrowRight, Clock, Check, X, Eye, FileText } from "lucide-react"
 import Link from "next/link"
-import { analyticsAPI, formatDate } from "../lib/api"
+import { analyticsAPI, adminRequirementsAPI, formatDate } from "../lib/api"
 
 const workshopTitle = (w) => w?.basicInformation?.title || "Untitled workshop"
 const workshopImage = (w) => w?.basicInformation?.coverImage?.url || w?.basicInformation?.thumbnail?.url || ""
@@ -19,6 +19,11 @@ const articleAuthor = (a) =>
   a?.creatorType ||
   "Unknown"
 
+const requirementUserName = (u) => {
+  if (!u) return "Unknown user";
+  return [u.firstName, u.lastName].filter(Boolean).join(" ") || u.email || "Unknown user";
+}
+
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -26,6 +31,12 @@ export default function DashboardPage() {
   const [recentWorkshops, setRecentWorkshops] = useState([])
   const [recentArticles, setRecentArticles] = useState([])
   const [recentUsers, setRecentUsers] = useState([])
+  const [requirementStats, setRequirementStats] = useState({ pending: 0, approved: 0, rejected: 0 })
+  const [latestPending, setLatestPending] = useState([])
+  const [viewing, setViewing] = useState(null)
+  const [confirmReject, setConfirmReject] = useState(null)
+  const [actingId, setActingId] = useState(null)
+  const [toast, setToast] = useState(null)
 
   useEffect(() => {
     fetchDashboard()
@@ -43,6 +54,8 @@ export default function DashboardPage() {
       setRecentWorkshops(data.recentWorkshops || [])
       setRecentArticles(data.recentArticles || [])
       setRecentUsers(data.recentUsers || [])
+      setRequirementStats(data.requirementStats || { pending: 0, approved: 0, rejected: 0 })
+      setLatestPending(data.latestPendingRequirements || [])
     } catch (err) {
       console.log("Dashboard fetch error:", err?.response?.data || err.message)
       setError("Failed to load dashboard data")
@@ -50,6 +63,37 @@ export default function DashboardPage() {
       setLoading(false)
     }
   }
+
+  const approve = async (req) => {
+    setActingId(req._id);
+    try {
+      await adminRequirementsAPI.approve(req._id);
+      setToast({ type: "success", message: "Requirement approved and is now visible publicly." });
+      setViewing(null);
+      fetchDashboard();
+    } catch {
+      setToast({ type: "error", message: "Failed to approve requirement." });
+    } finally {
+      setActingId(null);
+    }
+  };
+
+  const reject = async () => {
+    const req = confirmReject;
+    if (!req) return;
+    setActingId(req._id);
+    try {
+      await adminRequirementsAPI.reject(req._id);
+      setToast({ type: "success", message: "Requirement rejected." });
+      setConfirmReject(null);
+      setViewing(null);
+      fetchDashboard();
+    } catch {
+      setToast({ type: "error", message: "Failed to reject requirement." });
+    } finally {
+      setActingId(null);
+    }
+  };
 
   if (loading) {
     return <div className="text-sm text-slate-500">Loading dashboard...</div>
@@ -78,6 +122,55 @@ export default function DashboardPage() {
         <StatCard label="Total Videos" value={stats?.totalVideos ?? 0} icon={<Video size={18} className="text-pink-600" />} color="bg-pink-50" />
         <StatCard label="Total Reviews" value={stats?.totalReviews ?? 0} icon={<MessageSquare size={18} className="text-cyan-600" />} color="bg-cyan-50" />
       </div>
+
+      {/* ── Requirements Review ── */}
+      <Card>
+        <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h2 className="font-semibold text-slate-900">Requirement Reviews</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Approve or reject user-submitted training requirements.</p>
+          </div>
+          <Link href="/admin/requirements" className="text-xs text-blue-600 hover:underline flex items-center gap-1">Open review section <ArrowRight size={12} /></Link>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 p-5 border-b border-slate-100">
+          <div className="flex flex-col gap-1">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600"><Clock size={13} /> Total Pending</span>
+            <span className="text-2xl font-bold text-slate-900">{requirementStats.pending ?? 0}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600"><Check size={13} /> Total Approved</span>
+            <span className="text-2xl font-bold text-slate-900">{requirementStats.approved ?? 0}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600"><X size={13} /> Total Rejected</span>
+            <span className="text-2xl font-bold text-slate-900">{requirementStats.rejected ?? 0}</span>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <h3 className="text-sm font-semibold text-slate-800 mb-3">Latest 5 Pending Items</h3>
+          {latestPending.length === 0 ? (
+            <p className="text-sm text-slate-500 py-4 text-center">No pending requirements right now.</p>
+          ) : (
+            <div className="space-y-2">
+              {latestPending.map((req) => (
+                <div key={req._id} className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                  <Avatar name={requirementUserName(req.user)} size={36} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">{req.title}</p>
+                    <p className="text-xs text-slate-500 truncate">{requirementUserName(req.user)} · {formatDate(req.createdAt)}</p>
+                  </div>
+                  <StatusBadge status={req.status} />
+                  <Button variant="secondary" size="sm" onClick={() => setViewing(req)}>
+                    <Eye size={13} /> Open
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </Card>
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
@@ -184,6 +277,95 @@ export default function DashboardPage() {
           </table>
         </div>
       </Card>
+
+      {/* ── Requirement detail modal (read-only review) ── */}
+      {viewing && (
+        <Modal
+          isOpen
+          onClose={() => setViewing(null)}
+          title="Requirement details"
+          size="md"
+          footer={
+            <>
+              {viewing.status !== "rejected" && (
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    setConfirmReject(viewing);
+                    setViewing(null);
+                  }}
+                >
+                  <X size={14} /> Reject
+                </Button>
+              )}
+              {viewing.status !== "approved" && (
+                <Button
+                  variant="primary"
+                  onClick={() => approve(viewing)}
+                  loading={actingId === viewing._id}
+                >
+                  <Check size={14} /> Approve
+                </Button>
+              )}
+            </>
+          }
+        >
+          <div className="space-y-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Avatar name={requirementUserName(viewing.user)} size={40} />
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">{viewing.title}</p>
+                  <p className="text-xs text-slate-500">{requirementUserName(viewing.user)} · {viewing.user?.email}</p>
+                </div>
+              </div>
+              <StatusBadge status={viewing.status} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="flex items-center gap-2 text-slate-600">
+                <BookOpen size={14} className="text-slate-400 shrink-0" />
+                <span>Category: <span className="font-medium text-slate-900">{viewing.category || "—"}</span></span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-600">
+                <Video size={14} className="text-slate-400 shrink-0" />
+                <span>Format: <span className="font-medium text-slate-900">{viewing.format || "—"}</span></span>
+              </div>
+              {viewing.audienceSize && (
+                <div className="flex items-center gap-2 text-slate-600">
+                  <Users size={14} className="text-slate-400 shrink-0" />
+                  <span>Audience: <span className="font-medium text-slate-900">{viewing.audienceSize}</span></span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 text-slate-600">
+                <FileText size={14} className="text-slate-400 shrink-0" />
+                <span>Created: <span className="font-medium text-slate-900">{formatDate(viewing.createdAt)}</span></span>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-100 pt-4">
+              <p className="text-sm font-medium text-slate-800 mb-2">Description</p>
+              <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+                {viewing.description || "No description provided."}
+              </p>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      <ConfirmDialog
+        isOpen={!!confirmReject}
+        onClose={() => setConfirmReject(null)}
+        onConfirm={reject}
+        title="Reject this requirement?"
+        message="The requirement will be marked as rejected and will not be visible to the public."
+        confirmLabel="Reject"
+        loading={actingId === confirmReject?._id}
+      />
+
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+      )}
     </div>
   )
 }

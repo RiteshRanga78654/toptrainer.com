@@ -1,10 +1,11 @@
 import express from "express";
 import upload from '../middleware/uploadMiddleware.js';
-import { getAboutPage, updateAboutPage } from "../controllers/aboutController.js";
+import { getAboutPage, updateAboutPage, getStats } from "../controllers/aboutController.js";
 
 const router = express.Router();
 
 router.get("/", getAboutPage);
+router.get("/stats", getStats);
 
 router.put(
   "/",

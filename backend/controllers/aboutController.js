@@ -1,4 +1,10 @@
 import AboutPage from "../models/AboutPage.js";
+import User from "../models/user.js";
+import TrainerProfile from "../models/trainerProfile.js";
+import Workshop from "../models/workshops.js";
+import Article from "../models/Article.js";
+import Review from "../models/review.js";
+import Industry from "../models/industry.js";
 import cloudinary from "../config/cloudinary.js";
 
 const parseIfString = (value, fallback = []) => {
@@ -42,6 +48,45 @@ export const getAboutPage = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch about page",
+    });
+  }
+};
+
+export const getStats = async (req, res) => {
+  try {
+    const [trainers, users, workshops, articles, approvedReviews, expertise] =
+      await Promise.all([
+        TrainerProfile.countDocuments(),
+        User.countDocuments(),
+        Workshop.countDocuments({ status: "published" }),
+        Article.countDocuments({ status: "published" }),
+        Review.find({ status: "approved" }).select("averageRating"),
+        Industry.countDocuments(),
+      ]);
+
+    const rating = approvedReviews.length
+      ? approvedReviews.reduce(
+          (sum, r) => sum + (r.averageRating || 0),
+          0
+        ) / approvedReviews.length
+      : 0;
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        trainers,
+        users,
+        workshops,
+        articles,
+        rating: Math.round(rating * 10) / 10,
+        expertise,
+      },
+    });
+  } catch (error) {
+    console.error("getStats error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch stats",
     });
   }
 };

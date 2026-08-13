@@ -193,9 +193,9 @@ export default function UserDashboard() {
                 <h2 className="text-lg font-bold text-slate-900 mb-1">Post your Requirement</h2>
                 <p className="text-[13px] text-slate-500">Let us know what you need, and we'll suggest the best trainers for you.</p>
               </div>
-              <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-colors shadow-sm" disabled title="Requirement posting isn't wired up on the backend yet">
+              <Link href="/user/my-requirements" className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-colors shadow-sm">
                 Create New Requirement
-              </button>
+              </Link>
             </div>
             <div className="flex flex-wrap md:flex-nowrap justify-between items-start pt-5 border-t border-slate-100 gap-4 md:gap-0">
               <div className="flex flex-col gap-1.5 w-full md:w-1/5">
