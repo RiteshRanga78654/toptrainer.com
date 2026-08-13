@@ -18,32 +18,32 @@ import {
 import Link from "next/link";
 
 const exploreLinks = [
-  { name: "Find Trainers", href: "#" },
-  { name: "All Categories", href: "#" },
-  { name: "Articles", href: "/blogs" },
+  { name: "Find Trainers", href: "/find-trainer" },
+  { name: "All Categories", href: "/Industry" },
+  { name: "Articles", href: "/articles" },
   { name: "Videos", href: "#" },
-  { name: "Workshops", href: "#" },
+  { name: "Workshops", href: "/trainer" },
   { name: "Ebooks / Reading Material", href: "#" },
   { name: "Training Companies", href: "#" },
   { name: "Popular Social Channels", href: "#" },
 ];
 
 const learnerLinks = [
-  { name: "Post a Requirement", href: "#" },
+  { name: "Post a Requirement", href: "/join-as-trainer" },
   { name: "How It Works", href: "#" },
-  { name: "Corporate Training Solutions", href: "#" },
+  { name: "Corporate Training Solutions", href: "/trainer" },
   { name: "Custom Workshops", href: "#" },
-  { name: "Find Training Partners", href: "#" },
+  { name: "Find Training Partners", href: "/partners" },
   { name: "Pricing & Plans", href: "#" },
   { name: "Success Stories", href: "#" },
   { name: "Help Center", href: "#" },
 ];
 
 const trainerLinks = [
-  { name: "Create Trainer Profile", href: "#" },
-  { name: "Write Articles", href: "#" },
+  { name: "Create Trainer Profile", href: "/trainer-profile" },
+  { name: "Write Articles", href: "/articles" },
   { name: "Upload Videos", href: "#" },
-  { name: "Host Workshops", href: "#" },
+  { name: "Host Workshops", href: "/trainer" },
   { name: "Sell Ebooks / Courses", href: "#" },
   { name: "Grow Your Audience", href: "#" },
   { name: "Trainer Resources", href: "#" },

@@ -54,23 +54,26 @@ const Navbar = () => {
             transition-all duration-300"
           >
             <h1 className="flex items-center gap-2 text-lg sm:text-xl font-bold leading-none -ml-2">
-              <Image
-                src="/logo.png"
-                alt="TopTrainer Logo"
-                width={32}
-                height={32}
-                className="object-contain"
-              />
- <Link href="/">
+              <Link href={"/"}>
+                <Image
+                  src="/logo.png"
+                  alt="TopTrainer Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+              </Link>
+              <Link href="/">
                 <span className="cursor-pointer">
                  <Image
-                src="/topTrainer-logo.png"
-                alt="TopTrainer Logo"
-               width={70}
-                height={32}
-              />
+                    src="/toptrainerTextLogo.png"
+                    alt="TopTrainerLogo"
+                    width={150}
+                    height={42}
+                  />
                 </span>
               </Link>
+
             </h1>
 
             <nav className="hidden md:flex items-center gap-1">
