@@ -10,7 +10,7 @@ import {
   Languages, MessageSquare, Download, ExternalLink,
   CheckCircle2, TrendingUp, Lightbulb, Target, Building2,
   GraduationCap, Trophy, Camera, Zap, Play, ShieldCheck,
-  Facebook, Instagram, Share2, PenSquare,
+  Facebook, Instagram, Share2, PenSquare, X,
 } from "lucide-react";
 import Footer from "../../components/footer";
 import DownloadButton from "../../profile/DownloadButton";
@@ -545,6 +545,7 @@ export default function Profile() {
                   <div className="flex items-center gap-3 md:hidden absolute top-0 -right-4">
                     <ShareButton title={trainer?.fullName} />
                     <DownloadButton />
+                   <X />
                   </div>
 
                   <div className="relative flex-shrink-0">

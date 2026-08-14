@@ -20,21 +20,21 @@ import {
 const adminNav = [
   {
     label: 'MAIN', items: [
-      { label: 'Dashboard',  href: '/admin',                icon: LayoutDashboard, exact: true },
-      { label: 'Trainers',   href: '/admin/trainers',       icon: GraduationCap, perm: 'trainers' },
-      { label: 'Users',      href: '/admin/users',          icon: Settings,      perm: 'users' },
-      { label: 'Homepage',   href: '/admin/homepage',       icon: Home,          perm: 'homepage' },
-      { label: 'Workshops',  href: '/admin/workshops',      icon: BookOpen,      perm: 'workshops' },
-      { label: 'Industry',   href: '/admin/industries',     icon: Building2,     perm: 'industry' },
-      { label: 'Competency', href: '/admin/competencies',   icon: Award,         perm: 'competency' },
-      { label: 'Department', href: '/admin/departmentes',   icon: Award,         perm: 'department' },
-      { label: 'Articles',   href: '/admin/articles',       icon: FileText,      perm: 'articles' },
-      { label: 'Reports',    href: '/admin/reports',        icon: BarChart3,     perm: 'reports' },
-      { label: 'About us',   href: '/admin/aboutus',        icon: Settings,      perm: 'about_us' },
-      { label: 'Reviews',    href: '/admin/review',         icon: Star,          perm: 'reviews' },
-      { label: 'Requirements', href: '/admin/requirements', icon: Briefcase,     perm: 'requirements' },
-      { label: 'Communications', href: '/admin/communications', icon: Send,      perm: 'communications' },
-      { label: 'Team & Access', href: '/admin/team',        icon: ShieldCheck,   perm: 'team' },
+      { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, exact: true },
+      { label: 'Trainers', href: '/admin/trainers', icon: GraduationCap, perm: 'trainers' },
+      { label: 'Users', href: '/admin/users', icon: Settings, perm: 'users' },
+      { label: 'Homepage', href: '/admin/homepage', icon: Home, perm: 'homepage' },
+      { label: 'Workshops', href: '/admin/workshops', icon: BookOpen, perm: 'workshops' },
+      { label: 'Industry', href: '/admin/industries', icon: Building2, perm: 'industry' },
+      { label: 'Competency', href: '/admin/competencies', icon: Award, perm: 'competency' },
+      { label: 'Department', href: '/admin/departmentes', icon: Award, perm: 'department' },
+      { label: 'Blogs', href: '/admin/articles', icon: FileText, perm: 'articles' },
+      { label: 'Reports', href: '/admin/reports', icon: BarChart3, perm: 'reports' },
+      { label: 'About us', href: '/admin/aboutus', icon: Settings, perm: 'about_us' },
+      { label: 'Reviews', href: '/admin/review', icon: Star, perm: 'reviews' },
+      { label: 'Requirements', href: '/admin/requirements', icon: Briefcase, perm: 'requirements' },
+      { label: 'Communications', href: '/admin/communications', icon: Send, perm: 'communications' },
+      { label: 'Team & Access', href: '/admin/team', icon: ShieldCheck, perm: 'team' },
     ]
   },
   {
@@ -47,10 +47,10 @@ const adminNav = [
 const trainerNav = [
   {
     label: 'MAIN', items: [
-      { label: 'Dashboard',    href: '/trainer',            icon: LayoutDashboard, exact: true },
-      { label: 'My Workshops', href: '/trainer/workshops',  icon: BookOpen },
-      { label: 'My Articles',  href: '/trainer/articles',   icon: BookMarked },
-      { label: 'Analytics',    href: '/trainer/analytics',  icon: BarChart2 },
+      { label: 'Dashboard', href: '/trainer', icon: LayoutDashboard, exact: true },
+      { label: 'My Workshops', href: '/trainer/workshops', icon: BookOpen },
+      { label: 'My Articles', href: '/trainer/articles', icon: BookMarked },
+      { label: 'Analytics', href: '/trainer/analytics', icon: BarChart2 },
     ]
   },
   {
@@ -131,9 +131,9 @@ function shouldShowItem(item, user) {
 function SidebarContent({ role, user, onClose, onLogout }) {
   const filteredSections = role === 'admin'
     ? adminNav.map(section => ({
-        ...section,
-        items: section.items.filter(item => shouldShowItem(item, user)),
-      })).filter(section => section.items.length > 0)
+      ...section,
+      items: section.items.filter(item => shouldShowItem(item, user)),
+    })).filter(section => section.items.length > 0)
     : trainerNav
 
   const initials = user?.name ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'U'
@@ -144,10 +144,11 @@ function SidebarContent({ role, user, onClose, onLogout }) {
       {/* Logo */}
       <div className="h-16 flex items-center px-5 border-b border-slate-800 shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8  rounded-lg flex items-center justify-center shrink-0">
-            <Image src="/logo.png" alt="Logo" width={20} height={20} className="object-contain" />
+          <div className="w-26 h-8  rounded-lg flex items-center justify-center shrink-0">
+            <Image src="/logo.png" alt="Logo" width={20} height={20} className="object-contain" />   
+                   <Image src="/toptrainerTextLogo.png" alt="toptrainer Logo" width={200} height={200} className="object-contain" />
           </div>
-         <Image src="/topTrainer-logo.png" alt="Logo" width={120} height={40} className="object-contain" />
+       
         </div>
         {onClose && (
           <button onClick={onClose} className="ml-auto text-slate-400 hover:text-white transition-colors">

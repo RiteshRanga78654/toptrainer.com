@@ -53,24 +53,22 @@ const Navbar = () => {
             hover:shadow-[0_8px_40px_rgba(37,99,235,0.13)]
             transition-all duration-300"
           >
-            <h1 className="flex items-center gap-2 text-lg sm:text-xl font-bold leading-none -ml-2">
-              <Image
-                src="/logo.png"
-                alt="TopTrainer Logo"
-                width={32}
-                height={32}
-                className="object-contain"
-              />
- <Link href="/">
+            <h1 className="flex items-center gap-1 text-lg sm:text-xl font-bold leading-none -ml-2">
+              <Link href={"/"}>
+                <Image
+                  src="/logo.png"
+                  alt="TopTrainer Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+              </Link>
+              <Link href="/">
                 <span className="cursor-pointer">
-                 <Image
-                src="/topTrainer-logo.png"
-                alt="TopTrainer Logo"
-               width={70}
-                height={32}
-              />
+                 <Image src="/toptrainerTextLogo.png" alt="toptrainer Logo" width={125} height={125} className="object-contain" />
                 </span>
               </Link>
+
             </h1>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -102,7 +100,7 @@ const Navbar = () => {
                 >
                   {user?.avatar ? (
                     <img
-                      src={user.avatar}
+                      src={user.avatar?.url}
                       alt={displayName}
                       className="w-full h-full object-cover"
                     />
@@ -182,7 +180,7 @@ const Navbar = () => {
                 <div className="w-9 h-9 rounded-full overflow-hidden border border-blue-300 bg-white flex items-center justify-center">
                   {user?.avatar ? (
                     <img
-                      src={user.avatar}
+                      src={user.avatar?.url}
                       alt={displayName}
                       className="w-full h-full object-cover"
                     />

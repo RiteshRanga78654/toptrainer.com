@@ -341,7 +341,39 @@ export const getAllTrainerArticles = async (req, res) => {
     totalPages: Math.ceil(count / limit),
     data: articles,
   });
-};export const getAllArticles = async (req, res)=>{
+};
+export const getAllTrainerArticlesAdmin = asyncHandler(async (req, res) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const query = await buildArticleQuery(req.query, {
+    creatorType: "TrainerProfile",
+  });
+
+  const [articles, count] = await Promise.all([
+    Article.find(query)
+      .populate("industry", "name icon")
+      .populate("competency", "name icon")
+      .populate("department", "name icon")
+      .populate("trainer", "fullName companyName subjectLine profilePhoto")
+      .populate("createdBy", "firstName lastName fullName email")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }),
+    Article.countDocuments(query),
+  ]);
+
+  res.status(200).json({
+    success: true,
+    count,
+    currentPage: page,
+    totalPages: Math.ceil(count / limit),
+    data: articles,
+  });
+});
+
+export const getAllArticles = async (req, res)=>{
     try {
         const { keyword, creatorType, status, industry, competency, department, page = 1, limit = 10 } = req.query;
         let query = {};

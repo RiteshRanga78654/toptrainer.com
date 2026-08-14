@@ -207,8 +207,8 @@ export default function UserTrainerLoginPage() {
 
         <div className="hidden lg:flex w-full lg:w-1/2 flex-col pt-10 px-8 sm:px-14 lg:px-24 relative z-10">
           <div className="left-anim-1 flex items-center gap-2 mb-16">
-            <Image src="/icon.png" alt="toptrainer Logo" width={28} height={28} className="object-contain" />
-            <span className="font-bold text-[22px] tracking-tight text-gray-900">TopTrainer</span>
+            <Image src="/logo.png" alt="toptrainer Logo" width={28} height={28} className="object-contain" />
+                             <Image src="/toptrainerTextLogo.png" alt="toptrainer Logo" width={125} height={125} className="object-contain" />
           </div>
 
           <div className="flex-1 flex flex-col max-w-[500px]">
@@ -268,7 +268,7 @@ export default function UserTrainerLoginPage() {
 
         <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 lg:p-12 relative z-10 min-h-screen lg:min-h-0">
           <div className="lg:hidden flex items-center justify-center gap-2 mb-8 w-full anim-1">
-            <Image src="/icon.png" alt="TopTrainer Logo" width={32} height={32} className="object-contain" />
+            <Image src="/logo.png" alt="TopTrainer Logo" width={32} height={32} className="object-contain" />
             <span className="font-bold text-[24px] tracking-tight text-gray-900">TopTrainer</span>
           </div>
 

@@ -654,6 +654,12 @@ export const articlesAdminAPI = {
 
   getDrafts: () => API.get("/articles/admin/drafts"),
   getPublished: () => API.get("/articles/admin/published"),
+
+  getAllAdminArticles: (params = {}) =>
+    API.get("/articles/admin/articles", { params }),
+
+  getAllTrainerArticles: (params = {}) =>
+    API.get("/articles/admin/trainer-articles", { params }),
 };
 export const blogsAPI = {
   getAll: (params = {}) =>

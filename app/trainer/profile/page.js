@@ -10,6 +10,7 @@ import {
   ChevronDown, BookOpen, UserPlus, Plus, Trash2, Image as ImageIcon,
   Video, GraduationCap, Link, Trophy, Image as Img, Zap
 } from 'lucide-react'
+import Image from "next/image";
 import { trainersAPI, industryAPI, competencyAPI, departmentsAPI } from '../../lib/api'
 
 // ─────────────────────────────────────────────────────────
@@ -1208,7 +1209,7 @@ useEffect(() => {
 
       {/* TOPBAR */}
       <header className="tpd-topbar">
-        <div className="tpd-brand"><span className="tpd-brand-dot"/>TopTrainer</div>
+        <div className="tpd-brand"><span className="tpd-brand-dot"/> <Image src="/toptrainerTextLogo.png" alt="toptrainer Logo" width={100} height={100} className="object-contain" /></div>
         <span className="tpd-bc">My Profile</span>
       </header>
 

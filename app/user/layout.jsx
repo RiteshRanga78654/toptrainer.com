@@ -46,7 +46,7 @@ export default function UserLayout({ children }) {
     user?.email?.split("@")?.[0] ||
     "User";
 const profileImage =
-  user?.profilePhoto?.url || user?.avatar ||
+  user?.profilePhoto?.url || user?.avatar?.url ||
     user?.photo ||
     user?.image || "";
 
@@ -98,9 +98,7 @@ const profileImage =
                 height={32}
                 className="object-contain"
               />
-              <span className="font-bold text-xl tracking-tight text-slate-900">
-                TopTrainer
-              </span>
+             <Image src="/toptrainerTextLogo.png" alt="toptrainer Logo" width={125} height={125} className="object-contain" />
             </div>
 
             <button

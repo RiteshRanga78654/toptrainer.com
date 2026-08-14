@@ -57,7 +57,7 @@ export function StatusBadge({ status }) {
   const map = {
     active:    { variant: 'success', label: 'Active' },
     inactive:  { variant: 'gray',    label: 'Inactive' },
-    pending:   { variant: 'warning', label: 'Pending' },
+    pending:   { variant: 'warning', label: 'Pending Review' },
     approved:  { variant: 'success', label: 'Approved' },
     published: { variant: 'success', label: 'Published' },
     draft:     { variant: 'gray',    label: 'Draft' },

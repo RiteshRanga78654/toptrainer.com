@@ -24,7 +24,6 @@ const emptyForm = {
     city: "",
     state: "",
     country: "",
-    address: "",
     profession: "",
     company: "",
     bio: "",
@@ -73,7 +72,6 @@ export default function UserProfile() {
       city: p.city || "",
       state: p.state || "",
       country: p.country || "",
-      address: p.address || "",
       profession: p.profession || "",
       company: p.company || "",
       bio: p.bio || "",
@@ -184,7 +182,7 @@ export default function UserProfile() {
         city: form.city,
         state: form.state,
         country: form.country,
-        address: form.address,
+      
         profession: form.profession,
         company: form.company,
         bio: form.bio,
@@ -463,7 +461,6 @@ export default function UserProfile() {
                         <InfoRow icon={<MapPin className="w-4 h-4" />} label="City" value={profile.city} />
                         <InfoRow icon={<MapPin className="w-4 h-4" />} label="State" value={profile.state} />
                         <InfoRow icon={<Globe className="w-4 h-4" />} label="Country" value={profile.country} />
-                        <InfoRow icon={<HomeIcon className="w-4 h-4" />} label="Address" value={profile.address} full />
                         <InfoRow icon={<Briefcase className="w-4 h-4" />} label="Profession / Designation" value={profile.profession} />
                         <InfoRow icon={<Building2 className="w-4 h-4" />} label="Company / Organization" value={profile.company} />
                         <InfoRow icon={<User className="w-4 h-4" />} label="Bio / About Me" value={profile.bio} full multiline />
@@ -618,50 +615,10 @@ export default function UserProfile() {
                 </div>
 
                 {/* Learning Goals */}
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                            <Target className="w-5 h-5" />
-                        </div>
-                        <h3 className="text-[17px] font-bold text-slate-900">My Learning Goals</h3>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                        {goals.map((goal, idx) => (
-                          <div key={goal.id || idx}>
-                              <div className="flex justify-between text-[13px] font-bold text-slate-900 mb-2">
-                                  <span>{goal.title}</span>
-                                  <span>{goal.progress}%</span>
-                              </div>
-                              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                  <div className="h-full bg-blue-600 rounded-full" style={{ width: `${goal.progress}%` }}></div>
-                              </div>
-                          </div>
-                        ))}
-                    </div>
-                </div>
+                
 
                 {/* Skills of Interest */}
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-                            <Star className="w-5 h-5" />
-                        </div>
-                        <h3 className="text-[17px] font-bold text-slate-900">Skills of Interest</h3>
-                    </div>
-
-                    <div className="flex flex-wrap gap-3">
-                        {skills.map((skill, idx) => {
-                          const bgColors = ['bg-blue-50 text-blue-700', 'bg-purple-50 text-purple-700', 'bg-emerald-50 text-emerald-700', 'bg-amber-50 text-amber-700'];
-                          const colorClass = bgColors[idx % bgColors.length];
-                          return (
-                            <span key={idx} className={`px-4 py-1.5 rounded-full text-sm font-semibold ${colorClass}`}>
-                              {skill}
-                            </span>
-                          );
-                        })}
-                    </div>
-                </div>
+               
             </div>
         </div>
 

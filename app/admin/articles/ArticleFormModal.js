@@ -176,7 +176,16 @@ const CSS = `
   display:inline-flex;align-items:center;gap:6px;
 }
 .btn-draft:hover{background:var(--surf);}
-.btn-draft:disabled,.btn-publish:disabled{opacity:.55;cursor:not-allowed;}
+.btn-draft:disabled,.btn-publish:disabled,.btn-pending:disabled{opacity:.55;cursor:not-allowed;}
+.btn-pending{
+  padding:10px 20px;border-radius:11px;
+  background:rgba(217,119,6,.1);color:#b45309;
+  border:1px solid rgba(217,119,6,.25);
+  font-family:var(--ffb);font-size:.84rem;font-weight:700;
+  cursor:pointer;transition:all .18s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn-pending:hover{background:rgba(217,119,6,.18);}
 .btn-publish{
   padding:10px 24px;border-radius:11px;
   background:linear-gradient(135deg,var(--blue),#1d4ed8);color:white;
@@ -271,7 +280,7 @@ function buildFormData(f, status, existing, user) {
       return { type, content };
     });
 
-  const authorName = (user?.fullName || user?.name || f.author || "").trim();
+  const authorName = (f.author || user?.fullName || user?.name || "").trim();
   const authorRole = (
     f.authorRole ||
     user?.subjectLine ||
@@ -546,7 +555,7 @@ export default function ArticleFormModal({ article, onClose, onSaved }) {
         <div className="mbox">
           <div className="mhdr">
             <div>
-              <div className="mhdr-title">{isEdit ? "Edit Article" : "Create New Article"}</div>
+              <div className="mhdr-title">{isEdit ? "Edit Blogs" : "Create New Blogs"}</div>
               <div className="mhdr-sub">Fill in the details and publish to your blog</div>
             </div>
             <button type="button" className="mclose" onClick={onClose}>
@@ -580,10 +589,10 @@ export default function ArticleFormModal({ article, onClose, onSaved }) {
               </div>
 
               <div className="cov-info">
-                <p className="cov-title">Article cover image</p>
+                <p className="cov-title">Blogs cover image</p>
                 <p>Recommended: 1280×720 px (16:9)</p>
                 <p style={{ fontSize: ".72rem", marginTop: 4 }}>
-                  Shown on the article card and detail hero.
+                  Shown on the Blog card and detail hero.
                 </p>
                 {form.image && (
                   <button type="button" className="cov-rm" onClick={rmImg}>
@@ -638,7 +647,7 @@ export default function ArticleFormModal({ article, onClose, onSaved }) {
                 className="fta"
                 rows={2}
                 maxLength={300}
-                placeholder="A concise hook shown on the article card and hero subtitle."
+                placeholder="A concise hook shown on the Blog card and hero subtitle."
                 value={form.brief}
                 onChange={(e) => set("brief", e.target.value)}
                 style={{ minHeight: 70 }}
@@ -667,7 +676,7 @@ export default function ArticleFormModal({ article, onClose, onSaved }) {
               </div>
             </Field>
 
-            <div className="msec">Article Content</div>
+            <div className="msec">Blogs Content</div>
             <Field label="Sections" hint="Add headings, paragraphs, callouts, and quotes that make up the article body.">
               <BlockEditor blocks={form.content} onChange={(c) => set("content", c)} />
             </Field>
@@ -681,9 +690,12 @@ export default function ArticleFormModal({ article, onClose, onSaved }) {
               <button type="button" className="btn-draft" onClick={() => handleSubmit("draft")} disabled={saving}>
                 {saving && <Loader2 size={13} className="spin" />} Save as Draft
               </button>
+              <button type="button" className="btn-pending" onClick={() => handleSubmit("pending")} disabled={saving}>
+                {saving && <Loader2 size={13} className="spin" />} Pending Review
+              </button>
               <button type="button" className="btn-publish" onClick={() => handleSubmit("published")} disabled={saving}>
                 {saving && <Loader2 size={13} className="spin" />}
-                {isEdit ? "Update & Publish" : "Publish Article"}
+                {isEdit ? "Update & Publish" : "Publish Blog"}
               </button>
             </div>
           </div>

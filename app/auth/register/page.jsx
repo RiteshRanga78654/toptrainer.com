@@ -180,9 +180,7 @@ export default function UserRegistrationPage() {
             height={28}
             className="object-contain"
           />
-          <span className="font-bold text-[22px] tracking-tight text-gray-900">
-            TopTrainer
-          </span>
+                          <Image src="/toptrainerTextLogo.png" alt="toptrainer Logo" width={125} height={125} className="object-contain" />
         </div>
         <div className="text-[14px] text-gray-500 font-medium hidden sm:block">
           Already have an account?{" "}

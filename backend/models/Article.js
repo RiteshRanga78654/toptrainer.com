@@ -93,7 +93,7 @@ shortDescription: {
 
     status: {
       type: String,
-      enum: ["draft", "published"],
+      enum: ["draft", "pending", "published"],
       default: "draft",
     },
 
