@@ -66,22 +66,21 @@ const popularChannels = [
     followers: "125K Followers",
     color: "bg-[#1877F2]",
     icon: Facebook,
-    href: "https://www.facebook.com/IREEDAcademy/"
+    href: "https://www.facebook.com/IREEDAcademy/",
   },
   {
     name: "IREED India",
     followers: "98K Followers",
     color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
     icon: Instagram,
-    href: "https://www.instagram.com/ireed_india/"
-
+    href: "https://www.instagram.com/ireed_india/",
   },
   {
     name: "IREED India",
     followers: "245K Subscribers",
     color: "bg-[#FF0000]",
     icon: Youtube,
-    href: "https://www.youtube.com/@ireedindia"
+    href: "https://www.youtube.com/@ireedindia",
   },
 ];
 
@@ -153,49 +152,11 @@ export default function Footer() {
 
   return (
     <footer className="bg-white text-gray-800 w-full">
-      {/* ── Newsletter Bar ── */}
-      <div className="w-full bg-white/80 backdrop-blur-sm border-y border-gray-200/50 shadow-[0_4px_24px_rgba(37,99,235,0.03)]">
-        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-8 flex flex-col sm:flex-row items-center justify-center gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-500 flex items-center justify-center shrink-0">
-              <Mail size={22} className="text-white" />
-            </div>
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
-                Stay Updated, Always.
-              </h3>
-              <p className="text-[13px] sm:text-[14px] text-gray-500 mt-0.5">
-                Get the latest articles, videos, workshops
-                <br className="hidden sm:block" /> and platform updates.
-              </p>
-            </div>
-          </div>
-
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="flex w-full sm:w-auto items-center"
-          >
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full sm:w-[260px] px-4 py-2.5 rounded-l-lg border border-gray-300 bg-white text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
-            />
-            <button
-              type="submit"
-              className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-500 text-white font-semibold text-sm rounded-r-lg hover:from-blue-700 hover:to-purple-600 transition-all whitespace-nowrap shadow-[0_2px_8px_rgba(37,99,235,0.15)]"
-            >
-              Subscribe
-            </button>
-          </form>
-        </div>
-      </div>
-
+      
       {/* ── Main Footer ── */}
       <div className="w-full">
         <div className="w-full mx-auto px-5 md:px-8 py-12 lg:py-14 ">
-          <div className="flex w-full justify-center">
+          <div className="flex w-full justify-center gap-4">
             {/* Brand Column */}
             <div className="lg:col-span-3 border-r border-slate-200 p-6">
               <div className="flex items-center gap-3 mb-4">
@@ -333,34 +294,43 @@ export default function Footer() {
             </div>
 
             {/* Follow Popular Channels */}
-            <div className="space-y-3 border border-slate-200 rounded-xl p-6 ">
-
-              <div className="flex justify-between gap-4 font-bold ">
-                <p>Follow Popular Channels</p>
-                <p className="text-blue-600 cursor-pointer hover:text-blue-500">View All</p>
-              </div>
-
-              <div className="flex flex-col gap-6 mt-10 ">
-                {popularChannels.map((ch, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div
-                      className={`w-8 h-8 rounded-full ${ch.color} flex items-center justify-center text-white shrink-0`}
-                    >
-                      <ch.icon size={14} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">
-                        {ch.name}
-                      </p>
-                      <p className="text-[11px] text-gray-500">{ch.followers}</p>
-                    </div>
-                    <button className="text-[11px] px-3 py-1 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-50 hover:border-blue-300 transition-colors font-medium whitespace-nowrap">
-                      Follow
-                    </button>
+            <div className="border border-slate-200 rounded-xl p-2 ">
+              <div className=" max-w-98 px-5 md:px-8 py-8 flex flex-col items-center justify-center gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-500 flex items-center justify-center shrink-0">
+                    <Mail size={22} className="text-white" />
                   </div>
-                ))}
-              </div>
 
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
+                      Stay Updated, Always.
+                    </h3>
+                    <p className="text-[13px] sm:text-[14px] text-gray-500 mt-0.5">
+                      Get the latest articles, videos, workshops
+                      <br className="hidden sm:block" /> and platform updates.
+                    </p>
+                  </div>
+                </div>
+
+                <form
+                  onSubmit={(e) => e.preventDefault()}
+                  className="flex w-full sm:w-auto items-center"
+                >
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="w-full sm:w-[260px] px-4 py-2.5 rounded-l-lg border border-gray-300 bg-white text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  />
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-500 text-white font-semibold text-sm rounded-r-lg hover:from-blue-700 hover:to-purple-600 transition-all whitespace-nowrap shadow-[0_2px_8px_rgba(37,99,235,0.15)]"
+                  >
+                    Subscribe
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -371,7 +341,10 @@ export default function Footer() {
         <div className="w-full mx-auto px-5 md:px-8 py-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {trustFeatures.map((f, i) => (
-              <div key={i} className="flex items-start gap-3 border-r border-slate-200">
+              <div
+                key={i}
+                className="flex items-start gap-3 border-r border-slate-200"
+              >
                 <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                   <f.icon size={20} className="text-blue-700" />
                 </div>
@@ -432,7 +405,6 @@ export default function Footer() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </footer>
