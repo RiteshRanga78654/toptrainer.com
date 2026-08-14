@@ -108,6 +108,30 @@ const userSchema = new mongoose.Schema(
       maxlength: [1000, "Bio cannot exceed 1000 characters"],
     },
 
+    userType: {
+      type: String,
+      enum: ["Student", "Professional", "Own Business", ""],
+      default: "",
+    },
+
+    industry: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Industry",
+      default: null,
+    },
+
+    competency: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Competency",
+      default: null,
+    },
+
+    department: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      default: null,
+    },
+
     password: {
       type: String,
       required: true,

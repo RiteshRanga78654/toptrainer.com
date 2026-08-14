@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { userAPI } from '../../lib/api';
+import { userAPI, industryAPI, competencyAPI, departmentsAPI } from '../../lib/api';
 import {
     PenLine, Camera, Mail, MapPin, Calendar, Target, Star, User,
     GraduationCap, Download, Award, ChevronRight, TrendingUp,
@@ -10,10 +10,21 @@ import {
 } from 'lucide-react';
 import Link from 'next/link'; 
 import DatePicker from '../../components/Datepicker';
+import SearchableDropdown from '../../components/SearchableDropdown';
 
 const GENDER_OPTIONS = ["Male", "Female", "Other", "Prefer not to say"];
+const USER_TYPE_OPTIONS = ["Student", "Professional", "Own Business"];
 const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
+const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+const formatCreatedDate = (dateStr) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return "";
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${day} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+};
 
 const emptyForm = {
     fullName: "",
@@ -27,6 +38,10 @@ const emptyForm = {
     profession: "",
     company: "",
     bio: "",
+    userType: "",
+    industry: "",
+    competency: "",
+    department: "",
 };
 
 export default function UserProfile() {
@@ -42,6 +57,13 @@ export default function UserProfile() {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [removeAvatarFlag, setRemoveAvatarFlag] = useState(false);
   const fileInputRef = useRef(null);
+
+  const [industries, setIndustries] = useState([]);
+  const [competencies, setCompetencies] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [loadingIndustries, setLoadingIndustries] = useState(true);
+  const [loadingCompetencies, setLoadingCompetencies] = useState(true);
+  const [loadingDepartments, setLoadingDepartments] = useState(true);
 
   // Fetch profile on mount
   useEffect(() => {
@@ -62,6 +84,43 @@ export default function UserProfile() {
     fetchProfile();
   }, []);
 
+  // Fetch Area of Interest option lists
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [industryRes, competencyRes, departmentRes] = await Promise.all([
+          industryAPI.getActive(),
+          competencyAPI.getActive(),
+          departmentsAPI.getActive(),
+        ]);
+
+        setIndustries(industryRes?.data?.industries || industryRes?.data?.data || []);
+        setCompetencies(competencyRes?.data?.competencies || competencyRes?.data?.data || []);
+        setDepartments(departmentRes?.data?.departments || departmentRes?.data?.data || []);
+      } catch (error) {
+        console.error("Error fetching interest options:", error);
+        toast.error("Failed to load interest options.");
+      } finally {
+        setLoadingIndustries(false);
+        setLoadingCompetencies(false);
+        setLoadingDepartments(false);
+      }
+    };
+    fetchOptions();
+  }, []);
+
+  const refId = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return value._id || value.id || "";
+  };
+
+  const refName = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return value.name || "";
+  };
+
   const populateForm = (p) => {
     setForm({
       fullName: `${p.firstName || ''} ${p.lastName || ''}`.trim(),
@@ -75,6 +134,10 @@ export default function UserProfile() {
       profession: p.profession || "",
       company: p.company || "",
       bio: p.bio || "",
+      userType: p.userType || "",
+      industry: refId(p.industry),
+      competency: refId(p.competency),
+      department: refId(p.department),
     });
   };
 
@@ -146,6 +209,10 @@ export default function UserProfile() {
       nextErrors.phoneNumber = "Enter a valid mobile number";
     }
 
+    if (!form.userType) {
+      nextErrors.userType = "Please select a user type";
+    }
+
     if (form.dateOfBirth) {
       const dob = new Date(form.dateOfBirth);
       if (dob > new Date()) {
@@ -186,6 +253,10 @@ export default function UserProfile() {
         profession: form.profession,
         company: form.company,
         bio: form.bio,
+        userType: form.userType,
+        industry: form.industry,
+        competency: form.competency,
+        department: form.department,
       };
 
       let body;
@@ -463,6 +534,8 @@ export default function UserProfile() {
                         <InfoRow icon={<Globe className="w-4 h-4" />} label="Country" value={profile.country} />
                         <InfoRow icon={<Briefcase className="w-4 h-4" />} label="Profession / Designation" value={profile.profession} />
                         <InfoRow icon={<Building2 className="w-4 h-4" />} label="Company / Organization" value={profile.company} />
+                        <InfoRow icon={<Target className="w-4 h-4" />} label="User Type" value={profile.userType} />
+                        <InfoRow icon={<Calendar className="w-4 h-4" />} label="Profile Created On" value={formatCreatedDate(profile.createdAt)} />
                         <InfoRow icon={<User className="w-4 h-4" />} label="Bio / About Me" value={profile.bio} full multiline />
                       </div>
                     ) : (
@@ -580,6 +653,29 @@ export default function UserProfile() {
                           />
                         </FormField>
 
+                        <FormField label="User Type" required error={errors.userType}>
+                          <select
+                            value={form.userType}
+                            onChange={(e) => handleFieldChange('userType', e.target.value)}
+                            className={inputClass(errors.userType)}
+                          >
+                            <option value="">Select user type</option>
+                            {USER_TYPE_OPTIONS.map((t) => (
+                              <option key={t} value={t}>{t}</option>
+                            ))}
+                          </select>
+                        </FormField>
+
+                        <FormField label="Profile Created On">
+                          <input
+                            type="text"
+                            value={formatCreatedDate(profile.createdAt)}
+                            readOnly
+                            disabled
+                            className={inputClass() + " bg-slate-50 text-slate-400 cursor-not-allowed"}
+                          />
+                        </FormField>
+
                         <FormField label="Bio / About Me" full error={errors.bio}>
                           <textarea
                             rows={4}
@@ -610,6 +706,62 @@ export default function UserProfile() {
                             {saving ? 'Saving...' : 'Save Changes'}
                           </button>
                         </div>
+                      </div>
+                    )}
+                </div>
+
+                {/* Area of Interest */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                            <Target className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-[17px] font-bold text-slate-900">Area of Interest</h3>
+                          <p className="text-xs text-slate-400 mt-0.5">The industry, competency and department you are interested in.</p>
+                        </div>
+                    </div>
+
+                    {!isEditing ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-5">
+                        <InfoRow icon={<Building2 className="w-4 h-4" />} label="Industry" value={refName(profile.industry)} />
+                        <InfoRow icon={<Target className="w-4 h-4" />} label="Competency" value={refName(profile.competency)} />
+                        <InfoRow icon={<HomeIcon className="w-4 h-4" />} label="Department" value={refName(profile.department)} />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <FormField label="Industry">
+                          <SearchableDropdown
+                            options={industries}
+                            value={form.industry}
+                            onChange={(v) => handleFieldChange('industry', v)}
+                            placeholder="Select industry"
+                            loading={loadingIndustries}
+                            emptyText="No industries available"
+                          />
+                        </FormField>
+
+                        <FormField label="Competency">
+                          <SearchableDropdown
+                            options={competencies}
+                            value={form.competency}
+                            onChange={(v) => handleFieldChange('competency', v)}
+                            placeholder="Select competency"
+                            loading={loadingCompetencies}
+                            emptyText="No competencies available"
+                          />
+                        </FormField>
+
+                        <FormField label="Department">
+                          <SearchableDropdown
+                            options={departments}
+                            value={form.department}
+                            onChange={(v) => handleFieldChange('department', v)}
+                            placeholder="Select department"
+                            loading={loadingDepartments}
+                            emptyText="No departments available"
+                          />
+                        </FormField>
                       </div>
                     )}
                 </div>

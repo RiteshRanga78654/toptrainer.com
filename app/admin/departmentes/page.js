@@ -18,14 +18,17 @@ import {
   adminWorkshopsAPI,
   youtubeVideosAPI,
   articlesAPI,
+  userAPI,
 } from "../../lib/api";
 import YoutubeSection from "../homepage/components/YoutubeSection";
 import FeaturedArticles from "../homepage/components/FeaturedArticles";
+import EntityUsers from "../../components/admin/EntityUsers";
 
 export default function DepartmentPage() {
   const [departments, setDepartments] = useState([]);
   const [trainers, setTrainers] = useState([]);
   const [workshops, setWorkshops] = useState([]);
+  const [users, setUsers] = useState([]);
   const [selectedTrainers, setSelectedTrainers] = useState([]);
   const [selectedWorkshops, setSelectedWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,10 +72,11 @@ export default function DepartmentPage() {
     try {
       setLoading(true);
 
-      const [departmentRes, trainerRes, workshopRes] = await Promise.all([
+      const [departmentRes, trainerRes, workshopRes, userRes] = await Promise.all([
         departmentsAPI.getAll(),
         trainersAPI.getAll(),
         adminWorkshopsAPI.getAll(),
+        userAPI.getAll({ limit: 1000 }),
       ]);
 
       const departmentsData =
@@ -81,6 +85,7 @@ export default function DepartmentPage() {
       setDepartments(departmentsData);
       setTrainers(trainerRes?.data?.trainers || trainerRes?.data?.data || []);
       setWorkshops(workshopRes?.data?.workshops || workshopRes?.data?.data || []);
+      setUsers(userRes?.data?.users || userRes?.data?.data || []);
 
       if (departmentsData.length > 0) {
         setSelectedDepartmentId((prev) => {
@@ -486,6 +491,13 @@ export default function DepartmentPage() {
                           <span>{item.trainers?.length || 0} experts</span>
                           <span className="text-slate-300">•</span>
                           <span>{item.workshops?.length || 0} workshops</span>
+                          <span className="text-slate-300">•</span>
+                          <span>
+                            {users.filter(
+                              (u) => (u.department?._id || u.department?.id || u.department) === item._id
+                            ).length}{" "}
+                            users
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -542,6 +554,15 @@ export default function DepartmentPage() {
                   {selectedDepartment.icon} {selectedDepartment.name}
                 </div>
               </Card>
+
+              <EntityUsers
+                users={users.filter(
+                  (u) => (u.department?._id || u.department?.id || u.department) === selectedDepartment._id
+                )}
+                entityName={selectedDepartment.name}
+                icon={selectedDepartment.icon}
+                emptyText="No users have selected this department yet."
+              />
 
               {isLoadingYoutubeFor === selectedDepartment._id ? (
                 <Card className="p-4 text-sm text-slate-500">Loading videos...</Card>

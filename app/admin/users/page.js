@@ -3,22 +3,56 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Mail } from "lucide-react";
 import { Button, Toast } from "../../components/ui";
-import { userAPI, cn, formatDate } from "../../lib/api";
+import { userAPI, industryAPI, competencyAPI, departmentsAPI, cn, formatDate } from "../../lib/api";
+import SearchableDropdown from "../../components/SearchableDropdown";
 import QuickSendModal from "../../components/admin/communications/QuickSendModal";
 import WhatsAppIcon from "../../components/admin/communications/WhatsAppIcon";
+
+const USER_TYPE_OPTIONS = ["Student", "Professional", "Own Business"];
+
+function refName(value) {
+  if (!value) return "-";
+  if (typeof value === "string") return value;
+  return value.name || "-";
+}
+
+function createdDate(dateStr) {
+  if (!dateStr) return "-";
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return "-";
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterUserType, setFilterUserType] = useState("");
+  const [filterIndustry, setFilterIndustry] = useState("");
+  const [filterCompetency, setFilterCompetency] = useState("");
+  const [filterDepartment, setFilterDepartment] = useState("");
+
+  const [industries, setIndustries] = useState([]);
+  const [competencies, setCompetencies] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
+
   const [toast, setToast] = useState(null);
   const [quickModal, setQuickModal] = useState({ open: false, recipient: null, mode: "email" });
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await userAPI.getAll();
+      const params = {};
+      if (filterUserType) params.userType = filterUserType;
+      if (filterIndustry) params.industry = filterIndustry;
+      if (filterCompetency) params.competency = filterCompetency;
+      if (filterDepartment) params.department = filterDepartment;
+
+      const res = await userAPI.getAll(params);
       const raw = res?.data?.users || res?.data?.data || [];
       setUsers(raw);
     } catch (err) {
@@ -29,9 +63,34 @@ export default function UsersPage() {
     }
   };
 
+  const fetchOptions = async () => {
+    try {
+      setLoadingOptions(true);
+      const [industryRes, competencyRes, departmentRes] = await Promise.all([
+        industryAPI.getActive(),
+        competencyAPI.getActive(),
+        departmentsAPI.getActive(),
+      ]);
+      setIndustries(industryRes?.data?.industries || industryRes?.data?.data || []);
+      setCompetencies(competencyRes?.data?.competencies || competencyRes?.data?.data || []);
+      setDepartments(departmentRes?.data?.departments || departmentRes?.data?.data || []);
+    } catch (err) {
+      console.error("Failed to fetch filter options:", err?.response?.data || err.message);
+    } finally {
+      setLoadingOptions(false);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchOptions();
   }, []);
+
+  useEffect(() => {
+    if (filterUserType || filterIndustry || filterCompetency || filterDepartment) {
+      fetchUsers();
+    }
+  }, [filterUserType, filterIndustry, filterCompetency, filterDepartment]);
 
   const handleToggleStatus = async (user, nextStatus) => {
     try {
@@ -70,9 +129,21 @@ export default function UsersPage() {
         (filterStatus === "active" && u?.status === "active") ||
         (filterStatus === "inactive" && u?.status === "inactive");
 
-      return matchesSearch && matchesStatus;
+      const matchesUserType =
+        !filterUserType || u?.userType === filterUserType;
+
+      const userRefId = (ref) =>
+        ref ? ref._id || ref.id || ref : "";
+      const matchesIndustry =
+        !filterIndustry || userRefId(u?.industry) === filterIndustry;
+      const matchesCompetency =
+        !filterCompetency || userRefId(u?.competency) === filterCompetency;
+      const matchesDepartment =
+        !filterDepartment || userRefId(u?.department) === filterDepartment;
+
+      return matchesSearch && matchesStatus && matchesUserType && matchesIndustry && matchesCompetency && matchesDepartment;
     });
-  }, [users, search, filterStatus]);
+  }, [users, search, filterStatus, filterUserType, filterIndustry, filterCompetency, filterDepartment]);
 
   return (
     <div className="space-y-4">
@@ -82,40 +153,93 @@ export default function UsersPage() {
         </Toast>
       )}
 
-      <div className="flex flex-col gap-3 md:flex-row md:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            className="w-full rounded-md border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-gray-400"
-            placeholder="Search username, email, phone..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-gray-400"
+              placeholder="Search username, email, phone..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <select
+            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none"
+            value={filterUserType}
+            onChange={(e) => setFilterUserType(e.target.value)}
+          >
+            <option value="">All Types</option>
+            {USER_TYPE_OPTIONS.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+
+          <select
+            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+
+          <Button onClick={fetchUsers}>Refresh</Button>
         </div>
 
-        <select
-          className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-        >
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-
-        <Button onClick={fetchUsers}>Refresh</Button>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:flex-wrap">
+          <div className="w-full md:w-56">
+            <SearchableDropdown
+              compact
+              options={industries}
+              value={filterIndustry}
+              onChange={setFilterIndustry}
+              placeholder="Filter by Industry"
+              loading={loadingOptions}
+              emptyText="No industries available"
+            />
+          </div>
+          <div className="w-full md:w-56">
+            <SearchableDropdown
+              compact
+              options={competencies}
+              value={filterCompetency}
+              onChange={setFilterCompetency}
+              placeholder="Filter by Competency"
+              loading={loadingOptions}
+              emptyText="No competencies available"
+            />
+          </div>
+          <div className="w-full md:w-56">
+            <SearchableDropdown
+              compact
+              options={departments}
+              value={filterDepartment}
+              onChange={setFilterDepartment}
+              placeholder="Filter by Department"
+              loading={loadingOptions}
+              emptyText="No departments available"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1050px] text-sm">
+<table className="w-full min-w-[1600px] text-sm">
             <thead className="bg-gray-50">
               <tr className="text-left">
                 <th className="px-5 py-4 font-semibold text-gray-700">Username</th>
                 <th className="px-5 py-4 font-semibold text-gray-700">Email</th>
                 <th className="px-5 py-4 font-semibold text-gray-700">Phone</th>
-                <th className="px-5 py-4 font-semibold text-gray-700">Joined Date</th>
+                <th className="px-5 py-4 font-semibold text-gray-700">User Type</th>
+                <th className="px-5 py-4 font-semibold text-gray-700">Industry</th>
+                <th className="px-5 py-4 font-semibold text-gray-700">Competency</th>
+                <th className="px-5 py-4 font-semibold text-gray-700">Department</th>
+                <th className="px-5 py-4 font-semibold text-gray-700">Profile Created On</th>
                 <th className="px-5 py-4 font-semibold text-gray-700">Last Online</th>
                 <th className="px-5 py-4 text-center font-semibold text-gray-700">Mail</th>
                 <th className="px-5 py-4 text-center font-semibold text-gray-700">WhatsApp</th>
@@ -127,13 +251,13 @@ export default function UsersPage() {
             <tbody>
               {loading ? (
                 <tr>
-                      <td colSpan={9} className="px-5 py-6 text-center text-gray-500">
+                      <td colSpan={13} className="px-5 py-6 text-center text-gray-500">
                     Loading users...
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-5 py-6 text-center text-gray-500">
+                  <td colSpan={13} className="px-5 py-6 text-center text-gray-500">
                     No users found
                   </td>
                 </tr>
@@ -146,6 +270,7 @@ export default function UsersPage() {
                   const phone = user?.phoneNumber ? String(user.phoneNumber) : "-";
                   const joinedDate = user?.createdAt;
                   const lastOnline = user?.lastSeen;
+                  const userType = user?.userType || "-";
 
                   return (
                     <tr key={user._id || user.id} className="border-t border-gray-100">
@@ -156,7 +281,30 @@ export default function UsersPage() {
                       <td className="px-5 py-4 text-gray-700">{phone}</td>
 
                       <td className="px-5 py-4 text-gray-700">
-                        {formatDate(joinedDate)}
+                        {userType === "-" ? (
+                          "-"
+                        ) : (
+                          <span
+                            className={cn(
+                              "inline-flex rounded-full px-3 py-1 text-xs font-medium",
+                              userType === "Student" && "bg-blue-50 text-blue-700",
+                              userType === "Professional" && "bg-purple-50 text-purple-700",
+                              userType === "Own Business" && "bg-emerald-50 text-emerald-700"
+                            )}
+                          >
+                            {userType}
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="px-5 py-4 text-gray-700">{refName(user?.industry)}</td>
+
+                      <td className="px-5 py-4 text-gray-700">{refName(user?.competency)}</td>
+
+                      <td className="px-5 py-4 text-gray-700">{refName(user?.department)}</td>
+
+                      <td className="px-5 py-4 text-gray-700">
+                        {createdDate(joinedDate)}
                       </td>
 
                       <td className="px-5 py-4 text-gray-700">

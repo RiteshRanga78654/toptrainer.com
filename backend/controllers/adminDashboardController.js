@@ -126,9 +126,28 @@ export const getAllUsers = asyncHandler(async (req, res) => {
     query.status = req.query.status;
   }
 
+  if (req.query.userType) {
+    query.userType = req.query.userType;
+  }
+
+  if (req.query.industry) {
+    query.industry = req.query.industry;
+  }
+
+  if (req.query.competency) {
+    query.competency = req.query.competency;
+  }
+
+  if (req.query.department) {
+    query.department = req.query.department;
+  }
+
   const users = await User.find(query)
+    .populate("industry", "name icon")
+    .populate("competency", "name icon")
+    .populate("department", "name icon")
     .select(
-      "firstName lastName email phoneNumber profileImage isOnline lastSeen status createdAt"
+      "firstName lastName email phoneNumber profileImage avatar isOnline lastSeen status createdAt userType industry competency department"
     )
     .skip(skip)
     .limit(limit)
@@ -149,6 +168,9 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 export const getUserById = asyncHandler(
     async (req, res) => {
         const user = await User.findById(req.params.id)
+        .populate("industry", "name icon")
+        .populate("competency", "name icon")
+        .populate("department", "name icon")
         .select("-password")
         if (!user) {
             return res.status(404).json({

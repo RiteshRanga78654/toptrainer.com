@@ -3,6 +3,15 @@ import generateToken from "../utils/generationToken.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
 import cloudinary from "../config/cloudinary.js";
 
+const USER_TYPES = ["Student", "Professional", "Own Business"];
+
+const REF_FIELDS = ["industry", "competency", "department"];
+
+const normalizeRefValue = (value) =>
+  value === "" || value === "null" || value === null || value === undefined
+    ? null
+    : value;
+
 export const registerUser = asyncHandler(
     async (req, res) => {
         const { firstName, lastName, email, phoneNumber, password, comfirmPassword } = req.body;
@@ -119,6 +128,9 @@ export const getMyProfile = asyncHandler(
         const user = await User.findById(
             req.user._id,
         )
+        .populate("industry", "name icon")
+        .populate("competency", "name icon")
+        .populate("department", "name icon");
 
         if (!user) {
             return res.status(404).json({
@@ -161,10 +173,27 @@ export const updateMyProfile = asyncHandler(
             "profession",
             "company",
             "bio",
+            "userType",
+            "industry",
+            "competency",
+            "department",
         ];
 
+        if (req.body.userType !== undefined && req.body.userType !== "") {
+            if (!USER_TYPES.includes(req.body.userType)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid user type",
+                });
+            }
+            user.userType = req.body.userType;
+        }
+
         editableFields.forEach((field) => {
-            if (req.body[field] !== undefined) {
+            if (req.body[field] === undefined) return;
+            if (REF_FIELDS.includes(field)) {
+                user[field] = normalizeRefValue(req.body[field]);
+            } else {
                 user[field] = req.body[field] === "" ? "" : req.body[field];
             }
         });

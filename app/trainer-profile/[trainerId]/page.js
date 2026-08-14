@@ -544,8 +544,14 @@ export default function Profile() {
                 <div className="relative flex flex-row items-center justify-between md:flex-col md:justify-start gap-4 flex-shrink-0 w-full md:w-auto">
                   <div className="flex items-center gap-3 md:hidden absolute top-0 -right-4">
                     <ShareButton title={trainer?.fullName} />
-                    <DownloadButton />
-                   <X />
+                    <DownloadButton trainer={trainer} reviews={reviews} />
+                    <button
+                      onClick={() => router.push("/find-trainer")}
+                      aria-label="Close and browse trainers"
+                      className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center text-white hover:bg-white/25 transition-all duration-200 shadow-md"
+                    >
+                      <X size={15} />
+                    </button>
                   </div>
 
                   <div className="relative flex-shrink-0">
@@ -616,7 +622,14 @@ export default function Profile() {
                     </h1>
                     <div className="hidden md:flex items-center gap-4 flex-shrink-0 -mt-3">
                       <ShareButton title={trainer?.fullName} />
-                      <DownloadButton />
+                      <DownloadButton trainer={trainer} reviews={reviews} />
+                      <button
+                        onClick={() => router.push("/find-trainer")}
+                        aria-label="Close and browse trainers"
+                        className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center text-white hover:bg-white/25 transition-all duration-200 shadow-md"
+                      >
+                        <X size={15} />
+                      </button>
                     </div>
                   </div>
 

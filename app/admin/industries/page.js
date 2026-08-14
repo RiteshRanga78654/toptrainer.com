@@ -9,14 +9,17 @@ import {
   adminWorkshopsAPI,
   youtubeVideosAPI,
   articlesAPI,
+  userAPI,
 } from "../../lib/api";
 import YoutubeSection from "../homepage/components/YoutubeSection";
 import FeaturedArticles from "../homepage/components/FeaturedArticles";
+import EntityUsers from "../../components/admin/EntityUsers";
 
 export default function IndustryPage() {
   const [industries, setIndustries] = useState([]);
   const [trainers, setTrainers] = useState([]);
   const [workshops, setWorkshops] = useState([]);
+  const [users, setUsers] = useState([]);
   const [selectedTrainers, setSelectedTrainers] = useState([]);
   const [selectedWorkshops, setSelectedWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,16 +65,18 @@ export default function IndustryPage() {
     try {
       setLoading(true);
 
-      const [industryRes, trainerRes, workshopRes] = await Promise.all([
+      const [industryRes, trainerRes, workshopRes, userRes] = await Promise.all([
         industryAPI.getAll(),
         trainersAPI.getAll(),
         adminWorkshopsAPI.getAll(),
+        userAPI.getAll({ limit: 1000 }),
       ]);
 
       const industriesData = industryRes?.data?.industries || industryRes?.data?.data || [];
       setIndustries(industriesData);
       setTrainers(trainerRes?.data?.trainers || trainerRes?.data?.data || []);
       setWorkshops(workshopRes?.data?.workshops || workshopRes?.data?.data || []);
+      setUsers(userRes?.data?.users || userRes?.data?.data || []);
 
       if (industriesData.length > 0) {
         setSelectedIndustryId((prev) => {
@@ -507,6 +512,13 @@ export default function IndustryPage() {
                           <span>{ind.trainers?.length || 0} experts</span>
                           <span className="text-slate-300">•</span>
                           <span>{ind.workshops?.length || 0} workshops</span>
+                          <span className="text-slate-300">•</span>
+                          <span>
+                            {users.filter(
+                              (u) => (u.industry?._id || u.industry?.id || u.industry) === ind._id
+                            ).length}{" "}
+                            users
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -567,6 +579,15 @@ export default function IndustryPage() {
                   {selectedIndustry.icon} {selectedIndustry.name}
                 </div>
               </Card>
+
+              <EntityUsers
+                users={users.filter(
+                  (u) => (u.industry?._id || u.industry?.id || u.industry) === selectedIndustry._id
+                )}
+                entityName={selectedIndustry.name}
+                icon={selectedIndustry.icon}
+                emptyText="No users have selected this industry yet."
+              />
 
               {isLoadingYoutubeFor === selectedIndustry._id ? (
                 <Card className="p-4 text-sm text-slate-500">Loading videos...</Card>

@@ -19,14 +19,17 @@ import {
   adminWorkshopsAPI,
   youtubeVideosAPI,
   articlesAPI,
+  userAPI,
 } from "../../lib/api";
 import YoutubeSection from "../homepage/components/YoutubeSection";
 import FeaturedArticles from "../homepage/components/FeaturedArticles";
+import EntityUsers from "../../components/admin/EntityUsers";
 
 export default function CompetencyPage() {
   const [competencies, setCompetencies] = useState([]);
   const [trainers, setTrainers] = useState([]);
   const [workshops, setWorkshops] = useState([]);
+  const [users, setUsers] = useState([]);
   const [selectedTrainers, setSelectedTrainers] = useState([]);
   const [selectedWorkshops, setSelectedWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,10 +73,11 @@ export default function CompetencyPage() {
     try {
       setLoading(true);
 
-      const [competencyRes, trainerRes, workshopRes] = await Promise.all([
+      const [competencyRes, trainerRes, workshopRes, userRes] = await Promise.all([
         competenciesAPI.getAll(),
         trainersAPI.getAll(),
         adminWorkshopsAPI.getAll(),
+        userAPI.getAll({ limit: 1000 }),
       ]);
 
       const competenciesData =
@@ -82,6 +86,7 @@ export default function CompetencyPage() {
       setCompetencies(competenciesData);
       setTrainers(trainerRes?.data?.trainers || trainerRes?.data?.data || []);
       setWorkshops(workshopRes?.data?.workshops || workshopRes?.data?.data || []);
+      setUsers(userRes?.data?.users || userRes?.data?.data || []);
 
       if (competenciesData.length > 0) {
         setSelectedCompetencyId((prev) => {
@@ -487,6 +492,13 @@ export default function CompetencyPage() {
                           <span>{item.trainers?.length || 0} experts</span>
                           <span className="text-slate-300">•</span>
                           <span>{item.workshops?.length || 0} workshops</span>
+                          <span className="text-slate-300">•</span>
+                          <span>
+                            {users.filter(
+                              (u) => (u.competency?._id || u.competency?.id || u.competency) === item._id
+                            ).length}{" "}
+                            users
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -543,6 +555,15 @@ export default function CompetencyPage() {
                   {selectedCompetency.icon} {selectedCompetency.name}
                 </div>
               </Card>
+
+              <EntityUsers
+                users={users.filter(
+                  (u) => (u.competency?._id || u.competency?.id || u.competency) === selectedCompetency._id
+                )}
+                entityName={selectedCompetency.name}
+                icon={selectedCompetency.icon}
+                emptyText="No users have selected this competency yet."
+              />
 
               {isLoadingYoutubeFor === selectedCompetency._id ? (
                 <Card className="p-4 text-sm text-slate-500">Loading videos...</Card>
