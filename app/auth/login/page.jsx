@@ -269,7 +269,7 @@ export default function UserTrainerLoginPage() {
         <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 lg:p-12 relative z-10 min-h-screen lg:min-h-0">
           <div className="lg:hidden flex items-center justify-center gap-2 mb-8 w-full anim-1">
             <Image src="/logo.png" alt="TopTrainer Logo" width={32} height={32} className="object-contain" />
-            <span className="font-bold text-[24px] tracking-tight text-gray-900">TopTrainer</span>
+           <Image src="/toptrainerTextLogo.png" alt="toptrainer Logo" width={75} height={75} className="object-contain" />
           </div>
 
           <div className="anim-2 w-full max-w-[480px] bg-white rounded-3xl shadow-[0_12px_40px_rgb(0,0,0,0.06)] p-8 sm:p-12">
