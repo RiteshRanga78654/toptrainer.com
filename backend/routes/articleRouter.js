@@ -1,6 +1,6 @@
 import express from "express";
 
-import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle, updateArticle, getAllArticles,getAllAdminArticles, getAllTrainerArticles, getArticleByIdPublic, getAllTrainerArticlesAdmin } from "../controllers/articleContoller.js";
+import { createArticle, getDraftArticles, getMyPublishedArticles, publishArticle,deleteArticle, updateArticle, getAllArticles,getAllAdminArticles, getAllTrainerArticles, getArticleByIdPublic, getAllTrainerArticlesAdmin, getTrainerPublishedArticles } from "../controllers/articleContoller.js";
 import { protectAdmin } from "../middleware/adminAuthMiddleware.js";
 import { protectTrainer } from "../middleware/trainerAuthMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -27,6 +27,7 @@ router.get("/", getAllArticles)
 router.get("/admin/articles",  getAllAdminArticles);
 router.get("/admin/trainer-articles", protectAdmin, getAllTrainerArticlesAdmin);
 router.get("/trainer/articles", getAllTrainerArticles);
+router.get("/trainer/:trainerId/published", getTrainerPublishedArticles);
 
 // Public: fetch a single published article by its id (used by /blogs/[slug])
 router.get("/:id", getArticleByIdPublic);

@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Download } from "lucide-react";
 
-export default function DownloadButton() {
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+export default function DownloadButton({ trainer, reviews = [] }) {
   const [mounted, setMounted] = useState(false);
   const [PDFDownloadLink, setPDFDownloadLink] = useState(null);
   const [TrainerPDFDocument, setTrainerPDFDocument] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [articles, setArticles] = useState([]);
+  const trainerIdRef = useRef(null);
+
+  const trainerId = trainer?._id || trainer?.trainerId;
 
   useEffect(() => {
     setIsMobile(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
@@ -21,6 +27,25 @@ export default function DownloadButton() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!trainerId || trainerIdRef.current === trainerId) return;
+    trainerIdRef.current = trainerId;
+
+    const fetchArticles = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/articles/trainer/${trainerId}/published`);
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setArticles(data.articles || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch trainer articles:", err);
+      }
+    };
+
+    fetchArticles();
+  }, [trainerId]);
+
   const buttonClass =
     "w-9 h-9 rounded-full bg-white/10 backdrop-blur border border-white/50 flex items-center justify-center text-white hover:bg-blue-800 transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95";
 
@@ -32,15 +57,17 @@ export default function DownloadButton() {
     );
   }
 
+  const displayName = trainer?.fullName || "Trainer";
+  const fileName = `${displayName.replace(/\s+/g, "_")}_Profile.pdf`;
+  const documentProps = { trainer, reviews, articles };
+
   if (isMobile && typeof navigator !== "undefined" && navigator.share) {
     const handleShare = async () => {
       try {
         const { pdf } = await import("@react-pdf/renderer");
-        const blob = await pdf(<TrainerPDFDocument />).toBlob();
-        const file = new File([blob], "Karan_Malhotra_Profile.pdf", {
-          type: "application/pdf",
-        });
-        await navigator.share({ title: "Karan Malhotra Profile", files: [file] });
+        const blob = await pdf(<TrainerPDFDocument {...documentProps} />).toBlob();
+        const file = new File([blob], fileName, { type: "application/pdf" });
+        await navigator.share({ title: `${displayName} Profile`, files: [file] });
       } catch (err) {
         console.error("Share failed:", err);
       }
@@ -55,8 +82,8 @@ export default function DownloadButton() {
 
   return (
     <PDFDownloadLink
-      document={<TrainerPDFDocument />}
-      fileName="Karan_Malhotra_Profile.pdf"
+      document={<TrainerPDFDocument {...documentProps} />}
+      fileName={fileName}
       className={buttonClass}
     >
       {({ loading }) =>

@@ -39,7 +39,7 @@ export default function WelcomeScreen({ onComplete }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-1000 ease-[cubic-bezier(0.65,0,0.35,1)] ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-white transition-opacity duration-1000 ease-[cubic-bezier(0.65,0,0.35,1)] ${
         phase === "exit" ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
@@ -52,17 +52,17 @@ export default function WelcomeScreen({ onComplete }) {
       ></div>
 
       {/* Elegant corner accents */}
-      <div className="absolute top-8 left-8 w-8 h-8 md:w-12 md:h-12 border-t border-l border-white/20"></div>
-      <div className="absolute top-8 right-8 w-8 h-8 md:w-12 md:h-12 border-t border-r border-white/20"></div>
-      <div className="absolute bottom-8 left-8 w-8 h-8 md:w-12 md:h-12 border-b border-l border-white/20"></div>
-      <div className="absolute bottom-8 right-8 w-8 h-8 md:w-12 md:h-12 border-b border-r border-white/20"></div>
+      <div className="absolute top-8 left-8 w-8 h-8 md:w-12 md:h-12 border-t border-l border-black/20"></div>
+      <div className="absolute top-8 right-8 w-8 h-8 md:w-12 md:h-12 border-t border-r border-black/20"></div>
+      <div className="absolute bottom-8 left-8 w-8 h-8 md:w-12 md:h-12 border-b border-l border-black/20"></div>
+      <div className="absolute bottom-8 right-8 w-8 h-8 md:w-12 md:h-12 border-b border-r border-black/20"></div>
 
       {/* Centered Text Elements */}
       <div className="relative flex flex-col items-center text-center">
        
         {/* Line 1 */}
         <h1
-          className={`text-white font-semibold uppercase tracking-[0.2em] text-md md:text-4xl  mb-5 transition-all duration-700 ease-out ${
+          className={`text-black font-semibold uppercase tracking-[0.2em] text-md md:text-4xl  mb-5 transition-all duration-700 ease-out ${
             phase === "enter"
               ? "opacity-0 translate-y-6"
               : "opacity-100 translate-y-0"
@@ -74,7 +74,7 @@ export default function WelcomeScreen({ onComplete }) {
 
         {/* Decorative Line */}
         <div
-          className={`h-[1px] bg-white/40 mb-5 transition-all duration-700 ease-out ${
+          className={`h-[1px] bg-black/40 mb-5 transition-all duration-700 ease-out ${
             phase === "enter" ? "w-0 opacity-0" : "w-16 md:w-24 opacity-100"
           }`}
           style={{ transitionDelay: "700ms" }}
@@ -82,7 +82,7 @@ export default function WelcomeScreen({ onComplete }) {
 
         {/* Tagline */}
         <p
-          className={`text-white uppercase tracking-[0.4em] text-sm md:text-xl transition-all duration-700 ease-out ${
+          className={`text-black uppercase tracking-[0.4em] text-sm md:text-xl transition-all duration-700 ease-out ${
             phase === "enter"
               ? "opacity-0 translate-y-4"
               : "opacity-100 translate-y-0"

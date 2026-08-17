@@ -3,6 +3,7 @@ import Article from "../models/Article.js";
 import Industry from "../models/industry.js";
 import Competency from "../models/Competency.js";
 import Department from "../models/department.js";
+import TrainerProfile from "../models/trainerProfile.js";
 import cloudinary from "../config/cloudinary.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
 
@@ -429,6 +430,40 @@ export const getAllArticles = async (req, res)=>{
         res.status(500).json({ success: false, message: "Error fetching articles" });
     }
 }
+// Public: fetch a single trainer's published articles by trainerId code or
+// Mongo _id. Used by the trainer profile page / PDF generation.
+export const getTrainerPublishedArticles = asyncHandler(async (req, res) => {
+  const { trainerId } = req.params;
+
+  let trainer = await TrainerProfile.findOne({
+    trainerId: String(trainerId).toUpperCase(),
+  }).select("_id");
+
+  if (!trainer && mongoose.Types.ObjectId.isValid(trainerId)) {
+    trainer = await TrainerProfile.findById(trainerId).select("_id");
+  }
+
+  if (!trainer) {
+    return res.status(404).json({
+      success: false,
+      message: "Trainer not found",
+    });
+  }
+
+  const articles = await Article.find({
+    trainer: trainer._id,
+    status: "published",
+  })
+    .sort({ publishedAt: -1, createdAt: -1 })
+    .select("title shortDescription coverImage publishedAt createdAt");
+
+  res.status(200).json({
+    success: true,
+    count: articles.length,
+    articles,
+  });
+});
+
 export const getArticleByIdPublic = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
