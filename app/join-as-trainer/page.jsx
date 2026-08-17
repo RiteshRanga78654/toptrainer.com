@@ -1183,7 +1183,7 @@ useEffect(()=> {
     const fetchDepartment = async () => {
       try {
         const res = await departmentsAPI.getActive();
-        setDepartment(res?.data?.department || res?.data?.data || []);      
+        setDepartment(res?.data?.departments || res?.data?.data || []);      
       } catch (err){
         console.log("Department fetch error:", err?.response?.data || err.message);     
        setDepartment([]);

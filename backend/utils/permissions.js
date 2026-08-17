@@ -10,7 +10,9 @@ export const ALL_MODULES = [
   "reports",
   "about_us",
   "reviews",
+  "requirements",
   "communications",
+  "team",
 ];
 
 export const ROLES = {

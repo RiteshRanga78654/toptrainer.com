@@ -25,9 +25,9 @@ export default function AuthGuard({ children, requiredRole }) {
       router.replace(loginRoute)
       return
     }
-    if (!initialized) {
-      dispatch(fetchMe())
-    }
+    // Always refresh the session on load so permission/role changes (e.g.
+    // team access) take effect without the user having to log out and in.
+    dispatch(fetchMe())
   }, [])
 
   useEffect(()=>{
@@ -46,7 +46,10 @@ export default function AuthGuard({ children, requiredRole }) {
     }
   }, [user, initialized])
 
-  if (!mounted || !initialized || loading) {
+  // Only show the loader when we have nothing to render yet. If a session
+  // already exists (localStorage), render immediately while fetchMe refreshes
+  // permissions in the background — avoids a flash on every page load.
+  if (!mounted || !initialized || (!user && loading)) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0c4a6e 0%, #0f172a 50%, #1e1b4b 100%)' }}>
         <div style={{ textAlign: 'center' }}>

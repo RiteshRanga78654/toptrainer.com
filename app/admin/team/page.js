@@ -28,6 +28,7 @@ import {
   KeyRound,
   CheckCircle2,
   XCircle,
+  Briefcase,
 } from "lucide-react";
 import {
   Card,
@@ -60,7 +61,9 @@ const MODULE_ICONS = {
   reports: BarChart3,
   about_us: Info,
   reviews: Star,
+  requirements: Briefcase,
   communications: Send,
+  team: ShieldCheck,
 };
 
 const ROLE_ICONS = {

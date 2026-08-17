@@ -12,6 +12,7 @@ export const ALL_MODULES = [
   "reviews",
   "requirements",
   "communications",
+  "team",
 ];
 
 export const MODULE_LABELS = {
@@ -28,6 +29,7 @@ export const MODULE_LABELS = {
   reviews: "Reviews",
   requirements: "Requirements",
   communications: "Communications",
+  team: "Team & Access",
 };
 
 export const ROLES = [
@@ -60,8 +62,10 @@ export function hasFullAccess(user) {
   const perms = user?.permissions;
   if (!Array.isArray(perms)) return true;
   if (perms.length === 0) return true;
-  if (perms.includes("team")) return true;
-  return ALL_MODULES.every((m) => perms.includes(m));
+  if (perms.includes(teamPermission)) return true;
+  return ALL_MODULES.filter((m) => m !== teamPermission).every((m) =>
+    perms.includes(m)
+  );
 }
 
 export function canManageTeam(user) {

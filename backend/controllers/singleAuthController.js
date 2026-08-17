@@ -4,6 +4,19 @@ import User from "../models/user.js";
 import TeamMember from "../models/teamMember.js";
 import generateToken from "../utils/generationToken.js";
 import asyncHandler from "../middleware/asyncMiddlewire.js";
+import { resolvePermissions, ROLES } from "../utils/permissions.js";
+
+// Legacy Admin documents (created before the role/permissions fields existed)
+// have an undefined role and a stale permissions snapshot. Normalize them so
+// they are treated as full administrators with the current module list.
+const normalizeAdmin = (admin) => {
+  if (!admin) return admin;
+  if (!Object.values(ROLES).includes(admin.role)) {
+    admin.role = ROLES.administrator;
+  }
+  admin.permissions = resolvePermissions(admin.role, admin.permissions);
+  return admin;
+};
 
 export const unifiedLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -24,6 +37,7 @@ export const unifiedLogin = asyncHandler(async (req, res) => {
       });
     }
 
+    normalizeAdmin(admin);
     admin.lastLogin = new Date();
     await admin.save({ validateBeforeSave: false });
 
@@ -37,7 +51,7 @@ export const unifiedLogin = asyncHandler(async (req, res) => {
         name: admin.name,
         email: admin.email,
         role: "admin",
-        permissions: admin.permissions || [],
+        permissions: admin.permissions,
       },
     });
   }
@@ -64,7 +78,7 @@ export const unifiedLogin = asyncHandler(async (req, res) => {
         name: teamMember.fullName,
         email: teamMember.email,
         role: "admin",
-        permissions: teamMember.permissions || [],
+        permissions: resolvePermissions(teamMember.role, teamMember.permissions),
       },
     });
   }
@@ -130,6 +144,8 @@ export const getCurrentSession = asyncHandler(async (req, res) => {
 
   const isTeamMember = req.isTeamMember;
 
+  normalizeAdmin(admin);
+
   res.status(200).json({
     success: true,
     data: {
@@ -137,7 +153,7 @@ export const getCurrentSession = asyncHandler(async (req, res) => {
       name: admin.name || admin.fullName,
       email: admin.email,
       role: "admin",
-      permissions: admin.permissions || [],
+      permissions: admin.permissions,
       isTeamMember,
     },
   });
