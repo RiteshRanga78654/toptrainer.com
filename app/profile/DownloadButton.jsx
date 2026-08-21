@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Download } from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/api
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app/api";
 
 export default function DownloadButton({ trainer, reviews = [] }) {
   const [mounted, setMounted] = useState(false);
