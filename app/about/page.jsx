@@ -445,7 +445,7 @@ export default function AboutPage() {
   const [cultureIndex, setCultureIndex] = useState(0);
   const cultureScrollRef = useRef(null);
   const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_URL || "toptrainer-backend-production.up.railway.app0";
 
 
 

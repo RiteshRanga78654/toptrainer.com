@@ -178,7 +178,7 @@ export default function YoutubeSection({ scope = "home", entityType, entityId })
     if (entityId) params.set("entityId", entityId);
 
     const base =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app//api";
 
     fetch(`${base}/youtube-videos?${params.toString()}`)
       .then((res) => res.json())

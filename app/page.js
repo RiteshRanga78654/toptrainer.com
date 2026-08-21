@@ -623,7 +623,7 @@ const Page = () => {
     const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/hero-images/active")
+    fetch("https://toptrainer-backend-production.up.railway.app/api/hero-images/active")
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data.length > 0) {

@@ -14,7 +14,7 @@ import {
 import { useAuth } from "../../hooks";
 import { userDashboardAPI } from "../../lib/api";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/";
 
 const CATEGORIES = [
   { id: "all", label: "All" },

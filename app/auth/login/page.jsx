@@ -81,7 +81,7 @@ export default function UserTrainerLoginPage() {
   };
 
   const handleSocialLogin = (provider) => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app//api";
     window.location.href = `${baseUrl}/auth/${provider}`;
   };
 

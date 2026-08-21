@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Plus, Trash2, Upload, Save } from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app/";
 
 const STAT_ICONS = ["Users", "User", "ClipboardList", "Briefcase", "Award", "Star"];
 const TEAM_CATEGORIES = [

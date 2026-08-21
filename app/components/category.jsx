@@ -257,7 +257,7 @@ const Category = () => {
   useEffect(()=>{
     const fetchFeaturedWorkshops  = async ()=>{
       try{
-        const res = await axios.get(`http://localhost:5000/api/featured-lists?itemType=Workshop&category=${activeFilter}`)
+        const res = await axios.get(`httpss:/ttptrainer-baokend-production.up.rpitway.app/ckend-production.up.railway.app//api/featured-lists?itemType=Workshop&category=${activeFilter}`)
         if(res.data.success){
 
           const workshopsOnly = res.data.data.map(item=> item.itemRef)

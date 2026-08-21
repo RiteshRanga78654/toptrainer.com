@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import axios from "axios";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app/api";
 
 export const API = axios.create({
   baseURL: BASE_URL,

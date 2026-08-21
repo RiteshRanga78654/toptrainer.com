@@ -636,7 +636,7 @@ export default function PopularTrainers() {
       const responses = await Promise.all(
         categories.map((category) =>
           axios.get(
-            `http://localhost:5000/api/featured-lists?itemType=TrainerProfile&category=${category}`
+            `https://toptrainer-backend-production.up.railway.app/api/featured-lists?itemType=TrainerProfile&category=${category}`
           )
         )
       );

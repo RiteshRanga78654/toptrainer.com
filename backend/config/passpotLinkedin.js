@@ -15,7 +15,7 @@ dotenv.config();
 
 const linkedInClientId = process.env.LINKEDIN_CLIENT_ID;
 const linkedInClientSecret = process.env.LINKEDIN_CLIENT_SECRET;
-const linkedInCallbackUrl = process.env.LINKEDIN_CALLBACK_URL || "http://localhost:5000/api/auth/linkedin/callback";
+const linkedInCallbackUrl = process.env.LINKEDIN_CALLBACK_URL || "https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app//api/auth/linkedin/callback";
 const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000";
 
 // LinkedIn retired the old r_emailaddress / r_liteprofile (v1/v2) scopes.
