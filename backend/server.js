@@ -40,13 +40,24 @@ dotenv.config();
 console.log("SERVER ENV:", process.env.CLOUDINARY_CLOUD_NAME);
 
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://toptrainer-com.vercel.app",
+];
+
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://toptrainer-com.vercel.app",], // or whatever port Next.js runs on
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-  }),
+  })
 );
 app.use(express.json());
 app.use(cookieParser());
