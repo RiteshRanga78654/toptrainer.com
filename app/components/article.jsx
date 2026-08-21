@@ -322,7 +322,7 @@ export default function Articles() {
 const fetchFeaturedArticles = async()=>{
   
   try{
-    const res = await axios.get(`https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/apifeatured-lists?itemType=Article`)
+    const res = await axios.get(`https://toptrainer-backend-production.up.railway.app/apifeatured-lists?itemType=Article`)
     if(res.data.success){
       const articlesFeatured = res.data.data.map(item => item.itemRef)
       setFeaturedArticles(articlesFeatured)
