@@ -15,7 +15,7 @@ dotenv.config();
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const googleCallbackUrl = process.env.GOOGLE_CALLBACK_URL || "https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app//api/auth/google/callback";
+const googleCallbackUrl = process.env.GOOGLE_CALLBACK_URL || "https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/apiauth/google/callback";
 const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000";
 
 if (googleClientId && googleClientSecret) {

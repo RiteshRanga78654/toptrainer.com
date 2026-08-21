@@ -15,7 +15,7 @@ import {
 import Footer from "../../components/footer";
 import DownloadButton from "../../profile/DownloadButton";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app//api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/ckend-production.up.railway.app/pi";
 
 function useInView(threshold = 0.15) {
   const ref = useRef(null);

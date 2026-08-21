@@ -123,7 +123,7 @@ export default function Department() {
       try {
         setArticlesLoading(true);
 
-        const res = await axios.get("https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app//api/articles", {
+        const res = await axios.get("https://toptrainer-backend-production.up.railway.app/ckend-production.up.railway.app/api/articles", {
           params: {
             department: "any",
           },

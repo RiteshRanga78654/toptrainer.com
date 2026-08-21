@@ -95,7 +95,7 @@ export default function UserRegistrationPage() {
   };
 
   const handleSocialSignup = (provider) => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app//api";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://toptrainer-backend-production.up.railway.app/api";
     window.location.href = `${baseUrl}/auth/${provider}`;
   };
 

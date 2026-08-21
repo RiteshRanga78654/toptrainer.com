@@ -10,7 +10,7 @@ export default function useWorkshopHeroImages() {
   const [heroSaved, setHeroSaved] = useState(false);
 
   useEffect(() => {
-    fetch("https://toptrainer-backend-production.up.railway.app//api/hero-images?scope=workshops")
+    fetch("https://toptrainer-backend-production.up.railway.app/api/hero-images?scope=workshops")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -31,7 +31,7 @@ export default function useWorkshopHeroImages() {
 
     try {
       await axios.put(
-        `https://toptrainer-backend-production.up.railway.app//api/hero-images/${id}`,
+        `https://toptrainer-backend-production.up.railway.app/api/hero-images/${id}`,
         { active: !imgToUpdate.active },
         { withCredentials: true }
       );
@@ -53,7 +53,7 @@ export default function useWorkshopHeroImages() {
 
     try {
       await axios.put(
-        `https://toptrainer-backend-production.up.railway.app//api/hero-images/${id}`,
+        `https://toptrainer-backend-production.up.railway.app/api/hero-images/${id}`,
         { caption: newCaption },
         { withCredentials: true }
       );
@@ -69,7 +69,7 @@ export default function useWorkshopHeroImages() {
 
   const removeImage = async (id) => {
     try {
-      const res = await axios.delete(`https://toptrainer-backend-production.up.railway.app//api/hero-images/${id}`, {
+      const res = await axios.delete(`https://toptrainer-backend-production.up.railway.app/api/hero-images/${id}`, {
         withCredentials: true,
       });
       if (res.data.success) {
@@ -87,7 +87,7 @@ export default function useWorkshopHeroImages() {
     formData.append("scope", "workshops");
 
     try {
-      const res = await axios.post("https://toptrainer-backend-production.up.railway.app//api/hero-images", formData, {
+      const res = await axios.post("https://toptrainer-backend-production.up.railway.app/api/hero-images", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
