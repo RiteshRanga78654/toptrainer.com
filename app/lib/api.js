@@ -17,9 +17,9 @@ API.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
       const token =
-        localStorage.getItem("token") ||
         localStorage.getItem("tt_token") ||
-        localStorage.getItem("accessToken");
+        document.cookie.match(/(?:^|;\s*)token=([^;]+)/)?.[1] ||
+        null;
 
       if (token) {
         config.headers = config.headers || {};
@@ -35,9 +35,10 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error?.response?.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("token");
       localStorage.removeItem("tt_token");
-      localStorage.removeItem("accessToken");
+      localStorage.removeItem("tt_role");
+      localStorage.removeItem("tt_user");
+      document.cookie = "token=; path=/; max-age=0";
     }
     return Promise.reject(error);
   }

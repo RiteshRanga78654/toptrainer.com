@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trainerDashboardAPI } from "../../lib/api";
+import AuthGuard, { getExpectedPathForRole } from "../../components/AuthGuard";
 import {
   BookOpen, FileText, Eye, Users, TrendingUp,
   ArrowRight, Clock, Star, Plus, BarChart2,
@@ -159,7 +160,7 @@ function PageLoader() {
   );
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const user = useSelector((s) => s.auth?.user);
   const router = useRouter();
 
@@ -532,5 +533,13 @@ export default function DashboardPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <AuthGuard allowedRoles={["trainer"]}>
+      <DashboardContent />
+    </AuthGuard>
   );
 }

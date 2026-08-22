@@ -1,27 +1,40 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authAPI, userAPI } from "../../lib/api";
 
+const TOKEN_KEY = "tt_token";
+const ROLE_KEY = "tt_role";
+const USER_KEY = "tt_user";
+const COOKIE_MAX_AGE = 7 * 24 * 3600;
+
 function saveToken(token) {
   if (typeof window === "undefined") return;
-  localStorage.setItem("tt_token", token);
-  document.cookie = `token=${token}; path=/; max-age=${7 * 24 * 3600}`;
+  localStorage.setItem(TOKEN_KEY, token);
+  document.cookie = `token=${token}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
 }
 
 function clearToken() {
   if (typeof window === "undefined") return;
-  localStorage.removeItem("tt_token");
-  localStorage.removeItem("role");
-  localStorage.removeItem("user");
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(ROLE_KEY);
+  localStorage.removeItem(USER_KEY);
   document.cookie = "token=; path=/; max-age=0";
 }
 
 function getToken() {
   if (typeof window === "undefined") return null;
   return (
-    localStorage.getItem("tt_token") ||
+    localStorage.getItem(TOKEN_KEY) ||
     document.cookie.match(/(?:^|;\s*)token=([^;]+)/)?.[1] ||
     null
   );
+}
+
+function normalizeRole(role) {
+  if (!role) return "user";
+  const r = role.toLowerCase();
+  if (r === "administrator" || r === "admin") return "admin";
+  if (r === "trainer" || r === "content_writer") return "trainer";
+  return "user";
 }
 
 export const login = createAsyncThunk(
@@ -33,20 +46,21 @@ export const login = createAsyncThunk(
       const payload = res.data?.data || res.data;
       const token = payload?.token;
       const user = payload?.user;
-      const role = payload?.role || payload?.user?.role;
+      const rawRole = payload?.role || payload?.user?.role;
 
       if (!token || !user) {
         return rejectWithValue("Invalid login response from server");
       }
 
+      const normalizedRole = normalizeRole(rawRole);
       const normalizedUser = {
         ...user,
-        role: user.role || role,
+        role: normalizedRole,
       };
 
       saveToken(token);
-      localStorage.setItem("role", normalizedUser.role || "");
-      localStorage.setItem("user", JSON.stringify(normalizedUser));
+      localStorage.setItem(ROLE_KEY, normalizedRole);
+      localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
 
       return { token, user: normalizedUser };
     } catch (err) {
@@ -73,14 +87,15 @@ export const register = createAsyncThunk(
         );
       }
 
+      const normalizedRole = normalizeRole(user.role || "user");
       const normalizedUser = {
         ...user,
-        role: user.role || "user",
+        role: normalizedRole,
       };
 
       saveToken(token);
-      localStorage.setItem("role", normalizedUser.role || "");
-      localStorage.setItem("user", JSON.stringify(normalizedUser));
+      localStorage.setItem(ROLE_KEY, normalizedRole);
+      localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
 
       return { token, user: normalizedUser };
     } catch (err) {
@@ -98,6 +113,9 @@ export const fetchMe = createAsyncThunk(
       const res = await authAPI.me();
       const payload = res.data?.data || res.data;
 
+      if (payload?.user) {
+        payload.user.role = normalizeRole(payload.user.role);
+      }
       return payload;
     } catch (err) {
       clearToken();
@@ -118,7 +136,7 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 const initialState = {
   user:
     typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
+      ? JSON.parse(localStorage.getItem(USER_KEY) || "null")
       : null,
   token: typeof window !== "undefined" ? getToken() : null,
   loading: false,
@@ -136,7 +154,7 @@ const authSlice = createSlice({
     updateUser: (state, action) => {
       state.user = { ...state.user, ...action.payload };
       if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(state.user));
+        localStorage.setItem(USER_KEY, JSON.stringify(state.user));
       }
     },
   },
