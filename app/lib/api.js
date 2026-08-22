@@ -34,7 +34,16 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error?.response?.status === 401 && typeof window !== "undefined") {
+    // IMPORTANT: only treat a 401 as "the session itself is invalid" when it
+    // comes from the session-check endpoint (/auth/me). A 401 from any other
+    // endpoint (e.g. a single resource the user isn't allowed to see) used to
+    // wipe the token/user/cookie here unconditionally — that silently logged
+    // the user out and bounced them straight back to the login page right
+    // after a successful login (affected admin and trainer both, since this
+    // interceptor is shared by every request).
+    const url = error?.config?.url || "";
+    const isSessionCheck = url.includes("/auth/me");
+    if (error?.response?.status === 401 && isSessionCheck && typeof window !== "undefined") {
       localStorage.removeItem("tt_token");
       localStorage.removeItem("tt_role");
       localStorage.removeItem("tt_user");
