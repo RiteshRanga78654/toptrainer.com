@@ -5,8 +5,6 @@ import { makeStore } from './store'
 import { Toaster } from 'react-hot-toast'
 
 export default function StoreProvider({ children }) {
-  // Create the store once per StoreProvider instance (not once per module),
-  // per the standard Redux Toolkit + Next.js App Router pattern.
   const storeRef = useRef(null)
   if (!storeRef.current) {
     storeRef.current = makeStore()
