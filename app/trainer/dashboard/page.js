@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trainerDashboardAPI } from "../../lib/api";
-import AuthGuard, { getExpectedPathForRole } from "../../components/AuthGuard";
 import {
   BookOpen, FileText, Eye, Users, TrendingUp,
   ArrowRight, Clock, Star, Plus, BarChart2,
@@ -537,9 +536,10 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-  return (
-    <AuthGuard allowedRoles={["trainer"]}>
-      <DashboardContent />
-    </AuthGuard>
-  );
+  // Auth + role protection is already handled once, at the route level, by
+  // `trainer/layout.js` (which wraps every /trainer/* page). Wrapping again
+  // here with a second, independent AuthGuard caused two auth checks to run
+  // concurrently and fight over redirects — that was the source of the
+  // "dashboard keeps reloading" loop. Do not re-add a guard here.
+  return <DashboardContent />;
 }

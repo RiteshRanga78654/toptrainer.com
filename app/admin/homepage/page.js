@@ -10,7 +10,6 @@ import HeroSliderSection from "./components/HeroSliderSection";
 import YoutubeSection from "./components/YoutubeSection";
 import useHomepageState from "./hooks/useHomepageState";
 import FeaturedArticles from "./components/FeaturedArticles";
-import AuthGuard from "../../components/AuthGuard";
 
 function HomepageContent() {
   const { youtubeState, heroState, expertState, workshopState, articleState } =
@@ -554,9 +553,8 @@ function HomepageContent() {
 }
 
 export default function HomepagePage() {
-  return (
-    <AuthGuard allowedRoles={["admin"]}>
-      <HomepageContent />
-    </AuthGuard>
-  );
+  // `admin/layout.js` already wraps every /admin/* page (except
+  // /admin/login) in its own AuthGuard requiring the admin role. A second,
+  // independent AuthGuard here raced with it and caused redirect loops.
+  return <HomepageContent />;
 }

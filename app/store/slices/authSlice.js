@@ -197,9 +197,18 @@ const authSlice = createSlice({
       })
       .addCase(fetchMe.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        // `action.payload` from the /auth/me thunk is `{ user: {...} }`
+        // (or similar), NOT the user object itself. Storing the whole
+        // payload here left `state.user.role` undefined, which broke every
+        // role check downstream (AuthGuards kept seeing "no role" and
+        // bouncing people between dashboards / back to login).
+        const nextUser = action.payload?.user || action.payload;
+        state.user = nextUser;
         state.initialized = true;
         state.error = null;
+        if (typeof window !== "undefined" && nextUser) {
+          localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
+        }
       })
       .addCase(fetchMe.rejected, (state) => {
         state.loading = false;

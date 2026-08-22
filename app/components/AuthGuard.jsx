@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchMe } from "../store/slices/authSlice";
 
 export const ROLE_ROUTES = {
-  admin: "/admin/homepage",
+  admin: "/admin",
   trainer: "/trainer/dashboard",
   user: "/user/dashboard",
 };
