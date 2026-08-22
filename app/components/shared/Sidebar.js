@@ -211,7 +211,7 @@ export default function Sidebar({ role = 'admin', onClose }) {
 
   const handleLogout = async () => {
     await dispatch(logout())
-    router.replace('/auth/login')
+    router.replace(role === 'admin' ? '/admin/login' : '/auth/login')
   }
 
   return (
