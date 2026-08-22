@@ -13,7 +13,8 @@ import {
   FileText,
 } from "lucide-react";
 import Link from "next/link";
-import { userDashboardAPI } from "../../lib/api"; // adjust to match this file's real locatio
+import { userDashboardAPI } from "../../lib/api";
+import AuthGuard from "../../components/AuthGuard";
 const videos = [
   { id: "bAulddz4q94", title: "How I leveled up as a Full Stack Developer | Paras Kumar | IREED India", views: "9.8K views" },
   { id: "xA7AWhLQXKQ", title: "From Beginner to Developer | Web Development Journey | IREED India", views: "7.6K views" },
@@ -26,7 +27,7 @@ function fmtWorkshopDate(d) {
   return { day: String(dt.getDate()).padStart(2, "0"), month: dt.toLocaleString("en-US", { month: "short" }).toUpperCase() };
 }
 
-export default function UserDashboard() {
+function UserDashboardContent() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -302,5 +303,13 @@ export default function UserDashboard() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function UserDashboard() {
+  return (
+    <AuthGuard allowedRoles={["user"]}>
+      <UserDashboardContent />
+    </AuthGuard>
   );
 }

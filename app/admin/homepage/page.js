@@ -10,8 +10,9 @@ import HeroSliderSection from "./components/HeroSliderSection";
 import YoutubeSection from "./components/YoutubeSection";
 import useHomepageState from "./hooks/useHomepageState";
 import FeaturedArticles from "./components/FeaturedArticles";
+import AuthGuard from "../../components/AuthGuard";
 
-export default function HomepagePage() {
+function HomepageContent() {
   const { youtubeState, heroState, expertState, workshopState, articleState } =
     useHomepageState();
 
@@ -549,5 +550,13 @@ export default function HomepagePage() {
         />
       )}
     </div>
+  );
+}
+
+export default function HomepagePage() {
+  return (
+    <AuthGuard allowedRoles={["admin"]}>
+      <HomepageContent />
+    </AuthGuard>
   );
 }
