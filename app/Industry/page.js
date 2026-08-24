@@ -47,7 +47,8 @@ function ArticleSlider({ articles }) {
               {chunk.map((a) => (
                 <div
                   key={a._id || a.id || a.slug || a.title}
-                  className="relative rounded-2xl overflow-hidden cursor-pointer group hover:scale-[1.02] transition-all duration-300 h-68"
+                  className="relative rounded-2xl overflow-hidden cursor-pointeriner
+                   group hover:scale-[1.02] transition-all duration-300 h-68"
                 >
                   <Image
                     src={a.image || a.thumbnail || "/Images/workshop2.png"}

@@ -33,7 +33,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
 
-  const publicPaths = ["/auth/login", "/auth/register", "/", "/find-trainer", "/articles", "/workshops", "/trainer-profile", "/join-as-trainer", "/about", "/contact", "/privacy", "/terms"];
+  const publicPaths = ["/auth/login", "/auth/register", "/", "/find-trainer", "/articles", "/workshops", "/trainer-profile", "/join-as-trainer", "/about", "/contact", "/privacy", "/terms", "/Industry", "/department", "/competency"];
 
   const isPublicPath = publicPaths.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
